@@ -1,7 +1,11 @@
 # This file is a template, and might need editing before it works on your project.
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/node/tags/
-image: node:10-alpine
+image: node:10
+
+stages:
+  - build
+  - preview
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -19,15 +23,14 @@ image: node:10-alpine
 ## INTEGRATION
 
 build:
+  stage: build
   script:
-    - apk --no-cache add --virtual native-deps git
     - npm install
     - npm run export
-    - apk del native-deps
   artifacts:
     name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
     paths:
-      - public/
+      - build/
 #   only:
 #     - master
 
@@ -41,6 +44,7 @@ build:
 ## DELIVERY
 
 pages:
+  stage: preview
   image: alpine:latest
   environment: staging
   script:
