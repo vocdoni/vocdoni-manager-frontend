@@ -16,14 +16,50 @@ image: node:10-alpine
 #   paths:
 #   - node_modules/
 
-check db:
- script:
-  - npm install
-  - npm run export
+## INTEGRATION
+
+build:
+  script:
+    - apk --no-cache add --virtual native-deps git
+    - npm install
+    - npm run export
+    - apk del native-deps
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - public/
+#   only:
+#     - master
 
 # docker build:
 #   script: docker build -t voc/entity-manager:$CI_COMMIT_REF_SLUG .
 #   only:
 #     changes:
 #       - Dockerfile
-#       - build/**/*
+#       - public/**/*
+
+## DELIVERY
+
+pages:
+  image: alpine:latest
+  environment: staging
+  script:
+  - cp -a ./build ./public
+  artifacts:
+    paths:
+    - public
+#   except:
+#   - master
+
+
+# variables:
+#   S3_BUCKET_NAME: "yourbucket"
+
+# deploy to production:
+#   environment: production
+#   image: python:latest
+#   script:
+#   - pip install awscli
+#   - aws s3 cp ./ s3://$S3_BUCKET_NAME/ --recursive --exclude "*" --include "*.html"
+#   only:
+#   - master
