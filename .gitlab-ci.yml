@@ -16,12 +16,14 @@ image: node:10-alpine
 #   paths:
 #   - node_modules/
 
-dummy check:
-  script: echo "DONE" ; true
+check db:
+ script:
+  - npm install
+  - npm run export
 
-#check db:
-#  script:
-#   - pwd
-#   - ls -lha
-#   - npm install
-#   - node test-db.js
+# docker build:
+#   script: docker build -t voc/entity-manager:$CI_COMMIT_REF_SLUG .
+#   only:
+#     changes:
+#       - Dockerfile
+#       - build/**/*
