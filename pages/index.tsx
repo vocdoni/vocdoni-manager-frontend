@@ -149,15 +149,12 @@ export default class Main extends Component<{}, State> {
 
     render() {
         return <MainLayout>
-            <Layout>
-                <Header style={{ backgroundColor: "#173f56a3" }}>
-                    <AccountStatus
-                        currentAddress={this.state.currentAddress}
-                        entityDetails={this.state.entityDetails}
-                    />
-
-                </Header>
-            </Layout>
+            <Header style={{ backgroundColor: "#173f56a3" }}>
+                <AccountStatus
+                    currentAddress={this.state.currentAddress}
+                    entityDetails={this.state.entityDetails}
+                />
+            </Header>
             <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
                 {this.renderPageContent()}
             </div>
