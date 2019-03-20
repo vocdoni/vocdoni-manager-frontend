@@ -1,13 +1,12 @@
 # This file is a template, and might need editing before it works on your project.
 # Official framework image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/node/tags/
-image: node:10
 
 stages:
   - build
-  - test
-  - preview
-  - deploy
+#   - test
+#   - preview
+#   - deploy
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -25,6 +24,7 @@ stages:
 ## INTEGRATION
 
 build:
+  image: node:10
   stage: build
   script:
     - npm install
@@ -45,29 +45,27 @@ build:
 
 ## PREVIEW
 
-pages:
-  stage: preview
-  image: alpine:latest
-  environment: staging
-  script:
-  - cp -a ./build ./public
-  artifacts:
-    paths:
-    - public
+# pages:
+#   stage: preview
+#   image: alpine:latest
+#   environment: staging
+#   script:
+#   - cp -a ./build ./public
+#   artifacts:
+#     paths:
+#     - public
 #   except:
 #   - master
 
-review:
-  stage: deploy
-  script:
-    - echo "Deploy to review server"
-  environment:
-    name: review/$CI_COMMIT_REF_NAME
-    # url: https://$CI_ENVIRONMENT_SLUG.example.com/
+# review:
+#   stage: deploy
+#   image: alpine:latest
+#   script:
+#     - echo "Deploy to review server"
 #   environment:
-#     name: staging
-    # url: https://staging.example.com
-#   only:
+#     name: review/$CI_COMMIT_REF_NAME
+#     # url: https://$CI_ENVIRONMENT_SLUG.example.com/
+#   except:
 #   - master
 
 ## DELIVERY
