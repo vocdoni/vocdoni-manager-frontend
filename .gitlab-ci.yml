@@ -5,7 +5,9 @@ image: node:10
 
 stages:
   - build
+  - test
   - preview
+  - deploy
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -41,7 +43,7 @@ build:
 #       - Dockerfile
 #       - public/**/*
 
-## DELIVERY
+## PREVIEW
 
 pages:
   stage: preview
@@ -55,6 +57,20 @@ pages:
 #   except:
 #   - master
 
+review:
+  stage: deploy
+  script:
+    - echo "Deploy to review server"
+  environment:
+    name: review/$CI_COMMIT_REF_NAME
+    # url: https://$CI_ENVIRONMENT_SLUG.example.com/
+#   environment:
+#     name: staging
+    # url: https://staging.example.com
+#   only:
+#   - master
+
+## DELIVERY
 
 # variables:
 #   S3_BUCKET_NAME: "yourbucket"
