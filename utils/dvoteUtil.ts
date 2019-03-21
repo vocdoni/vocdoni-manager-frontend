@@ -1,4 +1,5 @@
 import { Process, Census, Entity } from 'dvote-client'
+// export { IEntity } from 'dvote-client/dist/dvote/entity'
 
 // TODO: Refactor: The dvote-client library should be able to provide such functionality
 

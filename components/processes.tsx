@@ -20,7 +20,7 @@ export default class processes extends Component<Props, State> {
     }
 
     renderMenu() {
-        return Object.keys(this.props.processesMetadata).map((processId) => {
+        return Object.keys(this.props.processesMetadata || []).map((processId) => {
             let processMetadata = this.props.processesMetadata[processId]
             return <Menu.Item key={processMetadata.id}>{processMetadata.name}</Menu.Item>
         });
@@ -47,7 +47,7 @@ export default class processes extends Component<Props, State> {
         if (this.state.selectedProcess == "NEW_PROCESS_KEY")
             return <NewProcess dvote={this.props.dvote} />
 
-        if (!Object.keys(this.props.processesMetadata).length)
+        if (!Object.keys(this.props.processesMetadata || []).length)
             return this.renderNoExistingProcessMessage()
 
         if (!this.state.selectedProcess)

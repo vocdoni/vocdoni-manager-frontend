@@ -3,7 +3,7 @@ import { Layout, Menu, Icon } from 'antd'
 import Web3Manager from "../utils/web3Manager"
 import { AccountState } from "../utils/accountState"
 import DvoteUtil from "../utils/dvoteUtil"
-import Registry from "./registry"
+import Registry from "./_list-example"
 import Processes from "./processes"
 
 enum Page {

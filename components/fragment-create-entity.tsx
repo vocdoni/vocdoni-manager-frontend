@@ -15,7 +15,6 @@ interface State {
 }
 
 interface Props {
-    dvote: DvoteUtil
     defaultCensusRequestUrl: string
     currentAddress: string,
 }
@@ -53,8 +52,8 @@ export default class NewEntity extends Component<Props, State> {
         };
 
         try {
-            let transaction = await this.props.dvote.entity.create(processMetadata, this.props.currentAddress)
-            console.log(transaction)
+            const dvote = new DvoteUtil()
+            let transaction = await dvote.entity.create(processMetadata, this.props.currentAddress)
         }
         catch (err) {
             notification.error({
@@ -65,10 +64,11 @@ export default class NewEntity extends Component<Props, State> {
     }
 
     render() {
-        return <div style={{ padding: 50 }}>
+        return <div>
 
             <h2>Create a new entity</h2>
             <p>Your account has not created an entity yet. Fill in the details of the entity to create one.</p>
+            <p>Keep in mind that the entity you create will be bound to your current Ethereum address. Make sure you can keep access to this account in the future.</p>
 
             <Divider />
 
@@ -80,7 +80,7 @@ export default class NewEntity extends Component<Props, State> {
                 onChange={this.onChangeEntityName}
             />
 
-            <br />
+            {/* <br />
             <br />
             <h3>Census request URL</h3>
             <Input
@@ -88,7 +88,7 @@ export default class NewEntity extends Component<Props, State> {
                 prefix={<Icon type="link" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 value={this.state.censusRequestUrl}
                 onChange={this.onChangeCensusRequestUrl}
-            />
+            /> */}
 
             <Divider />
 

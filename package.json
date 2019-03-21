@@ -4,7 +4,7 @@
     "description": "",
     "scripts": {
         "postinstall": "npm run build",
-        "dev": "next -p 7070",
+        "dev": "next -p 8080",
         "build": "next build",
         "start": "next start",
         "export": "npm run build && next export -o build",
