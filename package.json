@@ -4,7 +4,7 @@
     "description": "",
     "scripts": {
         "postinstall": "npm run build",
-        "dev": "next -p 8080",
+        "dev": "URL=http://localhost:8080 ; echo $URL | clipboard && echo \"${URL} copied!\" ; next -p 8080",
         "build": "next build",
         "start": "next start",
         "export": "npm run build && next export -o build",
@@ -28,6 +28,7 @@
         "@types/react": "^16.4.14",
         "@types/react-dom": "16.0.7",
         "babel-plugin-transform-define": "^1.3.1",
+        "clipboard-cli": "^1.1.0",
         "typescript": "3.0.3"
     }
 }
