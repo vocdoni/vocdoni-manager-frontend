@@ -54,6 +54,7 @@ export default class NewEntity extends Component<Props, State> {
         try {
             const dvote = new DvoteUtil()
             let transaction = await dvote.entity.create(processMetadata, this.props.currentAddress)
+            console.log(transaction)
         }
         catch (err) {
             notification.error({
@@ -64,8 +65,7 @@ export default class NewEntity extends Component<Props, State> {
     }
 
     render() {
-        return <div>
-
+        return <>
             <h2>Create a new entity</h2>
             <p>Your account has not created an entity yet. Fill in the details of the entity to create one.</p>
             <p>Keep in mind that the entity you create will be bound to your current Ethereum address. Make sure you can keep access to this account in the future.</p>
@@ -95,7 +95,6 @@ export default class NewEntity extends Component<Props, State> {
             <div style={{ textAlign: "center" }}>
                 <Button size='large' style={{ marginLeft: 8 }} type='primary' onClick={() => this.onClickCreateEntity()}>Create new Entity</Button>
             </div>
-
-        </div>
+        </>
     }
 }

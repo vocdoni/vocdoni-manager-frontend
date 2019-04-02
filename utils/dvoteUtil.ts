@@ -24,7 +24,7 @@ export default class DvoteUtil {
 
     public getProcessess = async (organizerAddress: string) => {
         let processess = await this.process.getProcessesIdsByOrganizer(organizerAddress)
-        let details = {}
+        let details: any = {}
 
         for (let processId of processess) {
             let metadata = await this.process.getMetadata(processId)

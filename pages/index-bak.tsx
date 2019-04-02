@@ -1,17 +1,21 @@
 import { Component } from "react"
+import { Layout } from 'antd'
 import Web3Manager from "../utils/web3Manager";
 import DvoteUtil from "../utils/dvoteUtil";
-import NewEntity from "./fragment-create-entity";
-import Manager from "./_fragment-manager"
+import NewEntity from "../components/newEntity";
+import MainLayout from "../components/layout";
+import AccountStatus from "../components/accountStatus";
+import Manager from "../components/manager"
 import { AccountState } from "../utils/accountState";
-
-const votingAddress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
-const entityAddress = process.env.VOTING_ENTITY_CONTRACT_ADDRESS
-// const censusServiceUrl = process.env.CENSUS_SERVICE_URL
+import Setup from "../components/setup";
+const { Header } = Layout;
 
 enum Page {
+    Home = "Home",
+    Setup = "Setup",
     Manager = "Manager",
-    NewEntity = "NewEntity"
+    NewEntity = "NewEntity",
+    Registry = "Registry"
 }
 
 interface State {
@@ -30,12 +34,16 @@ export default class Main extends Component<{}, State> {
         currentAddress: "",
         processesMetadata: {},
         selectedProcess: "",
-        selectedPage: Page.Manager,
+        selectedPage: Page.Home,
         entityDetails: null
     }
 
     dvote: DvoteUtil
     checkInterval: any
+
+    votingAddress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
+    entityAddress = process.env.VOTING_ENTITY_CONTRACT_ADDRESS
+    censusServiceUrl = process.env.CENSUS_SERVICE_URL
 
     componentDidMount() {
         this.dvote = new DvoteUtil()
@@ -59,11 +67,12 @@ export default class Main extends Component<{}, State> {
         let accountState = await Web3Manager.getBrowserAccountState()
 
         if (accountState === AccountState.Ok) {
+
             currentAddress = await Web3Manager.getAccount()
 
             if (prevAccountState !== AccountState.Ok) {
-                this.dvote.initProcess(Web3Manager.getInjectedProvider(), votingAddress)
-                this.dvote.initEntity(Web3Manager.getInjectedProvider(), entityAddress)
+                this.dvote.initProcess(Web3Manager.getInjectedProvider(), this.votingAddress)
+                this.dvote.initEntity(Web3Manager.getInjectedProvider(), this.entityAddress)
                 this.fetchProcesses(currentAddress)
                 this.fetchEntityDetails(currentAddress)
             }
@@ -92,20 +101,29 @@ export default class Main extends Component<{}, State> {
 
     getPageForState(): Page {
         const accountState = this.state.accountState
-        if (!this.state.entityDetails || !this.state.entityDetails.name)
+
+        if (accountState !== AccountState.Ok)
+            return Page.Setup
+
+        else if (!this.state.entityDetails || !this.state.entityDetails.name)
             return Page.NewEntity
 
         else if (accountState === AccountState.Ok)
             return Page.Manager
 
-        return Page.Manager
+        return Page.Home
     }
 
-    onClickUnlockAccount = () => {
-        Web3Manager.unlock()
-    }
+    renderPageContent() {
+        if (this.state.selectedPage === Page.Home)
+            return <div></div>
 
-    render() {
+        if (this.state.selectedPage === Page.Setup)
+            return <Setup
+                accountState={this.state.accountState}
+                onClickUnlockAccount={this.onClickUnlockAccount}
+            />
+
         if (this.state.selectedPage === Page.NewEntity)
             return <NewEntity
                 dvote={this.dvote}
@@ -123,5 +141,27 @@ export default class Main extends Component<{}, State> {
             />
 
         return null
+    }
+
+    onClickUnlockAccount = () => {
+        Web3Manager.unlock()
+    }
+
+    render() {
+        return <MainLayout>
+            <Layout>
+                <Header style={{ backgroundColor: "#173f56a3" }}>
+                    <AccountStatus
+                        currentAddress={this.state.currentAddress}
+                        entityDetails={this.state.entityDetails}
+                    />
+
+                </Header>
+            </Layout>
+            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                {this.renderPageContent()}
+            </div>
+
+        </MainLayout>
     }
 }

@@ -1,6 +1,10 @@
 import { Component } from "react"
 import { Button, Spin } from 'antd'
 import { AccountState } from "../utils/accountState"
+import { headerBackgroundColor } from "../lib/constants"
+
+import { Layout } from 'antd'
+const { Header } = Layout
 
 interface Props {
     accountState: AccountState,
@@ -37,11 +41,12 @@ export default class Setup extends Component<Props> {
                     size="large"
                     onClick={() => this.props.onClickUnlockAccount()}>
                     Log in with Metamask
-            </Button>
+                </Button>
             </div>
         </div>
     }
-    render() {
+
+    renderMainContent() {
         switch (this.props.accountState) {
             case AccountState.NoWeb3:
             case AccountState.NoEthereum:
@@ -53,5 +58,16 @@ export default class Setup extends Component<Props> {
             default:
                 return this.renderPleaseWait()
         }
+    }
+    render() {
+        return <>
+            <Header style={{ backgroundColor: headerBackgroundColor }}>
+                { /* TITLE? */}
+            </Header>
+
+            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                {this.renderMainContent()}
+            </div>
+        </>
     }
 }

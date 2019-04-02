@@ -11,14 +11,14 @@ interface Props {
     currentAddress: string
 }
 interface State {
-    relays: object[]
+    census: object[]
 }
 
-export default class PageRelays extends Component<Props, State> {
+export default class PageCensus extends Component<Props, State> {
     dvote: DvoteUtil
 
     state = {
-        relays: []
+        census: []
     }
 
     componentDidMount() {
@@ -26,13 +26,13 @@ export default class PageRelays extends Component<Props, State> {
     }
 
     renderMainContent() {
-        if (!this.state.relays || !this.state.relays.length)
-            return <Empty description="No relays are available to show" style={{ padding: 30 }} />
+        if (!this.state.census || !this.state.census.length)
+            return <Empty description="No census service agents are available" style={{ padding: 30 }} />
 
         return <div style={{ padding: 30 }}>
             <List
                 itemLayout="horizontal"
-                dataSource={this.state.relays}
+                dataSource={this.state.census}
                 renderItem={item => (
                     <List.Item>
                         <List.Item.Meta

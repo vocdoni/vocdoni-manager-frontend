@@ -8,10 +8,11 @@ import {
 } from 'antd'
 
 import Web3Manager from "../utils/web3Manager";
-// import DvoteUtil from "../utils/dvoteUtil"
 import { AccountState } from "../utils/accountState";
 import { Utils } from "dvote-client"
 import DvoteUtil from "../utils/dvoteUtil";
+
+const votingAddress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
 
 interface Props {
     dvote: DvoteUtil
@@ -27,6 +28,8 @@ interface State {
 }
 
 export default class NewProcess extends Component<Props, State> {
+    dvote: DvoteUtil
+
     state = {
         processName: "",
         question: "",
@@ -68,7 +71,10 @@ export default class NewProcess extends Component<Props, State> {
 
         this.setState({ censusMerkleRoot: '(fetching...)' })
         try {
-            let merkleRoot = await this.props.dvote.census.getRoot(this.state.censusId)
+            this.dvote = new DvoteUtil()
+            this.dvote.initProcess(Web3Manager.getInjectedProvider(), votingAddress)
+
+            let merkleRoot = await this.dvote.census.getRoot(this.state.censusId)
             this.setState({ censusMerkleRoot: merkleRoot })
         }
         catch (err) {
@@ -154,16 +160,19 @@ export default class NewProcess extends Component<Props, State> {
             votingOptions: votingOptions,
         };
 
-        let transaction = await this.props.dvote.process.create(processMetadata, organizerAddress)
+        this.dvote = new DvoteUtil()
+        this.dvote.initProcess(Web3Manager.getInjectedProvider(), votingAddress)
+
+        let transaction = await this.dvote.process.create(processMetadata, organizerAddress)
         console.log("receipt", transaction)
 
-        let processId = await this.props.dvote.process.getId(processMetadata.name, organizerAddress);
+        let processId = await this.dvote.process.getId(processMetadata.name, organizerAddress);
         console.log('processId', processId)
 
-        let existingProcesses = await this.props.dvote.process.getProcessesIdsByOrganizer(organizerAddress);
+        let existingProcesses = await this.dvote.process.getProcessesIdsByOrganizer(organizerAddress);
         console.log('existingProesses', existingProcesses)
 
-        let metadata = await this.props.dvote.process.getMetadata(existingProcesses[existingProcesses.length - 1]);
+        let metadata = await this.dvote.process.getMetadata(existingProcesses[existingProcesses.length - 1]);
         console.log('lastProcessMetadata', metadata)
 
         notification.success({

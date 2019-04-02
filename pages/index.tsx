@@ -1,16 +1,18 @@
 import { Component } from "react"
-import { Layout, notification } from 'antd'
-import Web3Manager from "../utils/web3Manager";
-import DvoteUtil from "../utils/dvoteUtil";
-import MainLayout from "../components/layout";
+import { notification } from 'antd'
+import Web3Manager from "../utils/web3Manager"
+import DvoteUtil from "../utils/dvoteUtil"
+import MainLayout from "../components/layout"
 
-import PageHome from "../components/page-home";
-import PageEntityMeta from "../components/page-entity-meta";
-import PagePosts from "../components/page-posts";
+import PageHome from "../components/page-home"
+import PageEntityMeta from "../components/page-entity-meta"
+import PagePosts from "../components/page-posts"
+import PageVotes from "../components/page-votes"
+import PageCensus from "../components/page-census"
+import PageRelays from "../components/page-relays"
 
-import { AccountState } from "../utils/accountState";
-import EthereumSetup from "../components/ethereum-setup";
-const { Header } = Layout;
+import { AccountState } from "../utils/accountState"
+import EthereumSetup from "../components/page-ethereum-setup"
 
 const votingAddress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
 const entityAddress = process.env.VOTING_ENTITY_CONTRACT_ADDRESS
@@ -65,15 +67,18 @@ export default class Main extends Component<{}, State> {
         let accountState = await Web3Manager.getBrowserAccountState()
 
         if (accountState === AccountState.Ok) {
+
             currentAddress = await Web3Manager.getAccount()
 
             if (prevAccountState !== AccountState.Ok) {
                 this.dvote.initProcess(Web3Manager.getInjectedProvider(), votingAddress)
                 this.dvote.initEntity(Web3Manager.getInjectedProvider(), entityAddress)
+                this.fetchProcesses(currentAddress)
                 this.fetchEntityDetails(currentAddress)
             }
 
             if (prevAddress !== currentAddress) {
+                this.fetchProcesses(currentAddress)
                 this.fetchEntityDetails(currentAddress)
             }
         }
@@ -81,14 +86,25 @@ export default class Main extends Component<{}, State> {
         this.setState({ accountState, currentAddress })
     }
 
-    async fetchEntityDetails(organizerAddress?: string) {
-        const addr = organizerAddress || this.state.currentAddress
+    async fetchProcesses(organizerAddress?: string) {
         try {
+            const addr = organizerAddress || this.state.currentAddress
+            let processesMetadata = await this.dvote.getProcessess(addr)
+            this.setState({ processesMetadata })
+        }
+        catch (err) {
+            notification.error({ message: "Unable to fetch the processes" })
+        }
+    }
+
+    async fetchEntityDetails(organizerAddress?: string) {
+        try {
+            const addr = organizerAddress || this.state.currentAddress
             let entityDetails = await this.dvote.getEntityDetails(addr)
             this.setState({ entityDetails })
         }
         catch (err) {
-            notification.error({ message: "Unable to fetch the entity" })
+            notification.error({ message: "Unable to fetch the entity data" })
         }
     }
 
@@ -121,8 +137,21 @@ export default class Main extends Component<{}, State> {
                     currentAddress={this.state.currentAddress}
                 />
             case Page.VotingProcesses:
+                return <PageVotes
+                    entityDetails={this.state.entityDetails}
+                    currentAddress={this.state.currentAddress}
+                    processesMetadata={this.state.processesMetadata}
+                />
             case Page.CensusService:
+                return <PageCensus
+                    entityDetails={this.state.entityDetails}
+                    currentAddress={this.state.currentAddress}
+                />
             case Page.Relays:
+                return <PageRelays
+                    entityDetails={this.state.entityDetails}
+                    currentAddress={this.state.currentAddress}
+                />
         }
 
         return null
@@ -138,13 +167,7 @@ export default class Main extends Component<{}, State> {
             entityName={this.state.entityDetails && this.state.entityDetails.name}
             menuClicked={(key: Page) => this.setState({ selectedPage: key })}
         >
-            <Header style={{ backgroundColor: "#173f56a3" }}>
-
-            </Header>
-            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
-                {this.renderPageContent()}
-            </div>
-
+            {this.renderPageContent()}
         </MainLayout>
     }
 }

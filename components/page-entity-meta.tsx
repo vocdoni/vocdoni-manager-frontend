@@ -1,7 +1,12 @@
 import { Component } from "react"
-import DvoteUtil from "../utils/dvoteUtil";
-import CreateEntity from "./fragment-create-entity";
-import { Row, Col, Divider } from "antd";
+import DvoteUtil from "../utils/dvoteUtil"
+import CreateEntity from "./fragment-create-entity"
+import { Row, Col, Divider } from "antd"
+
+import { headerBackgroundColor } from "../lib/constants"
+
+import { Layout } from 'antd'
+const { Header } = Layout
 
 interface Props {
     entityDetails: object,
@@ -18,7 +23,8 @@ export default class PageEntity extends Component<Props, State> {
         this.dvote = new DvoteUtil()
     }
 
-    render() {
+    renderMainContent() {
+        // NO ENTITY => CREATE
         if (this.props.currentAddress && (!this.props.entityDetails || !this.props.entityDetails.exists)) {
             return <div style={{ padding: 30 }}>
                 <CreateEntity
@@ -27,6 +33,8 @@ export default class PageEntity extends Component<Props, State> {
                 />
             </div>
         }
+
+        // ENTITY => SHOW
         return <div style={{ padding: 30 }}>
             <h2>Entity</h2>
             <Row>
@@ -45,9 +53,21 @@ export default class PageEntity extends Component<Props, State> {
             </Row>
 
 
-            <Divider/>
+            <Divider />
             <pre>{JSON.stringify(this.props.entityDetails, null, 2)}</pre>
             <div>{this.props.currentAddress}</div>
         </div>
+    }
+
+    render() {
+        return <>
+            <Header style={{ backgroundColor: headerBackgroundColor }}>
+                { /* TITLE? */}
+            </Header>
+
+            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                {this.renderMainContent()}
+            </div>
+        </>
     }
 }
