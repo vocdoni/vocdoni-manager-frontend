@@ -1,21 +1,16 @@
 import { Component } from "react"
-import { notification } from 'antd'
-import Web3Manager from "../utils/web3Manager"
-import DvoteUtil from "../utils/dvoteUtil"
+import Web3Manager, { AccountState } from "../util/ethereum-manager"
+import { init, getEntity } from "../util/dvote"
 import MainLayout from "../components/layout"
 
-import PageHome from "../components/page-home"
-import PageEntityMeta from "../components/page-entity-meta"
-import PagePosts from "../components/page-posts"
-import PageVotes from "../components/page-votes"
-import PageCensus from "../components/page-census"
-import PageRelays from "../components/page-relays"
+// import PageHome from "../components/page-home"
+// import PageEntityMeta from "../components/page-entity-meta"
+// import PagePosts from "../components/page-posts"
+// import PageVotes from "../components/page-votes"
+// import PageCensus from "../components/page-census"
+// import PageRelays from "../components/page-relays"
 
-import { AccountState } from "../utils/accountState"
-import EthereumSetup from "../components/page-ethereum-setup"
-
-const votingAddress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
-const entityAddress = process.env.VOTING_ENTITY_CONTRACT_ADDRESS
+import EthereumInfo from "../components/page-ethereum-info"
 
 enum Page {
     Home = "Home",  // General menu
@@ -29,8 +24,6 @@ enum Page {
 interface State {
     accountState: AccountState,
     currentAddress: string
-    processesMetadata: object
-    selectedProcess: string
     selectedPage: Page,
     entityDetails: object
 }
@@ -39,126 +32,90 @@ export default class Main extends Component<{}, State> {
     state = {
         accountState: AccountState.Unknown,
         currentAddress: "",
-        processesMetadata: {},
-        selectedProcess: "",
         selectedPage: Page.Home,
         entityDetails: null
     }
 
-    dvote: DvoteUtil
-    checkInterval: any
+    refreshInterval: any
 
     componentDidMount() {
-        this.dvote = new DvoteUtil()
-
-        this.checkInterval = setInterval(() => this.fetchState(), 1000)
-        this.fetchState()
+        this.refreshInterval = setInterval(() => this.refreshState(), 1000)
+        this.refreshState()
     }
 
     componentWillUnmount() {
-        clearInterval(this.checkInterval)
+        clearInterval(this.refreshInterval)
     }
 
-    async fetchState() {
-        let prevAccountState = this.state.accountState
-        let prevAddress = this.state.currentAddress
+    async refreshState() {
+        const prevAccountState = this.state.accountState
+        const currentAccountState = await Web3Manager.getAccountState()
 
         let currentAddress = ""
-        let accountState = await Web3Manager.getBrowserAccountState()
+        const prevAddress = this.state.currentAddress
 
-        if (accountState === AccountState.Ok) {
-
-            currentAddress = await Web3Manager.getAccount()
-
+        if (currentAccountState === AccountState.Ok) {
+            // Was locked but now it's not? => connect
             if (prevAccountState !== AccountState.Ok) {
-                this.dvote.initProcess(Web3Manager.getInjectedProvider(), votingAddress)
-                this.dvote.initEntity(Web3Manager.getInjectedProvider(), entityAddress)
-                this.fetchProcesses(currentAddress)
-                this.fetchEntityDetails(currentAddress)
+                await init();
             }
 
-            if (prevAddress !== currentAddress) {
-                this.fetchProcesses(currentAddress)
-                this.fetchEntityDetails(currentAddress)
-            }
+            // Is metadata different than it was? => sync
+            const entity = getEntity();
+            // if(entity != ) // TODO:
+            // if(prevAddress != currentAddress)
         }
 
-        this.setState({ accountState, currentAddress })
+        this.setState({ accountState: currentAccountState, currentAddress })
     }
 
-    async fetchProcesses(organizerAddress?: string) {
-        try {
-            const addr = organizerAddress || this.state.currentAddress
-            let processesMetadata = await this.dvote.getProcessess(addr)
-            this.setState({ processesMetadata })
-        }
-        catch (err) {
-            notification.error({ message: "Unable to fetch the processes" })
-        }
-    }
-
-    async fetchEntityDetails(organizerAddress?: string) {
-        try {
-            const addr = organizerAddress || this.state.currentAddress
-            let entityDetails = await this.dvote.getEntityDetails(addr)
-            this.setState({ entityDetails })
-        }
-        catch (err) {
-            notification.error({ message: "Unable to fetch the entity data" })
-        }
-    }
 
     renderPageContent() {
         const accountState = this.state.accountState
 
         if (accountState !== AccountState.Ok) {
-            return <EthereumSetup
+            return <EthereumInfo
                 accountState={this.state.accountState}
-                onClickUnlockAccount={this.onClickUnlockAccount}
             />
         }
 
-        switch (this.state.selectedPage) {
-            case Page.Home:
-                return <PageHome
-                    entityDetails={this.state.entityDetails}
-                    currentAddress={this.state.currentAddress}
-                    refresh={() => { this.fetchEntityDetails() }}
-                />
-            case Page.EntityMeta:
-                return <PageEntityMeta
-                    entityDetails={this.state.entityDetails}
-                    currentAddress={this.state.currentAddress}
-                    refresh={() => { this.fetchEntityDetails() }}
-                />
-            case Page.OfficialDiary:
-                return <PagePosts
-                    entityDetails={this.state.entityDetails}
-                    currentAddress={this.state.currentAddress}
-                />
-            case Page.VotingProcesses:
-                return <PageVotes
-                    entityDetails={this.state.entityDetails}
-                    currentAddress={this.state.currentAddress}
-                    processesMetadata={this.state.processesMetadata}
-                />
-            case Page.CensusService:
-                return <PageCensus
-                    entityDetails={this.state.entityDetails}
-                    currentAddress={this.state.currentAddress}
-                />
-            case Page.Relays:
-                return <PageRelays
-                    entityDetails={this.state.entityDetails}
-                    currentAddress={this.state.currentAddress}
-                />
-        }
+        // switch (this.state.selectedPage) {
+        //     case Page.Home:
+        //         return <PageHome
+        //             entityDetails={this.state.entityDetails}
+        //             currentAddress={this.state.currentAddress}
+        //             refresh={() => { this.getEntityDetails() }}
+        //         />
+        //     case Page.EntityMeta:
+        //         return <PageEntityMeta
+        //             entityDetails={this.state.entityDetails}
+        //             currentAddress={this.state.currentAddress}
+        //             refresh={() => { this.getEntityDetails() }}
+        //         />
+        //     case Page.OfficialDiary:
+        //         return <PagePosts
+        //             entityDetails={this.state.entityDetails}
+        //             currentAddress={this.state.currentAddress}
+        //         />
+        //     case Page.VotingProcesses:
+        //         return <PageVotes
+        //             entityDetails={this.state.entityDetails}
+        //             currentAddress={this.state.currentAddress}
+        //             processesMetadata={this.state.processesMetadata}
+        //         />
+        //     case Page.CensusService:
+        //         return <PageCensus
+        //             entityDetails={this.state.entityDetails}
+        //             currentAddress={this.state.currentAddress}
+        //         />
+        //     case Page.Relays:
+        //         return <PageRelays
+        //             entityDetails={this.state.entityDetails}
+        //             currentAddress={this.state.currentAddress}
+        //         />
+        // }
 
-        return null
-    }
-
-    onClickUnlockAccount = () => {
-        Web3Manager.unlock()
+        return <div>UNIMPLEMENTED</div>
     }
 
     render() {

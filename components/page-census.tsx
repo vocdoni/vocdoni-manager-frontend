@@ -1,6 +1,6 @@
 import { Component } from "react"
 import { List, Avatar, Empty } from 'antd'
-import DvoteUtil from "../utils/dvoteUtil";
+import DvoteUtil from "../util/dvoteUtil";
 import { headerBackgroundColor } from "../lib/constants"
 
 import { Layout } from 'antd'

@@ -1,17 +1,20 @@
 import { Component } from "react"
 import { Button, Spin } from 'antd'
-import { AccountState } from "../utils/accountState"
+import Web3Manager, { AccountState } from "../util/ethereum-manager"
 import { headerBackgroundColor } from "../lib/constants"
 
 import { Layout } from 'antd'
 const { Header } = Layout
 
 interface Props {
-    accountState: AccountState,
-    onClickUnlockAccount: () => void
+    accountState: AccountState
 }
 
 export default class Setup extends Component<Props> {
+    onClickUnlockAccount() {
+        Web3Manager.unlock()
+    }
+
     renderPleaseWait() {
         return <div style={{ paddingTop: 30, textAlign: "center" }}>
             <p>Please, wait... <Spin size="small" /></p>
@@ -39,7 +42,7 @@ export default class Setup extends Component<Props> {
                 <Button
                     type="default"
                     size="large"
-                    onClick={() => this.props.onClickUnlockAccount()}>
+                    onClick={() => this.onClickUnlockAccount()}>
                     Log in with Metamask
                 </Button>
             </div>
@@ -52,7 +55,7 @@ export default class Setup extends Component<Props> {
             case AccountState.NoEthereum:
                 return this.renderInstallMetaMask()
 
-            case AccountState.NoUnlocked:
+            case AccountState.Locked:
                 return this.renderMetaMaskLogin()
 
             default:

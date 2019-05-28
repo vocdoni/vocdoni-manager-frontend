@@ -7,10 +7,10 @@ import {
     notification
 } from 'antd'
 
-import Web3Manager from "../utils/web3Manager";
-import { AccountState } from "../utils/accountState";
-import { Utils } from "dvote-client"
-import DvoteUtil from "../utils/dvoteUtil";
+import Web3Manager from "../util/ethereum-manager";
+import { AccountState } from "../util/ethereum-manager";
+import { Utils } from "../util/node_modules/dvote-client"
+import DvoteUtil from "../util/dvoteUtil";
 
 const votingAddress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
 
@@ -63,7 +63,7 @@ export default class NewProcess extends Component<Props, State> {
 
     onClickFetchCensusMerkleRoot = async () => {
 
-        let accountState = await Web3Manager.getBrowserAccountState()
+        let accountState = await Web3Manager.getAccountState()
         if (accountState != AccountState.Ok) {
             alert(accountState)
             return
@@ -130,7 +130,7 @@ export default class NewProcess extends Component<Props, State> {
             return
         }
 
-        let accountState = await Web3Manager.getBrowserAccountState()
+        let accountState = await Web3Manager.getAccountState()
         if (accountState != AccountState.Ok) {
             notification.error({
                 message: "Error",
@@ -139,7 +139,7 @@ export default class NewProcess extends Component<Props, State> {
             return
         }
 
-        let organizerAddress = await Web3Manager.getAccount()
+        let organizerAddress = await Web3Manager.getAddress()
 
 
         let votingOptions = [

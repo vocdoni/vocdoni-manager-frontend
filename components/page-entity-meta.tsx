@@ -1,5 +1,5 @@
 import { Component } from "react"
-import DvoteUtil from "../utils/dvoteUtil"
+import DvoteUtil from "../util/dvoteUtil"
 import CreateEntity from "./fragment-create-entity"
 import { Row, Col, Divider } from "antd"
 

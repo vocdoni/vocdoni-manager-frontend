@@ -7,7 +7,7 @@ import {
     notification
 } from 'antd'
 
-import DvoteUtil from "../utils/dvoteUtil";
+import DvoteUtil from "../util/dvoteUtil";
 
 interface State {
     entityName: string,

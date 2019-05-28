@@ -1,6 +1,6 @@
 import { Component } from "react"
 import { Empty, Menu, Icon } from 'antd'
-import DvoteUtil from "../utils/dvoteUtil";
+import DvoteUtil from "../util/dvoteUtil";
 import { headerBackgroundColor } from "../lib/constants"
 import NewProcess from "./fragment-create-process"
 
