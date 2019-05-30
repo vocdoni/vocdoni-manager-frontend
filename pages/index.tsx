@@ -1,20 +1,22 @@
 import { Component } from "react"
 import Web3Manager, { AccountState } from "../util/ethereum-manager"
-import { init, getEntity } from "../util/dvote"
+import { init, getState } from "../util/dvote"
 import MainLayout from "../components/layout"
+import { EntityMetadata } from "dvote-js"
 
 // import PageHome from "../components/page-home"
-// import PageEntityMeta from "../components/page-entity-meta"
+// import PageEntityInfo from "../components/page-entity-info"
 // import PagePosts from "../components/page-posts"
 // import PageVotes from "../components/page-votes"
 // import PageCensus from "../components/page-census"
 // import PageRelays from "../components/page-relays"
 
 import EthereumInfo from "../components/page-ethereum-info"
+import { message } from "antd";
 
 enum Page {
     Home = "Home",  // General menu
-    EntityMeta = "EntityMeta",
+    EntityInfo = "EntityInfo",
     OfficialDiary = "OfficialDiary",
     VotingProcesses = "VotingProcesses",
     CensusService = "CensusService",
@@ -23,15 +25,18 @@ enum Page {
 
 interface State {
     accountState: AccountState,
-    currentAddress: string
-    selectedPage: Page,
-    entityDetails: object
+    accountAddress: string,
+    entityInfo: EntityMetadata,
+    votingProcesses: any[],
+    selectedPage: Page
 }
 
 export default class Main extends Component<{}, State> {
     state = {
         accountState: AccountState.Unknown,
-        currentAddress: "",
+        accountAddress: "",
+        entityInfo: null,
+        votingProcesses: [],
         selectedPage: Page.Home,
         entityDetails: null
     }
@@ -51,22 +56,35 @@ export default class Main extends Component<{}, State> {
         const prevAccountState = this.state.accountState
         const currentAccountState = await Web3Manager.getAccountState()
 
-        let currentAddress = ""
-        const prevAddress = this.state.currentAddress
+        const prevAddress = this.state.accountAddress
+        const prevEntityInfo = this.state.entityInfo
+        const prevVotingProcesses = this.state.votingProcesses
 
         if (currentAccountState === AccountState.Ok) {
             // Was locked but now it's not? => connect
             if (prevAccountState !== AccountState.Ok) {
-                await init();
+                try {
+                    await init();
+                }
+                catch (err) {
+                    return message.error("Unable to initialize the decentralized connection")
+                }
             }
 
             // Is metadata different than it was? => sync
-            const entity = getEntity();
-            // if(entity != ) // TODO:
-            // if(prevAddress != currentAddress)
+            const { address, entityInfo, votingProcesses } = getState();
+            if (prevAddress != address || prevEntityInfo != entityInfo || prevVotingProcesses != votingProcesses) {
+                this.setState({
+                    accountAddress: address,
+                    entityInfo,
+                    votingProcesses
+                })
+            }
         }
 
-        this.setState({ accountState: currentAccountState, currentAddress })
+        if (prevAccountState != currentAccountState) {
+            this.setState({ accountState: currentAccountState })
+        }
     }
 
 
@@ -82,36 +100,34 @@ export default class Main extends Component<{}, State> {
         // switch (this.state.selectedPage) {
         //     case Page.Home:
         //         return <PageHome
-        //             entityDetails={this.state.entityDetails}
-        //             currentAddress={this.state.currentAddress}
         //             refresh={() => { this.getEntityDetails() }}
         //         />
-        //     case Page.EntityMeta:
-        //         return <PageEntityMeta
+        //     case Page.EntityInfo:
+        //         return <PageEntityInfo
         //             entityDetails={this.state.entityDetails}
-        //             currentAddress={this.state.currentAddress}
+        //             currentAddress={this.state.accountAddress}
         //             refresh={() => { this.getEntityDetails() }}
         //         />
         //     case Page.OfficialDiary:
         //         return <PagePosts
         //             entityDetails={this.state.entityDetails}
-        //             currentAddress={this.state.currentAddress}
+        //             currentAddress={this.state.accountAddress}
         //         />
         //     case Page.VotingProcesses:
         //         return <PageVotes
         //             entityDetails={this.state.entityDetails}
-        //             currentAddress={this.state.currentAddress}
+        //             currentAddress={this.state.accountAddress}
         //             processesMetadata={this.state.processesMetadata}
         //         />
         //     case Page.CensusService:
         //         return <PageCensus
         //             entityDetails={this.state.entityDetails}
-        //             currentAddress={this.state.currentAddress}
+        //             currentAddress={this.state.accountAddress}
         //         />
         //     case Page.Relays:
         //         return <PageRelays
         //             entityDetails={this.state.entityDetails}
-        //             currentAddress={this.state.currentAddress}
+        //             currentAddress={this.state.accountAddress}
         //         />
         // }
 
@@ -120,7 +136,7 @@ export default class Main extends Component<{}, State> {
 
     render() {
         return <MainLayout
-            currentAddress={this.state.currentAddress}
+            currentAddress={this.state.accountAddress}
             entityName={this.state.entityDetails && this.state.entityDetails.name}
             menuClicked={(key: Page) => this.setState({ selectedPage: key })}
         >

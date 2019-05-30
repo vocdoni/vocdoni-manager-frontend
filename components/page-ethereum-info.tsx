@@ -17,7 +17,7 @@ export default class Setup extends Component<Props> {
 
     renderPleaseWait() {
         return <div style={{ paddingTop: 30, textAlign: "center" }}>
-            <p>Please, wait... <Spin size="small" /></p>
+            <div>Please, wait... <Spin size="small" /></div>
         </div>
     }
     renderInstallMetaMask() {

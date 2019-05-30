@@ -1,38 +1,62 @@
 import { Component } from "react"
 import { List, Avatar, Empty } from 'antd'
-import DvoteUtil from "../util/dvoteUtil";
 import { headerBackgroundColor } from "../lib/constants"
+import { getState } from "../util/dvote"
 
 import { Layout } from 'antd'
 const { Header } = Layout
 
 interface Props {
-    entityDetails: object,
-    currentAddress: string
+    refresh?: () => void
 }
 interface State {
-    posts: object[]
+    accountAddress: string,
+    news: { [lang: string]: any[] },
+    selectedLang: string
 }
 
 export default class PagePosts extends Component<Props, State> {
-    dvote: DvoteUtil
-
     state = {
-        posts: []
+        accountAddress: "",
+        news: {},
+        selectedLang: "en"
     }
 
+    refreshInterval: any
+
     componentDidMount() {
-        this.dvote = new DvoteUtil()
+        this.refreshInterval = setInterval(() => this.refreshState(), 1000)
+        this.refreshState()
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.refreshInterval)
+    }
+
+    async refreshState() {
+        const prevAddress = this.state.accountAddress
+        const prevNews = this.state.news
+
+        // Changes? => sync
+        const { address, news } = getState();
+        if (prevAddress != address || prevNews != news) {
+            this.setState({
+                accountAddress: address,
+                news
+            })
+        }
     }
 
     renderMainContent() {
-        if (!this.state.posts || !this.state.posts.length)
+        const langs = Object.keys(this.state.news);
+        if (!langs.length)
             return <Empty description="No posts have been added yet" style={{ padding: 30 }} />
+
 
         return <div style={{ padding: 30 }}>
             <List
                 itemLayout="horizontal"
-                dataSource={this.state.posts}
+                dataSource={this.state.news}
                 renderItem={item => (
                     <List.Item>
                         <List.Item.Meta
