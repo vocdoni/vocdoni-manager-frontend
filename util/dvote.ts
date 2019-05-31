@@ -6,8 +6,8 @@ import { EntityMetadata } from "dvote-js"
 
 type BootNodesResponse = ({ [k: string]: { dvote: string, web3: string } })[]
 
-const votingProcessAdress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
 const entityResolverAddress = process.env.ENTITY_RESOLVER_ADDRESS
+const votingProcessAdress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
 const BOOTNODES_URL = process.env.BOOTNODES_URL
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -24,41 +24,49 @@ let newsState: { [lang: string]: any[] }
 export async function init() {
     disconnect()
 
-    accountAddressState = await EthereumManager.getAddress();
-
-    entityResolver = new EntityResolver({ web3Provider: EthereumManager.provider });
-    entityResolver.attach(entityResolverAddress);
-
     const bootNodesMap = await fetchBootnodes();
     if (!Array.isArray(bootNodesMap[ETH_NETWORK_ID])) throw new Error("Invalid bootstrap nodes")
     bootnodesState = bootNodesMap[ETH_NETWORK_ID]
+
+    accountAddressState = await EthereumManager.getAddress();
+
+    // RESOLVER CONTRACT
+    entityResolver = new EntityResolver({ providerUrl: bootnodesState[0].web3 }); // GATEWAY PROVIDER
+    // entityResolver = new EntityResolver({ provider: EthereumManager.provider }); // METAMASK PROVIDER
+    entityResolver.attach(entityResolverAddress);
+    entityResolver.contractInstance.connect(EthereumManager.signer)
 
     // React on all events (by now)
     entityResolver.contractInstance.on("TextChanged", () => this.fetchState());
     entityResolver.contractInstance.on("ListItemChanged", () => this.fetchState());
 
-    votingProcess = new VotingProcess({ web3Provider: EthereumManager.provider });
-    votingProcess.attach(votingProcessAdress);
+    // TODO:
+    // PROCESS CONTRACT
+    // votingProcess = new VotingProcess({ providerUrl: bootnodesState[0].web3 }); // GATEWAY PROVIDER
+    // // votingProcess = new VotingProcess({ provider: EthereumManager.provider }); // GATEWAY PROVIDER
+    // votingProcess.attach(votingProcessAdress);
+    // votingProcess.contractInstance.connect(EthereumManager.signer)
 
-    // Listen selectively
-    votingProcess.contractInstance.on(
-        votingProcess.contractInstance.filters.ProcessCreated(accountAddressState),
-        () => this.fetchState(accountAddressState));
-    votingProcess.contractInstance.on(
-        votingProcess.contractInstance.filters.ProcessCanceled(accountAddressState),
-        () => this.fetchState(accountAddressState));
-    // votingProcess.contractInstance.on("RelayAdded", () => this.fetchState(accountAddressState));
-    // votingProcess.contractInstance.on("BatchRegistered", () => this.fetchState(accountAddressState));
-    // votingProcess.contractInstance.on("RelayDisabled", () => this.fetchState(accountAddressState));
-    // votingProcess.contractInstance.on("PrivateKeyRevealed", () => this.fetchState(accountAddressState));
+    // // Listen selectively
+    // votingProcess.contractInstance.on(
+    //     votingProcess.contractInstance.filters.ProcessCreated(accountAddressState),
+    //     () => this.fetchState(accountAddressState));
+    // votingProcess.contractInstance.on(
+    //     votingProcess.contractInstance.filters.ProcessCanceled(accountAddressState),
+    //     () => this.fetchState(accountAddressState));
+    // // votingProcess.contractInstance.on("RelayAdded", () => this.fetchState(accountAddressState));
+    // // votingProcess.contractInstance.on("BatchRegistered", () => this.fetchState(accountAddressState));
+    // // votingProcess.contractInstance.on("RelayDisabled", () => this.fetchState(accountAddressState));
+    // // votingProcess.contractInstance.on("PrivateKeyRevealed", () => this.fetchState(accountAddressState));
 
-    await this.fetchState(accountAddressState)
+    return fetchState(accountAddressState)
 }
 
 export function disconnect() {
-    if (entityResolver && votingProcess.provider) {
-        votingProcess.provider.removeAllListeners("TextChanged");
-        votingProcess.provider.removeAllListeners("ListItemChanged");
+    if (entityResolver && entityResolver.provider) {
+        entityResolver.provider.removeAllListeners("TextChanged");
+        entityResolver.provider.removeAllListeners("ListItemChanged");
+        if (entityResolver.provider['polling']) entityResolver.provider['polling'] = false
     }
 
     if (votingProcess && votingProcess.provider) {
@@ -68,6 +76,7 @@ export function disconnect() {
         // votingProcess.provider.removeAllListeners("BatchRegistered")
         // votingProcess.provider.removeAllListeners("RelayDisabled")
         // votingProcess.provider.removeAllListeners("PrivateKeyRevealed")
+        if (votingProcess.provider['polling']) votingProcess.provider['polling'] = false
     }
 }
 

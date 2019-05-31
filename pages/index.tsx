@@ -37,8 +37,7 @@ export default class Main extends Component<{}, State> {
         accountAddress: "",
         entityInfo: null,
         votingProcesses: [],
-        selectedPage: Page.Home,
-        entityDetails: null
+        selectedPage: Page.Home
     }
 
     refreshInterval: any
@@ -100,44 +99,44 @@ export default class Main extends Component<{}, State> {
         // switch (this.state.selectedPage) {
         //     case Page.Home:
         //         return <PageHome
-        //             refresh={() => { this.getEntityDetails() }}
+        //             refresh={() => { this.refreshState() }}
         //         />
         //     case Page.EntityInfo:
         //         return <PageEntityInfo
-        //             entityDetails={this.state.entityDetails}
+        //             entityInfo={this.state.entityInfo}
         //             currentAddress={this.state.accountAddress}
-        //             refresh={() => { this.getEntityDetails() }}
+        //             refresh={() => { this.refreshState() }}
         //         />
         //     case Page.OfficialDiary:
         //         return <PagePosts
-        //             entityDetails={this.state.entityDetails}
+        //             entityInfo={this.state.entityInfo}
         //             currentAddress={this.state.accountAddress}
         //         />
         //     case Page.VotingProcesses:
         //         return <PageVotes
-        //             entityDetails={this.state.entityDetails}
+        //             entityInfo={this.state.entityInfo}
         //             currentAddress={this.state.accountAddress}
         //             processesMetadata={this.state.processesMetadata}
         //         />
         //     case Page.CensusService:
         //         return <PageCensus
-        //             entityDetails={this.state.entityDetails}
+        //             entityInfo={this.state.entityInfo}
         //             currentAddress={this.state.accountAddress}
         //         />
         //     case Page.Relays:
         //         return <PageRelays
-        //             entityDetails={this.state.entityDetails}
+        //             entityInfo={this.state.entityInfo}
         //             currentAddress={this.state.accountAddress}
         //         />
         // }
 
-        return <div>UNIMPLEMENTED</div>
+        return <div>Not found</div>
     }
 
     render() {
         return <MainLayout
             currentAddress={this.state.accountAddress}
-            entityName={this.state.entityDetails && this.state.entityDetails.name}
+            entityName={this.state.entityInfo && this.state.entityInfo["entity-name"]}
             menuClicked={(key: Page) => this.setState({ selectedPage: key })}
         >
             {this.renderPageContent()}
