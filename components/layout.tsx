@@ -30,6 +30,10 @@ const MainLayout: React.FunctionComponent<Props> = ({ children, entityName, curr
                 text-align: right;
                 color: #ddd;
             }
+
+            .ant-layout-header > h1, .ant-layout-header > h2, .ant-layout-header > h3 {
+                color: white;
+            }
         `}</style>
 
         <Layout id="main-layout">

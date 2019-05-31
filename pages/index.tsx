@@ -4,8 +4,8 @@ import { init, getState } from "../util/dvote"
 import MainLayout from "../components/layout"
 import { EntityMetadata } from "dvote-js"
 
-// import PageHome from "../components/page-home"
-// import PageEntityInfo from "../components/page-entity-info"
+import PageHome from "../components/page-home"
+import PageEntityMeta from "../components/page-entity-meta"
 // import PagePosts from "../components/page-posts"
 // import PageVotes from "../components/page-votes"
 // import PageCensus from "../components/page-census"
@@ -16,7 +16,7 @@ import { message } from "antd";
 
 enum Page {
     Home = "Home",  // General menu
-    EntityInfo = "EntityInfo",
+    EntityMeta = "EntityMeta",
     OfficialDiary = "OfficialDiary",
     VotingProcesses = "VotingProcesses",
     CensusService = "CensusService",
@@ -96,39 +96,37 @@ export default class Main extends Component<{}, State> {
             />
         }
 
-        // switch (this.state.selectedPage) {
-        //     case Page.Home:
-        //         return <PageHome
-        //             refresh={() => { this.refreshState() }}
-        //         />
-        //     case Page.EntityInfo:
-        //         return <PageEntityInfo
-        //             entityInfo={this.state.entityInfo}
-        //             currentAddress={this.state.accountAddress}
-        //             refresh={() => { this.refreshState() }}
-        //         />
-        //     case Page.OfficialDiary:
-        //         return <PagePosts
-        //             entityInfo={this.state.entityInfo}
-        //             currentAddress={this.state.accountAddress}
-        //         />
-        //     case Page.VotingProcesses:
-        //         return <PageVotes
-        //             entityInfo={this.state.entityInfo}
-        //             currentAddress={this.state.accountAddress}
-        //             processesMetadata={this.state.processesMetadata}
-        //         />
-        //     case Page.CensusService:
-        //         return <PageCensus
-        //             entityInfo={this.state.entityInfo}
-        //             currentAddress={this.state.accountAddress}
-        //         />
-        //     case Page.Relays:
-        //         return <PageRelays
-        //             entityInfo={this.state.entityInfo}
-        //             currentAddress={this.state.accountAddress}
-        //         />
-        // }
+        switch (this.state.selectedPage) {
+            case Page.Home:
+                return <PageHome
+                    refresh={() => { this.refreshState() }}
+                />
+            case Page.EntityMeta:
+                return <PageEntityMeta
+                    refresh={() => { this.refreshState() }}
+                />
+            //     case Page.OfficialDiary:
+            //         return <PagePosts
+            //             entityInfo={this.state.entityInfo}
+            //             currentAddress={this.state.accountAddress}
+            //         />
+            //     case Page.VotingProcesses:
+            //         return <PageVotes
+            //             entityInfo={this.state.entityInfo}
+            //             currentAddress={this.state.accountAddress}
+            //             processesMetadata={this.state.processesMetadata}
+            //         />
+            //     case Page.CensusService:
+            //         return <PageCensus
+            //             entityInfo={this.state.entityInfo}
+            //             currentAddress={this.state.accountAddress}
+            //         />
+            //     case Page.Relays:
+            //         return <PageRelays
+            //             entityInfo={this.state.entityInfo}
+            //             currentAddress={this.state.accountAddress}
+            //         />
+        }
 
         return <div>Not found</div>
     }

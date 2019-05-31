@@ -2,9 +2,10 @@ import EthereumManager from "./ethereum-manager";
 import { EntityResolver, VotingProcess } from "dvote-js"
 import { message } from 'antd'
 import axios from "axios"
-import { EntityMetadata } from "dvote-js"
+import { EntityMetadata, EntityResolverFields } from "dvote-js"
 
-type BootNodesResponse = ({ [k: string]: { dvote: string, web3: string } })[]
+export type BootNode = { dvote: string, web3: string }
+type BootNodesResponse = ({ [k: string]: BootNode })[]
 
 const entityResolverAddress = process.env.ENTITY_RESOLVER_ADDRESS
 const votingProcessAdress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
@@ -84,10 +85,10 @@ export async function fetchBootnodes(): Promise<BootNodesResponse> {
     return axios.get<BootNodesResponse>(BOOTNODES_URL).then(res => res.data)
 }
 
-export async function fetchState(address: string): Promise<void> {
+export async function fetchState(entityAddress: string): Promise<void> {
     for (let node of bootnodesState) {
         try {
-            const meta: EntityMetadata = await entityResolver.fetchJsonMetadata(address, node.dvote);
+            const meta: EntityMetadata = await entityResolver.fetchJsonMetadata(entityAddress, node.dvote);
             entityState = meta;
             return;
         }
@@ -99,6 +100,10 @@ export async function fetchState(address: string): Promise<void> {
     message.error("Unable to fetch from the network")
 }
 
+export function getAllEntityFields(entityAddress: string): Promise<EntityResolverFields> {
+    return entityResolver.fetchAllFields(entityAddress)
+}
+
 // GETTERS
 
 export function getState() {
@@ -106,6 +111,7 @@ export function getState() {
         address: accountAddressState,
         entityInfo: entityState,
         votingProcesses: votingProcessesState,
-        news: newsState
+        news: newsState,
+        bootnodes: bootnodesState
     }
 }

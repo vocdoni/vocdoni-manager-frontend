@@ -3,7 +3,7 @@ import { Button, Spin } from 'antd'
 import Web3Manager, { AccountState } from "../util/ethereum-manager"
 import { headerBackgroundColor } from "../lib/constants"
 
-import { Layout } from 'antd'
+import { Layout, Skeleton } from 'antd'
 const { Header } = Layout
 
 interface Props {
@@ -17,6 +17,8 @@ export default class Setup extends Component<Props> {
 
     renderPleaseWait() {
         return <div style={{ paddingTop: 30, textAlign: "center" }}>
+            <Skeleton active />
+            <br/>
             <div>Please, wait... <Spin size="small" /></div>
         </div>
     }

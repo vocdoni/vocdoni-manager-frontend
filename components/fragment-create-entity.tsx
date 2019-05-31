@@ -7,8 +7,6 @@ import {
     notification
 } from 'antd'
 
-import DvoteUtil from "../util/dvoteUtil";
-
 interface State {
     entityName: string,
     censusRequestUrl: string,
