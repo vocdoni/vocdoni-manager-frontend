@@ -1,7 +1,7 @@
 import { Component } from "react"
 import Web3Manager, { AccountState } from "../util/ethereum-manager"
 import { init, getState } from "../util/dvote"
-import MainLayout from "../components/layout"
+import MainLayout, { Page } from "../components/layout"
 import { EntityMetadata } from "dvote-js"
 
 import PageHome from "../components/page-home"
@@ -13,15 +13,6 @@ import PageEntityMeta from "../components/page-entity-meta"
 
 import EthereumInfo from "../components/page-ethereum-info"
 import { message } from "antd";
-
-enum Page {
-    Home = "Home",  // General menu
-    EntityMeta = "EntityMeta",
-    OfficialDiary = "OfficialDiary",
-    VotingProcesses = "VotingProcesses",
-    CensusService = "CensusService",
-    Relays = "Relays"
-}
 
 interface State {
     accountState: AccountState,

@@ -4,6 +4,16 @@ import { Layout, Menu, Icon, Row, Col } from 'antd'
 const { Header, Sider } = Layout
 const { SubMenu } = Menu
 
+export enum Page {
+    Home = "Home",  // General menu
+    EntityMeta = "EntityMeta",
+    OfficialDiary = "OfficialDiary",
+    VotingProcesses = "VotingProcesses",
+    CensusService = "CensusService",
+    Relays = "Relays",
+    OtherEntities = "OtherEntities"
+}
+
 type Props = {
     currentAddress: string,
     entityName: string,
@@ -59,29 +69,32 @@ const MainLayout: React.FunctionComponent<Props> = ({ children, entityName, curr
                         defaultOpenKeys={['entity']}
                         style={{ height: '100%', borderRight: 0 }}
                     >
-                        <Menu.Item key="home" onClick={() => menuClicked && menuClicked("Home")}>
+                        <Menu.Item key="home" onClick={() => menuClicked && menuClicked(Page.Home)}>
                             <Icon type="home" />
                             <span>General</span>
                         </Menu.Item>
                         <SubMenu key="entity" title={<span><Icon type="form" />Entity</span>}>
-                            <Menu.Item key="metadata" onClick={() => menuClicked && menuClicked("EntityMeta")}>
+                            <Menu.Item key="metadata" onClick={() => menuClicked && menuClicked(Page.EntityMeta)}>
                                 Metadata
                             </Menu.Item>
                         </SubMenu>
                         <SubMenu key="content" title={<span><Icon type="file-text" />Content</span>}>
-                            <Menu.Item key="diary" onClick={() => menuClicked && menuClicked("OfficialDiary")}>
+                            <Menu.Item key="diary" onClick={() => menuClicked && menuClicked(Page.OfficialDiary)}>
                                 Official Diary
                             </Menu.Item>
-                            <Menu.Item key="processes" onClick={() => menuClicked && menuClicked("VotingProcesses")}>
+                            <Menu.Item key="processes" onClick={() => menuClicked && menuClicked(Page.VotingProcesses)}>
                                 Voting processes
                             </Menu.Item>
                         </SubMenu>
                         <SubMenu key="settings" title={<span><Icon type="setting" />Infrastructure</span>}>
-                            <Menu.Item key="census-service" onClick={() => menuClicked && menuClicked("CensusService")}>
+                            <Menu.Item key="census-service" onClick={() => menuClicked && menuClicked(Page.CensusService)}>
                                 Census Service
                             </Menu.Item>
-                            <Menu.Item key="relays" onClick={() => menuClicked && menuClicked("Relays")}>
+                            <Menu.Item key="relays" onClick={() => menuClicked && menuClicked(Page.Relays)}>
                                 Relays
+                            </Menu.Item>
+                            <Menu.Item key="entities" onClick={() => menuClicked && menuClicked(Page.OtherEntities)}>
+                                Other Entities
                             </Menu.Item>
                         </SubMenu>
                     </Menu>
