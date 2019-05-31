@@ -1,5 +1,5 @@
 import EthereumManager from "./ethereum-manager";
-import { EntityResolver, VotingProcess } from "dvote-js"
+import { EntityResolver, VotingProcess, TextRecordKeys, TextListRecordKeys } from "dvote-js"
 import { message } from 'antd'
 import axios from "axios"
 import { EntityMetadata, EntityResolverFields } from "dvote-js"
@@ -102,6 +102,33 @@ export async function fetchState(entityAddress: string): Promise<void> {
 
 export function getAllEntityFields(entityAddress: string): Promise<EntityResolverFields> {
     return entityResolver.fetchAllFields(entityAddress)
+}
+
+export function getEntityField(entityAddress: string, fieldName: string): Promise<string | string[]> {
+    const entityId = EntityResolver.getEntityId(entityAddress)
+
+    for (let k in TextListRecordKeys) {
+        if (k.startsWith(fieldName)) {
+            return entityResolver.contractInstance.list(entityId, fieldName)
+        }
+    }
+
+    return entityResolver.contractInstance.text(entityId, fieldName)
+}
+
+export function setEntityTextField(entityAddress: string, fieldName: string, value: string) {
+    const entityId = EntityResolver.getEntityId(entityAddress)
+    entityResolver.contractInstance.connect(EthereumManager.signer)
+
+    return entityResolver.contractInstance.setText(entityId, fieldName, value)
+        .then(tx => tx.wait())
+}
+
+export function setEntityTextListField(entityAddress: string, fieldName: string, index: number, value: string[]) {
+    const entityId = EntityResolver.getEntityId(entityAddress)
+
+    return entityResolver.contractInstance.setListText(entityId, fieldName, index, value)
+        .then(tx => tx.wait())
 }
 
 // GETTERS

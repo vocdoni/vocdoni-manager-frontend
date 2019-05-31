@@ -12,7 +12,11 @@ export enum AccountState {
 
 export default class Web3Manager {
     static get provider() { return provider };
-    static get signer() { return provider.getSigner() };
+    static get signer() {
+        // const localProvider = new providers.Web3Provider(window["web3"].currentProvider);
+        // return localProvider.getSigner();
+        return provider.getSigner();
+    };
 
     static isWeb3Available() {
         return typeof window["web3"] !== 'undefined';
