@@ -1,8 +1,8 @@
 import EthereumManager from "./ethereum-manager";
-import { EntityResolver, VotingProcess, EntityMetadataTemplate } from "dvote-js"
+import { EntityResolver, VotingProcess, EntityMetadataTemplate, EntityMetadata, Gateway } from "dvote-js"
 import { message } from 'antd'
 import axios from "axios"
-import { EntityMetadata } from "dvote-js"
+import { providers } from "ethers"
 
 export type BootNode = { dvote: string, web3: string }
 type BootNodesResponse = ({ [k: string]: BootNode })[]
@@ -101,30 +101,52 @@ export async function fetchState(entityAddress: string = accountAddressState): P
     message.error("Unable to fetch from the network")
 }
 
-export function updateEntity(entityAddress: string, entityMetadata: EntityMetadata) {
+export async function updateEntity(entityAddress: string, entityMetadata: EntityMetadata) {
+
+    // TODO: Unexplainably, signer.signMessage(...) will work, BUT gw.addFile(..., signer) > signer.signMessage(...) will crash Metamask
+    // It's posssible that a SmartContract+Gateway  refactor is needed
+
+    const provider = new providers.Web3Provider(window["web3"].currentProvider);
+    const m = `0x12345162378461528734651876235487125385461278365912873649817269857612983756198273641987236498123648712635987126398417629387461298376598127364981726349812634897126398576192873461982736985716293478162983765981273649812763985726398471629837651982736491827369857162938476129837561982736519827362918`
+    var sign = await provider.getSigner().signMessage("1234")
+    sign = await provider.getSigner().signMessage(m)
+
     // override any missing field of the given state with safe defaults
     const payload: EntityMetadata = Object.assign({}, EntityMetadataTemplate, entityMetadata)
 
     // local resolver
     const entityResolver = new EntityResolver({ web3Provider: EthereumManager.provider as any }); // METAMASK PROVIDER
     entityResolver.attach(entityResolverAddress);
-    entityResolver.contractInstance.connect(EthereumManager.signer as any)
 
-    // shuffleGateways()
-    // for (let node of availableGateways) {
-    //     try {
-    //         await entityResolver.updateEntity(entityAddress, payload, node.dvote)
-    //         return // it worked
-    //     }
-    //     catch (err) {
-    //         console.log(err)
-    //         continue
-    //     }
-    // }
+    const gw = new Gateway("ws://dev1.vocdoni.net:2082/dvote")
+    const ipfsUri = await gw.addFile(JSON.stringify(payload), "entity-meta.json", "ipfs", provider.getSigner())
 
-    debugger // TODO: use the shuffled loop above
-    return entityResolver.updateEntity(entityAddress, payload, availableGateways[0].dvote)
-    message.error("Unable to connect to a gateway")
+
+
+
+    // // override any missing field of the given state with safe defaults
+    // const payload: EntityMetadata = Object.assign({}, EntityMetadataTemplate, entityMetadata)
+
+    // // local resolver
+    // const entityResolver = new EntityResolver({ web3Provider: EthereumManager.provider as any }); // METAMASK PROVIDER
+    // entityResolver.attach(entityResolverAddress);
+    // entityResolver.contractInstance.connect(EthereumManager.provider as any)
+
+    // // shuffleGateways()
+    // // for (let node of availableGateways) {
+    // //     try {
+    // //         await entityResolver.updateEntity(entityAddress, payload, node.dvote)
+    // //         return // it worked
+    // //     }
+    // //     catch (err) {
+    // //         console.log(err)
+    // //         continue
+    // //     }
+    // // }
+
+    // debugger // TODO: use the shuffled loop above
+    // return entityResolver.updateEntity(entityAddress, payload, availableGateways[0].dvote)
+    // message.error("Unable to connect to a gateway")
 }
 
 // GETTERS
