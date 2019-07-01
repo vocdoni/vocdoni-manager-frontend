@@ -7,8 +7,8 @@ import {
     notification
 } from 'antd'
 
-import Web3Manager from "../util/ethereum-manager";
-import { AccountState } from "../util/ethereum-manager";
+import Web3Manager from "../lib/ethereum-manager";
+import { AccountState } from "../lib/ethereum-manager";
 import { Utils } from "../util/node_modules/dvote-client"
 import DvoteUtil from "../util/dvoteUtil";
 

@@ -1,6 +1,6 @@
 import { Component } from "react"
 import { Button, Spin } from 'antd'
-import Web3Manager, { AccountState } from "../util/ethereum-manager"
+import Web3Manager, { AccountState } from "../lib/ethereum-manager"
 import { headerBackgroundColor } from "../lib/constants"
 
 import { Layout, Skeleton } from 'antd'

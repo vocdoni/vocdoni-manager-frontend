@@ -1,7 +1,7 @@
 import { Component } from "react"
 import { List, Avatar, Empty } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
-import { getState } from "../util/dvote"
+import { getState } from "../lib/dvote"
 
 import { Layout } from 'antd'
 const { Header } = Layout

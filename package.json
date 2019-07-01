@@ -17,7 +17,7 @@
         "antd": "^3.9.2",
         "axios": "^0.18.0",
         "babel-plugin-import": "^1.9.1",
-        "dvote-js": "^0.2.12",
+        "dvote-js": "^0.4.3",
         "ethers": "^4.0.28",
         "iso-language-codes": "^1.0.2",
         "next": "^8.1.0",

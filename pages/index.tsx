@@ -1,6 +1,6 @@
 import { Component } from "react"
-import Web3Manager, { AccountState } from "../util/ethereum-manager"
-import { init, getState } from "../util/dvote"
+import Web3Manager, { AccountState } from "../lib/ethereum-manager"
+import { init, getState } from "../lib/dvote"
 import MainLayout, { Page } from "../components/layout"
 import { EntityMetadata } from "dvote-js"
 
@@ -17,7 +17,7 @@ import { message } from "antd";
 interface State {
     accountState: AccountState,
     accountAddress: string,
-    entityInfo: EntityMetadata,
+    entityMetadata: EntityMetadata,
     votingProcesses: any[],
     selectedPage: Page
 }
@@ -26,7 +26,7 @@ export default class Main extends Component<{}, State> {
     state = {
         accountState: AccountState.Unknown,
         accountAddress: "",
-        entityInfo: null,
+        entityMetadata: null,
         votingProcesses: [],
         selectedPage: Page.Home
     }
@@ -47,7 +47,7 @@ export default class Main extends Component<{}, State> {
         const currentAccountState = await Web3Manager.getAccountState()
 
         const prevAddress = this.state.accountAddress
-        const prevEntityInfo = this.state.entityInfo
+        const prevEntityMetadata = this.state.entityMetadata
         const prevVotingProcesses = this.state.votingProcesses
 
         if (currentAccountState === AccountState.Ok) {
@@ -62,11 +62,11 @@ export default class Main extends Component<{}, State> {
             }
 
             // Is metadata different than it was? => sync
-            const { address, entityInfo, votingProcesses } = getState();
-            if (prevAddress != address || prevEntityInfo != entityInfo || prevVotingProcesses != votingProcesses) {
+            const { address, entityMetadata, votingProcesses } = getState();
+            if (prevAddress != address || prevEntityMetadata != entityMetadata || prevVotingProcesses != votingProcesses) {
                 this.setState({
                     accountAddress: address,
-                    entityInfo,
+                    entityMetadata,
                     votingProcesses
                 })
             }
@@ -98,23 +98,23 @@ export default class Main extends Component<{}, State> {
                 />
             //     case Page.OfficialDiary:
             //         return <PagePosts
-            //             entityInfo={this.state.entityInfo}
+            //             entityMetadata={this.state.entityMetadata}
             //             currentAddress={this.state.accountAddress}
             //         />
             //     case Page.VotingProcesses:
             //         return <PageVotes
-            //             entityInfo={this.state.entityInfo}
+            //             entityMetadata={this.state.entityMetadata}
             //             currentAddress={this.state.accountAddress}
             //             processesMetadata={this.state.processesMetadata}
             //         />
             //     case Page.CensusService:
             //         return <PageCensus
-            //             entityInfo={this.state.entityInfo}
+            //             entityMetadata={this.state.entityMetadata}
             //             currentAddress={this.state.accountAddress}
             //         />
             //     case Page.Relays:
             //         return <PageRelays
-            //             entityInfo={this.state.entityInfo}
+            //             entityMetadata={this.state.entityMetadata}
             //             currentAddress={this.state.accountAddress}
             //         />
         }
@@ -125,7 +125,7 @@ export default class Main extends Component<{}, State> {
     render() {
         return <MainLayout
             currentAddress={this.state.accountAddress}
-            entityName={this.state.entityInfo && this.state.entityInfo["entity-name"]}
+            entityName={this.state.entityMetadata && this.state.entityMetadata.name["default"]}
             menuClicked={(key: Page) => this.setState({ selectedPage: key })}
         >
             {this.renderPageContent()}

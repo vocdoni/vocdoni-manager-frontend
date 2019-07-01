@@ -1,8 +1,8 @@
 import EthereumManager from "./ethereum-manager";
-import { EntityResolver, VotingProcess, TextRecordKeys, TextListRecordKeys } from "dvote-js"
+import { EntityResolver, VotingProcess, EntityMetadataTemplate } from "dvote-js"
 import { message } from 'antd'
 import axios from "axios"
-import { EntityMetadata, EntityResolverFields } from "dvote-js"
+import { EntityMetadata } from "dvote-js"
 
 export type BootNode = { dvote: string, web3: string }
 type BootNodesResponse = ({ [k: string]: BootNode })[]
@@ -16,9 +16,9 @@ let entityResolver: EntityResolver = null;
 let votingProcess: VotingProcess = null;
 
 // STATE DATA
-let bootnodesState: { dvote: string, web3: string }[];
+let availableGateways: { dvote: string, web3: string }[];
 let accountAddressState: string;
-let entityState: EntityMetadata;
+let entityMetadataState: EntityMetadata;
 let votingProcessesState: any[];
 let newsState: { [lang: string]: any[] }
 
@@ -27,15 +27,15 @@ export async function init() {
 
     const bootNodesMap = await fetchBootnodes();
     if (!Array.isArray(bootNodesMap[ETH_NETWORK_ID])) throw new Error("Invalid bootstrap nodes")
-    bootnodesState = bootNodesMap[ETH_NETWORK_ID]
+    availableGateways = bootNodesMap[ETH_NETWORK_ID]
 
     accountAddressState = await EthereumManager.getAddress();
 
     // RESOLVER CONTRACT
-    entityResolver = new EntityResolver({ providerUrl: bootnodesState[0].web3 }); // GATEWAY PROVIDER
+    entityResolver = new EntityResolver({ providerUrl: availableGateways[0].web3 }); // GATEWAY PROVIDER
     // entityResolver = new EntityResolver({ provider: EthereumManager.provider }); // METAMASK PROVIDER
     entityResolver.attach(entityResolverAddress);
-    entityResolver.contractInstance.connect(EthereumManager.signer)
+    entityResolver.contractInstance.connect(EthereumManager.signer as any)
 
     // React on all events (by now)
     entityResolver.contractInstance.on("TextChanged", () => this.fetchState());
@@ -43,7 +43,7 @@ export async function init() {
 
     // TODO:
     // PROCESS CONTRACT
-    // votingProcess = new VotingProcess({ providerUrl: bootnodesState[0].web3 }); // GATEWAY PROVIDER
+    // votingProcess = new VotingProcess({ providerUrl: availableGateways[0].web3 }); // GATEWAY PROVIDER
     // // votingProcess = new VotingProcess({ provider: EthereumManager.provider }); // GATEWAY PROVIDER
     // votingProcess.attach(votingProcessAdress);
     // votingProcess.contractInstance.connect(EthereumManager.signer)
@@ -85,11 +85,12 @@ export async function fetchBootnodes(): Promise<BootNodesResponse> {
     return axios.get<BootNodesResponse>(BOOTNODES_URL).then(res => res.data)
 }
 
-export async function fetchState(entityAddress: string): Promise<void> {
-    for (let node of bootnodesState) {
+export async function fetchState(entityAddress: string = accountAddressState): Promise<void> {
+    shuffleGateways()
+    for (let node of availableGateways) {
         try {
-            const meta: EntityMetadata = await entityResolver.fetchJsonMetadata(entityAddress, node.dvote);
-            entityState = meta;
+            const meta: EntityMetadata = await entityResolver.getMetadata(entityAddress, node.dvote);
+            entityMetadataState = meta;
             return;
         }
         catch (err) {
@@ -100,35 +101,30 @@ export async function fetchState(entityAddress: string): Promise<void> {
     message.error("Unable to fetch from the network")
 }
 
-export function getAllEntityFields(entityAddress: string): Promise<EntityResolverFields> {
-    return entityResolver.fetchAllFields(entityAddress)
-}
+export function updateEntity(entityAddress: string, entityMetadata: EntityMetadata) {
+    // override any missing field of the given state with safe defaults
+    const payload: EntityMetadata = Object.assign({}, EntityMetadataTemplate, entityMetadata)
 
-export function getEntityField(entityAddress: string, fieldName: string): Promise<string | string[]> {
-    const entityId = EntityResolver.getEntityId(entityAddress)
+    // local resolver
+    const entityResolver = new EntityResolver({ web3Provider: EthereumManager.provider as any }); // METAMASK PROVIDER
+    entityResolver.attach(entityResolverAddress);
+    entityResolver.contractInstance.connect(EthereumManager.signer as any)
 
-    for (let k in TextListRecordKeys) {
-        if (k.startsWith(fieldName)) {
-            return entityResolver.contractInstance.list(entityId, fieldName)
-        }
-    }
+    // shuffleGateways()
+    // for (let node of availableGateways) {
+    //     try {
+    //         await entityResolver.updateEntity(entityAddress, payload, node.dvote)
+    //         return // it worked
+    //     }
+    //     catch (err) {
+    //         console.log(err)
+    //         continue
+    //     }
+    // }
 
-    return entityResolver.contractInstance.text(entityId, fieldName)
-}
-
-export function setEntityTextField(entityAddress: string, fieldName: string, value: string) {
-    const entityId = EntityResolver.getEntityId(entityAddress)
-    entityResolver.contractInstance.connect(EthereumManager.signer)
-
-    return entityResolver.contractInstance.setText(entityId, fieldName, value)
-        .then(tx => tx.wait())
-}
-
-export function setEntityTextListField(entityAddress: string, fieldName: string, index: number, value: string[]) {
-    const entityId = EntityResolver.getEntityId(entityAddress)
-
-    return entityResolver.contractInstance.setListText(entityId, fieldName, index, value)
-        .then(tx => tx.wait())
+    debugger // TODO: use the shuffled loop above
+    return entityResolver.updateEntity(entityAddress, payload, availableGateways[0].dvote)
+    message.error("Unable to connect to a gateway")
 }
 
 // GETTERS
@@ -136,9 +132,15 @@ export function setEntityTextListField(entityAddress: string, fieldName: string,
 export function getState() {
     return {
         address: accountAddressState,
-        entityInfo: entityState,
+        entityMetadata: entityMetadataState,
         votingProcesses: votingProcessesState,
         news: newsState,
-        bootnodes: bootnodesState
+        bootnodes: availableGateways
     }
+}
+
+// INTERNAL
+
+function shuffleGateways() {
+    availableGateways.sort(() => Math.random() * 2 - 1)
 }
