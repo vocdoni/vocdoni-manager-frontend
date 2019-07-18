@@ -1,11 +1,9 @@
 import { Component } from "react"
-import CreateEntity from "./fragment-create-entity"
-import { Row, Col, Divider, Skeleton, message, notification } from "antd"
-import { getState, fetchState, updateEntity } from "../lib/dvote"
-import { EntityMetadata } from "dvote-js"
+import { getState, updateEntityValues } from "../util/dvote"
+import { Row, Col, Divider, Skeleton, message, Layout, Button, Input, Spin, Icon, Select } from "antd"
+import { EntityMetadata, EntityMetadataTemplate } from "dvote-js"
 import { by639_1 } from 'iso-language-codes'
 import { headerBackgroundColor } from "../lib/constants"
-import { Layout, Button, Input, Icon, Select } from 'antd'
 const { Header } = Layout
 const { Option } = Select
 
@@ -17,159 +15,301 @@ const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {
 interface Props {
     refresh?: () => void
 }
-type State = ({
+type State = {
+    entityLoading: boolean,
+    entityUpdating: boolean,
     accountAddress: string,
-    entityMetadata: EntityMetadata
-})
+    entityMetadata: EntityMetadata,
+    newEntity: EntityMetadata
+}
 
 export default class PageEntityMeta extends Component<Props, State> {
 
     refreshInterval: any
+    state = {
+        entityLoading: false,
+        entityUpdating: false,
+        accountAddress: null,
+        entityMetadata: null,
+        newEntity: EntityMetadataTemplate
+    }
 
     componentDidMount() {
-        this.refreshInterval = setInterval(() => this.refreshState(), 1000)
+        this.refreshInterval = setInterval(() => this.checkAddressChanged(), 1000)
 
-        fetchState().then(() => {
-            const { address, entityMetadata } = getState();
-
-            this.setState({
-                accountAddress: address,
-                entityMetadata
-            })
-        }).catch(err => {
-            message.error("There was an error connecting to the network")
-        })
+        this.refreshEntityData()
     }
 
     componentWillUnmount() {
         clearInterval(this.refreshInterval)
     }
 
-    refreshState() {
+    checkAddressChanged() {
         const prevAddress = this.state.accountAddress
-        const { address, entityMetadata } = getState();
-
+        const { address } = getState()
         if (prevAddress == address) return
+        this.refreshEntityData()
+    }
+
+    refreshEntityData() {
+        const { address, entityMetadata, entityLoading } = getState()
         this.setState({
             accountAddress: address,
-            entityMetadata
+            entityMetadata,
+            entityLoading
         })
     }
 
-    // EVENTS
-    onNameChange(lang: string, value: string) {
-        const entity = this.state.entityMetadata
-        entity.name = Object.assign({}, entity.name, { [lang]: value })
-        this.setState({ entityMetadata: entity })
+    // EVENTS (EXISTING ENTITY)
+    onExistingLanguagesChange(languages) {
+        const entityMetadata = Object.assign({}, this.state.entityMetadata, { languages })
+        this.setState({ entityMetadata })
     }
-    onDescriptionChange(lang: string, value: string) {
-        const entity = this.state.entityMetadata
-        entity.description = Object.assign({}, entity.description, { [lang]: value })
-        this.setState({ entityMetadata: entity })
+    onExistingDefaultLanguageChange(language) {
+        const defaultLang = this.state.entityMetadata.languages.filter(ln => ln == language)
+        const otherLang = this.state.entityMetadata.languages.filter(ln => ln != language)
+        const entityMetadata = Object.assign({}, this.state.entityMetadata, { languages: defaultLang.concat(otherLang) })
+        this.setState({ entityMetadata })
     }
-    onFieldChange(fieldKey: string, value: string) {
-        const entity = Object.assign({}, this.state.entityMetadata, { [fieldKey]: value })
-        this.setState({ entityMetadata: entity })
+    onExistingNameChange(name: string, lang: string) {
+        const newName = Object.assign({}, this.state.entityMetadata.name, { [lang]: name })
+        const entityMetadata = Object.assign({}, this.state.entityMetadata, { name: newName })
+        this.setState({ entityMetadata })
+    }
+    onExistingDescriptionChange(description: string, lang: string) {
+        const newDescription = Object.assign({}, this.state.entityMetadata.description, { [lang]: description })
+        const entityMetadata = Object.assign({}, this.state.entityMetadata, { description: newDescription })
+        this.setState({ entityMetadata })
+    }
+    onExistingFieldChange(key: string, value: string) {
+        const entityMetadata = Object.assign({}, this.state.entityMetadata, { [key]: value })
+        this.setState({ entityMetadata })
+    }
+    updateMetadata() {
+        this.setState({ entityUpdating: true })
+        updateEntityValues(this.state.entityMetadata).then(() => {
+            message.success("The entity has been updated!")
+            this.setState({ entityUpdating: false })
+        }).catch(err => {
+            message.error("The entity could not be updated")
+            this.setState({ entityUpdating: false })
+        })
     }
 
-    async persistChanges() {
-        if (!confirm("You are about to persist the following changes on the blockchain.\nDo you want to continue?")) return;
-
-        try {
-            await updateEntity(this.state.accountAddress, this.state.entityMetadata)
-        }
-        catch (err) {
-            console.log(err)
-            notification.error({ message: "Error", description: "The metadata could not be updated at this point" })
-        }
+    // EVENTS (NEW ENTITY)
+    onNewLanguagesChange(languages) {
+        const newEntity = Object.assign({}, this.state.newEntity, { languages })
+        this.setState({ newEntity })
+    }
+    onNewDefaultLanguageChange(language) {
+        const defaultLang = this.state.newEntity.languages.filter(ln => ln == language)
+        const otherLang = this.state.newEntity.languages.filter(ln => ln != language)
+        const newEntity = Object.assign({}, this.state.newEntity, { languages: defaultLang.concat(otherLang) })
+        this.setState({ newEntity })
+    }
+    onNewNameChange(name: string, lang: string) {
+        const newName = Object.assign({}, this.state.newEntity.name, { [lang]: name })
+        const newEntity = Object.assign({}, this.state.newEntity, { name: newName })
+        this.setState({ newEntity })
+    }
+    onNewDescriptionChange(description: string, lang: string) {
+        const newDescription = Object.assign({}, this.state.newEntity.description, { [lang]: description })
+        const newEntity = Object.assign({}, this.state.newEntity, { description: newDescription })
+        this.setState({ newEntity })
+    }
+    onNewFieldChange(key: string, value: string) {
+        const newEntity = Object.assign({}, this.state.newEntity, { [key]: value })
+        this.setState({ newEntity })
+    }
+    registerEntity() {
+        this.setState({ entityUpdating: true })
+        updateEntityValues(this.state.newEntity).then(() => {
+            message.success("The entity has been registered!")
+            this.setState({ entityUpdating: false })
+        }).catch(err => {
+            message.error("The entity could not be registered")
+            this.setState({ entityUpdating: false })
+        })
     }
 
-    renderMainContent() {
-        const state: State = this.state
+    renderEntityEdit() {
+        const { entityMetadata: entity } = this.state
 
         return <div style={{ padding: 30 }}>
             <h2>General</h2>
 
             <Row gutter={16}>
-                {/* <Col xs={24} md={12}>
+                <Col xs={24} md={12}>
                     <label>Supported languages</label>
                     <Select
                         mode="multiple"
                         style={{ width: '100%' }}
                         placeholder="Select the supported languages"
-                        value={state.entityMetadata.languages || []}
-                        onChange={langs => this.onLanguagesChange(langs)}
+                        value={(entity.languages) || []}
+                        onChange={langs => this.onExistingLanguagesChange(langs)}
                     >
                         {languageCodes.map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
                     </Select>
-                    <br /><br />
-                    <div>
-                        <label>Default language</label>
-                        <Select
-                            style={{ width: '100%' }}
-                            placeholder="Select the default language"
-                            value={state.defaultLanguage || ""}
-                            onChange={lang => this.onDefaultLanguageChange(lang)}
-                        >
-                            {(state.entityMetadata.languages || []).map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
-                        </Select>
-                    </div>
-                </Col> */}
-                <Col xs={24} md={12}>
-                    {
-                        state.entityMetadata.languages.map(lang => <div key={lang}>
-                            <label>Official name ({by639_1[lang] ? by639_1[lang].name : lang})</label>
-                            <Input type="text"
-                                value={state.entityMetadata.name[lang]}
-                                prefix={<Icon type="info-circle" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder={"Entity name"}
-                                onChange={ev => this.onNameChange(lang, ev.target.value)} />
-                            <br /><br />
-                        </div>)
-                    }
                 </Col>
                 <Col xs={24} md={12}>
-                    {
-                        state.entityMetadata.languages.map(lang => <div key={lang}>
-                            <label>Description ({by639_1[lang] ? by639_1[lang].name : lang})</label>
-                            <Input type="text"
-                                value={state.entityMetadata.description[lang]}
-                                prefix={<Icon type="book" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder={"Description"}
-                                onChange={ev => this.onDescriptionChange(lang, ev.target.value)} />
-                            <br /><br />
-                        </div>)
-                    }
+                    <label>Default language</label>
+                    <Select
+                        style={{ width: '100%' }}
+                        placeholder="Select the default language"
+                        value={entity.languages[0] || ""}
+                        onChange={lang => this.onExistingDefaultLanguageChange(lang)}
+                    >
+                        {((entity.languages) || [] as any[]).filter(lang => by639_1[lang]).map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
+                    </Select>
                 </Col>
+            </Row>
+            <br />
+
+            <h2>Name</h2>
+            <Row gutter={16}>
+                {
+                    (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
+                        <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label>
+                        <Input type="text"
+                            value={entity.name[lang]}
+                            prefix={<Icon type="info-circle" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder={"Entity name"}
+                            onChange={val => this.onExistingNameChange(val.target.value, lang)} />
+                        <br /><br />
+                    </Col>)
+                }
+            </Row>
+
+            <h2>Description</h2>
+            <Row gutter={16}>
+                {
+                    (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
+                        <label>Description ({by639_1[lang] ? by639_1[lang].name : lang})</label>
+                        <Input type="text"
+                            value={entity.description[lang]}
+                            prefix={<Icon type="book" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder={"Description"}
+                            onChange={val => this.onExistingDescriptionChange(val.target.value, lang)} />
+                        <br /><br />
+                    </Col>)
+                }
+            </Row>
+
+            <h2>General</h2>
+            <Row gutter={16}>
                 <Col xs={24} md={12}>
                     <label>Avatar (URL)</label>
                     <Input
                         placeholder="Link to an avatar icon"
                         prefix={<Icon type="file-image" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        value={this.state.entityMetadata.avatar}
-                        onChange={ev => this.onFieldChange("avatar", ev.target.value)}
+                        value={entity.avatar}
+                        onChange={ev => this.onExistingFieldChange("avatar", ev.target.value)}
                     />
                 </Col>
             </Row>
 
-            {/* BOOT_ENTITIES */}
-            {/* TRUSTED_ENTITIES */}
-
             <Divider />
-            <p style={{ textAlign: "center" }}>
-                <small>Updating the fields above may require signing two transactions.</small>
-            </p>
 
             <div style={{ textAlign: "center" }}>
-                <Button size='large' type='primary' onClick={() => this.persistChanges()}>Persist changes</Button>
+                {this.state.entityUpdating ?
+                    <Spin indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />} /> :
+                    <Button size='large' type='primary' onClick={() => this.updateMetadata()}>Update metadata</Button>
+                }
+            </div>
+        </div>
+    }
+
+    renderCreateEntity() {
+        const { newEntity: entity } = this.state
+
+        return <div style={{ padding: 30 }}>
+            <h2>General</h2>
+
+            <Row gutter={16}>
+                <Col xs={24} md={12}>
+                    <label>Supported languages</label>
+                    <Select
+                        mode="multiple"
+                        style={{ width: '100%' }}
+                        placeholder="Select the supported languages"
+                        value={(entity.languages) || []}
+                        onChange={langs => this.onNewLanguagesChange(langs)}
+                    >
+                        {languageCodes.map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
+                    </Select>
+                </Col>
+                <Col xs={24} md={12}>
+                    <label>Default language</label>
+                    <Select
+                        style={{ width: '100%' }}
+                        placeholder="Select the default language"
+                        value={entity.languages[0] || ""}
+                        onChange={lang => this.onNewDefaultLanguageChange(lang)}
+                    >
+                        {((entity.languages) || [] as any[]).filter(lang => by639_1[lang]).map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
+                    </Select>
+                </Col>
+            </Row>
+            <br />
+
+            <h2>Name</h2>
+            <Row gutter={16}>
+                {
+                    (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
+                        <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label>
+                        <Input type="text"
+                            value={entity.name[lang]}
+                            prefix={<Icon type="info-circle" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder={"Entity name"}
+                            onChange={val => this.onNewNameChange(val.target.value, lang)} />
+                        <br /><br />
+                    </Col>)
+                }
+            </Row>
+
+            <h2>Description</h2>
+            <Row gutter={16}>
+                {
+                    (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
+                        <label>Description ({by639_1[lang] ? by639_1[lang].name : lang})</label>
+                        <Input type="text"
+                            value={entity.description[lang]}
+                            prefix={<Icon type="book" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder={"Description"}
+                            onChange={val => this.onNewDescriptionChange(val.target.value, lang)} />
+                        <br /><br />
+                    </Col>)
+                }
+            </Row>
+
+            <h2>General</h2>
+            <Row gutter={16}>
+                <Col xs={24} md={12}>
+                    <label>Avatar (URL)</label>
+                    <Input
+                        placeholder="Link to an avatar icon"
+                        prefix={<Icon type="file-image" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                        value={entity.avatar}
+                        onChange={ev => this.onNewFieldChange("avatar", ev.target.value)}
+                    />
+                </Col>
+            </Row>
+
+            <Divider />
+
+            <div style={{ textAlign: "center" }}>
+                {this.state.entityUpdating ?
+                    <Spin indicator={<Icon type="loading" style={{ fontSize: 24 }} spin />} /> :
+                    <Button size='large' type='primary' onClick={() => this.registerEntity()}>Register entity</Button>
+                }
             </div>
         </div>
     }
 
     render() {
-        const state: State = this.state
+        const { entityMetadata, entityLoading } = this.state
 
-        if (!state || !state.entityMetadata) {
+        if (entityLoading) {
             return <>
                 <Header style={{ backgroundColor: headerBackgroundColor }}>
                     <h2></h2>
@@ -185,11 +325,13 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
-                <h2>{state.entityMetadata.name["default"]}</h2>
+                <h2>{entityMetadata ? entityMetadata.name[entityMetadata.languages[0]] : "Register an Entity"}</h2>
             </Header>
 
             <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
-                {this.renderMainContent()}
+                {
+                    entityMetadata ? this.renderEntityEdit() : this.renderCreateEntity()
+                }
             </div>
         </>
     }

@@ -1,11 +1,11 @@
 import { Component } from "react"
 import { headerBackgroundColor } from "../lib/constants"
-import { getState, BootNode } from "../lib/dvote"
+import { getState, BootNode } from "../util/dvote"
 import { Layout, Row, Col } from 'antd'
 const { Header } = Layout
-import { EntityResolver, EntityMetadata } from "dvote-js"
+import { EntityMetadata, getEntityId } from "dvote-js"
 import QRCode from "qrcode.react"
-// import { by639_1 } from 'iso-language-codes'
+import { by639_1 } from 'iso-language-codes'
 
 interface Props {
     refresh?: () => void
@@ -50,29 +50,32 @@ export default class PageHome extends Component<Props, State> {
         }
     }
 
+    renderNoEntity() {
+        return <>
+            <Header style={{ backgroundColor: headerBackgroundColor }}>
+                <h2></h2>
+            </Header>
+
+            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                <div style={{ padding: 30 }}>
+                    <h2>No entity</h2>
+                    <p>There is no entity registered with your account yet</p>
+                </div>
+            </div>
+        </>
+    }
+
     render() {
         const entity: EntityMetadata = this.state.entityMetadata
-        if (!entity) {
-            return <>
-                <Header style={{ backgroundColor: headerBackgroundColor }}>
-                    <h2></h2>>
-                </Header>
+        if (!entity) return this.renderNoEntity()
 
-                <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
-                    <div style={{ padding: 30 }}>
-                        <h2>Entity overview</h2>
-                    </div>
-                </div>
-            </>
-        }
-
-        const entityId = EntityResolver.getEntityId(this.state.accountAddress)
+        const entityId = getEntityId(this.state.accountAddress)
         let subscriptionLink = `vocdoni://vocdoni.app/organization?resolverAddress=${process.env.ENTITY_RESOLVER_ADDRESS}&entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
         subscriptionLink += this.state.bootnodes.filter(n => n && n.dvote).map(n => `entryPoints[]=${n.dvote}`).join("&")
 
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
-                <h2>{entity.name["default"]}</h2>
+                <h2>{entity.name[entity.languages[0]]}</h2>
             </Header>
 
             <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
@@ -81,8 +84,7 @@ export default class PageHome extends Component<Props, State> {
                         <Col xs={24} md={15}>
                             <h2>Entity overview</h2>
                             <p>Entity ID: {entityId}</p>
-                            {/* <p>Supported languages: {(entity.languages || []).map(lang => by639_1[lang].name).join(", ")}</p> */}
-                            <p>Supported lanauges: default</p>
+                            <p>Supported languages: {(entity.languages || [] as any).map(lang => by639_1[lang].name).join(", ")}</p>
                             <p>Description</p>
                             <ul>
                                 {

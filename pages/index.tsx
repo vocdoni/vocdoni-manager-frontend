@@ -1,6 +1,6 @@
 import { Component } from "react"
-import Web3Manager, { AccountState } from "../lib/ethereum-manager"
-import { init, getState } from "../lib/dvote"
+import Web3Manager, { AccountState } from "../util/ethereum-manager"
+import { init, getState } from "../util/dvote"
 import MainLayout, { Page } from "../components/layout"
 import { EntityMetadata } from "dvote-js"
 
@@ -12,7 +12,7 @@ import PageEntityMeta from "../components/page-entity-meta"
 // import PageRelays from "../components/page-relays"
 
 import EthereumInfo from "../components/page-ethereum-info"
-import { message } from "antd";
+import { message } from "antd"
 
 interface State {
     accountState: AccountState,
@@ -125,7 +125,7 @@ export default class Main extends Component<{}, State> {
     render() {
         return <MainLayout
             currentAddress={this.state.accountAddress}
-            entityName={this.state.entityMetadata && this.state.entityMetadata.name["default"]}
+            entityName={this.state.entityMetadata && this.state.entityMetadata["entity-name"]}
             menuClicked={(key: Page) => this.setState({ selectedPage: key })}
         >
             {this.renderPageContent()}

@@ -1,6 +1,6 @@
 import { Component } from "react"
 import { Button, Spin } from 'antd'
-import Web3Manager, { AccountState } from "../lib/ethereum-manager"
+import Web3Manager, { AccountState } from "../util/ethereum-manager"
 import { headerBackgroundColor } from "../lib/constants"
 
 import { Layout, Skeleton } from 'antd'
@@ -18,7 +18,7 @@ export default class Setup extends Component<Props> {
     renderPleaseWait() {
         return <div style={{ paddingTop: 30, textAlign: "center" }}>
             <Skeleton active />
-            <br/>
+            <br />
             <div>Please, wait... <Spin size="small" /></div>
         </div>
     }
@@ -30,6 +30,7 @@ export default class Setup extends Component<Props> {
                 <Button
                     type="default"
                     size="large"
+                    target="_blank"
                     href={"https://metamask.io/"}>
                     Install Metamask
                 </Button>

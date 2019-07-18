@@ -1,6 +1,5 @@
 import { Component } from "react"
 import { List, Avatar, Empty } from 'antd'
-import DvoteUtil from "../util/dvoteUtil";
 import { headerBackgroundColor } from "../lib/constants"
 
 import { Layout } from 'antd'
@@ -15,14 +14,8 @@ interface State {
 }
 
 export default class PageRelays extends Component<Props, State> {
-    dvote: DvoteUtil
-
     state = {
         relays: []
-    }
-
-    componentDidMount() {
-        this.dvote = new DvoteUtil()
     }
 
     renderMainContent() {

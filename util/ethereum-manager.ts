@@ -1,4 +1,4 @@
-import { providers, Signer } from "ethers"
+import { providers } from "ethers"
 
 let provider: providers.Web3Provider = null;
 
@@ -12,11 +12,7 @@ export enum AccountState {
 
 export default class Web3Manager {
     static get provider() { return provider };
-    static get signer(): Signer {
-        // const localProvider = new providers.Web3Provider(window["web3"].currentProvider);
-        // return localProvider.getSigner();
-        return provider.getSigner();
-    };
+    static get signer() { return provider.getSigner() };
 
     static isWeb3Available() {
         return typeof window["web3"] !== 'undefined';
@@ -41,7 +37,6 @@ export default class Web3Manager {
             if (!Web3Manager.isWeb3Available()) return resolve(AccountState.NoWeb3)
             else if (!Web3Manager.isEthereumAvailable()) return resolve(AccountState.NoEthereum)
             else if (!provider) return resolve(AccountState.Locked)
-
             provider.listAccounts()
                 .then(accounts => {
                     if (accounts && accounts[0]) return resolve(AccountState.Ok);

@@ -1,6 +1,6 @@
 import { Component } from "react"
 import { List, Avatar, Empty } from 'antd'
-import DvoteUtil from "../util/dvoteUtil";
+// import DvoteUtil from "../util/dvoteUtil";
 import { headerBackgroundColor } from "../lib/constants"
 
 import { Layout } from 'antd'
@@ -15,14 +15,14 @@ interface State {
 }
 
 export default class PageCensus extends Component<Props, State> {
-    dvote: DvoteUtil
+    // dvote: DvoteUtil
 
     state = {
         census: []
     }
 
     componentDidMount() {
-        this.dvote = new DvoteUtil()
+        // this.dvote = new DvoteUtil()
     }
 
     renderMainContent() {
