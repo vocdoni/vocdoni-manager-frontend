@@ -125,7 +125,7 @@ export default class Main extends Component<{}, State> {
     render() {
         return <MainLayout
             currentAddress={this.state.accountAddress}
-            entityName={this.state.entityMetadata && this.state.entityMetadata["entity-name"]}
+            entityName={this.state.entityMetadata && this.state.entityMetadata.name && this.state.entityMetadata.name[this.state.entityMetadata.languages[0]]}
             menuClicked={(key: Page) => this.setState({ selectedPage: key })}
         >
             {this.renderPageContent()}

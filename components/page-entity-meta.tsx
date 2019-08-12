@@ -1,7 +1,7 @@
 import { Component } from "react"
 import { getState, updateEntityValues } from "../util/dvote"
 import { Row, Col, Divider, Skeleton, message, Layout, Button, Input, Spin, Icon, Select } from "antd"
-import { EntityMetadata, EntityMetadataTemplate } from "dvote-js"
+import { EntityMetadata, EntityMetadataTemplate, getEntityId } from "dvote-js"
 import { by639_1 } from 'iso-language-codes'
 import { headerBackgroundColor } from "../lib/constants"
 const { Header } = Layout
@@ -30,7 +30,7 @@ export default class PageEntityMeta extends Component<Props, State> {
         entityLoading: false,
         entityUpdating: false,
         accountAddress: null,
-        entityMetadata: null,
+        entityMetadata: null as EntityMetadata,
         newEntity: EntityMetadataTemplate
     }
 
@@ -81,13 +81,47 @@ export default class PageEntityMeta extends Component<Props, State> {
         const entityMetadata = Object.assign({}, this.state.entityMetadata, { description: newDescription })
         this.setState({ entityMetadata })
     }
-    onExistingFieldChange(key: string, value: string) {
-        const entityMetadata = Object.assign({}, this.state.entityMetadata, { [key]: value })
-        this.setState({ entityMetadata })
+    onExistingFieldChange(key: string, subkey: string, value: string) {
+        if (subkey === null) {
+            const entityMetadata = Object.assign({}, this.state.entityMetadata, { [key]: value })
+            this.setState({ entityMetadata })
+        }
+        else {
+            const entityMetadata = Object.assign({}, this.state.entityMetadata)
+            if (typeof entityMetadata[key] != "object") entityMetadata[key] = {}
+            entityMetadata[key][subkey] = value
+            this.setState({ entityMetadata })
+        }
     }
     updateMetadata() {
         this.setState({ entityUpdating: true })
-        updateEntityValues(this.state.entityMetadata).then(() => {
+
+        const entityMetadata = Object.assign({}, this.state.newEntity, this.state.entityMetadata)
+
+        // Ensure register action has appropriate Entity ID
+        const entityId = getEntityId(this.state.accountAddress)
+        entityMetadata.entityId = entityId
+
+        const idx = entityMetadata.actions.findIndex(act => act.type == "browser" && act.register)
+        if (idx < 0) { // add it
+            entityMetadata.actions.push({
+                type: "browser",
+                name: {
+                    default: "Sign up",
+                    // en: "Sign up",
+                    // fr: "S'inscrire"
+                },
+                register: true,
+                url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
+                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+            })
+        }
+        else { // update it
+            entityMetadata.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
+            entityMetadata.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+        }
+
+        updateEntityValues(entityMetadata).then(() => {
             message.success("The entity has been updated!")
             this.setState({ entityUpdating: false })
         }).catch(err => {
@@ -117,13 +151,46 @@ export default class PageEntityMeta extends Component<Props, State> {
         const newEntity = Object.assign({}, this.state.newEntity, { description: newDescription })
         this.setState({ newEntity })
     }
-    onNewFieldChange(key: string, value: string) {
-        const newEntity = Object.assign({}, this.state.newEntity, { [key]: value })
-        this.setState({ newEntity })
+    onNewFieldChange(key: string, subkey: string, value: string) {
+        if (subkey === null) {
+            const newEntity = Object.assign({}, this.state.newEntity, { [key]: value })
+            this.setState({ newEntity })
+        }
+        else {
+            const newEntity = Object.assign({}, this.state.newEntity)
+            if (typeof newEntity[key] != "object") newEntity[key] = {}
+            newEntity[key][subkey] = value
+            this.setState({ newEntity })
+        }
     }
     registerEntity() {
         this.setState({ entityUpdating: true })
-        updateEntityValues(this.state.newEntity).then(() => {
+
+        // Ensure register action has appropriate Entity ID
+        const newEntity = this.state.newEntity
+        const entityId = getEntityId(this.state.accountAddress)
+        newEntity.entityId = entityId
+
+        const idx = newEntity.actions.findIndex(act => act.type == "browser" && act.register)
+        if (idx < 0) { // add it
+            newEntity.actions.push({
+                type: "browser",
+                name: {
+                    default: "Sign up",
+                    // en: "Sign up",
+                    // fr: "S'inscrire"
+                },
+                register: true,
+                url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
+                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+            })
+        }
+        else { // update it
+            newEntity.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
+            newEntity.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+        }
+
+        updateEntityValues(newEntity).then(() => {
             message.success("The entity has been registered!")
             this.setState({ entityUpdating: false })
         }).catch(err => {
@@ -202,8 +269,17 @@ export default class PageEntityMeta extends Component<Props, State> {
                     <Input
                         placeholder="Link to an avatar icon"
                         prefix={<Icon type="file-image" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        value={entity.avatar}
-                        onChange={ev => this.onExistingFieldChange("avatar", ev.target.value)}
+                        value={entity.media && entity.media.avatar}
+                        onChange={ev => this.onExistingFieldChange("media", "avatar", ev.target.value)}
+                    />
+                </Col>
+                <Col xs={24} md={12}>
+                    <label>Header (URL)</label>
+                    <Input
+                        placeholder="Link to a header image"
+                        prefix={<Icon type="file-image" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                        value={entity.media && entity.media.header}
+                        onChange={ev => this.onExistingFieldChange("media", "header", ev.target.value)}
                     />
                 </Col>
             </Row>
@@ -289,8 +365,17 @@ export default class PageEntityMeta extends Component<Props, State> {
                     <Input
                         placeholder="Link to an avatar icon"
                         prefix={<Icon type="file-image" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        value={entity.avatar}
-                        onChange={ev => this.onNewFieldChange("avatar", ev.target.value)}
+                        value={entity.media && entity.media.avatar}
+                        onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+                    />
+                </Col>
+                <Col xs={24} md={12}>
+                    <label>Header (URL)</label>
+                    <Input
+                        placeholder="Link to aheader image"
+                        prefix={<Icon type="file-image" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                        value={entity.media && entity.media.header}
+                        onChange={ev => this.onNewFieldChange("media", "header", ev.target.value)}
                     />
                 </Col>
             </Row>

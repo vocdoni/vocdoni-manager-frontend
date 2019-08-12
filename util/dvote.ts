@@ -1,5 +1,5 @@
 import EthereumManager from "./ethereum-manager"
-import { message } from 'antd'
+// import { message } from 'antd'
 import axios from "axios"
 import { EntityMetadata, getEntityMetadata, GatewayURI, getEntityResolverInstance, getVotingContractInstance, getEntityId, updateEntity } from "dvote-js"
 import { EntityResolverContractMethods, VotingProcessContractMethods } from "dvote-solidity"
@@ -116,7 +116,7 @@ export async function fetchState(entityAddress: string): Promise<void> {
         }
     }
     entityLoading = false
-    message.error("Unable to fetch from the network")
+    throw new Error("Unable to fetch from the network")
 }
 
 // GETTERS
@@ -150,5 +150,5 @@ export async function updateEntityValues(metadata: EntityMetadata): Promise<void
             continue
         }
     }
-    message.error("Unable to fetch from the network")
+    throw new Error("Unable to fetch from the network")
 }
