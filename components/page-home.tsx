@@ -70,7 +70,7 @@ export default class PageHome extends Component<Props, State> {
         if (!entity) return this.renderNoEntity()
 
         const entityId = getEntityId(this.state.accountAddress)
-        let subscriptionLink = `vocdoni://vocdoni.app/organization?resolverAddress=${process.env.ENTITY_RESOLVER_ADDRESS}&entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
+        let subscriptionLink = `vocdoni://vocdoni.app/entity?resolverAddress=${process.env.ENTITY_RESOLVER_ADDRESS}&entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
         subscriptionLink += this.state.bootnodes.filter(n => n && n.dvote).map(n => `entryPoints[]=${n.dvote}`).join("&")
 
         return <>
