@@ -14,5 +14,5 @@ module.exports = {
 
     // USER REGISTRY + ACTIONS
     'process.env.REGISTRY_URL_PREFIX': process.env.REGISTRY_URL_PREFIX || "https://registry.vocdoni.net/register.html",
-    'process.env.ACTION_VISIBILITY_API_URL_PREFIX': process.env.ACTION_VISIBILITY_API_URL_PREFIX || "https://registry.vocdoni.net/api/actions/status?action=register",
+    'process.env.ACTION_VISIBILITY_API_URL_PREFIX': process.env.ACTION_VISIBILITY_API_URL_PREFIX || "https://registry.vocdoni.net/api/actions/status",
 }
