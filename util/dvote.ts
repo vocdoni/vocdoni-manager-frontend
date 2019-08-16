@@ -1,7 +1,7 @@
 import EthereumManager from "./ethereum-manager"
 // import { message } from 'antd'
 import axios from "axios"
-import { EntityMetadata, getEntityMetadata, GatewayURI, getEntityResolverInstance, getVotingContractInstance, getEntityId, updateEntity } from "dvote-js"
+import { EntityMetadata, getEntityMetadata, GatewayURI, getEntityResolverContractInstance, getVotingProcessContractInstance, getEntityId, updateEntity } from "dvote-js"
 import { EntityResolverContractMethods, VotingProcessContractMethods } from "dvote-solidity"
 import { Contract, providers } from "ethers"
 
@@ -37,7 +37,7 @@ export async function init() {
     const provider = new providers.JsonRpcProvider(bootnodesState[0].web3)
 
     // RESOLVER CONTRACT
-    entityResolver = getEntityResolverInstance({ provider, signer: EthereumManager.signer }, entityResolverAddress)
+    entityResolver = getEntityResolverContractInstance({ provider, signer: EthereumManager.signer }, entityResolverAddress)
 
     // React on all events (by now)
     entityResolver.on("TextChanged", () => fetchState(accountAddressState))
@@ -45,7 +45,7 @@ export async function init() {
 
     // TODO:
     // PROCESS CONTRACT
-    votingProcess = getVotingContractInstance({ provider, signer: EthereumManager.signer }, votingProcessAdress)
+    votingProcess = getVotingProcessContractInstance({ provider, signer: EthereumManager.signer }, votingProcessAdress)
 
     // Listen selectively
     votingProcess.on(
