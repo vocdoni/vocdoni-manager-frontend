@@ -17,7 +17,7 @@ let entityResolver: Contract & EntityResolverContractMethods = null
 let votingProcess: Contract & VotingProcessContractMethods = null
 
 // STATE DATA
-let bootnodesState: { dvote: string, web3: string, pubKey?: string }[]
+let bootnodesState: { dvote: string, census: string, web3: string, pubKey?: string }[]
 let accountAddressState: string
 let entityState: EntityMetadata
 let votingProcessesState: any[]
@@ -99,7 +99,7 @@ export async function fetchState(entityAddress: string): Promise<void> {
 
     for (let node of bootnodesState) {
         try {
-            const gw = new GatewayURI(node.dvote, node.web3)
+            const gw = new GatewayURI(node.dvote, node.census, node.web3)
             const meta = await getEntityMetadata(entityAddress, entityResolverAddress, gw)
             entityState = meta
             entityLoading = false
@@ -141,7 +141,7 @@ export async function updateEntityValues(metadata: EntityMetadata): Promise<void
 
     for (let node of bootnodesState) {
         try {
-            const gwUri = new GatewayURI(node.dvote, node.web3)
+            const gwUri = new GatewayURI(node.dvote, node.census, node.web3)
             await updateEntity(accountAddressState, entityResolverAddress, metadata, EthereumManager.signer, gwUri, node.pubKey)
             return fetchState(accountAddressState)
         }
