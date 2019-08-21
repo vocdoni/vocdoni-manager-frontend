@@ -1,11 +1,14 @@
 import { Component } from "react"
 import { getState, updateEntityValues } from "../util/dvote"
 import { Row, Col, Divider, Skeleton, message, Layout, Button, Input, Spin, Icon, Select } from "antd"
-import { EntityMetadata, EntityMetadataTemplate, getEntityId } from "dvote-js"
+import { EntityMetadata, API, Models } from "dvote-js"
 import { by639_1 } from 'iso-language-codes'
 import { headerBackgroundColor } from "../lib/constants"
 const { Header } = Layout
 const { Option } = Select
+
+const { EntityMetadataTemplate } = Models.Entity
+const { getEntityId } = API.Entity
 
 const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {
     if (!prev.includes(cur)) prev.push(cur)

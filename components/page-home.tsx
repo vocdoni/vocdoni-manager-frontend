@@ -1,11 +1,15 @@
 import { Component } from "react"
 import { headerBackgroundColor } from "../lib/constants"
-import { getState, BootNode } from "../util/dvote"
 import { Layout, Row, Col } from 'antd'
 const { Header } = Layout
-import { EntityMetadata, getEntityId } from "dvote-js"
+import { getState } from "../util/dvote"
+import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import QRCode from "qrcode.react"
 import { by639_1 } from 'iso-language-codes'
+
+const { getEntityId } = API.Entity
+const ENTITY_RESOLVER_ADDRESS = process.env.ENTITY_RESOLVER_ADDRESS
+const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 interface Props {
     refresh?: () => void
@@ -13,7 +17,7 @@ interface Props {
 interface State {
     accountAddress: string,
     entityMetadata: EntityMetadata,
-    bootnodes: BootNode[]
+    bootnodes: GatewayBootNodes
 }
 
 export default class PageHome extends Component<Props, State> {
@@ -21,7 +25,7 @@ export default class PageHome extends Component<Props, State> {
     state = {
         accountAddress: "",
         entityMetadata: null,
-        bootnodes: []
+        bootnodes: {} as GatewayBootNodes
     }
 
     refreshInterval: any
@@ -70,8 +74,8 @@ export default class PageHome extends Component<Props, State> {
         if (!entity) return this.renderNoEntity()
 
         const entityId = getEntityId(this.state.accountAddress)
-        let subscriptionLink = `vocdoni://vocdoni.app/entity?resolverAddress=${process.env.ENTITY_RESOLVER_ADDRESS}&entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
-        subscriptionLink += this.state.bootnodes.filter(n => n && n.dvote).map(n => `entryPoints[]=${n.dvote}`).join("&")
+        let subscriptionLink = `vocdoni://vocdoni.app/entity?resolverAddress=${ENTITY_RESOLVER_ADDRESS}&entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
+        subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].dvote.map(n => `entryPoints[]=${n.uri}`).join("&")
 
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>

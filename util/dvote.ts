@@ -1,6 +1,5 @@
 import EthereumManager from "./ethereum-manager"
 // import { message } from 'antd'
-import axios from "axios"
 import { API, Wrappers, Network, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import { EntityResolverContractMethods, VotingProcessContractMethods } from "dvote-solidity"
 import { Contract, providers } from "ethers"
@@ -99,7 +98,7 @@ export async function fetchState(entityAddress: string): Promise<void> {
             const w3Idx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].web3.length)
             const gwInfo = new GatewayInfo(gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].uri,
                 gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].apis,
-                gatewaysState[ETH_NETWORK_ID].dvote[w3Idx].uri,
+                gatewaysState[ETH_NETWORK_ID].web3[w3Idx].uri,
                 gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].pubKey)
 
             const meta = await getEntityMetadata(entityAddress, entityResolverAddress, gwInfo)
@@ -148,7 +147,7 @@ export async function updateEntityValues(metadata: EntityMetadata): Promise<void
             const w3Idx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].web3.length)
             const gwInfo = new GatewayInfo(gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].uri,
                 gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].apis,
-                gatewaysState[ETH_NETWORK_ID].dvote[w3Idx].uri,
+                gatewaysState[ETH_NETWORK_ID].web3[w3Idx].uri,
                 gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].pubKey)
 
             await updateEntity(accountAddressState, entityResolverAddress, metadata, EthereumManager.signer, gwInfo)
