@@ -100,11 +100,8 @@ export default class PageEntityMeta extends Component<Props, State> {
         this.setState({ entityUpdating: true })
 
         const entityMetadata = Object.assign({}, this.state.newEntity, this.state.entityMetadata)
-
-        // Ensure register action has appropriate Entity ID
+        
         const entityId = getEntityId(this.state.accountAddress)
-        entityMetadata.entityId = entityId
-
         const idx = entityMetadata.actions.findIndex(act => act.type == "browser" && act.register)
         if (idx < 0) { // add it
             entityMetadata.actions.push({
@@ -172,7 +169,6 @@ export default class PageEntityMeta extends Component<Props, State> {
         // Ensure register action has appropriate Entity ID
         const newEntity = this.state.newEntity
         const entityId = getEntityId(this.state.accountAddress)
-        newEntity.entityId = entityId
 
         const idx = newEntity.actions.findIndex(act => act.type == "browser" && act.register)
         if (idx < 0) { // add it
