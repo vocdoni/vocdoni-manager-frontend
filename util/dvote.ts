@@ -1,12 +1,14 @@
 import EthereumManager from "./ethereum-manager"
 // import { message } from 'antd'
 import axios from "axios"
-import { EntityMetadata, getEntityMetadata, GatewayURI, getEntityResolverContractInstance, getVotingProcessContractInstance, getEntityId, updateEntity } from "dvote-js"
+import { API, Wrappers, Network, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import { EntityResolverContractMethods, VotingProcessContractMethods } from "dvote-solidity"
 import { Contract, providers } from "ethers"
 
-export type BootNode = { dvote: string, web3: string }
-type BootNodesResponse = ({ [k: string]: BootNode })[]
+const { getEntityMetadata, updateEntity, getEntityResolverContractInstance } = API.Entity
+const { getVotingProcessContractInstance } = API.Vote
+const { GatewayInfo } = Wrappers
+const { fetchFromBootNode } = Network.Gateway
 
 const entityResolverAddress = process.env.ENTITY_RESOLVER_ADDRESS
 const votingProcessAdress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
@@ -17,7 +19,7 @@ let entityResolver: Contract & EntityResolverContractMethods = null
 let votingProcess: Contract & VotingProcessContractMethods = null
 
 // STATE DATA
-let bootnodesState: { dvote: string, census: string, web3: string, pubKey?: string }[]
+let gatewaysState: GatewayBootNodes
 let accountAddressState: string
 let entityState: EntityMetadata
 let votingProcessesState: any[]
@@ -34,7 +36,7 @@ export async function init() {
 
     // CHOOSE
     // const provider = EthereumManager.provider
-    const provider = new providers.JsonRpcProvider(bootnodesState[0].web3)
+    const provider = new providers.JsonRpcProvider(gatewaysState[ETH_NETWORK_ID].web3[0].uri)
 
     // RESOLVER CONTRACT
     entityResolver = getEntityResolverContractInstance({ provider, signer: EthereumManager.signer }, entityResolverAddress)
@@ -80,27 +82,27 @@ export function disconnect() {
     }
 }
 
-export function getBootnodes(): Promise<BootNodesResponse> {
-    return axios.get<BootNodesResponse>(BOOTNODES_URL).then(res => res.data)
-}
-
 export async function fetchBootNodes(): Promise<void> {
-    const bootNodesMap = await getBootnodes()
-    if (!Array.isArray(bootNodesMap[ETH_NETWORK_ID])) throw new Error("Invalid bootstrap nodes")
-    bootnodesState = bootNodesMap[ETH_NETWORK_ID]
+    gatewaysState = await fetchFromBootNode(BOOTNODES_URL)
 }
 
 export async function fetchState(entityAddress: string): Promise<void> {
     entityLoading = true
 
-    if (!bootnodesState) {
+    if (!gatewaysState) {
         await fetchBootNodes()
     }
 
-    for (let node of bootnodesState) {
+    for (let i = 0; i < gatewaysState[ETH_NETWORK_ID].dvote.length; i++) {
         try {
-            const gw = new GatewayURI(node.dvote, node.census, node.web3)
-            const meta = await getEntityMetadata(entityAddress, entityResolverAddress, gw)
+            const dvIdx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].dvote.length)
+            const w3Idx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].web3.length)
+            const gwInfo = new GatewayInfo(gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].uri,
+                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].apis,
+                gatewaysState[ETH_NETWORK_ID].dvote[w3Idx].uri,
+                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].pubKey)
+
+            const meta = await getEntityMetadata(entityAddress, entityResolverAddress, gwInfo)
             entityState = meta
             entityLoading = false
             return
@@ -115,6 +117,7 @@ export async function fetchState(entityAddress: string): Promise<void> {
             continue
         }
     }
+
     entityLoading = false
     throw new Error("Unable to fetch from the network")
 }
@@ -127,7 +130,7 @@ export function getState() {
         entityMetadata: entityState,
         votingProcesses: votingProcessesState,
         news: newsState,
-        bootnodes: bootnodesState,
+        bootnodes: gatewaysState,
         entityLoading
     }
 }
@@ -135,14 +138,20 @@ export function getState() {
 // UPDATE OPERATIONS
 
 export async function updateEntityValues(metadata: EntityMetadata): Promise<void> {
-    if (!bootnodesState) {
+    if (!gatewaysState) {
         await fetchBootNodes()
     }
 
-    for (let node of bootnodesState) {
+    for (let i = 0; i < gatewaysState[ETH_NETWORK_ID].dvote.length; i++) {
         try {
-            const gwUri = new GatewayURI(node.dvote, node.census, node.web3)
-            await updateEntity(accountAddressState, entityResolverAddress, metadata, EthereumManager.signer, gwUri, node.pubKey)
+            const dvIdx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].dvote.length)
+            const w3Idx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].web3.length)
+            const gwInfo = new GatewayInfo(gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].uri,
+                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].apis,
+                gatewaysState[ETH_NETWORK_ID].dvote[w3Idx].uri,
+                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].pubKey)
+
+            await updateEntity(accountAddressState, entityResolverAddress, metadata, EthereumManager.signer, gwInfo)
             return fetchState(accountAddressState)
         }
         catch (err) {
@@ -150,5 +159,6 @@ export async function updateEntityValues(metadata: EntityMetadata): Promise<void
             continue
         }
     }
+
     throw new Error("Unable to fetch from the network")
 }
