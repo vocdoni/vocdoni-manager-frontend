@@ -8,7 +8,6 @@ import QRCode from "qrcode.react"
 import { by639_1 } from 'iso-language-codes'
 
 const { getEntityId } = API.Entity
-const ENTITY_RESOLVER_ADDRESS = process.env.ENTITY_RESOLVER_ADDRESS
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 interface Props {
@@ -74,7 +73,7 @@ export default class PageHome extends Component<Props, State> {
         if (!entity) return this.renderNoEntity()
 
         const entityId = getEntityId(this.state.accountAddress)
-        let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
+        let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&`
         subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
 
         return <>
