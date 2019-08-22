@@ -74,8 +74,8 @@ export default class PageHome extends Component<Props, State> {
         if (!entity) return this.renderNoEntity()
 
         const entityId = getEntityId(this.state.accountAddress)
-        let subscriptionLink = `vocdoni://vocdoni.app/entity?resolverAddress=${ENTITY_RESOLVER_ADDRESS}&entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
-        subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].dvote.map(n => `entryPoints[]=${n.uri}`).join("&")
+        let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}&`
+        subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
 
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
@@ -92,7 +92,7 @@ export default class PageHome extends Component<Props, State> {
                             <p>Description</p>
                             <ul>
                                 {
-                                    entity.languages.map(lang => <li>
+                                    entity.languages.map(lang => <li key={lang}>
                                         {lang}: {entity.description[lang]}
                                     </li>)
                                 }

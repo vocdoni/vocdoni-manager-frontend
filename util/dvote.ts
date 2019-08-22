@@ -3,15 +3,13 @@ import EthereumManager from "./ethereum-manager"
 import { API, Wrappers, Network, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import { EntityResolverContractMethods, VotingProcessContractMethods } from "dvote-solidity"
 import { Contract, providers } from "ethers"
+import { message } from "antd"
 
-const { getEntityMetadata, updateEntity, getEntityResolverContractInstance } = API.Entity
-const { getVotingProcessContractInstance } = API.Vote
+const { getEntityMetadata, updateEntity } = API.Entity
+// const {  } = API.Vote
 const { GatewayInfo } = Wrappers
-const { fetchFromBootNode } = Network.Gateway
+const { Gateway: { fetchDefaultBootNode }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
 
-const entityResolverAddress = process.env.ENTITY_RESOLVER_ADDRESS
-const votingProcessAdress = process.env.VOTING_PROCESS_CONTRACT_ADDRESS
-const BOOTNODES_URL = process.env.BOOTNODES_URL
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 let entityResolver: Contract & EntityResolverContractMethods = null
@@ -38,7 +36,7 @@ export async function init() {
     const provider = new providers.JsonRpcProvider(gatewaysState[ETH_NETWORK_ID].web3[0].uri)
 
     // RESOLVER CONTRACT
-    entityResolver = getEntityResolverContractInstance({ provider, signer: EthereumManager.signer }, entityResolverAddress)
+    entityResolver = await getEntityResolverInstance({ provider, signer: EthereumManager.signer })
 
     // React on all events (by now)
     entityResolver.on("TextChanged", () => fetchState(accountAddressState))
@@ -46,7 +44,7 @@ export async function init() {
 
     // TODO:
     // PROCESS CONTRACT
-    votingProcess = getVotingProcessContractInstance({ provider, signer: EthereumManager.signer }, votingProcessAdress)
+    votingProcess = await getVotingProcessInstance({ provider, signer: EthereumManager.signer })
 
     // Listen selectively
     votingProcess.on(
@@ -60,7 +58,9 @@ export async function init() {
     // votingProcess.on("RelayDisabled", () => fetchState(accountAddressState))
     // votingProcess.on("PrivateKeyRevealed", () => fetchState(accountAddressState))
 
-    return fetchState(accountAddressState)
+    return fetchState(accountAddressState).catch(err => {
+        message.error("Unable to connect to a Gateway")
+    })
 }
 
 export function disconnect() {
@@ -82,7 +82,7 @@ export function disconnect() {
 }
 
 export async function fetchBootNodes(): Promise<void> {
-    gatewaysState = await fetchFromBootNode(BOOTNODES_URL)
+    gatewaysState = await fetchDefaultBootNode()
 }
 
 export async function fetchState(entityAddress: string): Promise<void> {
@@ -94,14 +94,18 @@ export async function fetchState(entityAddress: string): Promise<void> {
 
     for (let i = 0; i < gatewaysState[ETH_NETWORK_ID].dvote.length; i++) {
         try {
-            const dvIdx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].dvote.length)
-            const w3Idx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].web3.length)
-            const gwInfo = new GatewayInfo(gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].uri,
-                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].apis,
-                gatewaysState[ETH_NETWORK_ID].web3[w3Idx].uri,
-                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].pubKey)
+            const dvoteLen = gatewaysState && gatewaysState[ETH_NETWORK_ID] && gatewaysState[ETH_NETWORK_ID].dvote
+                && gatewaysState[ETH_NETWORK_ID].dvote.length || 0
+            if (!dvoteLen) throw new Error("Could not connect to the Gateway")
+            const w3Len = gatewaysState && gatewaysState[ETH_NETWORK_ID] && gatewaysState[ETH_NETWORK_ID].web3
+                && gatewaysState[ETH_NETWORK_ID].web3.length || 0
+            if (!w3Len) throw new Error("Could not connect to the Gateway")
 
-            const meta = await getEntityMetadata(entityAddress, entityResolverAddress, gwInfo)
+            const dvGw = gatewaysState[ETH_NETWORK_ID].dvote[Math.floor(Math.random() * dvoteLen)]
+            const w3Gw = gatewaysState[ETH_NETWORK_ID].web3[Math.floor(Math.random() * w3Len)]
+            const gwInfo = new GatewayInfo(dvGw.uri, dvGw.apis, w3Gw.uri, dvGw.pubKey)
+
+            const meta = await getEntityMetadata(entityAddress, gwInfo)
             entityState = meta
             entityLoading = false
             return
@@ -143,14 +147,18 @@ export async function updateEntityValues(metadata: EntityMetadata): Promise<void
 
     for (let i = 0; i < gatewaysState[ETH_NETWORK_ID].dvote.length; i++) {
         try {
-            const dvIdx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].dvote.length)
-            const w3Idx = Math.floor(Math.random() * gatewaysState[ETH_NETWORK_ID].web3.length)
-            const gwInfo = new GatewayInfo(gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].uri,
-                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].apis,
-                gatewaysState[ETH_NETWORK_ID].web3[w3Idx].uri,
-                gatewaysState[ETH_NETWORK_ID].dvote[dvIdx].pubKey)
+            const dvoteLen = gatewaysState && gatewaysState[ETH_NETWORK_ID] && gatewaysState[ETH_NETWORK_ID].dvote
+                && gatewaysState[ETH_NETWORK_ID].dvote.length || 0
+            if (!dvoteLen) throw new Error("Could not connect to the Gateway")
+            const w3Len = gatewaysState && gatewaysState[ETH_NETWORK_ID] && gatewaysState[ETH_NETWORK_ID].web3
+                && gatewaysState[ETH_NETWORK_ID].web3.length || 0
+            if (!w3Len) throw new Error("Could not connect to the Gateway")
 
-            await updateEntity(accountAddressState, entityResolverAddress, metadata, EthereumManager.signer, gwInfo)
+            const dvGw = gatewaysState[ETH_NETWORK_ID].dvote[Math.floor(Math.random() * dvoteLen)]
+            const w3Gw = gatewaysState[ETH_NETWORK_ID].web3[Math.floor(Math.random() * w3Len)]
+            const gwInfo = new GatewayInfo(dvGw.uri, dvGw.apis, w3Gw.uri, dvGw.pubKey)
+
+            await updateEntity(accountAddressState, metadata, EthereumManager.signer, gwInfo)
             return fetchState(accountAddressState)
         }
         catch (err) {
