@@ -76,6 +76,10 @@ export default class PageHome extends Component<Props, State> {
         let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&`
         subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
 
+        let supportedLanguages = (entity.languages || [] as any)
+        console.log(supportedLanguages)
+        // 
+
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
                 <h2>{entity.name[entity.languages[0]]}</h2>
@@ -87,7 +91,16 @@ export default class PageHome extends Component<Props, State> {
                         <Col xs={24} md={15}>
                             <h2>Entity overview</h2>
                             <p>Entity ID: {entityId}</p>
-                            <p>Supported languages: {(entity.languages || [] as any).map(lang => by639_1[lang].name).join(", ")}</p>
+
+                            <p>Supported languages: {(entity.languages || [] as any).map(
+                                (lang) => {
+
+                                    let code = by639_1[lang]
+                                    return code ? code.name : lang
+                                }
+                            ).join(", ")}</p>
+
+
                             <p>Description</p>
                             <ul>
                                 {
