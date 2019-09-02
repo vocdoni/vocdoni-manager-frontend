@@ -1,98 +1,90 @@
 import { Component } from "react"
-// import { Empty, Menu, Icon } from 'antd'
-// import { headerBackgroundColor } from "../lib/constants"
-// import NewProcess from "./fragment-create-process"
+import { List, Avatar, Empty, Button, Input } from 'antd'
+import { headerBackgroundColor } from "../lib/constants"
 
-// import { Layout } from 'antd'
-// const { Header, Sider, Content } = Layout
-
-// const NEW_PROCESS_KEY = "NEW_PROCESS_KEY"
+import { Layout } from 'antd'
+const { Header } = Layout
 
 interface Props {
     entityDetails: object,
-    currentAddress: string,
-    processesMetadata: any
+    currentAddress: string
 }
+
 interface State {
-    selectedProcess: string
+    processess: object[],
+    selectedProcess: number
 }
+
+
 
 export default class PageVotes extends Component<Props, State> {
-    // state = {
-    //     selectedProcess: ""
-    // }
+    state = {
+        processess: [],
+        selectedProcess: -1
+    }
 
-    // renderMenu() {
-    //     return Object.keys(this.props.processesMetadata || []).map((processId) => {
-    //         let processMetadata = this.props.processesMetadata[processId]
-    //         return <Menu.Item key={processMetadata.id}>{processMetadata.name}</Menu.Item>
-    //     });
-    // }
+    renderProcessessList() {
+        if (!this.state.processess || !this.state.processess.length)
+            return <Empty description="No processess" style={{ padding: 30 }} />
 
-    // onMenuClick = (e) => {
-    //     this.setState({ selectedProcess: e.key })
-    // }
+        return <div style={{ padding: 30 }}>
+            <List
+                itemLayout="horizontal"
+                dataSource={this.state.processess}
+                renderItem={item => (
+                    <List.Item>
+                        <List.Item.Meta
+                            avatar={<Avatar>{item.name[0] + item.lastName[0]}</Avatar>}
+                            title={`${item.name} ${item.lastName}`}
+                            description={<span>
+                                NIF: {item.nif}<br />
+                                Public key: <code>{item.publicKey}</code>
+                            </span>}
+                        />
+                    </List.Item>
+                )}
+            />
+        </div>
+    }
 
-    // renderNoExistingProcessMessage = () => {
-    //     return <Empty description="No exsisting votes exist for this address" style={{ padding: 30 }} />
-    // }
+    onProcessClick() {
 
-    // renderEmptyPlaceholder = () => {
-    //     return <Empty description="Select a process to display or create a new one" style={{ padding: 30 }} />
-    // }
+    }
 
-    // renderBody = () => {
-    //     if (this.state.selectedProcess == NEW_PROCESS_KEY)
-    //         return <NewProcess dvote={this.props.dvote} />
-
-    //     if (!Object.keys(this.props.processesMetadata || []).length)
-    //         return this.renderNoExistingProcessMessage()
-
-    //     if (!this.state.selectedProcess)
-    //         return this.renderEmptyPlaceholder()
+    renderCreateProcess() {
+        return <List>
+            <label>Avatar (URL)</label>
+            <Input
+                placeholder="Link to an avatar icon"
+                value={"hello"}
+            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+            />
+        </List>
+    }
 
 
-    //     let metadata = this.props.processesMetadata[this.state.selectedProcess]
 
-    //     if (!metadata)
-    //         return this.renderEmptyPlaceholder()
+    render() {
+        return <>
+            <Header style={{ backgroundColor: headerBackgroundColor }}>
+                { /* TITLE? */}
+            </Header>
 
-    //     return <div>
-    //         <h2>{metadata.name}</h2>
-    //         <code style={{ color: "#ccc" }}>{metadata.id}</code>
-    //         <h4 style={{ marginTop: 20 }}>{metadata.question}</h4>
-    //         <ul>
-    //             {metadata.votingOptions.map(option => <li key={option}>{option}</li>)}
-    //         </ul>
-    //     </div>
-    // }
 
-    // render() {
-    //     return <>
-    //         <Header style={{ backgroundColor: headerBackgroundColor }}>
-    //             { /* TITLE? */}
-    //         </Header>
 
-    //         <Layout style={{ background: '#fff' }}>
-    //             <Sider width={200} style={{backgroundColor: "white"}}>
-    //                 <Menu
-    //                     mode="inline"
-    //                     defaultSelectedKeys={['']}
-    //                     defaultOpenKeys={['Processes']}
-    //                     onClick={this.onMenuClick}
-    //                     style={{ maxHeight: "80vh", overflowY: "scroll" }}
-    //                 >
-    //                     <Menu.Item key={NEW_PROCESS_KEY} >
-    //                         <span><Icon type="plus" />New process</span>
-    //                     </Menu.Item>
-
-    //                     {this.renderMenu()}
-    //                 </Menu>
-    //             </Sider>
-    //             <Content style={{ margin: 30, minHeight: 280, minWidth: 300 }}>
-    //                 {this.renderBody()}
-    //             </Content>
-    //         </Layout>
-    //     </>
-    // }
+            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                <div style={{ padding: 24 }}>
+                    <Button
+                        type="primary"
+                        icon="plus"
+                        size={'default'}
+                        onClick={this.onProcessClick}>
+                        New process
+                        </Button>
+                </div>
+                {this.renderCreateProcess}
+                {this.renderProcessessList()}
+            </div>
+        </>
+    }
 }

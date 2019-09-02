@@ -7,7 +7,7 @@ import { EntityMetadata } from "dvote-js"
 import PageHome from "../components/page-home"
 import PageEntityMeta from "../components/page-entity-meta"
 // import PagePosts from "../components/page-posts"
-// import PageVotes from "../components/page-votes"
+import PageVotes from "../components/page-votes"
 // import PageCensus from "../components/page-census"
 // import PageRelays from "../components/page-relays"
 
@@ -94,7 +94,11 @@ export default class Main extends Component<{}, State> {
                 />
             case Page.EntityMeta:
                 return <PageEntityMeta
-                    refresh={() => { this.refreshState() }}
+                    refresh={() => { this.refreshState() }} />
+            case Page.VotingProcesses:
+                return <PageVotes
+                    entityDetails={this.state.entityMetadata}
+                    currentAddress={this.state.accountAddress}
                 />
             //     case Page.OfficialDiary:
             //         return <PagePosts
@@ -105,7 +109,6 @@ export default class Main extends Component<{}, State> {
             //         return <PageVotes
             //             entityMetadata={this.state.entityMetadata}
             //             currentAddress={this.state.accountAddress}
-            //             processesMetadata={this.state.processesMetadata}
             //         />
             //     case Page.CensusService:
             //         return <PageCensus
