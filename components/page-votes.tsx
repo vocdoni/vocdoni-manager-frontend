@@ -1,6 +1,8 @@
 import { Component } from "react"
-import { List, Avatar, Empty, Button, Input } from 'antd'
+import { Col, List, Avatar, Empty, Button, Input } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
+import { ProcessMetadata } from "dvote-js"
+
 
 import { Layout } from 'antd'
 const { Header } = Layout
@@ -13,6 +15,7 @@ interface Props {
 interface State {
     processess: object[],
     selectedProcess: number
+    newProcess: ProcessMetadata
 }
 
 
@@ -20,7 +23,8 @@ interface State {
 export default class PageVotes extends Component<Props, State> {
     state = {
         processess: [],
-        selectedProcess: -1
+        selectedProcess: -1,
+        newProcess: this.makeEmptyProcess()
     }
 
     renderProcessessList() {
@@ -51,15 +55,65 @@ export default class PageVotes extends Component<Props, State> {
 
     }
 
+    setData(process, fields, value) {
+        if (process[fields[0]] == null)
+            process[fields[0]] = {}
+    }
+
+    makeEmptyProcess() {
+        let process: ProcessMetadata = {
+            version: "1.0",
+            type: "snark-vote",
+            startBlock: 0,
+            numberOfBlocks: 0,
+            census: {
+                censusMerkleRoot: "",
+                censusMerkleTree: ""
+            },
+            details: {
+                entityId: "",
+                encryptionPublicKey: "",
+                title: {
+                    default: ""
+                },
+                description: {
+                    default: ""
+                },
+                headerImage: "",
+                questions: []
+            }
+        }
+        return process
+    }
+
     renderCreateProcess() {
-        return <List>
-            <label>Avatar (URL)</label>
+        return <Col xs={24} md={12}>
             <Input
-                placeholder="Link to an avatar icon"
-                value={"hello"}
+                placeholder="Name"
+                value={this.state.newProcess.details.title['default']}
             //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
             />
-        </List>
+
+            <Input
+                placeholder="Description"
+                value={this.state.newProcess.details.description['default']}
+            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+            />
+
+            <Input
+                placeholder="Starting block"
+                value={this.state.newProcess.startBlock}
+            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+            />
+
+
+            <Input
+                placeholder="Number of blocks"
+                value={this.state.newProcess.numberOfBlocks}
+            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+            />
+
+        </Col>
     }
 
 
@@ -82,7 +136,7 @@ export default class PageVotes extends Component<Props, State> {
                         New process
                         </Button>
                 </div>
-                {this.renderCreateProcess}
+                {this.renderCreateProcess()}
                 {this.renderProcessessList()}
             </div>
         </>
