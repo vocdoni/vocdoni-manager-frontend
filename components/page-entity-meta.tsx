@@ -100,7 +100,7 @@ export default class PageEntityMeta extends Component<Props, State> {
         this.setState({ entityUpdating: true })
 
         const entityMetadata = Object.assign({}, this.state.newEntity, this.state.entityMetadata)
-        
+
         const entityId = getEntityId(this.state.accountAddress)
         const idx = entityMetadata.actions.findIndex(act => act.type == "browser" && act.register)
         if (idx < 0) { // add it
@@ -198,37 +198,41 @@ export default class PageEntityMeta extends Component<Props, State> {
         })
     }
 
+    renderSupportedLanaguages(entity) {
+        return <Row gutter={16}>
+            <Col xs={24} md={12}>
+                <label>Supported languages</label>
+                <Select
+                    mode="multiple"
+                    style={{ width: '100%' }}
+                    placeholder="Select the supported languages"
+                    value={(entity.languages) || []}
+                    onChange={langs => this.onExistingLanguagesChange(langs)}
+                >
+                    {languageCodes.map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
+                </Select>
+            </Col>
+            <Col xs={24} md={12}>
+                <label>Default language</label>
+                <Select
+                    style={{ width: '100%' }}
+                    placeholder="Select the default language"
+                    value={entity.languages[0] || ""}
+                    onChange={lang => this.onExistingDefaultLanguageChange(lang)}
+                >
+                    {((entity.languages) || [] as any[]).filter(lang => by639_1[lang]).map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
+                </Select>
+            </Col>
+        </Row>
+    }
+
     renderEntityEdit() {
         const { entityMetadata: entity } = this.state
 
         return <div style={{ padding: 30 }}>
             <h2>General</h2>
 
-            <Row gutter={16}>
-                <Col xs={24} md={12}>
-                    <label>Supported languages</label>
-                    <Select
-                        mode="multiple"
-                        style={{ width: '100%' }}
-                        placeholder="Select the supported languages"
-                        value={(entity.languages) || []}
-                        onChange={langs => this.onExistingLanguagesChange(langs)}
-                    >
-                        {languageCodes.map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
-                    </Select>
-                </Col>
-                <Col xs={24} md={12}>
-                    <label>Default language</label>
-                    <Select
-                        style={{ width: '100%' }}
-                        placeholder="Select the default language"
-                        value={entity.languages[0] || ""}
-                        onChange={lang => this.onExistingDefaultLanguageChange(lang)}
-                    >
-                        {((entity.languages) || [] as any[]).filter(lang => by639_1[lang]).map((lang, i) => <Option key={String(i)} value={lang}>{by639_1[lang].name}</Option>)}
-                    </Select>
-                </Col>
-            </Row>
+            {/*this.renderSupportedLanaguages(entity)*/}
             <br />
 
             <h2>Name</h2>
