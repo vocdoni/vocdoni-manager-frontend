@@ -8,7 +8,7 @@ import { message } from "antd"
 const { getEntityMetadata, updateEntity } = API.Entity
 // const {  } = API.Vote
 const { GatewayInfo } = Wrappers
-const { Gateway: { fetchDefaultBootNode }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
+const { Bootnodes: { fetchDefaultBootNode }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
