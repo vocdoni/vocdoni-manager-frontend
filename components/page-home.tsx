@@ -77,7 +77,7 @@ export default class PageHome extends Component<Props, State> {
         subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
 
         let supportedLanguages = (entity.languages || [] as any)
-        console.log(supportedLanguages)
+        // console.log(supportedLanguages)
         // 
 
         return <>
