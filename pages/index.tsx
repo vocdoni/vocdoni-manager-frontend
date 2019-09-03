@@ -57,6 +57,7 @@ export default class Main extends Component<{}, State> {
                     await init();
                 }
                 catch (err) {
+                    console.error(err)
                     return message.error("Unable to initialize the decentralized connection")
                 }
             }

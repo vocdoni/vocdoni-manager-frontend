@@ -86,12 +86,51 @@ export default class PageVotes extends Component<Props, State> {
         return process
     }
 
+    /*onNewFieldChange(key: string, subkey: string, subsubkey: string, value: string) {
+        console.log(value)
+        if (subkey === null) {
+            const newProcess = Object.assign({}, this.state.newProcess, { [key]: value })
+            this.setState({ newProcess: newProcess })
+        }
+
+        else {
+            const newProcess = Object.assign({}, this.state.newProcess)
+            if (subkey != null) {
+                if (typeof newProcess[key] != "object") newProcess[key] = {}
+                newProcess[key][subkey] = value
+
+            }
+            if (subsubkey != null) {
+                if (typeof newProcess[key][subkey] != "object") newProcess[key][subkey] = {}
+                newProcess[key][subkey][subsubkey] = value
+            }
+
+            this.setState({ newProcess })
+        }
+    }
+
+}*/
+
+    setNestedKey = (obj, path, value) => {
+        if (path.length === 1) {
+            obj[path] = value
+            return
+        }
+        return this.setNestedKey(obj[path[0]], path.slice(1), value)
+    }
+
+    setNewProcessField(path, value) {
+        let process = this.setNestedKey(this.state.newProcess, path, value)
+        this.setState({ newProcess: process })
+    }
+
+
     renderCreateProcess() {
         return <Col xs={24} md={12}>
             <Input
                 placeholder="Name"
-                value={this.state.newProcess.details.title['default']}
-            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+                value={this.state.newProcess.details.title.default}
+                onChange={ev => this.setNewProcessField(['title', 'default'], ev.target.value)}
             />
 
             <Input
