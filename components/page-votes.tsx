@@ -64,8 +64,8 @@ export default class PageVotes extends Component<Props, State> {
         let process: ProcessMetadata = {
             version: "1.0",
             type: "snark-vote",
-            startBlock: 0,
-            numberOfBlocks: 0,
+            startBlock: null,
+            numberOfBlocks: null,
             census: {
                 censusMerkleRoot: "",
                 censusMerkleTree: ""
@@ -86,31 +86,6 @@ export default class PageVotes extends Component<Props, State> {
         return process
     }
 
-    /*onNewFieldChange(key: string, subkey: string, subsubkey: string, value: string) {
-        console.log(value)
-        if (subkey === null) {
-            const newProcess = Object.assign({}, this.state.newProcess, { [key]: value })
-            this.setState({ newProcess: newProcess })
-        }
-
-        else {
-            const newProcess = Object.assign({}, this.state.newProcess)
-            if (subkey != null) {
-                if (typeof newProcess[key] != "object") newProcess[key] = {}
-                newProcess[key][subkey] = value
-
-            }
-            if (subsubkey != null) {
-                if (typeof newProcess[key][subkey] != "object") newProcess[key][subkey] = {}
-                newProcess[key][subkey][subsubkey] = value
-            }
-
-            this.setState({ newProcess })
-        }
-    }
-
-}*/
-
     setNestedKey = (obj, path, value) => {
         if (path.length === 1) {
             obj[path] = value
@@ -120,36 +95,39 @@ export default class PageVotes extends Component<Props, State> {
     }
 
     setNewProcessField(path, value) {
-        let process = this.setNestedKey(this.state.newProcess, path, value)
+        let process = Object.assign({}, this.state.newProcess)
+        this.setNestedKey(process, path, value)
         this.setState({ newProcess: process })
     }
 
-
     renderCreateProcess() {
+        console.log(this.state.newProcess)
         return <Col xs={24} md={12}>
             <Input
                 placeholder="Name"
                 value={this.state.newProcess.details.title.default}
-                onChange={ev => this.setNewProcessField(['title', 'default'], ev.target.value)}
+                onChange={ev => this.setNewProcessField(['details', 'title', 'default'], ev.target.value)}
             />
 
             <Input
                 placeholder="Description"
                 value={this.state.newProcess.details.description['default']}
-            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+                onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
             />
 
             <Input
                 placeholder="Starting block"
                 value={this.state.newProcess.startBlock}
-            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+                onChange={ev => this.setNewProcessField(["startBlock"], ev.target.value)}
+
             />
 
 
             <Input
                 placeholder="Number of blocks"
                 value={this.state.newProcess.numberOfBlocks}
-            //onChange={ev => this.onNewFieldChange("media", "avatar", ev.target.value)}
+                onChange={ev => this.setNewProcessField(["numberOfBlocks"], ev.target.value)}
+
             />
 
         </Col>
