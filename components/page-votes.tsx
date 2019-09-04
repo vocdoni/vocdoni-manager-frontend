@@ -227,8 +227,10 @@ export default class PageVotes extends Component<Props, State> {
                         type="default"
                         icon="minus"
                         size={'large'}
+                        disabled = {this.state.newProcess.details.questions.length<=1}
                         onClick={() => this.removeQuestion(questionIdx)}>
                     </Button>
+
                 </div>
             </div>
 
@@ -282,6 +284,7 @@ export default class PageVotes extends Component<Props, State> {
                     type="default"
                     icon="minus"
                     size={'default'}
+                    disabled = {this.state.newProcess.details.questions[questionIdx].voteOptions.length<=2}
                     onClick={() => this.removeOption(questionIdx, optionIdx)}>
                 </Button>
             </div>
