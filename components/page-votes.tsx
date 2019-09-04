@@ -59,11 +59,18 @@ export default class PageVotes extends Component<Props, State> {
 
     }
 
-    addQuestionClick = () => {
+    onAddQuestionClick = () => {
         let process = this.cloneNewProcess();
         let newQuestion = this.makeEmptyQuestion()
         process.details.questions.push(newQuestion as any)
-        this.setState({newProcess:process})
+        this.setState({ newProcess: process })
+    }
+
+    onAddVotingOptionClick = (questionIdx) => {
+        let process = this.cloneNewProcess();
+        let newVoteOption = this.makeEmptyVoteOption()
+        process.details.questions[questionIdx].voteOptions.push(newVoteOption)
+        this.setState({ newProcess: process })
     }
 
     setData(process, fields, value) {
@@ -170,22 +177,51 @@ export default class PageVotes extends Component<Props, State> {
                 type="default"
                 icon="plus"
                 size={'default'}
-                onClick={this.addQuestionClick}>
+                onClick={this.onAddQuestionClick}>
                 Add question
                         </Button>
-
-
-
         </Col>
     }
 
-    renderCreateQuestion(idx) {
-        return <div>
+    renderCreateQuestion(questionIdx) {
+
+        let options = this.state.newProcess.details.questions[questionIdx].voteOptions.map((option, optionIdx) => this.renderCreateOption(questionIdx, optionIdx))
+
+        return <div key={'question' + questionIdx}>
 
             <Input
+
                 placeholder="Question"
-                value={this.state.newProcess.details.questions[idx].question.default}
-                onChange={ev => this.setNewProcessField(['details', 'questions', idx, 'default'], ev.target.value)}
+                value={this.state.newProcess.details.questions[questionIdx].question.default}
+                onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'question', 'default'], ev.target.value)}
+            />
+
+            <Input
+                placeholder="Description"
+                value={this.state.newProcess.details.questions[questionIdx].description.default}
+                onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], ev.target.value)}
+            />
+
+            <Button
+                type="default"
+                icon="plus"
+                size={'default'}
+                onClick={() => this.onAddVotingOptionClick(questionIdx)}>
+                Add option
+            </Button>
+            {options}
+
+        </div>
+    }
+
+    renderCreateOption(questionIdx, optionIndex) {
+
+        return <div key={"option"+optionIndex}>
+
+            <Input
+                placeholder="Option"
+                value={this.state.newProcess.details.questions[questionIdx].voteOptions[optionIndex].title.default}
+                onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'voteOptions', optionIndex, 'title', 'default'], ev.target.value)}
             />
 
         </div>
