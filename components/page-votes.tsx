@@ -78,6 +78,13 @@ export default class PageVotes extends Component<Props, State> {
         this.setState({ newProcess: process })
     }
 
+    onRemoveQuestionClick = (questionIdx) => {
+        let process = this.cloneNewProcess();
+        let newVoteOption = this.makeEmptyVoteOption()
+        process.details.questions.splice(questionIdx, 1)
+        this.setState({ newProcess: process })
+    }
+
     onRemoveVotingOptionClick = (questionIdx, optionIdx) => {
         let process = this.cloneNewProcess();
         let newVoteOption = this.makeEmptyVoteOption()
@@ -184,7 +191,7 @@ export default class PageVotes extends Component<Props, State> {
             />
 
             {questions}
-            <div style={{ display:"flex", justifyContent: "flex-end", paddingTop:24}}>
+            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
                 <Button
                     style={fieldStyle}
                     type="default"
@@ -203,14 +210,31 @@ export default class PageVotes extends Component<Props, State> {
 
         return <div key={'question' + questionIdx} style={{ paddingTop: 24 }}>
 
-            <Input
-                style={fieldStyle}
-                addonBefore={questionIdx.toString()}
-                placeholder="Question"
-                size="large"
-                value={this.state.newProcess.details.questions[questionIdx].question.default}
-                onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'question', 'default'], ev.target.value)}
-            />
+            <div style={{
+                paddingTop: 8,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start"
+            }}>
+                <Input
+                    addonBefore={questionIdx.toString()}
+                    placeholder="Question"
+                    size="large"
+                    value={this.state.newProcess.details.questions[questionIdx].question.default}
+                    onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'question', 'default'], ev.target.value)}
+                />
+
+                <div style={{ paddingLeft: 8 }}>
+
+                    <Button
+                        type="default"
+                        icon="minus"
+                        size={'large'}
+                        onClick={() => this.onRemoveQuestionClick(questionIdx)}>
+                    </Button>
+                </div>
+            </div>
+
 
             <TextArea
                 style={fieldStyle}
@@ -224,7 +248,7 @@ export default class PageVotes extends Component<Props, State> {
                 {options}
             </div>
 
-            <div style={{ display:"flex", justifyContent: "flex-end", paddingTop:8}}>
+            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 8 }}>
                 <Button
                     type="default"
                     icon="plus"
