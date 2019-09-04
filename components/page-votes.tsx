@@ -214,7 +214,7 @@ export default class PageVotes extends Component<Props, State> {
                 justifyContent: "flex-start"
             }}>
                 <Input
-                    addonBefore={questionIdx.toString()}
+                    addonBefore={(questionIdx + 1).toString()}
                     placeholder="Question"
                     size="large"
                     value={this.state.newProcess.details.questions[questionIdx].question.default}
@@ -227,7 +227,7 @@ export default class PageVotes extends Component<Props, State> {
                         type="default"
                         icon="minus"
                         size={'large'}
-                        disabled = {this.state.newProcess.details.questions.length<=1}
+                        disabled={this.state.newProcess.details.questions.length <= 1}
                         onClick={() => this.removeQuestion(questionIdx)}>
                     </Button>
 
@@ -253,8 +253,8 @@ export default class PageVotes extends Component<Props, State> {
                     icon="plus"
                     size={'default'}
                     onClick={() => this.addOption(questionIdx)}>
-                    
-                    </Button>
+
+                </Button>
             </div>
         </div>
     }
@@ -273,7 +273,7 @@ export default class PageVotes extends Component<Props, State> {
             <Input
                 style={{ width: "100%" }}
                 placeholder="Option"
-                addonBefore={optionIdx.toString()}
+                addonBefore={(optionIdx + 1).toString()}
                 value={this.state.newProcess.details.questions[questionIdx].voteOptions[optionIdx].title.default}
                 onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'voteOptions', optionIdx, 'title', 'default'], ev.target.value)}
             />
@@ -284,7 +284,7 @@ export default class PageVotes extends Component<Props, State> {
                     type="default"
                     icon="minus"
                     size={'default'}
-                    disabled = {this.state.newProcess.details.questions[questionIdx].voteOptions.length<=2}
+                    disabled={this.state.newProcess.details.questions[questionIdx].voteOptions.length <= 2}
                     onClick={() => this.removeOption(questionIdx, optionIdx)}>
                 </Button>
             </div>
