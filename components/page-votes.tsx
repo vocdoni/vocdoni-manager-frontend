@@ -4,6 +4,7 @@ import { headerBackgroundColor } from "../lib/constants"
 import { ProcessMetadata, MultiLanguage } from "dvote-js"
 
 import { Layout } from 'antd'
+import TextArea from "antd/lib/input/TextArea";
 const { Header } = Layout
 
 interface Props {
@@ -80,13 +81,8 @@ export default class PageVotes extends Component<Props, State> {
     onRemoveVotingOptionClick = (questionIdx, optionIdx) => {
         let process = this.cloneNewProcess();
         let newVoteOption = this.makeEmptyVoteOption()
-        process.details.questions[questionIdx].voteOptions.splice(optionIdx,1)
+        process.details.questions[questionIdx].voteOptions.splice(optionIdx, 1)
         this.setState({ newProcess: process })
-    }
-
-    setData(process, fields, value) {
-        if (process[fields[0]] == null)
-            process[fields[0]] = {}
     }
 
     makeEmptyProcess() {
@@ -156,7 +152,7 @@ export default class PageVotes extends Component<Props, State> {
     renderCreateProcess() {
 
         let questions = this.state.newProcess.details.questions.map((question, idx) => this.renderCreateQuestion(idx))
-        return <Col xs={24} md={12}>
+        return <div>
             <Input
                 style={fieldStyle}
                 size="large"
@@ -188,16 +184,17 @@ export default class PageVotes extends Component<Props, State> {
             />
 
             {questions}
-
-            <Button
-                style={fieldStyle}
-                type="default"
-                icon="plus"
-                size={'default'}
-                onClick={this.onAddQuestionClick}>
-                Add question
+            <div style={{ display:"flex", justifyContent: "flex-end", paddingTop:24}}>
+                <Button
+                    style={fieldStyle}
+                    type="default"
+                    icon="plus"
+                    size={'default'}
+                    onClick={this.onAddQuestionClick}>
+                    Add question
                         </Button>
-        </Col>
+            </div>
+        </div>
     }
 
     renderCreateQuestion(questionIdx) {
@@ -215,48 +212,59 @@ export default class PageVotes extends Component<Props, State> {
                 onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'question', 'default'], ev.target.value)}
             />
 
-            <Input
+            <TextArea
                 style={fieldStyle}
                 placeholder="Description"
+                autosize={{ minRows: 2, maxRows: 6 }}
                 value={this.state.newProcess.details.questions[questionIdx].description.default}
                 onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], ev.target.value)}
             />
 
-            {options}
+            <div>
+                {options}
+            </div>
 
-            <Button
-                style={fieldStyle}
-                type="default"
-                icon="plus"
-                size={'default'}
-                onClick={() => this.onAddVotingOptionClick(questionIdx)}>
-                Add option
-            </Button>
-
+            <div style={{ display:"flex", justifyContent: "flex-end", paddingTop:8}}>
+                <Button
+                    type="default"
+                    icon="plus"
+                    size={'default'}
+                    onClick={() => this.onAddVotingOptionClick(questionIdx)}>
+                    Add option
+                    </Button>
+            </div>
         </div>
     }
 
     renderCreateOption(questionIdx, optionIdx) {
 
-        return <div key={"option" + optionIdx} >
-
+        return <div
+            key={"option" + optionIdx}
+            style={{
+                paddingTop: 8,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start"
+            }}>
 
             <Input
-                style={fieldStyle}
+                style={{ width: "100%" }}
                 placeholder="Option"
                 addonBefore={optionIdx.toString()}
                 value={this.state.newProcess.details.questions[questionIdx].voteOptions[optionIdx].title.default}
                 onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'voteOptions', optionIdx, 'title', 'default'], ev.target.value)}
             />
 
-            <Button
-                style={fieldStyle}
-                type="default"
-                icon="minus"
-                size={'default'}
-                onClick={() => this.onRemoveVotingOptionClick(questionIdx, optionIdx)}>
-                Add option
-            </Button>
+            <div style={{ paddingLeft: 8 }}>
+
+                <Button
+                    type="default"
+                    icon="minus"
+                    size={'default'}
+                    onClick={() => this.onRemoveVotingOptionClick(questionIdx, optionIdx)}>
+                </Button>
+            </div>
+
 
         </div>
     }
@@ -264,21 +272,11 @@ export default class PageVotes extends Component<Props, State> {
     render() {
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
-                { /* TITLE? */}
+                New process
             </Header>
 
             <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
-                <div style={{ padding: 24 }}>
-                    <Button
-                        type="primary"
-                        icon="plus"
-                        size={'default'}
-                        onClick={this.onProcessClick}>
-                        New process
-                        </Button>
-                </div>
                 {this.renderCreateProcess()}
-                {this.renderProcessessList()}
             </div>
         </>
     }
