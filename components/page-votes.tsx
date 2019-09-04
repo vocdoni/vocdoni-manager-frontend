@@ -63,7 +63,11 @@ export default class PageVotes extends Component<Props, State> {
     addQuestion = () => {
         let process = this.cloneNewProcess();
         let newQuestion = this.makeEmptyQuestion()
+        let option1 = this.makeEmptyVoteOption()
+        let option2 = this.makeEmptyVoteOption()
         process.details.questions.push(newQuestion as any)
+        newQuestion.voteOptions.push(option1)
+        newQuestion.voteOptions.push(option2)
         this.setState({ newProcess: process })
     }
 
@@ -164,9 +168,10 @@ export default class PageVotes extends Component<Props, State> {
                 onChange={ev => this.setNewProcessField(['details', 'title', 'default'], ev.target.value)}
             />
 
-            <Input
+            <TextArea
                 style={fieldStyle}
                 placeholder="Description"
+                autosize={{ minRows: 2, maxRows: 6 }}
                 value={this.state.newProcess.details.description['default']}
                 onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
             />
