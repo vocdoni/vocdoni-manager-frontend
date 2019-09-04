@@ -82,7 +82,7 @@ export function disconnect() {
 }
 
 export async function fetchBootNodes(): Promise<void> {
-    gatewaysState = await fetchDefaultBootNode(ETH_NETWORK_ID as any)
+    gatewaysState = await fetchDefaultBootNode()
 }
 
 export async function fetchState(entityAddress: string): Promise<void> {
