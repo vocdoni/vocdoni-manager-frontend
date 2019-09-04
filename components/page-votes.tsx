@@ -1,8 +1,7 @@
 import { Component } from "react"
 import { Col, List, Avatar, Empty, Button, Input } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
-import { ProcessMetadata } from "dvote-js"
-
+import { ProcessMetadata, MultiLanguage } from "dvote-js"
 
 import { Layout } from 'antd'
 const { Header } = Layout
@@ -18,7 +17,12 @@ interface State {
     newProcess: ProcessMetadata
 }
 
-
+/*interface Question {
+        type: string,
+        question: MultiLanguage<string>,
+        description:MultiLanguage<string>,
+        voteOptions: []
+}*/
 
 export default class PageVotes extends Component<Props, State> {
     state = {
@@ -51,8 +55,15 @@ export default class PageVotes extends Component<Props, State> {
         </div>
     }
 
-    onProcessClick() {
+    onProcessClick = () => {
 
+    }
+
+    addQuestionClick = () => {
+        let process = this.cloneNewProcess();
+        let newQuestion = this.makeEmptyQuestion()
+        process.details.questions.push(newQuestion as any)
+        this.setState({newProcess:process})
     }
 
     setData(process, fields, value) {
@@ -86,6 +97,26 @@ export default class PageVotes extends Component<Props, State> {
         return process
     }
 
+    makeEmptyQuestion() {
+        return {
+            type: "single-choice",
+            question: {
+                default: ""
+            },
+            description: {
+                default: ""
+            },
+            voteOptions: []
+        }
+    }
+
+    makeEmptyVoteOption() {
+        return {
+            title: { default: "" },
+            value: ""
+        };
+    }
+
     setNestedKey = (obj, path, value) => {
         if (path.length === 1) {
             obj[path] = value
@@ -94,14 +125,19 @@ export default class PageVotes extends Component<Props, State> {
         return this.setNestedKey(obj[path[0]], path.slice(1), value)
     }
 
+    cloneNewProcess() {
+        return Object.assign({}, this.state.newProcess)
+    }
+
     setNewProcessField(path, value) {
-        let process = Object.assign({}, this.state.newProcess)
+        let process = this.cloneNewProcess()
         this.setNestedKey(process, path, value)
         this.setState({ newProcess: process })
     }
 
     renderCreateProcess() {
-        console.log(this.state.newProcess)
+
+        let questions = this.state.newProcess.details.questions.map((question, idx) => this.renderCreateQuestion(idx))
         return <Col xs={24} md={12}>
             <Input
                 placeholder="Name"
@@ -119,9 +155,7 @@ export default class PageVotes extends Component<Props, State> {
                 placeholder="Starting block"
                 value={this.state.newProcess.startBlock}
                 onChange={ev => this.setNewProcessField(["startBlock"], ev.target.value)}
-
             />
-
 
             <Input
                 placeholder="Number of blocks"
@@ -130,18 +164,38 @@ export default class PageVotes extends Component<Props, State> {
 
             />
 
+            {questions}
+
+            <Button
+                type="default"
+                icon="plus"
+                size={'default'}
+                onClick={this.addQuestionClick}>
+                Add question
+                        </Button>
+
+
+
         </Col>
     }
 
+    renderCreateQuestion(idx) {
+        return <div>
 
+            <Input
+                placeholder="Question"
+                value={this.state.newProcess.details.questions[idx].question.default}
+                onChange={ev => this.setNewProcessField(['details', 'questions', idx, 'default'], ev.target.value)}
+            />
+
+        </div>
+    }
 
     render() {
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
                 { /* TITLE? */}
             </Header>
-
-
 
             <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
                 <div style={{ padding: 24 }}>
