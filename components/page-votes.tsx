@@ -60,32 +60,28 @@ export default class PageVotes extends Component<Props, State> {
         </div>
     }
 
-    onProcessClick = () => {
-
-    }
-
-    onAddQuestionClick = () => {
+    addQuestion = () => {
         let process = this.cloneNewProcess();
         let newQuestion = this.makeEmptyQuestion()
         process.details.questions.push(newQuestion as any)
         this.setState({ newProcess: process })
     }
 
-    onAddVotingOptionClick = (questionIdx) => {
+    addOption = (questionIdx) => {
         let process = this.cloneNewProcess();
         let newVoteOption = this.makeEmptyVoteOption()
         process.details.questions[questionIdx].voteOptions.push(newVoteOption)
         this.setState({ newProcess: process })
     }
 
-    onRemoveQuestionClick = (questionIdx) => {
+    removeQuestion = (questionIdx) => {
         let process = this.cloneNewProcess();
         let newVoteOption = this.makeEmptyVoteOption()
         process.details.questions.splice(questionIdx, 1)
         this.setState({ newProcess: process })
     }
 
-    onRemoveVotingOptionClick = (questionIdx, optionIdx) => {
+    removeOption = (questionIdx, optionIdx) => {
         let process = this.cloneNewProcess();
         let newVoteOption = this.makeEmptyVoteOption()
         process.details.questions[questionIdx].voteOptions.splice(optionIdx, 1)
@@ -197,7 +193,7 @@ export default class PageVotes extends Component<Props, State> {
                     type="default"
                     icon="plus"
                     size={'default'}
-                    onClick={this.onAddQuestionClick}>
+                    onClick={this.addQuestion}>
                     Add question
                         </Button>
             </div>
@@ -230,7 +226,7 @@ export default class PageVotes extends Component<Props, State> {
                         type="default"
                         icon="minus"
                         size={'large'}
-                        onClick={() => this.onRemoveQuestionClick(questionIdx)}>
+                        onClick={() => this.removeQuestion(questionIdx)}>
                     </Button>
                 </div>
             </div>
@@ -248,13 +244,13 @@ export default class PageVotes extends Component<Props, State> {
                 {options}
             </div>
 
-            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 8 }}>
+            <div style={{ display: "flex", justifyContent: "flex-start", paddingTop: 8 }}>
                 <Button
                     type="default"
                     icon="plus"
                     size={'default'}
-                    onClick={() => this.onAddVotingOptionClick(questionIdx)}>
-                    Add option
+                    onClick={() => this.addOption(questionIdx)}>
+                    
                     </Button>
             </div>
         </div>
@@ -285,7 +281,7 @@ export default class PageVotes extends Component<Props, State> {
                     type="default"
                     icon="minus"
                     size={'default'}
-                    onClick={() => this.onRemoveVotingOptionClick(questionIdx, optionIdx)}>
+                    onClick={() => this.removeOption(questionIdx, optionIdx)}>
                 </Button>
             </div>
 
