@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { Col, List, Avatar, Empty, Button, Input } from 'antd'
+import { Col, List, Avatar, Empty, Button, Input, Form, InputNumber } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
 import { ProcessMetadata, MultiLanguage } from "dvote-js"
 
@@ -27,7 +27,16 @@ const fieldStyle = { marginTop: 8 }
         voteOptions: []
 }*/
 
-
+const formItemLayout = {
+    labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
+    },
+    wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 19 },
+    },
+}
 
 export default class PageVotes extends Component<Props, State> {
     state = {
@@ -153,40 +162,55 @@ export default class PageVotes extends Component<Props, State> {
 
     renderCreateProcess() {
 
-        let questions = this.state.newProcess.details.questions.map((question, idx) => this.renderCreateQuestion(idx))
-        return <div>
-            <Input
-                style={fieldStyle}
-                size="large"
-                placeholder="Title"
-                value={this.state.newProcess.details.title.default}
-                onChange={ev => this.setNewProcessField(['details', 'title', 'default'], ev.target.value)}
-            />
+        let questions = this.state.newProcess.details.questions
 
-            <TextArea
-                style={fieldStyle}
-                placeholder="Description"
-                autosize={{ minRows: 2, maxRows: 6 }}
-                value={this.state.newProcess.details.description['default']}
-                onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
-            />
+        return <div style={{ padding: 30 }}>
+            <h2>General</h2>
+            <Form {...formItemLayout} onSubmit={e => { e.preventDefault() }}>
+                <Form.Item label="Title">
+                    <Input
+                        style={fieldStyle}
+                        size="large"
+                        placeholder="Human Rights Declaration"
+                        value={this.state.newProcess.details.title.default}
+                        onChange={ev => this.setNewProcessField(['details', 'title', 'default'], ev.target.value)}
+                    />
+                </Form.Item>
+                <Form.Item label="Description">
+                    <TextArea
+                        style={fieldStyle}
+                        placeholder="Description"
+                        autosize={{ minRows: 4, maxRows: 8 }}
+                        value={this.state.newProcess.details.description['default']}
+                        onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
+                    />
 
-            <Input
-                style={fieldStyle}
-                placeholder="Starting block"
-                value={this.state.newProcess.startBlock}
-                onChange={ev => this.setNewProcessField(["startBlock"], ev.target.value)}
-            />
+                </Form.Item>
+                <Form.Item label="Start block">
+                    <InputNumber
+                        style={fieldStyle}
+                        min={0}
+                        placeholder="1234"
+                        value={this.state.newProcess.startBlock}
+                        onChange={num => this.setNewProcessField(["startBlock"], num)}
+                    />
 
-            <Input
-                style={fieldStyle}
-                placeholder="Number of blocks"
-                value={this.state.newProcess.numberOfBlocks}
-                onChange={ev => this.setNewProcessField(["numberOfBlocks"], ev.target.value)}
+                </Form.Item>
+                <Form.Item label="Number of blocks">
+                    <InputNumber
+                        style={fieldStyle}
+                        min={1}
+                        placeholder="200"
+                        value={this.state.newProcess.numberOfBlocks}
+                        onChange={num => this.setNewProcessField(["numberOfBlocks"], num)}
+                    />
+                </Form.Item>
+            </Form>
 
-            />
-
-            {questions}
+            <h2>Questions</h2>
+            {
+                questions.map((question, idx) => this.renderCreateQuestion(idx))
+            }
             <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
                 <Button
                     style={fieldStyle}
@@ -194,57 +218,57 @@ export default class PageVotes extends Component<Props, State> {
                     icon="plus"
                     size={'default'}
                     onClick={this.addQuestion}>
-                    Add question
-                        </Button>
+                    Add a question</Button>
             </div>
         </div>
     }
 
     renderCreateQuestion(questionIdx) {
 
-        let options = this.state.newProcess.details.questions[questionIdx].voteOptions.map((option, optionIdx) => this.renderCreateOption(questionIdx, optionIdx))
+        let options = this.state.newProcess.details.questions
 
         return <div key={'question' + questionIdx} style={{ paddingTop: 24 }}>
 
-            <div style={{
-                paddingTop: 8,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-start"
-            }}>
-                <Input
-                    addonBefore={(questionIdx + 1).toString()}
-                    placeholder="Question"
-                    size="large"
-                    value={this.state.newProcess.details.questions[questionIdx].question.default}
-                    onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'question', 'default'], ev.target.value)}
-                />
+            <Form {...formItemLayout} onSubmit={e => { e.preventDefault() }}>
 
-                <div style={{ paddingLeft: 8 }}>
+                <Form.Item label="Question title">
+                    <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+                        <Input
+                            addonBefore={(questionIdx + 1).toString()}
+                            // placeholder="Question"
+                            size="large"
+                            value={this.state.newProcess.details.questions[questionIdx].question.default}
+                            onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'question', 'default'], ev.target.value)}
+                        />
 
-                    <Button
-                        type="default"
-                        icon="minus"
-                        size={'large'}
-                        disabled={this.state.newProcess.details.questions.length <= 1}
-                        onClick={() => this.removeQuestion(questionIdx)}>
-                    </Button>
+                        <div style={{ paddingLeft: 8 }}>
+                            <Button
+                                type="default"
+                                icon="minus"
+                                size={'large'}
+                                disabled={this.state.newProcess.details.questions.length <= 1}
+                                onClick={() => this.removeQuestion(questionIdx)}>
+                            </Button>
+                        </div>
+                    </div>
+                </Form.Item>
 
+                <Form.Item label="Description">
+                    <TextArea
+                        style={fieldStyle}
+                        // placeholder="Description"
+                        autosize={{ minRows: 4, maxRows: 8 }}
+                        value={this.state.newProcess.details.questions[questionIdx].description.default}
+                        onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], ev.target.value)}
+                    />
+                </Form.Item>
+
+                <div>
+                    {
+                        options[questionIdx].voteOptions.map((option, optionIdx) => this.renderCreateOption(questionIdx, optionIdx))
+                    }
                 </div>
-            </div>
-
-
-            <TextArea
-                style={fieldStyle}
-                placeholder="Description"
-                autosize={{ minRows: 2, maxRows: 6 }}
-                value={this.state.newProcess.details.questions[questionIdx].description.default}
-                onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], ev.target.value)}
-            />
-
-            <div>
-                {options}
-            </div>
+            </Form>
 
             <div style={{ display: "flex", justifyContent: "flex-start", paddingTop: 8 }}>
                 <Button
@@ -252,7 +276,6 @@ export default class PageVotes extends Component<Props, State> {
                     icon="plus"
                     size={'default'}
                     onClick={() => this.addOption(questionIdx)}>
-
                 </Button>
             </div>
         </div>
@@ -260,44 +283,36 @@ export default class PageVotes extends Component<Props, State> {
 
     renderCreateOption(questionIdx, optionIdx) {
 
-        return <div
-            key={"option" + optionIdx}
-            style={{
-                paddingTop: 8,
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-start"
-            }}>
-
-            <Input
-                style={{ width: "100%" }}
-                placeholder="Option"
-                addonBefore={(optionIdx + 1).toString()}
-                value={this.state.newProcess.details.questions[questionIdx].voteOptions[optionIdx].title.default}
-                onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'voteOptions', optionIdx, 'title', 'default'], ev.target.value)}
-            />
-
-            <div style={{ paddingLeft: 8 }}>
+        return <Form.Item label={"Option " + (optionIdx + 1).toString()}>
+            <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+                <Input
+                    style={{ width: "100%" }}
+                    // placeholder="Option"
+                    // addonBefore={(optionIdx + 1).toString()}
+                    value={this.state.newProcess.details.questions[questionIdx].voteOptions[optionIdx].title.default}
+                    onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'voteOptions', optionIdx, 'title', 'default'], ev.target.value)}
+                />
 
                 <Button
                     type="default"
                     icon="minus"
                     size={'default'}
+                    style={{ marginLeft: 8 }}
                     disabled={this.state.newProcess.details.questions[questionIdx].voteOptions.length <= 2}
                     onClick={() => this.removeOption(questionIdx, optionIdx)}>
                 </Button>
-            </div>
 
-        </div>
+            </div>
+        </Form.Item>
     }
 
     render() {
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
-                New process
+                <h2>Process creation</h2>
             </Header>
 
-            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+            <div style={{ padding: 24, background: '#fff' }}>
                 {this.renderCreateProcess()}
             </div>
         </>
