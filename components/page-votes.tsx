@@ -83,7 +83,6 @@ export default class PageVotes extends Component<Props, State> {
 
     removeOption = (questionIdx, optionIdx) => {
         let process = this.cloneNewProcess();
-        let newVoteOption = this.makeEmptyVoteOption()
         process.details.questions[questionIdx].voteOptions.splice(optionIdx, 1)
         this.setState({ newProcess: process })
     }
@@ -95,8 +94,8 @@ export default class PageVotes extends Component<Props, State> {
             startBlock: null,
             numberOfBlocks: null,
             census: {
-                censusMerkleRoot: "",
-                censusMerkleTree: ""
+                merkleRoot: "",
+                merkleTree: ""
             },
             details: {
                 entityId: "",
@@ -288,7 +287,6 @@ export default class PageVotes extends Component<Props, State> {
                     onClick={() => this.removeOption(questionIdx, optionIdx)}>
                 </Button>
             </div>
-
 
         </div>
     }
