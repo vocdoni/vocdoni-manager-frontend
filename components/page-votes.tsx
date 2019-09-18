@@ -1,7 +1,8 @@
 import { Component } from "react"
 import { Col, List, Avatar, Empty, Button, Input, Form, InputNumber } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
-import { ProcessMetadata, MultiLanguage } from "dvote-js"
+import { ProcessMetadata, MultiLanguage, API, Network } from "dvote-js"
+import EthereumManager from "../util/ethereum-manager"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
@@ -74,6 +75,17 @@ export default class PageVotes extends Component<Props, State> {
         let newQuestion = this.makeEmptyQuestion()
         process.details.questions.push(newQuestion as any)
         this.setState({ newProcess: process })
+    }
+
+    randomInt(min, max){
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+     }
+
+    createProcess = () => {
+        Network.Bootnodes.getRandomGatewayInfo("goerli").then((gws) => {
+            API.Vote.createVotingProcess(this.state.newProcess, EthereumManager.signer, gws["goerli"])
+        })
+
     }
 
     addOption = (questionIdx) => {
@@ -219,6 +231,16 @@ export default class PageVotes extends Component<Props, State> {
                     size={'default'}
                     onClick={this.addQuestion}>
                     Add a question</Button>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
+                <Button
+                    style={fieldStyle}
+                    type="primary"
+                    icon="rocket"
+                    size={'large'}
+                    onClick={this.createProcess}>
+                    Create new process</Button>
             </div>
         </div>
     }
