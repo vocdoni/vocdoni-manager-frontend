@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { Col, List, Avatar, Empty, Button, Input, Form, InputNumber } from 'antd'
+import { Col, List, Avatar, Empty, Button, Input, Form, InputNumber, message } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
 import { ProcessMetadata, MultiLanguage, API, Network } from "dvote-js"
 import EthereumManager from "../util/ethereum-manager"
@@ -77,27 +77,40 @@ export default class PageVotes extends Component<Props, State> {
         this.setState({ newProcess: process })
     }
 
-    randomInt(min, max){
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-     }
+    checkFields() {
+        if (isNaN(this.state.newProcess.startBlock)) {
+            message.error("Start block must be a number")
+            return false
+        }
+        if (isNaN(this.state.newProcess.numberOfBlocks)) {
+            message.error("Number of block must be a number")
+            return false
+        }
+
+        return true
+    }
 
     createProcess = () => {
+        let success = this.checkFields()
+
+        if (!success)
+            return
+
         Network.Bootnodes.getRandomGatewayInfo("goerli").then((gws) => {
             API.Vote.createVotingProcess(this.state.newProcess, EthereumManager.signer, gws["goerli"])
         })
-
     }
 
     addOption = (questionIdx) => {
         let process = this.cloneNewProcess();
-        let newVoteOption = this.makeEmptyVoteOption()
+        let numberOfOptions = process.details.questions[questionIdx].voteOptions.length
+        let newVoteOption = this.makeEmptyVoteOption(numberOfOptions.toString())
         process.details.questions[questionIdx].voteOptions.push(newVoteOption)
         this.setState({ newProcess: process })
     }
 
     removeQuestion = (questionIdx) => {
         let process = this.cloneNewProcess();
-        let newVoteOption = this.makeEmptyVoteOption()
         process.details.questions.splice(questionIdx, 1)
         this.setState({ newProcess: process })
     }
@@ -115,19 +128,19 @@ export default class PageVotes extends Component<Props, State> {
             startBlock: null,
             numberOfBlocks: null,
             census: {
-                merkleRoot: "",
-                merkleTree: ""
+                merkleRoot: "0xfake",
+                merkleTree: "0xfake"
             },
             details: {
-                entityId: "",
-                encryptionPublicKey: "",
+                entityId:API.Entity.getEntityId(this.props.currentAddress),
+                encryptionPublicKey: "0xfake",
                 title: {
                     default: ""
                 },
                 description: {
                     default: ""
                 },
-                headerImage: "",
+                headerImage: "https://source.unsplash.com/random/",
                 questions: [this.makeEmptyQuestion() as any]
             }
         }
@@ -143,14 +156,14 @@ export default class PageVotes extends Component<Props, State> {
             description: {
                 default: ""
             },
-            voteOptions: [this.makeEmptyVoteOption(), this.makeEmptyVoteOption()]
+            voteOptions: [this.makeEmptyVoteOption("0"), this.makeEmptyVoteOption("1")]
         }
     }
 
-    makeEmptyVoteOption() {
+    makeEmptyVoteOption(value) {
         return {
             title: { default: "" },
-            value: ""
+            value: value
         };
     }
 
@@ -215,6 +228,15 @@ export default class PageVotes extends Component<Props, State> {
                         placeholder="200"
                         value={this.state.newProcess.numberOfBlocks}
                         onChange={num => this.setNewProcessField(["numberOfBlocks"], num)}
+                    />
+                </Form.Item>
+
+                <Form.Item label="Header image URI">
+                    <Input
+                        style={fieldStyle}
+                        placeholder="Header image Uri"
+                        value={this.state.newProcess.details.headerImage}
+                        onChange={num => this.setNewProcessField(["details","headerImage"], num)}
                     />
                 </Form.Item>
             </Form>
