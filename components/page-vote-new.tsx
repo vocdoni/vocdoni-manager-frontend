@@ -207,7 +207,26 @@ export default class PageVoteNew extends Component<Props, State> {
                         value={this.state.newProcess.details.description['default']}
                         onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
                     />
-
+                </Form.Item>
+                <Form.Item label="Census Merkle Root">
+                    <Input
+                        style={fieldStyle}
+                        size="large"
+                        placeholder="0x123456789..."
+                        value={this.state.newProcess.census.merkleRoot}
+                        onChange={ev => this.setNewProcessField(['census', 'merkleRoot'], ev.target.value)}
+                    />
+                    <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p>
+                </Form.Item>
+                <Form.Item label="Census Merkle Tree origin">
+                    <Input
+                        style={fieldStyle}
+                        size="large"
+                        placeholder="ipfs://123456...!12345678"
+                        value={this.state.newProcess.census.merkleTree}
+                        onChange={ev => this.setNewProcessField(['census', 'merkleTree'], ev.target.value)}
+                    />
+                    <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p>
                 </Form.Item>
                 <Form.Item label="Start block">
                     <InputNumber
