@@ -98,6 +98,7 @@ export default class Main extends Component<{}, State> {
                     refresh={() => { this.refreshState() }} />
             case Page.VotingProcesses:
                 return <PageVotes
+                    refresh={() => { this.refreshState() }}
                     entityDetails={this.state.entityMetadata}
                     currentAddress={this.state.accountAddress}
                 />
