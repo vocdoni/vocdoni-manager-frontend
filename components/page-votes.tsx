@@ -3,6 +3,7 @@ import { Col, List, Avatar, Empty, Button, Skeleton, Spin, message, Row } from '
 import { headerBackgroundColor } from "../lib/constants"
 import { API, ProcessMetadata, EntityMetadata } from "dvote-js"
 const { getVoteMetadata } = API.Vote
+import ReactMarkdown from 'react-markdown'
 
 import { Layout } from 'antd'
 import PageVoteNew from "./page-vote-new"
@@ -97,15 +98,21 @@ export default class PageVotes extends Component<Props, State> {
             <Row>
                 <Col xs={24} sm={12}>
                     <h2>{processMeta.details.title["default"]}</h2>
-                    <p>{processMeta.details.description["default"]}</p>
+                    <ReactMarkdown source={processMeta.details.description["default"]} />
                 </Col>
                 <Col xs={24} sm={12}>
                     <img src={processMeta.details.headerImage} style={{ maxWidth: 200 }} />
                 </Col>
                 <Col xs={24} >
+                    <hr style={{ marginTop: 20, marginBottom: 20 }} />
+
+                    <h3>Process ID</h3>
+                    <p>{item.id}</p>
                     <h3>Census</h3>
-                    <p>Merkle Root: {processMeta.census.merkleRoot}</p>
-                    <p>Merkle Tree: {processMeta.census.merkleTree}</p>
+                    <h4>Merkle Root</h4>
+                    <p>{processMeta.census.merkleRoot}</p>
+                    <h4>Merkle Tree</h4>
+                    <p>{processMeta.census.merkleTree}</p>
                 </Col>
             </Row>
             <hr style={{ marginTop: 20, marginBottom: 20 }} />

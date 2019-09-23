@@ -253,7 +253,7 @@ export default class PageVoteNew extends Component<Props, State> {
                         style={fieldStyle}
                         placeholder="Header image Uri"
                         value={this.state.newProcess.details.headerImage}
-                        onChange={num => this.setNewProcessField(["details", "headerImage"], num)}
+                        onChange={ev => this.setNewProcessField(["details", "headerImage"], ev.target.value)}
                     />
                 </Form.Item>
             </Form>
