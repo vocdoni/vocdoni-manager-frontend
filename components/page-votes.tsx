@@ -103,25 +103,46 @@ export default class PageVotes extends Component<Props, State> {
                 <Col xs={24} sm={12}>
                     <img src={processMeta.details.headerImage} style={{ maxWidth: 200 }} />
                 </Col>
-                <Col xs={24} >
-                    <hr style={{ marginTop: 20, marginBottom: 20 }} />
-
-                    <h3>Process ID</h3>
-                    <p>{item.id}</p>
-                    <h3>Census</h3>
-                    <h4>Merkle Root</h4>
-                    <p>{processMeta.census.merkleRoot}</p>
-                    <h4>Merkle Tree</h4>
-                    <p>{processMeta.census.merkleTree}</p>
-                </Col>
             </Row>
+
             <hr style={{ marginTop: 20, marginBottom: 20 }} />
+
+
             {processMeta.details.questions.map((question) => <>
                 <h3>{question.question["default"]}</h3>
-                <p>{question.description["default"]}</p>
+                <ReactMarkdown source={question.description["default"]} />
                 <p>{question.type == "single-choice" ? "Single choice" : ""}</p>
                 <ul>{question.voteOptions.map((option) => <li key={option.value}>{option.title["default"]}</li>)}</ul>
             </>)}
+
+            <hr style={{ marginTop: 20, marginBottom: 20 }} />
+
+            <h3>General</h3>
+            <h4>Process ID</h4>
+            <p>{item.id}</p>
+            <h4>Census Merkle Root</h4>
+            <p>{processMeta.census.merkleRoot}</p>
+            <h4>Census Merkle Tree</h4>
+            <p>{processMeta.census.merkleTree}</p>
+
+            <hr style={{ marginTop: 20, marginBottom: 20 }} />
+
+            <h3>Timeframe</h3>
+            <Row>
+                <Col xs={24} sm={12}>
+                    <h4>Start block number</h4>
+                    <p>{processMeta.startBlock}</p>
+                    <h4>Start date (estimated)</h4>
+                    <p>-</p>
+                </Col>
+                <Col xs={24} sm={12}>
+                    <h4>End block</h4>
+                    <p>{processMeta.startBlock + processMeta.numberOfBlocks}</p>
+                    <h4>End date (estimated)</h4>
+                    <p>-</p>
+                </Col>
+            </Row>
+
         </div>
     }
 
