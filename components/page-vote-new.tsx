@@ -113,12 +113,12 @@ export default class PageVoteNew extends Component<Props, State> {
             startBlock: null,
             numberOfBlocks: null,
             census: {
-                merkleRoot: "0xfake",
-                merkleTree: "0xfake"
+                merkleRoot: "",
+                merkleTree: ""
             },
             details: {
                 entityId: API.Entity.getEntityId(this.props.currentAddress),
-                encryptionPublicKey: "0xfake",
+                encryptionPublicKey: "",
                 title: {
                     default: ""
                 },

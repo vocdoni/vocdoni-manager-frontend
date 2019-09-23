@@ -8,6 +8,7 @@ import PageHome from "../components/page-home"
 import PageEntityMeta from "../components/page-entity-meta"
 // import PagePosts from "../components/page-posts"
 import PageVotes from "../components/page-votes"
+import PageNewsFeed from "../components/page-newsfeed"
 // import PageCensus from "../components/page-census"
 // import PageRelays from "../components/page-relays"
 
@@ -102,16 +103,12 @@ export default class Main extends Component<{}, State> {
                     entityDetails={this.state.entityMetadata}
                     currentAddress={this.state.accountAddress}
                 />
-            //     case Page.OfficialDiary:
-            //         return <PagePosts
-            //             entityMetadata={this.state.entityMetadata}
-            //             currentAddress={this.state.accountAddress}
-            //         />
-            //     case Page.VotingProcesses:
-            //         return <PageVotes
-            //             entityMetadata={this.state.entityMetadata}
-            //             currentAddress={this.state.accountAddress}
-            //         />
+            case Page.OfficialDiary:
+                return <PageNewsFeed
+                    refresh={() => { this.refreshState() }}
+                    entityDetails={this.state.entityMetadata}
+                    currentAddress={this.state.accountAddress}
+                />
             //     case Page.CensusService:
             //         return <PageCensus
             //             entityMetadata={this.state.entityMetadata}
