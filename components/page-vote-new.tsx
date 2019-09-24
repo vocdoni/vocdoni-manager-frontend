@@ -118,7 +118,7 @@ export default class PageVoteNew extends Component<Props, State> {
             },
             details: {
                 entityId: API.Entity.getEntityId(this.props.currentAddress),
-                encryptionPublicKey: "",
+                encryptionPublicKey: "0x0",
                 title: {
                     default: ""
                 },
@@ -344,7 +344,7 @@ export default class PageVoteNew extends Component<Props, State> {
 
     renderCreateOption(questionIdx, optionIdx) {
 
-        return <Form.Item label={"Option " + (optionIdx + 1).toString()}>
+        return <Form.Item label={"Option " + (optionIdx + 1).toString()} key={optionIdx}>
             <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
                 <Input
                     style={{ width: "100%" }}
