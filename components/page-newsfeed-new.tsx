@@ -99,107 +99,104 @@ export default class PageNewsFeedNew extends Component<Props, State> {
     }
 
     renderPostEdit() {
-        return null
+        //return null
         
-        // const currentPost = this.state.selectedPost
+        const currentPost = this.state.selectedPost
 
-        // return <div style={{ padding: 30 }}>
-        //     <h2>General</h2>
-        //     <Form {...formItemLayout} onSubmit={e => { e.preventDefault() }}>
-        //         <Form.Item label="Title">
-        //             <Input
-        //                 style={fieldStyle}
-        //                 size="large"
-        //                 placeholder="Post Title"
-        //                 value={currentPost.title}
-        //                 onChange={ev => this.setselectedPostField(['title'], ev.target.value)}
-        //             />
-        //         </Form.Item>
-        //         <Form.Item label="Summary">
-        //             <TextArea
-        //                 style={fieldStyle}
-        //                 placeholder="Summary"
-        //                 autosize={{ minRows: 2, maxRows: 4 }}
-        //                 value={currentPost.summary}
-        //                 onChange={ev => this.setselectedPostField(["summary"], ev.target.value)}
-        //             />
-        //         </Form.Item>
-        //         <Form.Item label="Text">
-        //             <TextArea
-        //                 style={fieldStyle}
-        //                 placeholder="Text"
-        //                 autosize={{ minRows: 2, maxRows: 8 }}
-        //                 value={currentPost.content_text}
-        //                 onChange={ev => this.setselectedPostField(["content_text"], ev.target.value)}
-        //             />
-        //         </Form.Item>
-        //         <Form.Item label="HTML">
-        //             <TextArea
-        //                 style={fieldStyle}
-        //                 placeholder="HTML"
-        //                 autosize={{ minRows: 2, maxRows: 8 }}
-        //                 value={currentPost.content_html}
-        //                 onChange={ev => this.setselectedPostField(["content_html"], ev.target.value)}
-        //             />
-        //         </Form.Item>
-        //         <Form.Item label="URL">
-        //             <Input
-        //                 style={fieldStyle}
-        //                 placeholder="http://link.item/1234"
-        //                 value={currentPost.url}
-        //                 onChange={ev => this.setselectedPostField(["url"], ev.target.value)}
-        //             />
-        //         </Form.Item>
-        //         <Form.Item label="Image">
-        //             <Input
-        //                 style={fieldStyle}
-        //                 placeholder="http://link.item/1234"
-        //                 value={currentPost.image}
-        //                 onChange={ev => this.setselectedPostField(["image"], ev.target.value)}
-        //             />
-        //         </Form.Item>
+        return <div style={{ padding: 30 }}>
+            <h2>General</h2>
+            <Form {...formItemLayout} onSubmit={e => { e.preventDefault() }}>
+                <Form.Item label="Title">
+                    <Input
+                        style={fieldStyle}
+                        size="large"
+                        placeholder="Post Title"
+                        value={currentPost.title}
+                        onChange={ev => this.setselectedPostField(['title'], ev.target.value)}
+                    />
+                </Form.Item>
+                <Form.Item label="Summary">
+                    <TextArea
+                        style={fieldStyle}
+                        placeholder="Summary"
+                        autosize={{ minRows: 2, maxRows: 3 }}
+                        value={currentPost.summary}
+                        onChange={ev => this.setselectedPostField(["summary"], ev.target.value)}
+                    />
+                </Form.Item>
+                <Form.Item label="Text">
+                    <TextArea
+                        style={fieldStyle}
+                        placeholder="Text"
+                        autosize={{ minRows: 4, maxRows: 10 }}
+                        value={currentPost.content_text}
+                        onChange={ev => this.setselectedPostField(["content_text"], ev.target.value)}
+                    />
+                </Form.Item>
+                <Form.Item label="HTML">
+                    <TextArea
+                        style={fieldStyle}
+                        placeholder="HTML"
+                        autosize={{ minRows: 4, maxRows: 10 }}
+                        value={currentPost.content_html}
+                        onChange={ev => this.setselectedPostField(["content_html"], ev.target.value)}
+                    />
+                </Form.Item>
+                <Form.Item label="URL">
+                    <Input
+                        style={fieldStyle}
+                        placeholder="http://link.item/1234"
+                        value={currentPost.url}
+                        onChange={ev => this.setselectedPostField(["url"], ev.target.value)}
+                    />
+                </Form.Item>
+                <Form.Item label="Image">
+                    <Input
+                        style={fieldStyle}
+                        placeholder="http://link.item/1234"
+                        value={currentPost.image}
+                        onChange={ev => this.setselectedPostField(["image"], ev.target.value)}
+                    />
+                </Form.Item>
                 
-        //         {/* <Form.Item label="Tags">
-        //             <ArrayInput source="my-source">
-        //                 <SimpleFormIterator>
-        //                 <Input
-        //                     style={fieldStyle}
-        //                     placeholder="Name"
-        //                     value={currentPost.author.name}
-        //                     onChange={ev => this.setselectedPostField(["tags"], ev.target.value)}
-        //                 />
-        //                 </SimpleFormIterator>
-        //             </ArrayInput>
-                    
-        //         </Form.Item> */}
-        //         <Form.Item label="Author Name">
-        //             <Input
-        //                 style={fieldStyle}
-        //                 placeholder="Name"
-        //                 value={currentPost.author.name}
-        //                 onChange={ev => this.setselectedPostField(["author", "name"], ev.target.value)}
-        //             />
-        //         </Form.Item>
-        //         <Form.Item label="Author URL">
-        //             <Input
-        //                 style={fieldStyle}
-        //                 placeholder="URL"
-        //                 value={currentPost.author.url}
-        //                 onChange={ev => this.setselectedPostField(["author", "url"], ev.target.value)}
-        //             />
-        //         </Form.Item>
-        //     </Form>
+                <Form.Item label="Tags">
+                    <Input
+                            style={fieldStyle}
+                            placeholder="tag1;tag2;tag3"
+                            value={currentPost.tags}
+                            onChange={ev => this.setselectedPostField(["tags"], ev.target.value.toString().split(';'))}
 
-        //     <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
-        //         <Button
-        //             style={fieldStyle}
-        //             type="primary"
-        //             icon="rocket"
-        //             size={'large'}
-        //             onClick={this.submit}>
-        //             Create new process</Button>
-        //     </div>
-        // </div>
+                    />
+                    
+                </Form.Item>
+                <Form.Item label="Author Name">
+                    <Input
+                        style={fieldStyle}
+                        placeholder="Name"
+                        value={currentPost.author.name}
+                        onChange={ev => this.setselectedPostField(["author", "name"], ev.target.value)}
+                    />
+                </Form.Item>
+                <Form.Item label="Author URL">
+                    <Input
+                        style={fieldStyle}
+                        placeholder="http://link.item/1234"
+                        value={currentPost.author.url}
+                        onChange={ev => this.setselectedPostField(["author", "url"], ev.target.value)}
+                    />
+                </Form.Item>
+            </Form>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
+                <Button
+                    style={fieldStyle}
+                    type="primary"
+                    icon="rocket"
+                    size={'large'}
+                    onClick={this.submit}>
+                    Create new process</Button>
+            </div>
+        </div>
     }
 
     render() {
