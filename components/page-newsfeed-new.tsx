@@ -80,7 +80,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
 
         // TODO:  Add new post in Items (state.feed.items)
         let feed = this.state.feed
-        feed.items.unshift(post)  // Add as the first item
+        feed.items = [post].concat(feed.items)  // Add as the first item
         try {
             // TODO: The following removes the last post. Tested exactly the same in 
             // in Dvote-js and it works. How???

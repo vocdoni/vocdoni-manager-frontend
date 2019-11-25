@@ -52,9 +52,11 @@ export default class PageNewsFeed extends Component<Props, State> {
 
             const payload = await fetchFileString(newsFeedOrigin, gwInfo[process.env.ETH_NETWORK_ID])
 
-            let feed = JSON.parse(payload)
+            let feed
             try {
-                feed = checkValidJsonFeed(feed)
+                feed = JSON.parse(payload)
+                checkValidJsonFeed(feed)
+                // feed = checkValidJsonFeed(feed)
             }
             catch (err) {
                 message.warn("The current News Feed does not seem to have a correct format")
@@ -142,7 +144,7 @@ export default class PageNewsFeed extends Component<Props, State> {
     }
 
     render() {
-        if (this.state.showCreate) return <PageNewsFeedNew {...this.props} feed={this.state.feed} showList={() => this.setState({ showCreate: false })}/>
+        if (this.state.showCreate) return <PageNewsFeedNew {...this.props} feed={this.state.feed} showList={() => this.setState({ showCreate: false })} />
         else if (this.state.loading) return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
                 <div style={{ float: "right" }}>
