@@ -80,7 +80,7 @@ const MainLayout: React.FunctionComponent<Props> = ({ children, entityName, curr
                         </SubMenu>
                         <SubMenu key="content" title={<span><Icon type="file-text" />Content</span>}>
                             <Menu.Item key="diary" onClick={() => menuClicked && menuClicked(Page.OfficialDiary)}>
-                                Official Diary
+                                News feed
                             </Menu.Item>
                             <Menu.Item key="processes" onClick={() => menuClicked && menuClicked(Page.VotingProcesses)}>
                                 Voting processes
