@@ -5,7 +5,7 @@ import { EntityResolverContractMethods, VotingProcessContractMethods } from "dvo
 import { Contract, providers } from "ethers"
 import { message } from "antd"
 
-const { getEntityMetadata, updateEntity } = API.Entity
+const { getEntityMetadataByAddress, updateEntity } = API.Entity
 // const {  } = API.Vote
 const { GatewayInfo } = Wrappers
 const { Bootnodes: { fetchDefaultBootNode }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
@@ -105,7 +105,7 @@ export async function fetchState(entityAddress: string): Promise<void> {
             const w3Gw = gatewaysState[ETH_NETWORK_ID].web3[Math.floor(Math.random() * w3Len)]
             const gwInfo = new GatewayInfo(dvGw.uri, dvGw.apis, w3Gw.uri, dvGw.pubKey)
 
-            const meta = await getEntityMetadata(entityAddress, gwInfo)
+            const meta = await getEntityMetadataByAddress(entityAddress, gwInfo)
             entityState = meta
             entityLoading = false
             return
