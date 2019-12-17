@@ -2,10 +2,11 @@ import { Component } from "react"
 import { Col, List, Avatar, Empty, Button, Input, Form, Select, InputNumber, message } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
 import { ProcessMetadata, MultiLanguage, API, Network } from "dvote-js"
-import EthereumManager from "../util/ethereum-manager"
+import Web3Manager from "../util/web3-wallet"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
+import { getGatewayClients } from "../util/dvote-state"
 const { Header } = Layout
 
 interface Props {
@@ -51,7 +52,7 @@ export default class PageVoteNew extends Component<Props, State> {
         this.setState({ newProcess: process })
     }
 
-    checkFields() {
+    checkFields(): boolean {
         if (isNaN(this.state.newProcess.startBlock)) {
             message.error("Start block must be a number")
             return false
@@ -64,16 +65,16 @@ export default class PageVoteNew extends Component<Props, State> {
         return true
     }
 
-    createProcess = () => {
-        let success = this.checkFields()
+    async createProcess() {
+        if (!this.checkFields()) {
+            return message.warn("The metadata fields are not valid")
+        }
 
-        if (!success)
-            return
-
+        const clients = await getGatewayClients()
         const hideLoading = message.loading('Action in progress..', 0)
 
         Network.Bootnodes.getRandomGatewayInfo("goerli").then((gws) => {
-            return API.Vote.createVotingProcess(this.state.newProcess, EthereumManager.signer, gws["goerli"])
+            return API.Vote.createVotingProcess(this.state.newProcess, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
         }).then(processId => {
             message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
             hideLoading()

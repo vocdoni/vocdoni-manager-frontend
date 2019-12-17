@@ -1,6 +1,6 @@
 import { Component } from "react"
 import { Button, Spin } from 'antd'
-import Web3Manager, { AccountState } from "../util/ethereum-manager"
+import Web3Manager, { AccountState } from "../util/web3-wallet"
 import { headerBackgroundColor } from "../lib/constants"
 
 import { Layout, Skeleton } from 'antd'
@@ -22,6 +22,7 @@ export default class Setup extends Component<Props> {
             <div>Please, wait... <Spin size="small" /></div>
         </div>
     }
+
     renderInstallMetaMask() {
         return <div style={{ paddingTop: 30 }}>
             <h2>Ethereum not detected</h2>

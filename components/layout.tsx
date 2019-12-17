@@ -86,14 +86,14 @@ const MainLayout: React.FunctionComponent<Props> = ({ children, entityName, curr
                                 Voting processes
                             </Menu.Item>
                         </SubMenu>
-                        <SubMenu key="settings" title={<span><Icon type="setting" />Infrastructure</span>}>
+                        {/* <SubMenu key="settings" title={<span><Icon type="setting" />Infrastructure</span>}>
                             <Menu.Item key="census-service" onClick={() => menuClicked && menuClicked(Page.CensusService)}>
                                 Census Service
                             </Menu.Item>
                             <Menu.Item key="entities" onClick={() => menuClicked && menuClicked(Page.OtherEntities)}>
                                 Other Entities
                             </Menu.Item>
-                        </SubMenu>
+                        </SubMenu> */}
                     </Menu>
                 </Sider>
                 <Layout style={{ padding: '24px' }}>

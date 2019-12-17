@@ -50,21 +50,4 @@ export default class Web3Manager {
         if (!provider) this.connect();
         return provider.getSigner().getAddress();
     }
-
-    public static getNetworkId(): Promise<number> {
-        if (!provider) this.connect();
-        return provider.getNetwork().then(network => network.chainId)
-    }
-
-    public static getNetworkName() {
-        if (!provider) this.connect();
-        return provider.getNetwork().then(network => {
-            switch (network.chainId) {
-                case 1714:
-                    return 'Vocdoni testnet';
-                default:
-                    return network.name;
-            }
-        });
-    }
 }
