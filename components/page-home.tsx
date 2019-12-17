@@ -1,11 +1,12 @@
 import { Component } from "react"
 import { headerBackgroundColor } from "../lib/constants"
-import { Layout, Row, Col } from 'antd'
+import { Layout, Row, Col, message } from 'antd'
 const { Header } = Layout
-import { getState } from "../util/dvote"
+import { getState } from "../util/dvote-state"
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import QRCode from "qrcode.react"
 import { by639_1 } from 'iso-language-codes'
+import { fetchDefaultBootNode } from "dvote-js/dist/net/gateway-bootnodes"
 
 const { getEntityId } = API.Entity
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -30,6 +31,7 @@ export default class PageHome extends Component<Props, State> {
     refreshInterval: any
 
     componentDidMount() {
+        this.fetchBootnodes()
         this.refreshInterval = setInterval(() => this.refreshState(), 1000)
         this.refreshState()
     }
@@ -38,18 +40,30 @@ export default class PageHome extends Component<Props, State> {
         clearInterval(this.refreshInterval)
     }
 
-    async refreshState() {
-        const prevAddress = this.state.accountAddress
-        const prevEntityMetadata = this.state.entityMetadata
+    async fetchBootnodes() {
+        try {
+            const bootnodes = await fetchDefaultBootNode(process.env.ETH_NETWORK_ID as any)
+            this.setState({ bootnodes })
+        }
+        catch (err) {
+            message.error("Connection error")
+        }
+    }
 
-        // Changes? => sync
-        const { address, entityMetadata, bootnodes } = getState();
-        if (prevAddress != address || prevEntityMetadata != entityMetadata) {
-            this.setState({
-                accountAddress: address,
-                entityMetadata,
-                bootnodes
-            })
+    async refreshState() {
+        const { address, entityMetadata } = getState();
+        this.setState({
+            accountAddress: address,
+            entityMetadata,
+        })
+
+        // Fetch if needed
+        try {
+            if (Object.keys(this.state.bootnodes).length == 0) {
+                this.fetchBootnodes()
+            }
+        } catch (err) {
+            console.error(err)
         }
     }
 
@@ -74,11 +88,11 @@ export default class PageHome extends Component<Props, State> {
 
         const entityId = getEntityId(this.state.accountAddress)
         let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&`
-        subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
+        if (Object.keys(this.state.bootnodes).length >= 1) {
+            subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
+        }
 
-        let supportedLanguages = (entity.languages || [] as any)
-        // console.log(supportedLanguages)
-        // 
+        // let supportedLanguages = (entity.languages || [] as any)
 
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>

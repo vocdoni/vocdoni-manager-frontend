@@ -3,13 +3,14 @@ import { Button, Input, Form, Table, Select, InputNumber, message } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
 import { JsonFeed, JsonFeedPost, EntityMetadata, API, Network, MultiLanguage } from "dvote-js"
 import { checkValidJsonFeed } from "dvote-js/dist/models/json-feed"
-import { updateEntityValues } from "../util/dvote"
 const { Buffer } = require("buffer/")
-import EthereumManager from "../util/ethereum-manager"
+import Web3Manager from "../util/web3-wallet"
 // import { utils } from "ethers"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
+import { getGatewayClients, getState } from "../util/dvote-state"
+import { updateEntity } from "dvote-js/dist/api/entity"
 const { Header } = Layout
 
 interface Props {
@@ -45,17 +46,17 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         entityDetails: this.props.entityDetails,
     }
 
-    addPostMetadata(post) {
+    addMetadataToPost(post: JsonFeedPost) {
         const now = new Date()
-        post.id = String(Date.now())  // Timestamp
-        post.date_published = now
-        post.date_modified = now
+        if (!post.id) post.id = String(Date.now())  // Timestamp
+        if (!post.date_published) post.date_published = now.toJSON()
+        post.date_modified = now.toJSON()
         return post
     }
 
-    submit = () => {
+    async submit() {
         // TODO: Make a singnature and use it for next transactions
-        // EthereumManager.signer.signMessage("democracy")
+        // Web3Manager.signer.signMessage("democracy")
         // .then(payload => {
         //     console.log(payload)
         //     let passphrase = prompt("Enter your passphrase to unlock your account")
@@ -66,21 +67,16 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         // const privKey = padding/trim(digest)
         // const data = encrypt("hello", privKey)
 
-
-        const post = this.addPostMetadata(this.state.selectedPost)
-        // console.log(JSON.stringify(this.state.selectedPost, null, 2))
+        const newPost = this.addMetadataToPost(this.state.selectedPost)
 
         // TODO: Store POST in Dexie
         // el Dexie es un nice to have... con esto se puede montar una DB local, però también podríamos tirar de momento son
         // la única pega es que si se cierra el browser, se pierde todo
 
-        // TODO:  Check Field are correct
-        // let success = this.checkFields()
-        // if (!success) return   
-
         // TODO:  Add new post in Items (state.feed.items)
         let feed = this.state.feed
-        feed.items = [post].concat(feed.items)  // Add as the first item
+        feed.items = [newPost].concat(feed.items)  // Add as the first item
+
         try {
             // TODO: The following removes the last post. Tested exactly the same in 
             // in Dvote-js and it works. How???
@@ -93,36 +89,34 @@ export default class PageNewsFeedNew extends Component<Props, State> {
             return
         }
 
-        // TODO: Upload Entire feed like a string in IPFS
         const hideLoading = message.loading('Action in progress...', 0)
-        Network.Bootnodes.getRandomGatewayInfo("goerli").then((gws) => {
-            // TODO: Check why for some reason addFile doesn't work without Buffer
-            return API.File.addFile(Buffer.from(JSON.stringify(feed)), `feed_${Date.now()}.json`, EthereumManager.signer, gws["goerli"])
-        }).then(feedContentUri => {
-            message.success("The news feed was pinned on IPFS successfully");
-            // console.log(feedContentUri)
 
-            // TODO: Update EntityMeta (Post in IPFS and in blockchain)
+        try {
+            const clients = await getGatewayClients()
+            const state = getState()
+
+            // TODO: Check why for some reason addFile doesn't work without Buffer
+            const feedContent = Buffer.from(JSON.stringify(feed))
+            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Manager.signer, clients.dvoteGateway)
+
+            message.success("The news feed was pinned on IPFS successfully");
+
             let entityMetadata = this.props.entityDetails
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
-            updateEntityValues(entityMetadata).then(() => {
-                hideLoading()
-
-                this.setState({ feed: feed })
-                // message.success("The entity metadata ha been updated")
-                message.success("The post has been successfully published")
-
-                if (this.props.refresh) this.props.refresh()
-            }).catch(err => {
-                hideLoading()
-                message.error("The entity metadata could not be updated")
-            })
-        }).catch(err => {
+            await updateEntity(state.address, entityMetadata, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
-            console.error(`The new post could not be created: ${JSON.stringify(err)}`)
+
+            this.setState({ feed: feed })
+            message.success("The post has been successfully published")
+
+            if (this.props.refresh) this.props.refresh()
+        }
+        catch (err) {
+            hideLoading()
+            console.error("The new post could not be created", err)
             message.error("The new post could not be created")
-        })
+        }
     }
 
     setNestedKey = (obj, path: string[], value: any) => {
@@ -134,12 +128,12 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         }
     }
 
-    cloneselectedPost() {
+    getSelectedPostCopy() {
         return Object.assign({}, this.state.selectedPost)
     }
 
     setselectedPostField(path: string[], value: any) {
-        let post = this.cloneselectedPost()
+        let post = this.getSelectedPostCopy()
         this.setNestedKey(post, path, value)
         this.setState({ selectedPost: post })
     }

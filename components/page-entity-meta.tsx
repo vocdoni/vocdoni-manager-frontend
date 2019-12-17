@@ -1,14 +1,15 @@
 import { Component } from "react"
-import { getState, updateEntityValues } from "../util/dvote"
+import { getState, getGatewayClients, connectClients } from "../util/dvote-state"
 import { Row, Col, Divider, Skeleton, message, Layout, Button, Input, Spin, Icon, Select } from "antd"
-import { EntityMetadata, API, Models } from "dvote-js"
+import { EntityMetadata, API, Models, Network } from "dvote-js"
 import { by639_1 } from 'iso-language-codes'
 import { headerBackgroundColor } from "../lib/constants"
+import Web3Manager from "../util/web3-wallet"
 const { Header } = Layout
 const { Option } = Select
 
 const { EntityMetadataTemplate } = Models.Entity
-const { getEntityId } = API.Entity
+const { getEntityId, updateEntity } = API.Entity
 
 const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {
     if (!prev.includes(cur)) prev.push(cur)
@@ -96,6 +97,47 @@ export default class PageEntityMeta extends Component<Props, State> {
             this.setState({ entityMetadata })
         }
     }
+
+    registerEntity() {
+        this.setState({ entityUpdating: true })
+
+        // Ensure register action has appropriate Entity ID
+        const newEntity = this.state.newEntity
+        const entityId = getEntityId(this.state.accountAddress)
+
+        const idx = newEntity.actions.findIndex(act => act.type == "browser" && act.register)
+        if (idx < 0) { // add it
+            newEntity.actions.push({
+                type: "browser",
+                name: {
+                    default: "Sign up",
+                    // en: "Sign up",
+                    // fr: "S'inscrire"
+                },
+                register: true,
+                url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
+                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+            })
+        }
+        else { // update it
+            newEntity.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
+            newEntity.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+        }
+
+        return getGatewayClients().then(clients => {
+            const state = getState()
+            return updateEntity(state.address, newEntity, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
+        }).then(newOrigin => {
+            this.props.refresh()
+
+            message.success("The entity has been registered!")
+            this.setState({ entityUpdating: false })
+        }).catch(err => {
+            message.error("The entity could not be registered")
+            this.setState({ entityUpdating: false })
+        })
+    }
+
     updateMetadata() {
         this.setState({ entityUpdating: true })
 
@@ -121,8 +163,13 @@ export default class PageEntityMeta extends Component<Props, State> {
             entityMetadata.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
         }
 
-        updateEntityValues(entityMetadata).then(() => {
-            message.success("The entity has been updated!")
+        return getGatewayClients().then(clients => {
+            const state = getState()
+            return updateEntity(state.address, entityMetadata, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
+        }).then(newOrigin => {
+            this.props.refresh()
+
+            message.success("The entity has been updated")
             this.setState({ entityUpdating: false })
         }).catch(err => {
             message.error("The entity could not be updated")
@@ -163,41 +210,6 @@ export default class PageEntityMeta extends Component<Props, State> {
             this.setState({ newEntity })
         }
     }
-    registerEntity() {
-        this.setState({ entityUpdating: true })
-
-        // Ensure register action has appropriate Entity ID
-        const newEntity = this.state.newEntity
-        const entityId = getEntityId(this.state.accountAddress)
-
-        const idx = newEntity.actions.findIndex(act => act.type == "browser" && act.register)
-        if (idx < 0) { // add it
-            newEntity.actions.push({
-                type: "browser",
-                name: {
-                    default: "Sign up",
-                    // en: "Sign up",
-                    // fr: "S'inscrire"
-                },
-                register: true,
-                url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
-                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
-            })
-        }
-        else { // update it
-            newEntity.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
-            newEntity.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
-        }
-
-        updateEntityValues(newEntity).then(() => {
-            message.success("The entity has been registered!")
-            this.setState({ entityUpdating: false })
-        }).catch(err => {
-            message.error("The entity could not be registered")
-            this.setState({ entityUpdating: false })
-        })
-    }
-
     renderSupportedLanaguages(entity) {
         return <Row gutter={16}>
             <Col xs={24} md={12}>

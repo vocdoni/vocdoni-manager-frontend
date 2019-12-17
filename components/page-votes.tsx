@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown'
 
 import { Layout } from 'antd'
 import PageVoteNew from "./page-vote-new"
-import { getRandomGatewayInfo } from "dvote-js/dist/net/gateway-bootnodes"
+import { getGatewayClients } from "../util/dvote-state"
 const { Header } = Layout
 
 interface Props {
@@ -45,13 +45,12 @@ export default class PageVotes extends Component<Props, State> {
         try {
             this.setState({ processes: processIds })  // set all as a string => loading Skeleton
 
-            const gwInfo = await getRandomGatewayInfo(process.env.ETH_NETWORK_ID as any)
-            if (!gwInfo) throw new Error()
+            const clients = await getGatewayClients()
 
             const hideLoading = message.loading("Loading active votes...")
 
             await Promise.all(processIds.map(id => {
-                return getVoteMetadata(id, gwInfo[process.env.ETH_NETWORK_ID]).then(voteMetadata => {
+                return getVoteMetadata(id, clients.web3Gateway, clients.dvoteGateway).then(voteMetadata => {
                     const updatedProcesses: ({ id: string, data: ProcessMetadata } | string)[] = [].concat(this.state.processes)
                     for (let i = 0; i < this.state.processes.length; i++) {
                         if (typeof updatedProcesses[i] == "string" && updatedProcesses[i] == id) {

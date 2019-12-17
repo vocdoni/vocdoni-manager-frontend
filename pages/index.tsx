@@ -1,6 +1,6 @@
 import { Component } from "react"
-import Web3Manager, { AccountState } from "../util/ethereum-manager"
-import { init, getState } from "../util/dvote"
+import Web3Manager, { AccountState } from "../util/web3-wallet"
+import { init, getState } from "../util/dvote-state"
 import MainLayout, { Page } from "../components/layout"
 import { EntityMetadata } from "dvote-js"
 
@@ -13,9 +13,10 @@ import PageNewsFeed from "../components/page-newsfeed"
 // import PageRelays from "../components/page-relays"
 
 import EthereumInfo from "../components/page-ethereum-info"
-import { message } from "antd"
+import { message, Skeleton, Spin } from "antd"
 
 interface State {
+    isConnected: boolean,
     accountState: AccountState,
     accountAddress: string,
     entityMetadata: EntityMetadata,
@@ -25,6 +26,7 @@ interface State {
 
 export default class Main extends Component<{}, State> {
     state = {
+        isConnected: false,
         accountState: AccountState.Unknown,
         accountAddress: "",
         entityMetadata: null,
@@ -35,7 +37,13 @@ export default class Main extends Component<{}, State> {
     refreshInterval: any
 
     componentDidMount() {
-        this.refreshInterval = setInterval(() => this.refreshState(), 1000)
+        init().then(() => {
+            message.success("Connected")
+        }).catch(err => {
+            message.error("Could not connect")
+        });
+
+        this.refreshInterval = setInterval(() => this.refreshState(), 3500)
         this.refreshState()
     }
 
@@ -44,49 +52,33 @@ export default class Main extends Component<{}, State> {
     }
 
     async refreshState() {
-        const prevAccountState = this.state.accountState
         const currentAccountState = await Web3Manager.getAccountState()
 
-        const prevAddress = this.state.accountAddress
-        const prevEntityMetadata = this.state.entityMetadata
-        const prevVotingProcesses = this.state.votingProcesses
-
-        if (currentAccountState === AccountState.Ok) {
-            // Was locked but now it's not? => connect
-            if (prevAccountState !== AccountState.Ok) {
-                try {
-                    await init();
-                }
-                catch (err) {
-                    console.error(err)
-                    return message.error("Unable to initialize the decentralized connection")
-                }
-            }
-
-            // Is metadata different than it was? => sync
-            const { address, entityMetadata, votingProcesses } = getState();
-            if (prevAddress != address || prevEntityMetadata != entityMetadata || prevVotingProcesses != votingProcesses) {
-                this.setState({
-                    accountAddress: address,
-                    entityMetadata,
-                    votingProcesses
-                })
-            }
-        }
-
-        if (prevAccountState != currentAccountState) {
-            this.setState({ accountState: currentAccountState })
-        }
+        // Is metadata different than it was? => sync
+        const { isConnected, address, entityMetadata, votingProcesses } = getState();
+        this.setState({
+            isConnected,
+            accountAddress: address,
+            entityMetadata,
+            votingProcesses,
+            accountState: currentAccountState
+        })
     }
 
+    renderPleaseWait() {
+        return <div style={{ paddingTop: 30, textAlign: "center" }}>
+            <div>Please, wait... <Spin size="small" /></div>
+        </div>
+    }
 
     renderPageContent() {
         const accountState = this.state.accountState
 
-        if (accountState !== AccountState.Ok) {
-            return <EthereumInfo
-                accountState={this.state.accountState}
-            />
+        if (!this.state.isConnected) {
+            return this.renderPleaseWait()
+        }
+        else if (accountState !== AccountState.Ok) {
+            return <EthereumInfo accountState={this.state.accountState} />
         }
 
         switch (this.state.selectedPage) {

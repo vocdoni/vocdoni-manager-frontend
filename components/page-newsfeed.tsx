@@ -2,13 +2,14 @@ import { Component } from "react"
 import { Col, List, Avatar, Empty, Button, Skeleton, Spin, message, Row } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
 import { API, ProcessMetadata, EntityMetadata, JsonFeed } from "dvote-js"
-import ReactMarkdown from 'react-markdown'
+// import ReactMarkdown from 'react-markdown'
 
 import { Layout } from 'antd'
 import PageNewsFeedNew from "./page-newsfeed-new"
 import { getRandomGatewayInfo } from "dvote-js/dist/net/gateway-bootnodes"
 import { fetchFileString } from "dvote-js/dist/api/file"
 import { checkValidJsonFeed } from "dvote-js/dist/models/json-feed"
+import { getGatewayClients } from "../util/dvote-state"
 const { Header } = Layout
 
 interface Props {
@@ -50,7 +51,8 @@ export default class PageNewsFeed extends Component<Props, State> {
             const gwInfo = await getRandomGatewayInfo(process.env.ETH_NETWORK_ID as any)
             if (!gwInfo) throw new Error()
 
-            const payload = await fetchFileString(newsFeedOrigin, gwInfo[process.env.ETH_NETWORK_ID])
+            const clients = await getGatewayClients()
+            const payload = await fetchFileString(newsFeedOrigin, clients.dvoteGateway)
 
             let feed
             try {
