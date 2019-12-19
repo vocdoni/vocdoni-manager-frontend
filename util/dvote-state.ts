@@ -34,12 +34,12 @@ export async function connectClients() {
         dvoteGateway = new DVoteGateway(gwInfos[ETH_NETWORK_ID])
 
         await dvoteGateway.connect()
-        console.log("POST GW CONNECT")
         await dvoteGateway.getStatus()
-        console.log("POST GET STATUS")
 
-        accountAddressState = await EthereumManager.getAddress()
-        console.log("POST GET STATE", accountAddressState)
+        if (EthereumManager.isEthereumAvailable()) {
+            await EthereumManager.unlock()
+            accountAddressState = await EthereumManager.getAddress()
+        }
 
         // RESOLVER CONTRACT
         entityResolver = await getEntityResolverInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer })
@@ -107,6 +107,9 @@ export async function refreshMetadata(entityAddress: string): Promise<void> {
     entityLoading = true
 
     try {
+        if (EthereumManager.isEthereumAvailable()) {
+            accountAddressState = await EthereumManager.getAddress()
+        }
         entityState = await getEntityMetadataByAddress(entityAddress, web3Gateway, dvoteGateway)
         entityLoading = false
     }

@@ -27,9 +27,9 @@ export default class Web3Manager {
         provider = new providers.Web3Provider(window["web3"].currentProvider);
     }
 
-    public static unlock() {
+    public static unlock(): Promise<void> {
         if (!provider) this.connect();
-        window["ethereum"].enable();
+        return window["ethereum"].enable();
     }
 
     public static getAccountState(): Promise<AccountState> {
