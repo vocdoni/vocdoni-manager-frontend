@@ -22,8 +22,6 @@ interface Props {
 
 interface State {
     selectedPost: JsonFeedPost,
-    feed: JsonFeed,
-    entityDetails: EntityMetadata,
 }
 
 const fieldStyle = { marginTop: 8 }
@@ -42,8 +40,6 @@ const formItemLayout = {
 export default class PageNewsFeedNew extends Component<Props, State> {
     state = {
         selectedPost: this.makeEmptyPost(),
-        feed: this.props.feed,
-        entityDetails: this.props.entityDetails,
     }
 
     addMetadataToPost(post: JsonFeedPost) {
@@ -66,7 +62,6 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         // })
         // const privKey = padding/trim(digest)
         // const data = encrypt("hello", privKey)
-
         const newPost = this.addMetadataToPost(this.state.selectedPost)
 
         // TODO: Store POST in Dexie
@@ -74,7 +69,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         // la única pega es que si se cierra el browser, se pierde todo
 
         // TODO:  Add new post in Items (state.feed.items)
-        let feed = this.state.feed
+        let feed = this.props.feed
         feed.items = [newPost].concat(feed.items)  // Add as the first item
 
         try {
@@ -107,7 +102,6 @@ export default class PageNewsFeedNew extends Component<Props, State> {
             await updateEntity(state.address, entityMetadata, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
-            this.setState({ feed: feed })
             message.success("The post has been successfully published")
 
             if (this.props.refresh) this.props.refresh()
@@ -242,7 +236,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
                     type="primary"
                     icon="rocket"
                     size={'large'}
-                    onClick={this.submit}>
+                    onClick={() => this.submit()}>
                     Submit Post</Button>
             </div>
         </div>

@@ -279,7 +279,7 @@ export default class PageVoteNew extends Component<Props, State> {
                     type="primary"
                     icon="rocket"
                     size={'large'}
-                    onClick={this.createProcess}>
+                    onClick={() => this.createProcess()}>
                     Create new process</Button>
             </div>
         </div>
