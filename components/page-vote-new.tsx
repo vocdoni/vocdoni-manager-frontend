@@ -45,7 +45,7 @@ export default class PageVoteNew extends Component<Props, State> {
         newProcess: this.makeEmptyProcess()
     }
 
-    addQuestion = () => {
+    addQuestion() {
         let process = this.cloneNewProcess();
         let newQuestion = this.makeEmptyQuestion()
         process.details.questions.push(newQuestion as any)
@@ -87,7 +87,7 @@ export default class PageVoteNew extends Component<Props, State> {
         })
     }
 
-    addOption = (questionIdx) => {
+    addOption(questionIdx) {
         let process = this.cloneNewProcess();
         let numberOfOptions = process.details.questions[questionIdx].voteOptions.length
         let newVoteOption = this.makeEmptyVoteOption(numberOfOptions.toString())
@@ -95,13 +95,13 @@ export default class PageVoteNew extends Component<Props, State> {
         this.setState({ newProcess: process })
     }
 
-    removeQuestion = (questionIdx) => {
+    removeQuestion(questionIdx) {
         let process = this.cloneNewProcess();
         process.details.questions.splice(questionIdx, 1)
         this.setState({ newProcess: process })
     }
 
-    removeOption = (questionIdx, optionIdx) => {
+    removeOption(questionIdx, optionIdx) {
         let process = this.cloneNewProcess();
         process.details.questions[questionIdx].voteOptions.splice(optionIdx, 1)
         this.setState({ newProcess: process })
@@ -153,7 +153,7 @@ export default class PageVoteNew extends Component<Props, State> {
         };
     }
 
-    setNestedKey = (obj, path, value) => {
+    setNestedKey(obj, path, value) {
         if (path.length === 1) {
             obj[path] = value
             return
@@ -269,7 +269,7 @@ export default class PageVoteNew extends Component<Props, State> {
                     type="default"
                     icon="plus"
                     size={'default'}
-                    onClick={this.addQuestion}>
+                    onClick={() => this.addQuestion()}>
                     Add a question</Button>
             </div>
 

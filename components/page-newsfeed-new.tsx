@@ -113,7 +113,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         }
     }
 
-    setNestedKey = (obj, path: string[], value: any) => {
+    setNestedKey(obj, path: string[], value: any) {
         if (path.length === 1) {
             obj[path[0]] = value
         }
