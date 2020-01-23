@@ -96,41 +96,47 @@ export default class PageHome extends Component<Props, State> {
 
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
-                <h2>{entity.name[entity.languages[0]]}</h2>
+                <h2>Overview</h2>
             </Header>
 
             <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
                 <div style={{ padding: 30 }}>
                     <Row>
-                        <Col xs={24} md={15}>
-                            <h2>Entity overview</h2>
-                            <p>Entity ID: {entityId}</p>
+                        {/* <Col xs={24} md={15}> */}
+                            <h2>{entity.name[entity.languages[0]]}</h2>
+                            <p>Entity ID</p>
+                            <p>{entityId}</p>
 
-                            <p>Supported languages: {(entity.languages || [] as any).map(
+                            {/* <p>Supported languages: {(entity.languages || [] as any).map(
                                 (lang) => {
 
                                     let code = by639_1[lang]
                                     return code ? code.name : lang
                                 }
-                            ).join(", ")}</p>
+                            ).join(", ")}</p> */}
+                            <h2>Subscription</h2>
+                            <p><a href={subscriptionLink}>Subscription link</a></p>
+                            <p>
+                                <QRCode value={subscriptionLink} size={256} />
+                            </p>
 
-
-                            <p>Description</p>
+                            <p>{entity.description['default']}</p>
+                            {/* <p>Description</p>
                             <ul>
                                 {
                                     entity.languages.map(lang => <li key={lang}>
                                         {lang}: {entity.description[lang]}
                                     </li>)
                                 }
-                            </ul>
-                        </Col>
+                            </ul> */}
+                        {/* </Col>
                         <Col xs={24} md={9}>
                             <h2>Subscription</h2>
                             <p><a href={subscriptionLink}>Subscription link</a></p>
                             <p>
                                 <QRCode value={subscriptionLink} size={256} />
                             </p>
-                        </Col>
+                        </Col> */}
                     </Row>
 
                 </div>

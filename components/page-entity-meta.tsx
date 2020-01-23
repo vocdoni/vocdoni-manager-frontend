@@ -242,16 +242,18 @@ export default class PageEntityMeta extends Component<Props, State> {
         const { entityMetadata: entity } = this.state
 
         return <div style={{ padding: 30 }}>
-            <h2>General</h2>
+            {/* <h2>General</h2>
 
-            {/*this.renderSupportedLanaguages(entity)*/}
+            this.renderSupportedLanaguages(entity)
             <br />
 
-            <h2>Name</h2>
+            <h2>Name</h2> */}
             <Row gutter={16}>
                 {
-                    (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
-                        <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label>
+                    // (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
+                    ['default'].map(lang => <Col xs={24} md={12} key={lang}>
+                        {/* <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label> */}
+                        <label>Entity name</label>
                         <Input type="text"
                             value={entity.name[lang]}
                             prefix={<Icon type="info-circle" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -261,12 +263,13 @@ export default class PageEntityMeta extends Component<Props, State> {
                     </Col>)
                 }
             </Row>
-
-            <h2>Description</h2>
+            {/* <h2>Description</h2> */}
             <Row gutter={16}>
                 {
-                    (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
-                        <label>Description ({by639_1[lang] ? by639_1[lang].name : lang})</label>
+                    // (entity.languages).map(lang => <Col xs={24} md={12} key={lang}>
+                    ['default'].map(lang => <Col xs={24} md={12} key={lang}>
+                        {/* <label>Description ({by639_1[lang] ? by639_1[lang].name : lang})</label> */}
+                        <label>Description</label>
                         <Input type="text"
                             value={entity.description[lang]}
                             prefix={<Icon type="book" style={{ color: 'rgba(0,0,0,.25)' }} />}
@@ -277,7 +280,7 @@ export default class PageEntityMeta extends Component<Props, State> {
                 }
             </Row>
 
-            <h2>General</h2>
+            {/* <h2>General</h2> */}
             <Row gutter={16}>
                 <Col xs={24} md={12}>
                     <label>Avatar (URL)</label>
@@ -287,15 +290,19 @@ export default class PageEntityMeta extends Component<Props, State> {
                         value={entity.media && entity.media.avatar}
                         onChange={ev => this.onExistingFieldChange("media", "avatar", ev.target.value)}
                     />
+                     <br /><br />
                 </Col>
+            </Row>
+            <Row gutter={16}>
                 <Col xs={24} md={12}>
-                    <label>Header (URL)</label>
+                    <label>Header Image (URL)</label>
                     <Input
                         placeholder="Link to a header image"
                         prefix={<Icon type="file-image" style={{ color: 'rgba(0,0,0,.25)' }} />}
                         value={entity.media && entity.media.header}
                         onChange={ev => this.onExistingFieldChange("media", "header", ev.target.value)}
                     />
+                     <br /><br />
                 </Col>
             </Row>
 
@@ -425,7 +432,8 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
-                <h2>{entityMetadata ? entityMetadata.name[entityMetadata.languages[0]] : "Register an Entity"}</h2>
+                {/* <h2>{entityMetadata ? entityMetadata.name[entityMetadata.languages[0]] : "Register an Entity"}</h2> */}
+                <h2>{entityMetadata ? "Profile" : "Register an Entity"}</h2>
             </Header>
 
             <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>

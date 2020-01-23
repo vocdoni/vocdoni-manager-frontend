@@ -70,22 +70,22 @@ const MainLayout: React.FunctionComponent<Props> = ({ children, entityName, curr
                         style={{ height: '100%', borderRight: 0 }}
                     >
                         <Menu.Item key="home" onClick={() => menuClicked && menuClicked(Page.Home)}>
-                            <Icon type="home" />
-                            <span>General</span>
+                            {/* <Icon type="home" /> */}
+                            <span>Overview</span>
                         </Menu.Item>
-                        <SubMenu key="entity" title={<span><Icon type="form" />Entity</span>}>
+                        {/* <SubMenu key="entity" title={<span><Icon type="form" />Entity</span>}> */}
                             <Menu.Item key="metadata" onClick={() => menuClicked && menuClicked(Page.EntityMeta)}>
-                                Metadata
+                                Profile
                             </Menu.Item>
-                        </SubMenu>
-                        <SubMenu key="content" title={<span><Icon type="file-text" />Content</span>}>
+                        {/* </SubMenu>
+                        <SubMenu key="content" title={<span><Icon type="file-text" />Content</span>}> */}
                             <Menu.Item key="diary" onClick={() => menuClicked && menuClicked(Page.OfficialDiary)}>
                                 News feed
                             </Menu.Item>
                             <Menu.Item key="processes" onClick={() => menuClicked && menuClicked(Page.VotingProcesses)}>
-                                Voting processes
+                                Polls
                             </Menu.Item>
-                        </SubMenu>
+                        {/* </SubMenu> */}
                         {/* <SubMenu key="settings" title={<span><Icon type="setting" />Infrastructure</span>}>
                             <Menu.Item key="census-service" onClick={() => menuClicked && menuClicked(Page.CensusService)}>
                                 Census Service

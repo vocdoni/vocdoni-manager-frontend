@@ -96,23 +96,24 @@ export default class PageNewsFeed extends Component<Props, State> {
             `}</style>
             <Row>
                 <Col xs={24} sm={15}>
+                    <img src={item.image} style={{ maxWidth: 200 }} />
                     <h2>{item.title}</h2>
                     <p>{item.summary}</p>
                 </Col>
-                <Col xs={24} sm={9}>
+                {/* <Col xs={24} sm={9}>
                     <img src={item.image} style={{ maxWidth: 200 }} />
-                </Col>
+                </Col> */}
             </Row>
-            <hr style={{ marginTop: 20, marginBottom: 20 }} />
+            {/* <hr style={{ marginTop: 20, marginBottom: 20 }} /> */}
             <Row>
                 <Col xs={24}>
-                    <h3>Content (rich text)</h3>
+                    {/* <h3>Content (rich text)</h3> */}
                     <div dangerouslySetInnerHTML={{ __html: item.content_html }} />
                 </Col>
-                <Col xs={24}>
+                {/* <Col xs={24}>
                     <h3>Content (plain text)</h3>
                     <p>{item.content_text}</p>
-                </Col>
+                </Col> */}
             </Row>
         </div>
     }
@@ -122,7 +123,7 @@ export default class PageNewsFeed extends Component<Props, State> {
             return <Empty description="No news posts" style={{ padding: 30 }} />
 
         return <div style={{ padding: 30 }}>
-            <h3>News posts</h3>
+            {/* <h3>News posts</h3> */}
             <List
                 itemLayout="horizontal"
                 dataSource={this.state.feed.items}
@@ -172,9 +173,9 @@ export default class PageNewsFeed extends Component<Props, State> {
                         type="default"
                         icon="unordered-list"
                         style={{ marginLeft: 8 }}
-                        onClick={() => this.setState({ selectedPost: null })}>Show post list</Button>
+                        onClick={() => this.setState({ selectedPost: null })}>See all posts</Button>
                 </div>
-                <h2>News Feed</h2>
+                <h2>Post</h2>
             </Header>
 
             <div style={{ padding: 24, background: '#fff' }}>

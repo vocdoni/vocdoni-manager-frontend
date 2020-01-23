@@ -376,9 +376,9 @@ export default class PageVoteNew extends Component<Props, State> {
                         type="default"
                         icon="unordered-list"
                         style={{ marginLeft: 8 }}
-                        onClick={() => this.props.showList()}>Show vote list</Button>
+                        onClick={() => this.props.showList()}>See all polls</Button>
                 </div>
-                <h2>New Voting Process</h2>
+                <h2>New Poll</h2>
             </Header>
 
             <div style={{ padding: 24, background: '#fff' }}>

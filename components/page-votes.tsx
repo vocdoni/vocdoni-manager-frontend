@@ -95,13 +95,15 @@ export default class PageVotes extends Component<Props, State> {
 
         return <div style={{ padding: 30 }}>
             <Row>
-                <Col xs={24} sm={12}>
+                {/*<Col xs={24} sm={12}> */}
+                    <img src={processMeta.details.headerImage} style={{ maxWidth: 200 }} />
+                    <br /><br />
+                {/* </Col> */}
+                {/* <Col xs={24} sm={12}> */}
                     <h2>{processMeta.details.title["default"]}</h2>
                     <ReactMarkdown source={processMeta.details.description["default"]} />
-                </Col>
-                <Col xs={24} sm={12}>
-                    <img src={processMeta.details.headerImage} style={{ maxWidth: 200 }} />
-                </Col>
+                {/* </Col> */}
+                
             </Row>
 
             <hr style={{ marginTop: 20, marginBottom: 20 }} />
@@ -150,7 +152,6 @@ export default class PageVotes extends Component<Props, State> {
             return <Empty description="No Voting Processes" style={{ padding: 30 }} />
 
         return <div style={{ padding: 30 }}>
-            <h3>Active votes</h3>
             <List
                 itemLayout="horizontal"
                 dataSource={this.state.processes}
@@ -163,7 +164,8 @@ export default class PageVotes extends Component<Props, State> {
                                 <List.Item.Meta
                                     avatar={<Avatar>{idx + 1}</Avatar>}
                                     title={item.data.details && item.data.details.title && item.data.details.title["default"]}
-                                    description={(item.data.type == "snark-vote" ? "Anonymous vote" : item.data.type == "poll-vote" ? "Poll" : "Petition")}
+                                    // description={(item.data.type == "snark-vote" ? "Anonymous vote" : item.data.type == "poll-vote" ? "Poll" : "Petition")}
+                                    description={item.data.details && item.data.details.description && item.data.details.description["default"]}
                                 />
                                 : null}
                         </Skeleton>
@@ -182,9 +184,9 @@ export default class PageVotes extends Component<Props, State> {
                         type="default"
                         icon="unordered-list"
                         style={{ marginLeft: 8 }}
-                        onClick={() => this.setState({ selectedProcess: null })}>Show vote list</Button>
+                        onClick={() => this.setState({ selectedProcess: null })}>See all polls</Button>
                 </div>
-                <h2>Voting processes</h2>
+                <h2>Poll</h2>
             </Header>
 
             <div style={{ padding: 24, background: '#fff' }}>
@@ -201,9 +203,9 @@ export default class PageVotes extends Component<Props, State> {
                         type="default"
                         icon="plus"
                         style={{ marginLeft: 8 }}
-                        onClick={() => this.setState({ showCreate: true })}>Create voting process</Button>
+                        onClick={() => this.setState({ showCreate: true })}>New Poll</Button>
                 </div>
-                <h2>Voting processes</h2>
+                <h2>Polls</h2>
             </Header>
 
             <div style={{ padding: 24, background: '#fff' }}>
