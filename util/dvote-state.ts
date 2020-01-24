@@ -1,6 +1,7 @@
 import EthereumManager from "./web3-wallet"
 import { API, Wrappers, Network, EntityMetadata, IDVoteGateway, IWeb3Gateway, IEntityResolverContract, IVotingProcessContract } from "dvote-js"
 import { message } from "antd"
+import { Wallet, Signer } from "ethers"
 
 const { getEntityMetadataByAddress, updateEntity } = API.Entity
 const { Gateway: { DVoteGateway, Web3Gateway }, Bootnodes: { getRandomGatewayInfo }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
@@ -42,14 +43,14 @@ export async function connectClients() {
         }
 
         // RESOLVER CONTRACT
-        entityResolver = await getEntityResolverInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer })
+        entityResolver = await getEntityResolverInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer as (Wallet | Signer) })
 
         // React on all events (by now)
         entityResolver.on("TextChanged", () => refreshMetadata(accountAddressState))
         entityResolver.on("ListItemChanged", () => refreshMetadata(accountAddressState))
 
         // PROCESS CONTRACT
-        votingProcess = await getVotingProcessInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer })
+        votingProcess = await getVotingProcessInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer as (Wallet | Signer) })
     }
     catch (err) {
         hideLoading()

@@ -5,7 +5,7 @@ import { JsonFeed, JsonFeedPost, EntityMetadata, API, Network, MultiLanguage } f
 import { checkValidJsonFeed } from "dvote-js/dist/models/json-feed"
 const { Buffer } = require("buffer/")
 import Web3Manager from "../util/web3-wallet"
-// import { utils } from "ethers"
+import { Wallet, Signer } from "ethers"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
@@ -92,14 +92,14 @@ export default class PageNewsFeedNew extends Component<Props, State> {
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(feed))
-            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Manager.signer, clients.dvoteGateway)
+            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Manager.signer as (Wallet | Signer), clients.dvoteGateway)
 
             message.success("The news feed was pinned on IPFS successfully");
 
             let entityMetadata = this.props.entityDetails
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
-            await updateEntity(state.address, entityMetadata, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
+            await updateEntity(state.address, entityMetadata, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
             message.success("The post has been successfully published")

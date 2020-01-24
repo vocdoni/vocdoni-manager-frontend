@@ -7,6 +7,7 @@ import { headerBackgroundColor } from "../lib/constants"
 import Web3Manager from "../util/web3-wallet"
 const { Header } = Layout
 const { Option } = Select
+import { Wallet, Signer } from "ethers"
 
 const { EntityMetadataTemplate } = Models.Entity
 const { getEntityId, updateEntity } = API.Entity
@@ -126,7 +127,7 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         return getGatewayClients().then(clients => {
             const state = getState()
-            return updateEntity(state.address, newEntity, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
+            return updateEntity(state.address, newEntity, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
         }).then(newOrigin => {
             this.props.refresh()
 
@@ -165,7 +166,7 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         return getGatewayClients().then(clients => {
             const state = getState()
-            return updateEntity(state.address, entityMetadata, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
+            return updateEntity(state.address, entityMetadata, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
         }).then(newOrigin => {
             this.props.refresh()
 

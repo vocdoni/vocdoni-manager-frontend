@@ -114,7 +114,7 @@ export default class PageHome extends Component<Props, State> {
                                     return code ? code.name : lang
                                 }
                             ).join(", ")}</p> */}
-                            <h2>Subscription</h2>
+                            {/* <h2>Subscription</h2> */}
                             <p><a href={subscriptionLink}>Subscription link</a></p>
                             <p>
                                 <QRCode value={subscriptionLink} size={256} />

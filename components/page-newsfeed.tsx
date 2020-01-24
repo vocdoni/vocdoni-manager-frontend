@@ -1,7 +1,7 @@
 import { Component } from "react"
 import { Col, List, Avatar, Empty, Button, Skeleton, Spin, message, Row } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
-import { API, ProcessMetadata, EntityMetadata, JsonFeed } from "dvote-js"
+import { API, ProcessMetadata, EntityMetadata, JsonFeed, MultiLanguage } from "dvote-js"
 // import ReactMarkdown from 'react-markdown'
 
 import { Layout } from 'antd'
@@ -9,7 +9,10 @@ import PageNewsFeedNew from "./page-newsfeed-new"
 import { getRandomGatewayInfo } from "dvote-js/dist/net/gateway-bootnodes"
 import { fetchFileString } from "dvote-js/dist/api/file"
 import { checkValidJsonFeed } from "dvote-js/dist/models/json-feed"
-import { getGatewayClients } from "../util/dvote-state"
+import Web3Manager from "../util/web3-wallet"
+import { getGatewayClients, getState  } from "../util/dvote-state"
+import { updateEntity } from "dvote-js/dist/api/entity"
+import { Wallet, Signer } from "ethers"
 const { Header } = Layout
 
 interface Props {
@@ -62,6 +65,7 @@ export default class PageNewsFeed extends Component<Props, State> {
             }
             catch (err) {
                 message.warn("The current News Feed does not seem to have a correct format")
+                console.log(err);
             }
 
             this.setState({ feed, loading: false })
@@ -74,6 +78,41 @@ export default class PageNewsFeed extends Component<Props, State> {
             else
                 message.error("The news feed could not be loaded")
         }
+    }
+
+    async deletePost() {
+        let feed = JSON.parse(JSON.stringify(this.state.feed))
+        let postId = this.state.selectedPost
+        feed.items = feed.items.splice(postId,postId)
+
+        const hideLoading = message.loading('Action in progress...', 0)
+
+        try {
+            const clients = await getGatewayClients()
+            const state = getState()
+
+            // TODO: Check why for some reason addFile doesn't work without Buffer
+            const feedContent = Buffer.from(JSON.stringify(feed))
+            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Manager.signer as (Wallet | Signer), clients.dvoteGateway)
+            
+            message.success("The news feed was pinned on IPFS successfully");
+
+            let entityMetadata = this.props.entityDetails
+            entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
+
+            await updateEntity(state.address, entityMetadata, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            hideLoading()
+
+            message.success("The post has been deleted successfully")
+            this.setState({ feed: feed, selectedPost: null })
+            if (this.props.refresh) this.props.refresh()
+        }
+        catch (err) {
+            hideLoading()
+            console.error("The post could not be deleted", err)
+            message.error("The post could not be deleted")
+        }
+
     }
 
     renderPleaseWait() {
@@ -95,8 +134,10 @@ export default class PageNewsFeed extends Component<Props, State> {
             }
             `}</style>
             <Row>
-                <Col xs={24} sm={15}>
+                {/* <Col xs={24} sm={15}> */}
+                <Col xs={24} >
                     <img src={item.image} style={{ maxWidth: 200 }} />
+                    <br /><br />
                     <h2>{item.title}</h2>
                     <p>{item.summary}</p>
                 </Col>
@@ -174,6 +215,13 @@ export default class PageNewsFeed extends Component<Props, State> {
                         icon="unordered-list"
                         style={{ marginLeft: 8 }}
                         onClick={() => this.setState({ selectedPost: null })}>See all posts</Button>
+                </div>
+                <div style={{ float: "right" }}>
+                    <Button
+                        type="default"
+                        icon="minus"
+                        style={{ marginLeft: 8 }}
+                        onClick={() => this.deletePost()}>Delete Post</Button>
                 </div>
                 <h2>Post</h2>
             </Header>

@@ -3,6 +3,7 @@ import { Col, List, Avatar, Empty, Button, Input, Form, Select, InputNumber, mes
 import { headerBackgroundColor } from "../lib/constants"
 import { ProcessMetadata, MultiLanguage, API, Network } from "dvote-js"
 import Web3Manager from "../util/web3-wallet"
+import { Wallet, Signer } from "ethers"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
@@ -74,7 +75,7 @@ export default class PageVoteNew extends Component<Props, State> {
         const hideLoading = message.loading('Action in progress..', 0)
 
         Network.Bootnodes.getRandomGatewayInfo("goerli").then((gws) => {
-            return API.Vote.createVotingProcess(this.state.newProcess, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
+            return API.Vote.createVotingProcess(this.state.newProcess, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
         }).then(processId => {
             message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
             hideLoading()
