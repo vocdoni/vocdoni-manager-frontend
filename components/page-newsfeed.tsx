@@ -82,8 +82,13 @@ export default class PageNewsFeed extends Component<Props, State> {
 
     async deletePost() {
         let feed = JSON.parse(JSON.stringify(this.state.feed))
-        let postId = this.state.selectedPost
-        feed.items = feed.items.splice(postId,postId)
+        let post = this.state.selectedPost
+        // console.log(feed.items);
+        let postId =  feed.items.findIndex(o => o.id === post)
+        // console.log(postId);
+        feed.items = feed.items.splice(postId,1)
+        // console.log(feed.items);
+        
 
         const hideLoading = message.loading('Action in progress...', 0)
 
