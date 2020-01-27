@@ -104,6 +104,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
 
             message.success("The post has been successfully published")
 
+            this.props.showList()
             if (this.props.refresh) this.props.refresh()
         }
         catch (err) {
