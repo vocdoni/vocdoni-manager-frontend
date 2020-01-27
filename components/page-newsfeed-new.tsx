@@ -153,12 +153,33 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         return post
     }
 
+    openInNewTab(url) {
+        let win = window.open(url, '_blank');
+        win.focus();
+    }
+
     renderPostEditor() {
         const currentPost = this.state.selectedPost
 
         return <div style={{ padding: 30 }}>
-            <h2>General</h2>
             <Form {...formItemLayout} onSubmit={e => { e.preventDefault() }}>
+                <Form.Item label="Header Image URI">
+                    <Input
+                        style={fieldStyle}
+                        // placeholder="http://link.item/1234"
+                        value={currentPost.image}
+                        onChange={ev => this.setselectedPostField(["image"], ev.target.value)}
+                    />
+                <p style={{ marginBottom: 0 }}>
+                <Button
+                    style={fieldStyle}
+                    type="link"
+                    // icon="rocket"
+                    size={'small'}
+                    onClick={() => this.openInNewTab('https://unsplash.com/')}>
+                    Browse images in Unsplash.com</Button>
+                </p>
+                </Form.Item>
                 <Form.Item label="Title">
                     <Input
                         style={fieldStyle}
@@ -168,7 +189,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
                         onChange={ev => this.setselectedPostField(['title'], ev.target.value)}
                     />
                 </Form.Item>
-                <Form.Item label="Summary">
+                {/* <Form.Item label="Summary">
                     <TextArea
                         style={fieldStyle}
                         placeholder="A brief summary, containing the key purpose of the post described below."
@@ -176,8 +197,8 @@ export default class PageNewsFeedNew extends Component<Props, State> {
                         value={currentPost.summary}
                         onChange={ev => this.setselectedPostField(["summary"], ev.target.value)}
                     />
-                </Form.Item>
-                <Form.Item label="Content (plain text)">
+                </Form.Item> */}
+                {/* <Form.Item label="Content (plain text)">
                     <TextArea
                         style={fieldStyle}
                         placeholder="Your text goes here"
@@ -185,7 +206,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
                         value={currentPost.content_text}
                         onChange={ev => this.setselectedPostField(["content_text"], ev.target.value)}
                     />
-                </Form.Item>
+                </Form.Item> */}
                 <Form.Item label="Content (HTML)">
                     <TextArea
                         style={fieldStyle}
@@ -195,16 +216,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
                         onChange={ev => this.setselectedPostField(["content_html"], ev.target.value)}
                     />
                 </Form.Item>
-                <Form.Item label="Image Link">
-                    <Input
-                        style={fieldStyle}
-                        placeholder="http://link.item/1234"
-                        value={currentPost.image}
-                        onChange={ev => this.setselectedPostField(["image"], ev.target.value)}
-                    />
-                </Form.Item>
-
-                <Form.Item label="Tags">
+                {/* <Form.Item label="Tags">
                     <Input
                         style={fieldStyle}
                         placeholder="tag1;tag2;tag3"
@@ -228,7 +240,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
                         value={currentPost.author.url}
                         onChange={ev => this.setselectedPostField(["author", "url"], ev.target.value)}
                     />
-                </Form.Item>
+                </Form.Item> */}
             </Form>
 
             <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
@@ -238,7 +250,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
                     icon="rocket"
                     size={'large'}
                     onClick={() => this.submit()}>
-                    Submit Post</Button>
+                    Publish Post</Button>
             </div>
         </div>
     }

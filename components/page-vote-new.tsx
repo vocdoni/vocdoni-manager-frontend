@@ -127,7 +127,8 @@ export default class PageVoteNew extends Component<Props, State> {
                 description: {
                     default: ""
                 },
-                headerImage: "https://source.unsplash.com/random/",
+                // headerImage: "https://source.unsplash.com/random/",
+                headerImage: "",
                 questions: [this.makeEmptyQuestion() as any]
             }
         }
@@ -172,12 +173,16 @@ export default class PageVoteNew extends Component<Props, State> {
         this.setState({ newProcess: process })
     }
 
+    openInNewTab(url) {
+        let win = window.open(url, '_blank');
+        win.focus();
+    }
+
     renderCreateProcess() {
 
         let questions = this.state.newProcess.details.questions
 
         return <div style={{ padding: 30 }}>
-            <h2>General</h2>
             <Form {...formItemLayout} onSubmit={e => { e.preventDefault() }}>
                 <Form.Item label="Title">
                     <Input
@@ -188,7 +193,7 @@ export default class PageVoteNew extends Component<Props, State> {
                         onChange={ev => this.setNewProcessField(['details', 'title', 'default'], ev.target.value)}
                     />
                 </Form.Item>
-                <Form.Item label="Type">
+                {/* <Form.Item label="Type">
                     <Select
                         showSearch
                         style={{ width: 200 }}
@@ -200,7 +205,7 @@ export default class PageVoteNew extends Component<Props, State> {
                         <Select.Option value="poll-vote">Poll</Select.Option>
                         <Select.Option value="petition-sign" disabled>Petition</Select.Option>
                     </Select>
-                </Form.Item>
+                </Form.Item> */}
                 <Form.Item label="Description">
                     <TextArea
                         style={fieldStyle}
@@ -218,7 +223,8 @@ export default class PageVoteNew extends Component<Props, State> {
                         value={this.state.newProcess.census.merkleRoot}
                         onChange={ev => this.setNewProcessField(['census', 'merkleRoot'], ev.target.value)}
                     />
-                    <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p>
+                    <p style={{ marginBottom: 0 }}><small>You can find this value in the Census-manager</small></p>
+                    {/* <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p> */}
                 </Form.Item>
                 <Form.Item label="Census Merkle Tree origin">
                     <Input
@@ -228,7 +234,16 @@ export default class PageVoteNew extends Component<Props, State> {
                         value={this.state.newProcess.census.merkleTree}
                         onChange={ev => this.setNewProcessField(['census', 'merkleTree'], ev.target.value)}
                     />
-                    <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p>
+                    <p style={{ marginBottom: 0 }}><small>You can find this value in the Census-manager</small>
+                    <Button
+                    style={fieldStyle}
+                    type="link"
+                    // icon="rocket"
+                    size={'small'}
+                    onClick={() => this.openInNewTab('http://census-manager.vocdoni.net/')}>
+                    Go to Census-manager</Button>
+                    </p>
+                    {/* <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p> */}
                 </Form.Item>
                 <Form.Item label="Start block">
                     <InputNumber
@@ -253,10 +268,19 @@ export default class PageVoteNew extends Component<Props, State> {
                 <Form.Item label="Header image URI">
                     <Input
                         style={fieldStyle}
-                        placeholder="Header image Uri"
+                        // placeholder="Header image Uri"
                         value={this.state.newProcess.details.headerImage}
                         onChange={ev => this.setNewProcessField(["details", "headerImage"], ev.target.value)}
                     />
+                    <p style={{ marginBottom: 0 }}>
+                    <Button
+                    style={fieldStyle}
+                    type="link"
+                    // icon="rocket"
+                    size={'small'}
+                    onClick={() => this.openInNewTab('https://unsplash.com/')}>
+                    Browse images in Unsplash.com</Button>
+                    </p>
                 </Form.Item>
             </Form>
 
@@ -281,7 +305,7 @@ export default class PageVoteNew extends Component<Props, State> {
                     icon="rocket"
                     size={'large'}
                     onClick={() => this.createProcess()}>
-                    Create new process</Button>
+                    Publish Poll</Button>
             </div>
         </div>
     }
@@ -331,16 +355,20 @@ export default class PageVoteNew extends Component<Props, State> {
                         options[questionIdx].voteOptions.map((option, optionIdx) => this.renderCreateOption(questionIdx, optionIdx))
                     }
                 </div>
-            </Form>
+            
 
-            <div style={{ display: "flex", justifyContent: "flex-start", paddingTop: 8 }}>
+            {/* <div style={{float: "right", paddingTop: 8, paddingBottom: 24}}> */}
+            <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
                 <Button
+                    style={{ float: "right" , paddingBottom: 8, paddingTop: 8}}
+                    // style={fieldStyle}
                     type="default"
                     icon="plus"
                     size={'default'}
                     onClick={() => this.addOption(questionIdx)}>
-                </Button>
+                Add Option</Button>
             </div>
+            </Form>
         </div>
     }
 
