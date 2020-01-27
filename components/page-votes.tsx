@@ -7,7 +7,10 @@ import ReactMarkdown from 'react-markdown'
 
 import { Layout } from 'antd'
 import PageVoteNew from "./page-vote-new"
-import { getGatewayClients } from "../util/dvote-state"
+import Web3Manager from "../util/web3-wallet"
+import { getGatewayClients, getState } from "../util/dvote-state"
+import { updateEntity } from "dvote-js/dist/api/entity"
+import { Wallet, Signer } from "ethers"
 const { Header } = Layout
 
 interface Props {
@@ -78,6 +81,43 @@ export default class PageVotes extends Component<Props, State> {
             else
                 message.error("The list of voting processes could not be loaded")
         }
+    }
+
+    async endProcess() {
+        let activeProcesses = JSON.parse(JSON.stringify(this.props.entityDetails.votingProcesses.active))
+        let endedProcesses = JSON.parse(JSON.stringify(this.props.entityDetails.votingProcesses.ended))
+        // let processId =  activeProcesses.findIndex(o => o.id === post)
+        let processId =  activeProcesses.indexOf(this.state.selectedProcess)
+        activeProcesses.splice(processId,1)
+        endedProcesses.push(this.state.selectedProcess)
+        
+
+        const hideLoading = message.loading('Action in progress...', 0)
+
+        try {
+            const clients = await getGatewayClients()
+            const state = getState()
+
+            // TODO: Check if the process has actually ended before proceeding consulting the
+            // actual block number of Vochain and the finishBlock
+
+            let entityMetadata = this.props.entityDetails
+            entityMetadata.votingProcesses.active = activeProcesses
+            entityMetadata.votingProcesses.ended = endedProcesses
+
+            await updateEntity(state.address, entityMetadata, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            hideLoading()
+
+            message.success("The process has ended successfully")
+            this.setState({ selectedProcess : null })
+            if (this.props.refresh) this.props.refresh()
+        }
+        catch (err) {
+            hideLoading()
+            console.error("The process could not be ended", err)
+            message.error("The process could not be ended")
+        }
+
     }
 
     // renderPleaseWait() {
@@ -185,6 +225,13 @@ export default class PageVotes extends Component<Props, State> {
                         icon="unordered-list"
                         style={{ marginLeft: 8 }}
                         onClick={() => this.setState({ selectedProcess: null })}>See all polls</Button>
+                </div>
+                <div style={{ float: "right" }}>
+                    <Button
+                        type="default"
+                        icon="minus"
+                        style={{ marginLeft: 8 }}
+                        onClick={() => this.endProcess()}>End Process</Button>
                 </div>
                 <h2>Poll</h2>
             </Header>
