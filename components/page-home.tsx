@@ -82,12 +82,19 @@ export default class PageHome extends Component<Props, State> {
         </>
     }
 
+    openInNewTab(url) {
+        let win = window.open(url, '_blank');
+        win.focus();
+    }
+
     render() {
         const entity: EntityMetadata = this.state.entityMetadata
         if (!entity) return this.renderNoEntity()
 
+
         const entityId = getEntityId(this.state.accountAddress)
         let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&`
+        let resultsLink = `https://visualizer.vocdoni.net/?entityId=${entityId}&networkId=${process.env.ETH_NETWORK_ID}`
         if (Object.keys(this.state.bootnodes).length >= 1) {
             subscriptionLink += this.state.bootnodes[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
         }
@@ -115,12 +122,15 @@ export default class PageHome extends Component<Props, State> {
                                 }
                             ).join(", ")}</p> */}
                             {/* <h2>Subscription</h2> */}
-                            <p><a href={subscriptionLink}>Subscription link</a></p>
+                            <p><a onClick={() => this.openInNewTab(resultsLink)}>Subscription link</a></p>
                             <p>
                                 <QRCode value={subscriptionLink} size={256} />
                             </p>
 
+
                             <p>{entity.description['default']}</p>
+
+                            <p><a href={resultsLink}>Vote Results</a></p>
                             {/* <p>Description</p>
                             <ul>
                                 {
