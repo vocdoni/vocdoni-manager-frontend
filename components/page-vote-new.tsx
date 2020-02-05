@@ -1,7 +1,8 @@
-import { Component } from "react"
-import { Col, List, Avatar, Empty, Button, Input, Form, Select, InputNumber, message } from 'antd'
+import { Component, createRef } from "react"
+import { Row, Col, List, Avatar, Empty, Button, Input, Form, Select, InputNumber, message, Typography } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
 import { ProcessMetadata, MultiLanguage, API, Network } from "dvote-js"
+const { Vote: { createVotingProcess, getBlockHeight } } = API
 import Web3Manager from "../util/web3-wallet"
 import { Wallet, Signer } from "ethers"
 
@@ -19,8 +20,15 @@ interface Props {
 
 interface State {
     newProcess: ProcessMetadata
+    currentBlock: number
+    currentDate: Date
+    startDate: Date
+    endDate: Date
+    allowSubmit: boolean
 }
 
+const blockTime = Number(process.env.BLOCK_TIME)
+const waitTime = 600 // 10 minutes
 
 const fieldStyle = { marginTop: 8 }
 /*interface Question {
@@ -40,10 +48,30 @@ const formItemLayout = {
         sm: { span: 19 },
     },
 }
-
 export default class PageVoteNew extends Component<Props, State> {
+    
+    // startRef = createRef()
+    // endRef = createRef()
+
     state = {
-        newProcess: this.makeEmptyProcess()
+        newProcess: this.makeEmptyProcess(),
+        currentBlock: 0,
+        currentDate: new Date(),
+        startDate: null,
+        endDate: null,
+        allowSubmit: true,
+    }
+
+    async componentDidMount() {
+        await this.loadTime()
+        this.calculateStartDate(null)
+        this.calculateEndDate(null)
+    }
+
+    async loadTime() {
+        const clients = await getGatewayClients()
+        const currentBlock = await getBlockHeight(clients.dvoteGateway)
+        this.setState({ currentBlock })
     }
 
     addQuestion() {
@@ -58,34 +86,47 @@ export default class PageVoteNew extends Component<Props, State> {
             message.error("Start block must be a number")
             return false
         }
-        if (isNaN(this.state.newProcess.numberOfBlocks)) {
-            message.error("Number of block must be a number")
+        if (isNaN(this.state.newProcess.numberOfBlocks) || this.state.newProcess.numberOfBlocks <= 0) {
+            message.error("End block must be a positive number")
             return false
         }
 
+        if (isNaN(this.state.newProcess.numberOfBlocks)) {
+            message.error("Number of blocks must be a number")
+            return false
+        }
+
+        if (this.state.newProcess.startBlock <= this.state.currentBlock) {
+            message.error("Start block needs to be higher than current block")
+            return false
+        }
         return true
     }
 
     async createProcess() {
         if (!this.checkFields()) {
+            this.setState({ allowSubmit: false })
             return message.warn("The metadata fields are not valid")
+        } else {
+            this.setState({ allowSubmit: true })
         }
 
         const clients = await getGatewayClients()
         const hideLoading = message.loading('Action in progress..', 0)
 
-        Network.Bootnodes.getRandomGatewayInfo("goerli").then((gws) => {
-            return API.Vote.createVotingProcess(this.state.newProcess, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
-        }).then(processId => {
-            message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
-            hideLoading()
+        return createVotingProcess(this.state.newProcess, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            .then(processId => {
+                message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
+                hideLoading()
 
-            if (this.props.refresh) this.props.refresh()
-        }).catch(err => {
-            hideLoading()
+                if (this.props.refresh) this.props.refresh()
+                this.props.showList()
+            }).catch(err => {
+                hideLoading()
 
-            message.error("The voting process could not be created")
-        })
+                message.error("The voting process could not be created")
+                this.props.showList()
+            })
     }
 
     addOption(questionIdx) {
@@ -178,6 +219,31 @@ export default class PageVoteNew extends Component<Props, State> {
         win.focus();
     }
 
+    calculateStartDate(startBlock) {
+        startBlock = (startBlock || this.state.currentBlock + 60)
+        console.log("Current",this.state.currentBlock);
+        // console.log("State Start",this.state.newProcess.startBlock);
+        console.log("Start",startBlock);
+        let secondsDiff = (startBlock - this.state.currentBlock) * blockTime
+        console.log("Diff",secondsDiff);
+        let startDate = new Date(this.state.currentDate)
+        startDate.setTime(startDate.getTime() + secondsDiff * 1000)
+        this.setState({ startDate })
+
+        // let 
+    }
+
+    calculateEndDate(numberOfBlocks) {
+        let startBlock = (this.state.newProcess.startBlock || this.state.currentBlock + 60)
+        let endBlock = (numberOfBlocks) ? this.state.newProcess.numberOfBlocks + startBlock : startBlock+waitTime/blockTime + 24 * 60 * 6
+        // let endBlock = this.state.newProcess.numberOfBlocks + startBlock
+        let secondsDiff = (endBlock - startBlock) * blockTime
+        let endDate = new Date(this.state.currentDate)
+        endDate.setTime(endDate.getTime() + secondsDiff * 1000)
+        this.setState({ endDate })
+        // let 
+    }
+
     renderCreateProcess() {
 
         let questions = this.state.newProcess.details.questions
@@ -210,7 +276,7 @@ export default class PageVoteNew extends Component<Props, State> {
                     <TextArea
                         style={fieldStyle}
                         placeholder="Description"
-                        autosize={{ minRows: 4, maxRows: 8 }}
+                        autoSize={{ minRows: 4, maxRows: 8 }}
                         value={this.state.newProcess.details.description['default']}
                         onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
                     />
@@ -235,34 +301,62 @@ export default class PageVoteNew extends Component<Props, State> {
                         onChange={ev => this.setNewProcessField(['census', 'merkleTree'], ev.target.value)}
                     />
                     <p style={{ marginBottom: 0 }}><small>You can find this value in the Census-manager</small>
-                    <Button
-                    style={fieldStyle}
-                    type="link"
-                    // icon="rocket"
-                    size={'small'}
-                    onClick={() => this.openInNewTab('http://census-manager.vocdoni.net/')}>
-                    Go to Census-manager</Button>
+                        <Button
+                            style={fieldStyle}
+                            type="link"
+                            // icon="rocket"
+                            size={'small'}
+                            onClick={() => this.openInNewTab('http://census-manager.vocdoni.net/')}>
+                            Go to Census-manager</Button>
                     </p>
                     {/* <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p> */}
                 </Form.Item>
-                <Form.Item label="Start block">
-                    <InputNumber
-                        style={fieldStyle}
-                        min={0}
-                        placeholder="1234"
-                        value={this.state.newProcess.startBlock}
-                        onChange={num => this.setNewProcessField(["startBlock"], num)}
-                    />
-
+                <Form.Item label="Start block" >
+                    <Row>
+                        <Col xs={12} sm={12}>
+                            <InputNumber 
+                                style={fieldStyle}
+                                min={0}
+                                placeholder={(this.state.currentBlock + waitTime / blockTime).toString()}
+                                defaultValue={(this.state.currentBlock + waitTime / blockTime)}
+                                value={this.state.newProcess.startBlock}
+                                onChange={num => {
+                                    this.setNewProcessField(["startBlock"], num)
+                                    this.calculateStartDate(num)
+                                }}
+                            />
+                            <Typography.Text>Current Block: {this.state.currentBlock}</Typography.Text>
+                        </Col>
+                        <Col>
+                        {/* <Typography.Text id="start" ><div ref="startRef">Estimated Start Date: {(this.state.startDate) ? this.state.startDate.toString() : ""}</div></Typography.Text> */}
+                        <Typography.Text id="start" >Estimated Start Date: {(this.state.startDate) ? this.state.startDate.toString() : ""}</Typography.Text>
+                        </Col>
+                    </Row>
                 </Form.Item>
                 <Form.Item label="Number of blocks">
-                    <InputNumber
-                        style={fieldStyle}
-                        min={1}
-                        placeholder="200"
-                        value={this.state.newProcess.numberOfBlocks}
-                        onChange={num => this.setNewProcessField(["numberOfBlocks"], num)}
-                    />
+                    <Row>
+                        <Col xs={12} sm={12}>
+                            <InputNumber
+                                style={fieldStyle}
+                                min={1}
+                                placeholder={(waitTime/blockTime + 24 * 60 * 6).toString()}
+                                value={this.state.newProcess.numberOfBlocks}
+                                defaultValue={(waitTime/blockTime + 24 * 60 * 6)}
+                                onChange={num => {
+                                    this.setNewProcessField(["numberOfBlocks"], num)
+                                    this.calculateEndDate(num)
+                                    // setTimeout( document.getElementById("end").setAttribute("underline","true"),1)
+                                    
+                                }
+                                }
+                            />
+                        </Col>
+                        <Col>
+                            {/* <div><p>Estimated Finish Date: {(this.state.endDate) ? this.state.endDate.toString() : ""}</p></div> */}
+                            {/* <div ref="endRef"><Typography.Text id="end">Estimated Finish Date: {(this.state.endDate) ? this.state.endDate.toString() : ""}</Typography.Text></div> */}
+                            <Typography.Text id="end">Estimated Finish Date: {(this.state.endDate) ? this.state.endDate.toString() : ""}</Typography.Text>
+                        </Col>
+                    </Row>
                 </Form.Item>
 
                 <Form.Item label="Header image URI">
@@ -273,13 +367,13 @@ export default class PageVoteNew extends Component<Props, State> {
                         onChange={ev => this.setNewProcessField(["details", "headerImage"], ev.target.value)}
                     />
                     <p style={{ marginBottom: 0 }}>
-                    <Button
-                    style={fieldStyle}
-                    type="link"
-                    // icon="rocket"
-                    size={'small'}
-                    onClick={() => this.openInNewTab('https://unsplash.com/')}>
-                    Browse images in Unsplash.com</Button>
+                        <Button
+                            style={fieldStyle}
+                            type="link"
+                            // icon="rocket"
+                            size={'small'}
+                            onClick={() => this.openInNewTab('https://unsplash.com/')}>
+                            Browse images in Unsplash.com</Button>
                     </p>
                 </Form.Item>
             </Form>
@@ -304,6 +398,7 @@ export default class PageVoteNew extends Component<Props, State> {
                     type="primary"
                     icon="rocket"
                     size={'large'}
+                    disabled={!this.state.allowSubmit}
                     onClick={() => this.createProcess()}>
                     Publish Poll</Button>
             </div>
@@ -344,7 +439,7 @@ export default class PageVoteNew extends Component<Props, State> {
                     <TextArea
                         style={fieldStyle}
                         // placeholder="Description"
-                        autosize={{ minRows: 4, maxRows: 8 }}
+                        autoSize={{ minRows: 4, maxRows: 8 }}
                         value={this.state.newProcess.details.questions[questionIdx].description.default}
                         onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], ev.target.value)}
                     />
@@ -355,19 +450,19 @@ export default class PageVoteNew extends Component<Props, State> {
                         options[questionIdx].voteOptions.map((option, optionIdx) => this.renderCreateOption(questionIdx, optionIdx))
                     }
                 </div>
-            
 
-            {/* <div style={{float: "right", paddingTop: 8, paddingBottom: 24}}> */}
-            <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-                <Button
-                    style={{ float: "right" , paddingBottom: 8, paddingTop: 8}}
-                    // style={fieldStyle}
-                    type="default"
-                    icon="plus"
-                    size={'default'}
-                    onClick={() => this.addOption(questionIdx)}>
-                Add Option</Button>
-            </div>
+
+                {/* <div style={{float: "right", paddingTop: 8, paddingBottom: 24}}> */}
+                <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
+                    <Button
+                        style={{ float: "right", paddingBottom: 8, paddingTop: 8 }}
+                        // style={fieldStyle}
+                        type="default"
+                        icon="plus"
+                        size={'default'}
+                        onClick={() => this.addOption(questionIdx)}>
+                        Add Option</Button>
+                </div>
             </Form>
         </div>
     }
