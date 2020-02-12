@@ -114,7 +114,7 @@ export default class PageVoteNew extends Component<Props, State> {
         const clients = await getGatewayClients()
         const hideLoading = message.loading('Action in progress..', 0)
 
-        return createVotingProcess(this.state.newProcess, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+        return createVotingProcess(this.state.newProcess, Web3Manager.signer as any, clients.web3Gateway, clients.dvoteGateway)
             .then(processId => {
                 message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
                 hideLoading()
@@ -221,11 +221,7 @@ export default class PageVoteNew extends Component<Props, State> {
 
     calculateStartDate(startBlock) {
         startBlock = (startBlock || this.state.currentBlock + 60)
-        console.log("Current",this.state.currentBlock);
-        // console.log("State Start",this.state.newProcess.startBlock);
-        console.log("Start",startBlock);
         let secondsDiff = (startBlock - this.state.currentBlock) * blockTime
-        console.log("Diff",secondsDiff);
         let startDate = new Date(this.state.currentDate)
         startDate.setTime(startDate.getTime() + secondsDiff * 1000)
         this.setState({ startDate })
@@ -314,6 +310,7 @@ export default class PageVoteNew extends Component<Props, State> {
                 <Form.Item label="Start block" >
                     <Row>
                         <Col xs={12} sm={12}>
+                            {/* TODO Check onChanged */}
                             <InputNumber 
                                 style={fieldStyle}
                                 min={0}
@@ -398,7 +395,7 @@ export default class PageVoteNew extends Component<Props, State> {
                     type="primary"
                     icon="rocket"
                     size={'large'}
-                    disabled={!this.state.allowSubmit}
+                    // disabled={!this.state.allowSubmit}
                     onClick={() => this.createProcess()}>
                     Publish Poll</Button>
             </div>

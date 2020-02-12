@@ -95,14 +95,14 @@ export default class PageNewsFeed extends Component<Props, State> {
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(feed))
-            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Manager.signer as (Wallet | Signer), clients.dvoteGateway)
+            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Manager.signer as any, clients.dvoteGateway)
             
             message.success("The news feed was pinned on IPFS successfully");
 
             let entityMetadata = this.props.entityDetails
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
-            await updateEntity(state.address, entityMetadata, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            await updateEntity(state.address, entityMetadata, Web3Manager.signer as any, clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
             message.success("The post has been deleted successfully")
@@ -138,13 +138,13 @@ export default class PageNewsFeed extends Component<Props, State> {
             <Row>
                 {/* <Col xs={24} sm={15}> */}
                 <Col xs={24} >
-                    <img src={item.image} style={{ maxWidth: 200 }} />
+                    <img crossOrigin="anonymous" src={item.image} style={{ maxWidth: 200 }} />
                     <br /><br />
                     <h2>{item.title}</h2>
                     <p>{item.summary}</p>
                 </Col>
                 {/* <Col xs={24} sm={9}>
-                    <img src={item.image} style={{ maxWidth: 200 }} />
+                    <img crossOrigin="anonymous" src={item.image} style={{ maxWidth: 200 }} />
                 </Col> */}
             </Row>
             {/* <hr style={{ marginTop: 20, marginBottom: 20 }} /> */}

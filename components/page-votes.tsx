@@ -105,7 +105,7 @@ export default class PageVotes extends Component<Props, State> {
             entityMetadata.votingProcesses.active = activeProcesses
             entityMetadata.votingProcesses.ended = endedProcesses
 
-            await updateEntity(state.address, entityMetadata, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            await updateEntity(state.address, entityMetadata, Web3Manager.signer as any, clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
             message.success("The process has ended successfully")
@@ -136,7 +136,7 @@ export default class PageVotes extends Component<Props, State> {
         return <div style={{ padding: 30 }}>
             <Row>
                 {/*<Col xs={24} sm={12}> */}
-                    <img src={processMeta.details.headerImage} style={{ maxWidth: 200 }} />
+                    <img crossOrigin="anonymous" src={processMeta.details.headerImage} style={{ maxWidth: 200 }} />
                     <br /><br />
                 {/* </Col> */}
                 {/* <Col xs={24} sm={12}> */}
