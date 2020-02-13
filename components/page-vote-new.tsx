@@ -309,7 +309,7 @@ export default class PageVoteNew extends Component<Props, State> {
                 </Form.Item>
                 <Form.Item label="Start block" >
                     <Row>
-                        <Col xs={12} sm={12}>
+                        <Col>
                             {/* TODO Check onChanged */}
                             <InputNumber 
                                 style={fieldStyle}
@@ -332,7 +332,7 @@ export default class PageVoteNew extends Component<Props, State> {
                 </Form.Item>
                 <Form.Item label="Number of blocks">
                     <Row>
-                        <Col xs={12} sm={12}>
+                        <Col>
                             <InputNumber
                                 style={fieldStyle}
                                 min={1}
