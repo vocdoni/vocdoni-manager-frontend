@@ -43,14 +43,14 @@ export async function connectClients() {
         }
 
         // RESOLVER CONTRACT
-        entityResolver = await getEntityResolverInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer as any })
+        entityResolver = await getEntityResolverInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer as (Wallet | Signer) })
 
         // React on all events (by now)
         entityResolver.on("TextChanged", () => refreshMetadata(accountAddressState))
         entityResolver.on("ListItemChanged", () => refreshMetadata(accountAddressState))
 
         // PROCESS CONTRACT
-        votingProcess = await getVotingProcessInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer as any })
+        votingProcess = await getVotingProcessInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer as (Wallet | Signer) })
     }
     catch (err) {
         hideLoading()

@@ -114,7 +114,7 @@ export default class PageVoteNew extends Component<Props, State> {
         const clients = await getGatewayClients()
         const hideLoading = message.loading('Action in progress..', 0)
 
-        return createVotingProcess(this.state.newProcess, Web3Manager.signer as any, clients.web3Gateway, clients.dvoteGateway)
+        return createVotingProcess(this.state.newProcess, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
             .then(processId => {
                 message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
                 hideLoading()

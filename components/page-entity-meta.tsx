@@ -127,7 +127,7 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         return getGatewayClients().then(clients => {
             const state = getState()
-            return updateEntity(state.address, newEntity, Web3Manager.signer as any, clients.web3Gateway, clients.dvoteGateway)
+            return updateEntity(state.address, newEntity, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
         }).then(newOrigin => {
             this.props.refresh()
 
@@ -166,7 +166,7 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         return getGatewayClients().then(clients => {
             const state = getState()
-            return updateEntity(state.address, entityMetadata, Web3Manager.signer as any, clients.web3Gateway, clients.dvoteGateway)
+            return updateEntity(state.address, entityMetadata, Web3Manager.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
         }).then(newOrigin => {
             this.props.refresh()
 
