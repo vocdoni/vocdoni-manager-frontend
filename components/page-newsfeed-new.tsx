@@ -3,7 +3,7 @@ import { Button, Input, Form, Table, Select, InputNumber, message } from 'antd'
 import { headerBackgroundColor } from "../lib/constants"
 import { JsonFeed, JsonFeedPost, EntityMetadata, API, Network, MultiLanguage } from "dvote-js"
 import { checkValidJsonFeed } from "dvote-js/dist/models/json-feed"
-const { Buffer } = require("buffer/")
+const { Buffer } = require("buffer")
 import Web3Manager from "../util/web3-wallet"
 import { Wallet, Signer } from "ethers"
 
