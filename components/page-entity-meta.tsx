@@ -117,12 +117,12 @@ export default class PageEntityMeta extends Component<Props, State> {
                 },
                 register: true,
                 url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
-                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
             })
         }
         else { // update it
             newEntity.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
-            newEntity.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+            newEntity.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
         }
 
         return getGatewayClients().then(clients => {
@@ -156,12 +156,12 @@ export default class PageEntityMeta extends Component<Props, State> {
                 },
                 register: true,
                 url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
-                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
             })
         }
         else { // update it
             entityMetadata.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
-            entityMetadata.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?action=register`
+            entityMetadata.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
         }
 
         return getGatewayClients().then(clients => {
@@ -291,7 +291,7 @@ export default class PageEntityMeta extends Component<Props, State> {
                         value={entity.media && entity.media.avatar}
                         onChange={ev => this.onExistingFieldChange("media", "avatar", ev.target.value)}
                     />
-                     <br /><br />
+                    <br /><br />
                 </Col>
             </Row>
             <Row gutter={16}>
@@ -303,7 +303,7 @@ export default class PageEntityMeta extends Component<Props, State> {
                         value={entity.media && entity.media.header}
                         onChange={ev => this.onExistingFieldChange("media", "header", ev.target.value)}
                     />
-                     <br /><br />
+                    <br /><br />
                 </Col>
             </Row>
 
