@@ -16,6 +16,6 @@ module.exports = {
     'process.env.BLOCK_TIME': 10, // 10 seconds
 
     // USER REGISTRY + ACTIONS
-    'process.env.REGISTRY_URL_PREFIX': process.env.REGISTRY_URL_PREFIX || "https://registry.vocdoni.net/api/registration",
-    'process.env.ACTION_VISIBILITY_API_URL_PREFIX': process.env.ACTION_VISIBILITY_API_URL_PREFIX || "https://registry.vocdoni.net/api/actions/status",
+    'process.env.REGISTER_URL': process.env.REGISTER_URL || "https://registry.vocdoni.net/api/actions",
+    'process.env.ACTION_VISIBILITY_URL': process.env.ACTION_VISIBILITY_URL || "https://registry.vocdoni.net/api/actions",
 }

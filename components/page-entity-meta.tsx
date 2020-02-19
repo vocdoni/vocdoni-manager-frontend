@@ -104,25 +104,20 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         // Ensure register action has appropriate Entity ID
         const newEntity = this.state.newEntity
-        const entityId = getEntityId(this.state.accountAddress)
 
-        const idx = newEntity.actions.findIndex(act => act.type == "browser" && act.register)
+        const idx = newEntity.actions.findIndex(act => act.type == "register")
         if (idx < 0) { // add it
             newEntity.actions.push({
-                type: "browser",
-                name: {
-                    default: "Sign up",
-                    // en: "Sign up",
-                    // fr: "S'inscrire"
-                },
-                register: true,
-                url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
-                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
+                type: "register",
+                actionKey: "register",
+                name: { default: "Sign up" },
+                url: process.env.REGISTER_URL,
+                visible: process.env.ACTION_VISIBILITY_URL
             })
         }
         else { // update it
-            newEntity.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
-            newEntity.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
+            newEntity.actions[idx].url = process.env.REGISTER_URL
+            newEntity.actions[idx].visible = process.env.ACTION_VISIBILITY_URL
         }
 
         return getGatewayClients().then(clients => {
@@ -144,25 +139,23 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         const entityMetadata = Object.assign({}, this.state.newEntity, this.state.entityMetadata)
 
-        const entityId = getEntityId(this.state.accountAddress)
-        const idx = entityMetadata.actions.findIndex(act => act.type == "browser" && act.register)
+        const idx = entityMetadata.actions.findIndex(act => act.type == "register")
         if (idx < 0) { // add it
             entityMetadata.actions.push({
-                type: "browser",
-                name: {
-                    default: "Sign up",
-                    // en: "Sign up",
-                    // fr: "S'inscrire"
-                },
-                register: true,
-                url: `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`,
-                visible: `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
+                type: "register",
+                actionKey: "register",
+                name: { default: "Sign up" },
+                url: process.env.REGISTER_URL,
+                visible: process.env.ACTION_VISIBILITY_URL
             })
         }
         else { // update it
-            entityMetadata.actions[idx].url = `${process.env.REGISTRY_URL_PREFIX}?entityId=${entityId}`
-            entityMetadata.actions[idx].visible = `${process.env.ACTION_VISIBILITY_API_URL_PREFIX}?actionKey=register`
+            entityMetadata.actions[idx].url = process.env.REGISTER_URL
+            entityMetadata.actions[idx].visible = process.env.ACTION_VISIBILITY_URL
         }
+
+        // Filter extraneous actions
+        entityMetadata.actions = entityMetadata.actions.filter(meta => !!meta.actionKey)
 
         return getGatewayClients().then(clients => {
             const state = getState()
