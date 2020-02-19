@@ -13,9 +13,9 @@ module.exports = {
     // 'process.env.BOOTNODES_URL': process.env.BOOTNODES_URL || "https://bootnodes.github.io/gateways.json",
 
     // VOCHAIN
-    'process.env.BLOCK_TIME': 10, // 10 seconds
+    'process.env.BLOCK_TIME': 5, // 5 seconds
 
     // USER REGISTRY + ACTIONS
-    'process.env.REGISTER_URL': process.env.REGISTER_URL || "https://registry.vocdoni.net/api/actions",
-    'process.env.ACTION_VISIBILITY_URL': process.env.ACTION_VISIBILITY_URL || "https://registry.vocdoni.net/api/actions",
+    'process.env.REGISTER_URL': process.env.REGISTER_URL || "https://registry.vocdoni.net/api/actions/register",
+    'process.env.ACTION_VISIBILITY_URL': process.env.ACTION_VISIBILITY_URL || "https://registry.vocdoni.net/api/actions/status",
 }
