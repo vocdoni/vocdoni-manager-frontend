@@ -35,8 +35,8 @@ export async function connectClients() {
         dvoteGateway = new DVoteGateway(gwInfos[ETH_NETWORK_ID])
 
         await dvoteGateway.connect()
-        await dvoteGateway.getStatus()
-
+        await dvoteGateway.getGatewayInfo()
+        
         if (EthereumManager.isEthereumAvailable()) {
             await EthereumManager.unlock()
             accountAddressState = await EthereumManager.getAddress()
