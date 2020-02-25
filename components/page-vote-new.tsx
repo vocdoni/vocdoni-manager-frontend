@@ -1,12 +1,11 @@
-import { Component, createRef } from "react"
-import { Row, Col, List, Avatar, Empty, Button, Input, Form, Select, InputNumber, message, Typography, DatePicker } from 'antd'
+import { Component } from "react"
+import { Button, Input, Form, message, Typography, DatePicker } from 'antd'
 const { RangePicker } = DatePicker
 import moment from 'moment'
 import { headerBackgroundColor } from "../lib/constants"
-import { ProcessMetadata, MultiLanguage, API, Network } from "dvote-js"
+import { ProcessMetadata, MultiLanguage, API} from "dvote-js"
 const { Vote: { createVotingProcess, getBlockHeight } } = API
 import Web3Manager from "../util/web3-wallet"
-import { Wallet, Signer } from "ethers"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
@@ -16,7 +15,6 @@ const { Header } = Layout
 interface Props {
     refresh?: () => void
     showList: () => void
-    entityDetails: object,
     currentAddress: string
 }
 
@@ -84,22 +82,28 @@ export default class PageVoteNew extends Component<Props, State> {
     }
 
     checkFields(): boolean {
-        if (isNaN(this.state.newProcess.startBlock)) {
-            message.error("Start block must be a number")
+        if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
+            message.error("Poll dates where not defined correctly")
             return false
         }
-        if (isNaN(this.state.newProcess.numberOfBlocks) || this.state.newProcess.numberOfBlocks <= 0) {
-            message.error("End block must be a positive number")
+        // if (this.state.numberOfBlocks < 1000) {
+        //     message.error(`Poll duration is too short`)
+        //     return false
+        // }
+        if (this.state.numberOfBlocks <= 0) {
+            message.error("Poll start date needs to be higher than the end one")
             return false
         }
-        if (isNaN(this.state.newProcess.numberOfBlocks)) {
-            message.error("Number of blocks must be a number")
+        if (this.state.startBlock <= this.state.currentBlock + 20) {
+            let delay = 20*Number(process.env.BLOCK_TIME)
+            message.error(`The Start time of the process needs to be more than ${delay} seconds greater than the actual time`)
             return false
         }
-        if (this.state.newProcess.startBlock <= this.state.currentBlock + 20) {
-            message.error("Start block needs to be at least 20 blocks higher than current block")
-            return false
-        }
+
+        let newProcess = this.cloneNewProcess();
+        newProcess.startBlock = this.state.startBlock
+        newProcess.numberOfBlocks = this.state.numberOfBlocks
+        this.setState({ newProcess})
         return true
     }
 
@@ -245,13 +249,14 @@ export default class PageVoteNew extends Component<Props, State> {
       
     onDateOk(values) {
         // TODO check cases of onChange and onCalendarChange with ifs
-        console.log('onDateOk: ', values)
         let [ startDate, endDate] = values
         let numberOfBlocks = this.state.numberOfBlocks
         if (startDate) {
             let startBlock = (startDate.valueOf()-this.state.currentDate.valueOf())/1000/Number(process.env.BLOCK_TIME)+this.state.currentBlock
+            startBlock = Math.trunc(startBlock)
             if (endDate) {
                 numberOfBlocks = (endDate.valueOf()-startDate.valueOf())/1000/Number(process.env.BLOCK_TIME)
+                numberOfBlocks = Math.trunc(numberOfBlocks)
                 this.setState({startDate,  startBlock, endDate, numberOfBlocks})
             }
             else
@@ -341,7 +346,7 @@ export default class PageVoteNew extends Component<Props, State> {
                         onChange={(dates, _) => this.onDateOk(dates)}
                         />
                     </div>
-                    <Typography.Text id="start" >Current Block: {this.state.currentBlock}  Estimated Start Block: {(this.state.startBlock) | (this.state.currentBlock) } Estimated End Block: {(this.state.startBlock+this.state.numberOfBlocks) | this.state.currentBlock} </Typography.Text>
+                    <Typography.Text id="start" >Current Block: {this.state.currentBlock}  {(this.state.startBlock) ? "Estimated Start Block: "+this.state.startBlock : "" } {(this.state.startBlock && this.state.numberOfBlocks) ? "Estimated End Block: "+(this.state.startBlock+this.state.numberOfBlocks)  :"" } </Typography.Text>
                 </Form.Item>
                 <Form.Item label="Header image URI">
                     <Input
