@@ -1,5 +1,7 @@
 import { Component, createRef } from "react"
-import { Row, Col, List, Avatar, Empty, Button, Input, Form, Select, InputNumber, message, Typography } from 'antd'
+import { Row, Col, List, Avatar, Empty, Button, Input, Form, Select, InputNumber, message, Typography, DatePicker } from 'antd'
+const { RangePicker } = DatePicker
+import moment from 'moment'
 import { headerBackgroundColor } from "../lib/constants"
 import { ProcessMetadata, MultiLanguage, API, Network } from "dvote-js"
 const { Vote: { createVotingProcess, getBlockHeight } } = API
@@ -21,9 +23,12 @@ interface Props {
 interface State {
     newProcess: ProcessMetadata
     currentBlock: number
-    currentDate: Date
-    startDate: Date
-    endDate: Date
+    startBlock: number
+    endBlock: number
+    currentDate: moment.Moment
+    startDate: moment.Moment
+    numberOfBlocks: number,
+    endDate: moment.Moment
     allowSubmit: boolean
 }
 
@@ -49,14 +54,13 @@ const formItemLayout = {
     },
 }
 export default class PageVoteNew extends Component<Props, State> {
-    
-    // startRef = createRef()
-    // endRef = createRef()
-
     state = {
         newProcess: this.makeEmptyProcess(),
-        currentBlock: 0,
-        currentDate: new Date(),
+        currentBlock: null,
+        startBlock: null,
+        endBlock: null,
+        numberOfBlocks: null,
+        currentDate: moment(),
         startDate: null,
         endDate: null,
         allowSubmit: true,
@@ -64,8 +68,6 @@ export default class PageVoteNew extends Component<Props, State> {
 
     async componentDidMount() {
         await this.loadTime()
-        this.calculateStartDate(null)
-        this.calculateEndDate(null)
     }
 
     async loadTime() {
@@ -90,14 +92,12 @@ export default class PageVoteNew extends Component<Props, State> {
             message.error("End block must be a positive number")
             return false
         }
-
         if (isNaN(this.state.newProcess.numberOfBlocks)) {
             message.error("Number of blocks must be a number")
             return false
         }
-
-        if (this.state.newProcess.startBlock <= this.state.currentBlock) {
-            message.error("Start block needs to be higher than current block")
+        if (this.state.newProcess.startBlock <= this.state.currentBlock + 20) {
+            message.error("Start block needs to be at least 20 blocks higher than current block")
             return false
         }
         return true
@@ -123,9 +123,8 @@ export default class PageVoteNew extends Component<Props, State> {
                 this.props.showList()
             }).catch(err => {
                 hideLoading()
-
+                console.error("The voting process could not be created",err);
                 message.error("The voting process could not be created")
-                this.props.showList()
             })
     }
 
@@ -219,26 +218,47 @@ export default class PageVoteNew extends Component<Props, State> {
         win.focus();
     }
 
-    calculateStartDate(startBlock) {
-        startBlock = (startBlock || this.state.currentBlock + 60)
-        let secondsDiff = (startBlock - this.state.currentBlock) * blockTime
-        let startDate = new Date(this.state.currentDate)
-        startDate.setTime(startDate.getTime() + secondsDiff * 1000)
-        this.setState({ startDate })
-
-        // let 
+    disabledDate(current){
+        // Can not select days before today and today
+        return  current && current.valueOf() < this.state.currentDate.valueOf()
     }
 
-    calculateEndDate(numberOfBlocks) {
-        let startBlock = (this.state.newProcess.startBlock || this.state.currentBlock + 60)
-        let endBlock = (numberOfBlocks) ? this.state.newProcess.numberOfBlocks + startBlock : startBlock+waitTime/blockTime + 24 * 60 * 6
-        // let endBlock = this.state.newProcess.numberOfBlocks + startBlock
-        let secondsDiff = (endBlock - startBlock) * blockTime
-        let endDate = new Date(this.state.currentDate)
-        endDate.setTime(endDate.getTime() + secondsDiff * 1000)
-        this.setState({ endDate })
-        // let 
+    range(start, end) {
+        const result = [];
+        for (let i = start; i < end; i++) {
+          result.push(i);
+        }
+        return result;
+      }
+
+    disabledTime(current, type) {
+        if (type === 'start') {
+            if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'day'))  {
+                return {
+                    disabledHours: () => this.range(0, this.state.currentDate.hours()),
+                    disabledMinutes: () => this.range(0, this.state.currentDate.minutes()),
+                }
+            }
+        }
     }
+    
+      
+    onDateOk(values) {
+        // TODO check cases of onChange and onCalendarChange with ifs
+        console.log('onDateOk: ', values)
+        let [ startDate, endDate] = values
+        let numberOfBlocks = this.state.numberOfBlocks
+        if (startDate) {
+            let startBlock = (startDate.valueOf()-this.state.currentDate.valueOf())/1000/Number(process.env.BLOCK_TIME)+this.state.currentBlock
+            if (endDate) {
+                numberOfBlocks = (endDate.valueOf()-startDate.valueOf())/1000/Number(process.env.BLOCK_TIME)
+                this.setState({startDate,  startBlock, endDate, numberOfBlocks})
+            }
+            else
+                this.setState({startDate, startBlock})
+        }
+      }
+      
 
     renderCreateProcess() {
 
@@ -307,55 +327,22 @@ export default class PageVoteNew extends Component<Props, State> {
                     </p>
                     {/* <p style={{ marginBottom: 0 }}><small>You should find this value on Vocdoni's Census Manager or in your organization CRM</small></p> */}
                 </Form.Item>
-                <Form.Item label="Start block" >
-                    <Row>
-                        <Col>
-                            {/* TODO Check onChanged */}
-                            <InputNumber 
-                                style={fieldStyle}
-                                min={0}
-                                placeholder={(this.state.currentBlock + waitTime / blockTime).toString()}
-                                defaultValue={(this.state.currentBlock + waitTime / blockTime)}
-                                value={this.state.newProcess.startBlock}
-                                onChange={num => {
-                                    this.setNewProcessField(["startBlock"], num)
-                                    this.calculateStartDate(num)
-                                }}
-                            />
-                            <Typography.Text>Current Block: {this.state.currentBlock}</Typography.Text>
-                        </Col>
-                        <Col>
-                        {/* <Typography.Text id="start" ><div ref="startRef">Estimated Start Date: {(this.state.startDate) ? this.state.startDate.toString() : ""}</div></Typography.Text> */}
-                        <Typography.Text id="start" >Estimated Start Date: {(this.state.startDate) ? this.state.startDate.toString() : ""}</Typography.Text>
-                        </Col>
-                    </Row>
+                <Form.Item label="Time" >
+                    <div>
+                        <RangePicker
+                        showTime={{ format: 'HH:mm' }}
+                        showToday={true}
+                        format="YYYY-MM-DD HH:mm"
+                        placeholder={['Start Time', 'End Time']}
+                        disabledTime={(current, type) => this.disabledTime(current, type)}
+                        disabledDate={(current) => this.disabledDate(current)}
+                        onOk={(dates) => this.onDateOk(dates)}
+                        onCalendarChange={(dates) => this.onDateOk(dates)}
+                        onChange={(dates, _) => this.onDateOk(dates)}
+                        />
+                    </div>
+                    <Typography.Text id="start" >Current Block: {this.state.currentBlock}  Estimated Start Block: {(this.state.startBlock) | (this.state.currentBlock) } Estimated End Block: {(this.state.startBlock+this.state.numberOfBlocks) | this.state.currentBlock} </Typography.Text>
                 </Form.Item>
-                <Form.Item label="Number of blocks">
-                    <Row>
-                        <Col>
-                            <InputNumber
-                                style={fieldStyle}
-                                min={1}
-                                placeholder={(waitTime/blockTime + 24 * 60 * 6).toString()}
-                                value={this.state.newProcess.numberOfBlocks}
-                                defaultValue={(waitTime/blockTime + 24 * 60 * 6)}
-                                onChange={num => {
-                                    this.setNewProcessField(["numberOfBlocks"], num)
-                                    this.calculateEndDate(num)
-                                    // setTimeout( document.getElementById("end").setAttribute("underline","true"),1)
-                                    
-                                }
-                                }
-                            />
-                        </Col>
-                        <Col>
-                            {/* <div><p>Estimated Finish Date: {(this.state.endDate) ? this.state.endDate.toString() : ""}</p></div> */}
-                            {/* <div ref="endRef"><Typography.Text id="end">Estimated Finish Date: {(this.state.endDate) ? this.state.endDate.toString() : ""}</Typography.Text></div> */}
-                            <Typography.Text id="end">Estimated Finish Date: {(this.state.endDate) ? this.state.endDate.toString() : ""}</Typography.Text>
-                        </Col>
-                    </Row>
-                </Form.Item>
-
                 <Form.Item label="Header image URI">
                     <Input
                         style={fieldStyle}

@@ -122,7 +122,7 @@ export default class PageHome extends Component<Props, State> {
                                 }
                             ).join(", ")}</p> */}
                             {/* <h2>Subscription</h2> */}
-                            <p><a onClick={() => this.openInNewTab(resultsLink)}>Subscription link</a></p>
+                            <p><a onClick={() => this.openInNewTab(subscriptionLink)}>Subscription link</a></p>
                             <p>
                                 <QRCode value={subscriptionLink} size={256} />
                             </p>
