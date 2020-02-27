@@ -141,7 +141,7 @@ export default class PageEntityMeta extends Component<Props, State> {
 
         const idx = entityMetadata.actions.findIndex(act => act.type == "register")
         if (idx < 0) { // add it
-            entityMetadata.actions.push({
+            entityMetadata.actions.unshift({
                 type: "register",
                 actionKey: "register",
                 name: { default: "Sign up" },
@@ -150,6 +150,7 @@ export default class PageEntityMeta extends Component<Props, State> {
             })
         }
         else { // update it
+            entityMetadata.actions[idx].actionKey = "register"
             entityMetadata.actions[idx].url = process.env.REGISTER_URL
             entityMetadata.actions[idx].visible = process.env.ACTION_VISIBILITY_URL
         }
