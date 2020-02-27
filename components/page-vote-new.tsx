@@ -3,13 +3,14 @@ import { Button, Input, Form, message, Typography, DatePicker } from 'antd'
 const { RangePicker } = DatePicker
 import moment from 'moment'
 import { headerBackgroundColor } from "../lib/constants"
-import { ProcessMetadata, MultiLanguage, API} from "dvote-js"
+import { ProcessMetadata, MultiLanguage, API } from "dvote-js"
 const { Vote: { createVotingProcess, getBlockHeight } } = API
 import Web3Manager from "../util/web3-wallet"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
 import { getGatewayClients } from "../util/dvote-state"
+import { DVoteGateway } from "dvote-js/dist/net/gateway"
 const { Header } = Layout
 
 interface Props {
@@ -30,8 +31,9 @@ interface State {
     allowSubmit: boolean
 }
 
-const blockTime = Number(process.env.BLOCK_TIME)
-const waitTime = 600 // 10 minutes
+const BLOCK_TIME = Number(process.env.BLOCK_TIME)
+const ORACLE_CONFIRMATION_DELAY = Number(process.env.ORACLE_CONFIRMATION_DELAY)
+const BLOCK_MARGIN = 20 // 200 seconds
 
 const fieldStyle = { marginTop: 8 }
 /*interface Question {
@@ -81,7 +83,7 @@ export default class PageVoteNew extends Component<Props, State> {
         this.setState({ newProcess: process })
     }
 
-    checkFields(): boolean {
+    async checkFields(dvoteGateway: DVoteGateway): Promise<boolean> {
         if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
             message.error("Poll dates where not defined correctly")
             return false
@@ -94,28 +96,45 @@ export default class PageVoteNew extends Component<Props, State> {
             message.error("Poll start date needs to be higher than the end one")
             return false
         }
-        if (this.state.startBlock <= this.state.currentBlock + 20) {
-            let delay = 20*Number(process.env.BLOCK_TIME)
-            message.error(`The Start time of the process needs to be more than ${delay} seconds greater than the actual time`)
+        if (this.state.startDate.isSameOrBefore(this.state.currentDate,'minute')) {
+            message.error("Poll start date needs to be higher than the current one...")
+            return false
+        }
+        if (this.state.endDate.isSameOrBefore(this.state.startDate,'minute')) {
+            message.error("Poll start date needs to be higher than the end one!")
             return false
         }
 
-        let newProcess = this.cloneNewProcess();
-        newProcess.startBlock = this.state.startBlock
-        newProcess.numberOfBlocks = this.state.numberOfBlocks
-        this.setState({ newProcess})
+        const currentBlock = await getBlockHeight(dvoteGateway)
+        const blocksOracleDelay = ORACLE_CONFIRMATION_DELAY / BLOCK_TIME
+        if (this.state.startBlock <= currentBlock + BLOCK_MARGIN + blocksOracleDelay) {
+            const blocksSincePageLoaded = currentBlock - this.state.currentBlock
+            let delaySeconds = (blocksSincePageLoaded + blocksOracleDelay + BLOCK_MARGIN) * BLOCK_TIME
+            let delayMinutes = Math.ceil(delaySeconds/60)
+            message.error(`The Start time of the process needs to be more than ${delayMinutes} minutes greater than the actual time`)
+            this.setState({currentBlock})
+            return false
+        }
+
         return true
     }
 
     async createProcess() {
-        if (!this.checkFields()) {
+        const clients = await getGatewayClients()
+
+        if (!(await this.checkFields(clients.dvoteGateway))) {
             this.setState({ allowSubmit: false })
             return message.warn("The metadata fields are not valid")
         } else {
             this.setState({ allowSubmit: true })
         }
 
-        const clients = await getGatewayClients()
+        let newProcess = this.cloneNewProcess();
+        newProcess.startBlock = this.state.startBlock
+        newProcess.numberOfBlocks = this.state.numberOfBlocks
+        this.setState({ newProcess })
+
+
         const hideLoading = message.loading('Action in progress..', 0)
 
         return createVotingProcess(this.state.newProcess, Web3Manager.signer, clients.web3Gateway, clients.dvoteGateway)
@@ -127,7 +146,7 @@ export default class PageVoteNew extends Component<Props, State> {
                 this.props.showList()
             }).catch(err => {
                 hideLoading()
-                console.error("The voting process could not be created",err);
+                console.error("The voting process could not be created", err);
                 message.error("The voting process could not be created")
             })
     }
@@ -222,48 +241,54 @@ export default class PageVoteNew extends Component<Props, State> {
         win.focus();
     }
 
-    disabledDate(current){
-        // Can not select days before today and today
-        return  current && current.valueOf() < this.state.currentDate.valueOf()
+    onOpen(status) {
+        if (status) {
+            this.setState({ currentDate: moment() })
+        }
+    }
+
+    disabledDate(current: moment.Moment) {
+        return current && current.isBefore(this.state.currentDate, 'day')
     }
 
     range(start, end) {
         const result = [];
         for (let i = start; i < end; i++) {
-          result.push(i);
+            result.push(i);
         }
         return result;
-      }
+    }
 
-    disabledTime(current, type) {
-        if (type === 'start') {
-            if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'day'))  {
+    disabledTime(current: moment.Moment) {
+        if (!current)
+            return
+        if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'day')) {
+            if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'hours')) {
                 return {
                     disabledHours: () => this.range(0, this.state.currentDate.hours()),
                     disabledMinutes: () => this.range(0, this.state.currentDate.minutes()),
                 }
             }
+            return {
+                disabledHours: () => this.range(0, this.state.currentDate.hours()),
+            }
         }
     }
-    
-      
-    onDateOk(values) {
-        // TODO check cases of onChange and onCalendarChange with ifs
-        let [ startDate, endDate] = values
+
+    onStartDateOk(startDate: moment.Moment) {
+        // TODO ? If we don't need to show calculated blocks this could be moved in the checkFields function
+        let startBlock = (startDate.valueOf() - this.state.currentDate.valueOf()) / 1000 / BLOCK_TIME + this.state.currentBlock
+        startBlock = Math.trunc(startBlock)
+        this.setState({ startDate, startBlock })
+    }
+
+    onEndDateOk(endDate: moment.Moment) {
+        // TODO ? If we don't need to show calculated blocks this could be moved in the checkFields function
         let numberOfBlocks = this.state.numberOfBlocks
-        if (startDate) {
-            let startBlock = (startDate.valueOf()-this.state.currentDate.valueOf())/1000/Number(process.env.BLOCK_TIME)+this.state.currentBlock
-            startBlock = Math.trunc(startBlock)
-            if (endDate) {
-                numberOfBlocks = (endDate.valueOf()-startDate.valueOf())/1000/Number(process.env.BLOCK_TIME)
-                numberOfBlocks = Math.trunc(numberOfBlocks)
-                this.setState({startDate,  startBlock, endDate, numberOfBlocks})
-            }
-            else
-                this.setState({startDate, startBlock})
-        }
-      }
-      
+        numberOfBlocks = (endDate.valueOf() - this.state.startDate.valueOf()) / 1000 / BLOCK_TIME
+        numberOfBlocks = Math.trunc(numberOfBlocks)
+        this.setState({ endDate, numberOfBlocks })
+    }
 
     renderCreateProcess() {
 
@@ -334,19 +359,28 @@ export default class PageVoteNew extends Component<Props, State> {
                 </Form.Item>
                 <Form.Item label="Time" >
                     <div>
-                        <RangePicker
-                        showTime={{ format: 'HH:mm' }}
-                        showToday={true}
-                        format="YYYY-MM-DD HH:mm"
-                        placeholder={['Start Time', 'End Time']}
-                        disabledTime={(current, type) => this.disabledTime(current, type)}
-                        disabledDate={(current) => this.disabledDate(current)}
-                        onOk={(dates) => this.onDateOk(dates)}
-                        onCalendarChange={(dates) => this.onDateOk(dates)}
-                        onChange={(dates, _) => this.onDateOk(dates)}
+                        <DatePicker
+                            disabledDate={(current) => this.disabledDate(current)}
+                            disabledTime={(current) => this.disabledTime(current)}
+                            showTime={{ format: 'HH:mm' }}
+                            format="YYYY-MM-DD HH:mm"
+                            placeholder="Start"
+                            onOk={(dates) => this.onStartDateOk(dates)}
+                            onChange={(dates, _) => this.onStartDateOk(dates)}
+                            onOpenChange={(status) => this.onOpen(status)}
+                        />
+                        <DatePicker
+                            disabledDate={(current) => this.disabledDate(current)}
+                            disabledTime={(current) => this.disabledTime(current)}
+                            showTime={{ format: 'HH:mm' }}
+                            format="YYYY-MM-DD HH:mm"
+                            placeholder="End"
+                            onOk={(dates) => this.onEndDateOk(dates)}
+                            onChange={(dates, _) => this.onEndDateOk(dates)}
+                            onOpenChange={(status) => this.onOpen(status)}
                         />
                     </div>
-                    <Typography.Text id="start" >Current Block: {this.state.currentBlock}  {(this.state.startBlock) ? "Estimated Start Block: "+this.state.startBlock : "" } {(this.state.startBlock && this.state.numberOfBlocks) ? "Estimated End Block: "+(this.state.startBlock+this.state.numberOfBlocks)  :"" } </Typography.Text>
+                    <Typography.Text id="start" >Current Block: {this.state.currentBlock}  {(this.state.startBlock) ? "Estimated Start Block: " + this.state.startBlock : ""} {(this.state.startBlock && this.state.numberOfBlocks) ? "Estimated End Block: " + (this.state.startBlock + this.state.numberOfBlocks) : ""} </Typography.Text>
                 </Form.Item>
                 <Form.Item label="Header image URI">
                     <Input
