@@ -1,12 +1,13 @@
 import { Component } from "react"
 import { headerBackgroundColor } from "../lib/constants"
-import { Layout, Row, Col, message } from 'antd'
+import { Layout, Row, Col, message, Button } from 'antd'
 const { Header } = Layout
 import { getState } from "../util/dvote-state"
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import QRCode from "qrcode.react"
 import { by639_1 } from 'iso-language-codes'
 import { fetchDefaultBootNode } from "dvote-js/dist/net/gateway-bootnodes"
+import PageEntityMeta from "./page-entity-meta"
 
 const { getEntityId } = API.Entity
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -18,6 +19,9 @@ interface State {
     accountAddress: string,
     entityMetadata: EntityMetadata,
     bootnodes: GatewayBootNodes
+    createEntity: boolean
+    error: boolean
+    timedOut: boolean
 }
 
 export default class PageHome extends Component<Props, State> {
@@ -25,7 +29,10 @@ export default class PageHome extends Component<Props, State> {
     state = {
         accountAddress: "",
         entityMetadata: null,
-        bootnodes: {} as GatewayBootNodes
+        bootnodes: {} as GatewayBootNodes,
+        createEntity: false,
+        error: false,
+        timedOut: false
     }
 
     refreshInterval: any
@@ -51,10 +58,12 @@ export default class PageHome extends Component<Props, State> {
     }
 
     async refreshState() {
-        const { address, entityMetadata } = getState();
+        const { address, entityMetadata, error, timedOut } = getState();
         this.setState({
             accountAddress: address,
             entityMetadata,
+            error,
+            timedOut
         })
 
         // Fetch if needed
@@ -68,18 +77,38 @@ export default class PageHome extends Component<Props, State> {
     }
 
     renderNoEntity() {
-        return <>
-            <Header style={{ backgroundColor: headerBackgroundColor }}>
-                <h2></h2>
-            </Header>
+        if (this.state.error && !this.state.timedOut) {
+            // We consider as timeout the failure to discover the IPFS hash
+            return <>
+                <Header style={{ backgroundColor: headerBackgroundColor }}>
+                    <h2></h2>
+                </Header>
 
-            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
-                <div style={{ padding: 30 }}>
-                    <h2>No entity</h2>
-                    <p>There is no entity registered with your account yet</p>
+                <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                    <div style={{ padding: 30 }}>
+                        <h2>An error occured</h2>
+                        {/* <p>Please refresh the page (Ctrl+Shif+R)</p> */}
+                        {/* <Button size='large' type='primary' onClick={() => this.setState({createEntity: true})}>Create entity</Button> */}
+                    </div>
                 </div>
-            </div>
-        </>
+            </>
+        }
+        else {
+            if (this.state.createEntity) return <PageEntityMeta {...this.props} createEntity={true} />
+            return <>
+                <Header style={{ backgroundColor: headerBackgroundColor }}>
+                    <h2></h2>
+                </Header>
+
+                <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                    <div style={{ padding: 30 }}>
+                        <h2>No entity</h2>
+                        <p>There is no entity registered with your account yet</p>
+                        <Button size='large' type='primary' onClick={() => this.setState({ createEntity: true })}>Create entity</Button>
+                    </div>
+                </div>
+            </>
+        }
     }
 
     openInNewTab(url) {
@@ -110,28 +139,28 @@ export default class PageHome extends Component<Props, State> {
                 <div style={{ padding: 30 }}>
                     <Row>
                         {/* <Col xs={24} md={15}> */}
-                            <h2>{entity.name[entity.languages[0]]}</h2>
-                            <p>Entity ID</p>
-                            <p>{entityId}</p>
+                        <h2>{entity.name[entity.languages[0]]}</h2>
+                        <p>Entity ID</p>
+                        <p>{entityId}</p>
 
-                            {/* <p>Supported languages: {(entity.languages || [] as any).map(
+                        {/* <p>Supported languages: {(entity.languages || [] as any).map(
                                 (lang) => {
 
                                     let code = by639_1[lang]
                                     return code ? code.name : lang
                                 }
                             ).join(", ")}</p> */}
-                            {/* <h2>Subscription</h2> */}
-                            <p><a onClick={() => this.openInNewTab(subscriptionLink)}>Subscription link</a></p>
-                            <p>
-                                <QRCode value={subscriptionLink} size={256} />
-                            </p>
+                        {/* <h2>Subscription</h2> */}
+                        <p><a onClick={() => this.openInNewTab(subscriptionLink)}>Subscription link</a></p>
+                        <p>
+                            <QRCode value={subscriptionLink} size={256} />
+                        </p>
 
 
-                            <p>{entity.description['default']}</p>
+                        <p>{entity.description['default']}</p>
 
-                            <p><a href={resultsLink}>Vote Results</a></p>
-                            {/* <p>Description</p>
+                        <p><a href={resultsLink}>Vote Results</a></p>
+                        {/* <p>Description</p>
                             <ul>
                                 {
                                     entity.languages.map(lang => <li key={lang}>

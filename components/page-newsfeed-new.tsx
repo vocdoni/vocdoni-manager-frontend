@@ -80,7 +80,7 @@ export default class PageNewsFeedNew extends Component<Props, State> {
         }
         catch (err) {
             message.warn("The updated News Feed does not seem to have a correct format")
-            console.log(err)
+            console.error(err)
             return
         }
 

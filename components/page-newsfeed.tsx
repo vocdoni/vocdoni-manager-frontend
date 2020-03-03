@@ -10,7 +10,7 @@ import { getRandomGatewayInfo } from "dvote-js/dist/net/gateway-bootnodes"
 import { fetchFileString } from "dvote-js/dist/api/file"
 import { checkValidJsonFeed } from "dvote-js/dist/models/json-feed"
 import Web3Manager from "../util/web3-wallet"
-import { getGatewayClients, getState  } from "../util/dvote-state"
+import { getGatewayClients, getState } from "../util/dvote-state"
 import { updateEntity } from "dvote-js/dist/api/entity"
 import { Wallet, Signer } from "ethers"
 const { Header } = Layout
@@ -25,7 +25,8 @@ interface State {
     feed?: JsonFeed,
     loading?: boolean,
     selectedPost?: any,
-    showCreate?: boolean
+    showCreate?: boolean,
+    error: boolean,
 }
 
 
@@ -34,19 +35,25 @@ export default class PageNewsFeed extends Component<Props, State> {
         feed: null as JsonFeed,
         loading: true,
         selectedPost: null,
-        showCreate: false
+        showCreate: false,
+        error: false,
     }
 
     UNSAFE_componentWillUpdate(nextProps, nextState) {
-        if (typeof nextProps.entityDetails.newsFeed.default != "string") return
-        else if (this.props.entityDetails.newsFeed.default == nextProps.entityDetails.newsFeed.default) return
+        if (this.props.entityDetails) {
+            if (typeof nextProps.entityDetails.newsFeed.default != "string") return
+            else if (this.props.entityDetails.newsFeed.default == nextProps.entityDetails.newsFeed.default) return
 
-        // this.loadNewsFeed(nextProps.entityDetails.newsFeed.default)
-        message.warn("There seems to be a newer version of the news feed on the blockchain", 15)
+            // this.loadNewsFeed(nextProps.entityDetails.newsFeed.default)
+            message.warn("There seems to be a newer version of the news feed on the blockchain", 15)
+        }
     }
 
     componentDidMount() {
-        this.loadNewsFeed(this.props.entityDetails.newsFeed.default)
+        if (this.props.entityDetails)
+            this.loadNewsFeed(this.props.entityDetails.newsFeed.default)
+        else
+            this.setState({error:true})
     }
 
     async loadNewsFeed(newsFeedOrigin: string) {
@@ -83,9 +90,9 @@ export default class PageNewsFeed extends Component<Props, State> {
     async deletePost() {
         let feed = JSON.parse(JSON.stringify(this.state.feed))
         let post = this.state.selectedPost
-        let postId =  feed.items.findIndex(o => o.id === post)
-        feed.items.splice(postId,1)
-        
+        let postId = feed.items.findIndex(o => o.id === post)
+        feed.items.splice(postId, 1)
+
 
         const hideLoading = message.loading('Action in progress...', 0)
 
@@ -96,7 +103,7 @@ export default class PageNewsFeed extends Component<Props, State> {
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(feed))
             const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Manager.signer as (Wallet | Signer), clients.dvoteGateway)
-            
+
             message.success("The news feed was pinned on IPFS successfully");
 
             let entityMetadata = this.props.entityDetails
@@ -189,7 +196,28 @@ export default class PageNewsFeed extends Component<Props, State> {
         </div>
     }
 
+    renderError() {
+        // We consider as timeout the failure to discover the IPFS hash
+        return <>
+            <Header style={{ backgroundColor: headerBackgroundColor }}>
+                <h2></h2>
+            </Header>
+
+            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                <div style={{ padding: 30 }}>
+
+                    <h2>Data not available</h2>
+                    {/* <p>Please refresh the page (Ctrl+Shif+R)</p> */}
+                    {/* <Button size='large' type='primary' onClick={() => this.setState({createEntity: true})}>Create entity</Button> */}
+                </div>
+            </div>
+        </>
+    }
+
     render() {
+        if (this.state.error) {
+            return this.renderError()
+        }
         if (this.state.showCreate) return <PageNewsFeedNew {...this.props} feed={this.state.feed} showList={() => this.setState({ showCreate: false })} />
         else if (this.state.loading) return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>

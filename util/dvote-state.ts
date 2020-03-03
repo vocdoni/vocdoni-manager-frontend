@@ -21,6 +21,8 @@ let newsState: { [lang: string]: any[] }
 
 let isConnected = false
 let entityLoading: boolean = false
+let error: boolean = false
+let timedOut: boolean = false
 
 export function init() {
     return connectClients()
@@ -106,6 +108,8 @@ export function disconnect() {
 
 export async function refreshMetadata(entityAddress: string): Promise<void> {
     entityLoading = true
+    error = false
+    timedOut = false
 
     try {
         if (EthereumManager.isEthereumAvailable()) {
@@ -120,7 +124,15 @@ export async function refreshMetadata(entityAddress: string): Promise<void> {
             entityLoading = false
             return
         }
+        if (err && (err === "The request timed out" || err.message === "The request timed out")) {
+            timedOut = true   
+            console.log('timedOut');
+             
+            return        
+        }
+        error = true
         console.log(err)
+        return
     }
 }
 
@@ -133,7 +145,9 @@ export function getState() {
         entityMetadata: entityState,
         votingProcesses: votingProcessesState,
         news: newsState,
-        entityLoading
+        entityLoading,
+        error,
+        timedOut
     }
 }
 

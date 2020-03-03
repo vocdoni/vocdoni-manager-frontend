@@ -19,13 +19,15 @@ const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {
 
 interface Props {
     refresh?: () => void
+    createEntity?: boolean
 }
 type State = {
     entityLoading: boolean,
     entityUpdating: boolean,
     accountAddress: string,
     entityMetadata: EntityMetadata,
-    newEntity: EntityMetadata
+    newEntity: EntityMetadata,
+    error: boolean
 }
 
 export default class PageEntityMeta extends Component<Props, State> {
@@ -36,7 +38,8 @@ export default class PageEntityMeta extends Component<Props, State> {
         entityUpdating: false,
         accountAddress: null,
         entityMetadata: null as EntityMetadata,
-        newEntity: EntityMetadataTemplate
+        newEntity: EntityMetadataTemplate,
+        error: false,
     }
 
     componentDidMount() {
@@ -57,11 +60,12 @@ export default class PageEntityMeta extends Component<Props, State> {
     }
 
     refreshEntityData() {
-        const { address, entityMetadata, entityLoading } = getState()
+        const { address, entityMetadata, entityLoading, error } = getState()
         this.setState({
             accountAddress: address,
             entityMetadata,
-            entityLoading
+            entityLoading,
+            error
         })
     }
 
@@ -408,10 +412,33 @@ export default class PageEntityMeta extends Component<Props, State> {
         </div>
     }
 
-    render() {
-        const { entityMetadata, entityLoading } = this.state
+    renderError() {
+        // We consider as timeout the failure to discover the IPFS hash
+        return <>
+        <Header style={{ backgroundColor: headerBackgroundColor }}>
+            <h2></h2>
+        </Header>
 
-        if (entityLoading) {
+        <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+            <div style={{ padding: 30 }}>
+                <h2>An error occured</h2>
+                {/* <p>Please refresh the page (Ctrl+Shif+R)</p> */}
+                {/* <Button size='large' type='primary' onClick={() => this.setState({createEntity: true})}>Create entity</Button> */}
+            </div>
+        </div>
+    </>
+    }
+
+
+
+    render() {
+        if (this.state.error) {
+            return this.renderError()
+        }
+        const { entityMetadata, entityLoading } = this.state
+        const create = this.props['createEntity'] || false
+
+        if (entityLoading && !create) {
             return <>
                 <Header style={{ backgroundColor: headerBackgroundColor }}>
                     <h2></h2>

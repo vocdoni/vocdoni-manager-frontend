@@ -22,7 +22,8 @@ interface Props {
 interface State {
     processes: ({ id: string, data: ProcessMetadata } | string)[],
     selectedProcess: string,
-    showCreate: boolean
+    showCreate: boolean,
+    error: boolean
 }
 
 
@@ -30,18 +31,24 @@ export default class PageVotes extends Component<Props, State> {
     state = {
         processes: [],
         selectedProcess: "",
-        showCreate: false
+        showCreate: false,
+        error: false
     }
 
     UNSAFE_componentWillUpdate(nextProps, nextState) {
-        if (!Array.isArray(nextProps.entityDetails.votingProcesses.active)) return
-        else if (this.props.entityDetails.votingProcesses.active.join("-") == nextProps.entityDetails.votingProcesses.active.join("-"))
-            return
-        this.loadActiveProcessData(nextProps.entityDetails.votingProcesses.active)
+        if (nextProps.entityDetails){
+            if (!Array.isArray(nextProps.entityDetails.votingProcesses.active)) return
+            else if (this.props.entityDetails.votingProcesses.active.join("-") == nextProps.entityDetails.votingProcesses.active.join("-"))
+                return
+            this.loadActiveProcessData(nextProps.entityDetails.votingProcesses.active)
+        }
     }
 
     componentDidMount() {
-        this.loadActiveProcessData(this.props.entityDetails.votingProcesses.active)
+        if (this.props.entityDetails)
+            this.loadActiveProcessData(this.props.entityDetails.votingProcesses.active)
+        else
+            this.setState({error: true})
     }
 
     async loadActiveProcessData(processIds: string[]) {
@@ -215,7 +222,28 @@ export default class PageVotes extends Component<Props, State> {
         </div>
     }
 
+    renderError() {
+        // We consider as timeout the failure to discover the IPFS hash
+        return <>
+            <Header style={{ backgroundColor: headerBackgroundColor }}>
+                <h2></h2>
+            </Header>
+
+            <div style={{ padding: '24px ', paddingTop: 0, background: '#fff' }}>
+                <div style={{ padding: 30 }}>
+
+                    <h2>Data not available</h2>
+                    {/* <p>Please refresh the page (Ctrl+Shif+R)</p> */}
+                    {/* <Button size='large' type='primary' onClick={() => this.setState({createEntity: true})}>Create entity</Button> */}
+                </div>
+            </div>
+        </>
+    }
+
     render() {
+        if (this.state.error) {
+            return this.renderError()
+        }
         if (this.state.showCreate) return <PageVoteNew {...this.props} showList={() => this.setState({ showCreate: false })} />
         else if (this.state.selectedProcess) return <>
             <Header style={{ backgroundColor: headerBackgroundColor }}>
