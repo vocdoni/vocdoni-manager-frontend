@@ -4,7 +4,7 @@ import { message } from "antd"
 import { Wallet, Signer } from "ethers"
 
 const { getEntityMetadataByAddress, updateEntity } = API.Entity
-const { Gateway: { DVoteGateway, Web3Gateway }, Bootnodes: { getRandomGatewayInfo }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
+const { Gateway: { DVoteGateway, Web3Gateway }, Bootnodes: { getWorkingGatewayInfo }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
 
@@ -32,9 +32,9 @@ export async function connectClients() {
     const hideLoading = message.loading("Connecting", 0)
 
     try {
-        const gwInfos = await getRandomGatewayInfo(ETH_NETWORK_ID)
-        web3Gateway = new Web3Gateway(gwInfos[ETH_NETWORK_ID])
-        dvoteGateway = new DVoteGateway(gwInfos[ETH_NETWORK_ID])
+        const gwInfo = await getWorkingGatewayInfo(ETH_NETWORK_ID)
+        web3Gateway = new Web3Gateway(gwInfo)
+        dvoteGateway = new DVoteGateway(gwInfo)
 
         await dvoteGateway.connect()
         await dvoteGateway.getGatewayInfo()
@@ -55,6 +55,7 @@ export async function connectClients() {
         votingProcess = await getVotingProcessInstance({ provider: web3Gateway.getProvider(), signer: EthereumManager.signer as (Wallet | Signer) })
     }
     catch (err) {
+        console.error(err)
         hideLoading()
         throw err
     }
