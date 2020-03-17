@@ -5,8 +5,10 @@ import { Wallet, Signer } from "ethers"
 
 const { getEntityMetadataByAddress, updateEntity } = API.Entity
 const { Gateway: { DVoteGateway, Web3Gateway }, Bootnodes: { getWorkingGatewayInfo }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
+const {GatewayInfo} = Wrappers
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
+const BOOTNODES_URL = process.env.BOOTNODES_URL || ''
 
 let entityResolver: IEntityResolverContract = null
 let votingProcess: IVotingProcessContract = null
@@ -32,6 +34,7 @@ export async function connectClients() {
     const hideLoading = message.loading("Connecting", 0)
 
     try {
+        // const gwInfo = (BOOTNODES_URL) ? await getWorkingGatewayInfo(ETH_NETWORK_ID, BOOTNODES_URL) : await getWorkingGatewayInfo(ETH_NETWORK_ID)
         const gwInfo = await getWorkingGatewayInfo(ETH_NETWORK_ID)
         web3Gateway = new Web3Gateway(gwInfo)
         dvoteGateway = new DVoteGateway(gwInfo)

@@ -6,7 +6,8 @@ import { getState } from "../util/dvote-state"
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import QRCode from "qrcode.react"
 import { by639_1 } from 'iso-language-codes'
-import { fetchDefaultBootNode } from "dvote-js/dist/net/gateway-bootnodes"
+import { fetchDefaultBootNode, fetchFromBootNode } from "dvote-js/dist/net/gateway-bootnodes"
+const BOOTNODES_URL = process.env.BOOTNODES_URL || ''
 import PageEntityMeta from "./page-entity-meta"
 
 const { getEntityId } = API.Entity
@@ -49,7 +50,7 @@ export default class PageHome extends Component<Props, State> {
 
     async fetchBootnodes() {
         try {
-            const bootnodes = await fetchDefaultBootNode(process.env.ETH_NETWORK_ID as any)
+            const bootnodes = (BOOTNODES_URL) ? await fetchFromBootNode(BOOTNODES_URL) : await fetchDefaultBootNode(process.env.ETH_NETWORK_ID as any)
             this.setState({ bootnodes })
         }
         catch (err) {

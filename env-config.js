@@ -3,6 +3,7 @@
 
 module.exports = {
     'process.env.NODE_ENV': process.env.NODE_ENV,
+    'process.env.DEVELOPMENT': process.env.DEVELOPMENT || false,
 
     // BLOCKCHAIN
     // 'process.env.ENTITY_RESOLVER_ADDRESS': process.env.ENTITY_RESOLVER_ADDRESS || '0xCe8aed46b103847C7b4a5B02BA6afa720274Ea35',
@@ -10,7 +11,7 @@ module.exports = {
     'process.env.ETH_NETWORK_ID': process.env.ETH_NETWORK_ID || "goerli",
 
     // GATEWAYS
-    // 'process.env.BOOTNODES_URL': process.env.BOOTNODES_URL || "https://bootnodes.github.io/gateways.json",
+    'process.env.BOOTNODES_URL': process.env.BOOTNODES_URL || (process.env.DEVELOPMENT) ? "https://bootnodes.github.io/gateways.dev.json" :"https://bootnodes.github.io/gateways.priv.json",
 
     // VOCHAIN
     'process.env.BLOCK_TIME': 10, // 10 seconds
