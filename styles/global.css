@@ -1,0 +1,25 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+}
+
+/* VARIABLES */
+
+:root {
+    --white: #FFFFFF;
+    --dark: #111111;
+}
+
+/* FONTS */
+
+/*
+@font-face {
+    font-family: Lato;
+    src: url(/fonts/LatoLatin-Regular.ttf);
+}
+
+.lato {
+    font-family: Lato;
+}
+*/

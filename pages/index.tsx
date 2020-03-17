@@ -1,128 +1,31 @@
-import { Component } from "react"
-import Web3Manager, { AccountState } from "../util/web3-wallet"
-import { init, getState } from "../util/dvote-state"
-import MainLayout, { Page } from "../components/layout"
-import { EntityMetadata } from "dvote-js"
+// import { useContext } from 'react'
+// import AppContext from '../components/app-context'
+import Link from "next/link"
+// import MainLayout from "../components/layout"
+// import { main } from "../i18n"
+// import MultiLine from '../components/multi-line-text'
+// import { } from '../lib/types'
 
-import PageHome from "../components/page-home"
-import PageEntityMeta from "../components/page-entity-meta"
-// import PagePosts from "../components/page-posts"
-import PageVotes from "../components/page-votes"
-import PageNewsFeed from "../components/page-newsfeed"
-// import PageCensus from "../components/page-census"
-// import PageRelays from "../components/page-relays"
+const Index = props => {
+  // const { } = useContext(AppContext)
 
-import EthereumInfo from "../components/page-ethereum-info"
-import { message, Skeleton, Spin } from "antd"
-
-interface State {
-    isConnected: boolean,
-    accountState: AccountState,
-    accountAddress: string,
-    entityMetadata: EntityMetadata,
-    votingProcesses: any[],
-    selectedPage: Page
+  return <div id="index">
+    <p>Main page</p>
+    <p><Link href="/entities/#/0x1234-entity-id"><a>Entity view (info, processes and news)</a></Link></p>
+    <p><Link href="/entities/edit/#/0x1234-entity-id"><a>Entity edit</a></Link></p>
+    <p><Link href="/entities/new/#/0x1234-entity-id"><a>Entity create</a></Link></p>
+    <p><Link href="/processes/#/0x2345-entity-id"><a>Process view</a></Link></p>
+    <p><Link href="/processes/new"><a>Process create</a></Link></p>
+    <p><Link href="/processes/edit/#/0x2345-entity-id"><a>Process edit</a></Link></p>
+    <p><Link href="/posts/#/0x12345-entity-id/<idx>"><a>News post view</a></Link></p>
+    <p><Link href="/posts/edit/#/0x12345-entity-id/<idx>"><a>News post edit</a></Link></p>
+    <p><Link href="/posts/new/#/0x12345-entity-id/<idx>"><a>News post create</a></Link></p>
+  </div >
 }
 
-export default class Main extends Component<{}, State> {
-    state = {
-        isConnected: false,
-        accountState: AccountState.Unknown,
-        accountAddress: "",
-        entityMetadata: null,
-        votingProcesses: [],
-        selectedPage: Page.Home
-    }
+// // Custom layout example
+// Index.Layout = props => <MainLayout>
+//   {props.children}
+// </MainLayout>
 
-    refreshInterval: any
-
-    componentDidMount() {
-        init().then(() => {
-            message.success("Connected")
-        }).catch(err => {
-            message.error("Could not connect")
-        });
-
-        this.refreshInterval = setInterval(() => this.refreshState(), 3500)
-        this.refreshState()
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.refreshInterval)
-    }
-
-    async refreshState() {
-        const currentAccountState = await Web3Manager.getAccountState()
-
-        // Is metadata different than it was? => sync
-        const { isConnected, address, entityMetadata, votingProcesses } = getState();
-        this.setState({
-            isConnected,
-            accountAddress: address,
-            entityMetadata,
-            votingProcesses,
-            accountState: currentAccountState
-        })
-    }
-
-    renderPleaseWait() {
-        return <div style={{ paddingTop: 30, textAlign: "center" }}>
-            <div>Please, wait... <Spin size="small" /></div>
-        </div>
-    }
-
-    renderPageContent() {
-        const accountState = this.state.accountState
-
-        if (!this.state.isConnected) {
-            return this.renderPleaseWait()
-        }
-        else if (accountState !== AccountState.Ok) {
-            return <EthereumInfo accountState={this.state.accountState} />
-        }
-
-        switch (this.state.selectedPage) {
-            case Page.Home:
-                return <PageHome
-                    refresh={() => { this.refreshState() }}
-                />
-            case Page.EntityMeta:
-                return <PageEntityMeta
-                    refresh={() => { this.refreshState() }} />
-            case Page.VotingProcesses:
-                return <PageVotes
-                    refresh={() => { this.refreshState() }}
-                    entityDetails={this.state.entityMetadata}
-                    currentAddress={this.state.accountAddress}
-                />
-            case Page.OfficialDiary:
-                return <PageNewsFeed
-                    refresh={() => { this.refreshState() }}
-                    entityDetails={this.state.entityMetadata}
-                    currentAddress={this.state.accountAddress}
-                />
-            //     case Page.CensusService:
-            //         return <PageCensus
-            //             entityMetadata={this.state.entityMetadata}
-            //             currentAddress={this.state.accountAddress}
-            //         />
-            //     case Page.Relays:
-            //         return <PageRelays
-            //             entityMetadata={this.state.entityMetadata}
-            //             currentAddress={this.state.accountAddress}
-            //         />
-        }
-
-        return <div>Not found</div>
-    }
-
-    render() {
-        return <MainLayout
-            currentAddress={this.state.accountAddress}
-            entityName={this.state.entityMetadata && this.state.entityMetadata.name && this.state.entityMetadata.name[this.state.entityMetadata.languages[0]]}
-            menuClicked={(key: Page) => this.setState({ selectedPage: key })}
-        >
-            {this.renderPageContent()}
-        </MainLayout>
-    }
-}
+export default Index
