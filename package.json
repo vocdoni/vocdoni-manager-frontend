@@ -26,11 +26,16 @@
     "@types/react": "^16.9.21",
     "antd": "^4.0.1",
     "dexie": "^2.0.4",
+    "dvote-js": "^0.12.21",
+    "ethers": "^4.0.46",
+    "iso-language-codes": "^1.0.6",
     "isomorphic-unfetch": "^3.0.0",
     "next": "^9.3.1",
     "null-loader": "^3.0.0",
+    "qrcode.react": "^1.0.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-markdown": "^4.3.1",
     "typescript": "^3.8.2"
   }
 }

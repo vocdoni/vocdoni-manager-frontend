@@ -9,7 +9,7 @@ import { Wallet, Signer } from "ethers"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
-import { getGatewayClients, getState } from "../util/dvote-state"
+import { getGatewayClients, getState } from "../util/gateways"
 import { updateEntity } from "dvote-js/dist/api/entity"
 const { Header } = Layout
 

@@ -10,6 +10,7 @@ class MyDocument extends Document {
         return (
             <Html lang={process.env.LANG}>
                 <Head>
+                    <meta charSet='utf-8' />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                     <link rel="icon" type="image/png" href="/media/icon.png" />
                 </Head>

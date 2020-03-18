@@ -2,7 +2,7 @@ import { Component } from "react"
 import { headerBackgroundColor } from "../lib/constants"
 import { Layout, Row, Col, message, Button } from 'antd'
 const { Header } = Layout
-import { getState } from "../util/dvote-state"
+import { getState } from "../util/gateways"
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import QRCode from "qrcode.react"
 import { by639_1 } from 'iso-language-codes'

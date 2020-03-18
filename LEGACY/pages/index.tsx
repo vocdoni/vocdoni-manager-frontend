@@ -1,6 +1,6 @@
 import { Component } from "react"
 import Web3Manager, { AccountState } from "../util/web3-wallet"
-import { init, getState } from "../util/dvote-state"
+import { init, getState } from "../util/gateways"
 import MainLayout, { Page } from "../components/layout"
 import { EntityMetadata } from "dvote-js"
 
@@ -13,7 +13,7 @@ import PageNewsFeed from "../components/page-newsfeed"
 // import PageRelays from "../components/page-relays"
 
 import EthereumInfo from "../components/page-ethereum-info"
-import { message, Skeleton, Spin } from "antd"
+import { message, Spin } from "antd"
 
 interface State {
     isConnected: boolean,

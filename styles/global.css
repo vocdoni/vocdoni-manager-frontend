@@ -2,24 +2,60 @@ body {
     padding: 0;
     margin: 0;
     font-size: 14px;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+    background-color: var(--clear-95);
 }
 
 /* VARIABLES */
 
 :root {
-    --white: #FFFFFF;
-    --dark: #111111;
+    --clear: #FFFFFF;
+    --clear-95: #F7F7F7;
+
+    --dark: #222;
+    --dark-90: #3c3c3c;
+    
+    --main-color: #cad2de;
 }
 
 /* FONTS */
 
-/*
+/* latin */
 @font-face {
-    font-family: Lato;
-    src: url(/fonts/LatoLatin-Regular.ttf);
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: local('Open Sans Light'), local('OpenSans-Light'), url(/fonts/OpenSans-Light.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-.lato {
-    font-family: Lato;
+/* latin */
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local('Open Sans Regular'), local('OpenSans-Regular'), url(/fonts/OpenSans-Regular.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-*/
+
+/* latin */
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: local('Open Sans SemiBold'), local('OpenSans-SemiBold'), url(/fonts/OpenSans-SemiBold.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+
+
+/* COMMON */
+
+.please-wait {
+    padding-top: 200px;
+    text-align: center;
+    font-weight: 300;
+}

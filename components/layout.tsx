@@ -1,18 +1,18 @@
-import { Component } from 'react'
 // import Link from "next/link"
 // import AppContext from './app-context'
 
+
 type Props = {
-    children: Element[]
+    children: Element[],
+    title: string
 }
-type State = {}
 
-export default class MainLayout extends Component<Props, State> {
-    state = {}
+export default ({ children, title, ...props }: Props) => <div id="layout" {...props}>
+    <div className="top-bar">
+        <h2>{title || "Entities"}</h2>
+    </div>
 
-    render() {
-        return <div className="layout">
-            {this.props.children}
-        </div>
-    }
-}
+    <div className="content">
+        {children}
+    </div>
+</div>

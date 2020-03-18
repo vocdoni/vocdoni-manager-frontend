@@ -8,7 +8,7 @@ import ReactMarkdown from 'react-markdown'
 import { Layout } from 'antd'
 import PageVoteNew from "./page-vote-new"
 import Web3Manager from "../util/web3-wallet"
-import { getGatewayClients, getState } from "../util/dvote-state"
+import { getGatewayClients, getState } from "../util/gateways"
 import { updateEntity } from "dvote-js/dist/api/entity"
 import { Wallet, Signer } from "ethers"
 const { Header } = Layout

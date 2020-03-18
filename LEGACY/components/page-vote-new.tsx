@@ -9,7 +9,7 @@ import Web3Manager from "../util/web3-wallet"
 
 import { Layout } from 'antd'
 import TextArea from "antd/lib/input/TextArea";
-import { getGatewayClients } from "../util/dvote-state"
+import { getGatewayClients } from "../util/gateways"
 import { DVoteGateway } from "dvote-js/dist/net/gateway"
 const { Header } = Layout
 

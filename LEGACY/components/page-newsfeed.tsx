@@ -10,7 +10,7 @@ import { getRandomGatewayInfo } from "dvote-js/dist/net/gateway-bootnodes"
 import { fetchFileString } from "dvote-js/dist/api/file"
 import { checkValidJsonFeed } from "dvote-js/dist/models/json-feed"
 import Web3Manager from "../util/web3-wallet"
-import { getGatewayClients, getState } from "../util/dvote-state"
+import { getGatewayClients, getState } from "../util/gateways"
 import { updateEntity } from "dvote-js/dist/api/entity"
 import { Wallet, Signer } from "ethers"
 const { Header } = Layout

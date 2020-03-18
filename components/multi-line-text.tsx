@@ -7,7 +7,7 @@ export default function MultiLine(props: { text: string, children?: any }) {
         result.push(<span key={line}>{line}</span>)
         result.push(<br key={line + "br"} />)
     }
-    result.splice(result.length - 1, 1)
+    result.pop()
 
     return result
 }

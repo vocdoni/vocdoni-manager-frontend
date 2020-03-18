@@ -1,1 +1,15 @@
 /* Main Layout */
+
+#layout {}
+
+#layout .top-bar {
+    background-color: var(--main-color);
+    padding: 15px;
+}
+#layout .top-bar h2 {
+    margin: 0;
+}
+
+#layout .content {
+    padding: 10px 20px;
+}

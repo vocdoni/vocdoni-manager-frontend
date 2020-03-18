@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { getState, getGatewayClients, connectClients } from "../util/dvote-state"
+import { getState, getGatewayClients, connectClients } from "../util/gateways"
 import { Row, Col, Divider, Skeleton, message, Layout, Button, Input, Spin, Icon, Select } from "antd"
 import { EntityMetadata, API, Models, Network } from "dvote-js"
 import { by639_1 } from 'iso-language-codes'
