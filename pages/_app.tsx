@@ -75,6 +75,8 @@ class MainApp extends App<Props, State> {
     async refreshWeb3Status() {
         const currentAccountState = await Web3Manager.getAccountState()
 
+        // TODO: In read-only we may not need metamask
+
         // Is metadata different than it was? => sync
         const { isConnected, address, entityMetadata, votingProcesses } = getState();
         this.setState({
