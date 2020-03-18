@@ -37,12 +37,17 @@ async function generatePathMap() {
   const paths = {
     '/': { page: '/' },
     '/entities': { page: '/entities' },
-    '/entities/edit': { page: '/entities/edit' },
     '/processes': { page: '/processes' },
-    '/processes/new': { page: '/processes/new' },
-    '/processes/edit': { page: '/processes/edit' },
     '/posts': { page: '/posts' },
-    '/posts/edit': { page: '/posts/edit' },
+  }
+
+  if (!env.READ_ONLY) {
+    paths['/entities/edit'] = { page: '/entities/edit' }
+    paths['/entities/new'] = { page: '/entities/new' }
+    paths['/processes/edit'] = { page: '/processes/edit' }
+    paths['/processes/new'] = { page: '/processes/new' }
+    paths['/posts/edit'] = { page: '/posts/edit' }
+    paths['/posts/new'] = { page: '/posts/new' }
   }
   return paths
 }
