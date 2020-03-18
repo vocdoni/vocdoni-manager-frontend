@@ -54,6 +54,10 @@ body {
 
 /* COMMON */
 
+a {
+    color: inherit;
+}
+
 .please-wait {
     padding-top: 200px;
     text-align: center;

@@ -1,7 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
-import AppContext from '../components/app-context'
+import AppContext, { IGlobalState } from '../components/app-context'
 import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
 import { init, getState } from "../lib/gateways"
@@ -26,13 +26,17 @@ type Props = {
 
 interface State {
     isConnected: boolean,
-    accountState: AccountState
+    accountState: AccountState,
+
+    // STATE SHARED WITH CHILDREN
+    title: string,
 }
 
 class MainApp extends App<Props, State> {
     state: State = {
         isConnected: false,
-        accountState: AccountState.Unknown
+        accountState: AccountState.Unknown,
+        title: "Entities",
     }
 
     refreshInterval: any
@@ -51,41 +55,41 @@ class MainApp extends App<Props, State> {
         // TODO: Handle public and private GW's
         init().then(() => {
             message.success("Connected")
-            this.refreshState()
+            this.refreshWeb3Status()
         }).catch(err => {
-            this.refreshState()
+            this.refreshWeb3Status()
             message.error("Could not connect")
         });
 
-        this.refreshInterval = setInterval(() => this.refreshState(), 3500)
+        this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
     }
 
     componentWillUnmount() {
         clearInterval(this.refreshInterval)
     }
 
-    async refreshState() {
+    setTitle(title: string) {
+        this.setState({ title })
+    }
+
+    async refreshWeb3Status() {
         const currentAccountState = await Web3Manager.getAccountState()
 
         // Is metadata different than it was? => sync
         const { isConnected, address, entityMetadata, votingProcesses } = getState();
         this.setState({
             isConnected,
-            accountAddress: address,
-            entityMetadata,
-            votingProcesses,
             accountState: currentAccountState
         })
     }
-
 
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
         init().then(() => {
             message.success("Connected")
-            this.refreshState()
+            this.refreshWeb3Status()
         }).catch(err => {
-            this.refreshState()
+            this.refreshWeb3Status()
             message.error("Could not connect")
         });
     }
@@ -119,6 +123,8 @@ class MainApp extends App<Props, State> {
         // const { injectedArray } = this.props
 
         const injectedGlobalContext: IAppContext = {
+            title: this.state.title,
+            setTitle: (title) => this.setTitle(title),
             onGatewayError: this.onGatewayError
         }
 
@@ -127,7 +133,7 @@ class MainApp extends App<Props, State> {
         const Layout = (Component as any).Layout || MainLayout
         return <AppContext.Provider value={injectedGlobalContext}>
             <Head>
-                <title>Vocdoni</title>
+                <title>Vocdoni Entities</title>
             </Head>
             <Layout>
                 <Component {...pageProps} />

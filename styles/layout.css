@@ -9,6 +9,9 @@
 #layout .top-bar h2 {
     margin: 0;
 }
+#layout .top-bar a {
+    text-decoration: none;
+}
 
 #layout .content {
     padding: 10px 20px;

@@ -8,10 +8,10 @@ import AppContext, { IAppContext } from '../../components/app-context'
 
 // MAIN COMPONENT
 const EntityNewPage = props => {
-    // Get the global context props we might use
-    const { onGatewayError } = useContext(AppContext)
+    // Get the global context and pass it to our stateful component
+    const context = useContext(AppContext)
 
-    return <EntityNew onGatewayError={onGatewayError} />
+    return <EntityNew {...context} />
 }
 
 type State = {
@@ -24,13 +24,12 @@ class EntityNew extends Component<IAppContext, State> {
     state: State = {}
 
     componentDidMount() {
-        this.setState({ id: location.hash })
+        this.props.setTitle("Create entity")
     }
 
     render() {
         return <div id="entity-new">
             <p>Entity New</p>
-            <pre>{this.state.id}</pre>
         </div>
     }
 }

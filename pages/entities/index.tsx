@@ -8,10 +8,10 @@ import AppContext, { IAppContext } from '../../components/app-context'
 
 // MAIN COMPONENT
 const EntityViewPage = props => {
-  // Get the global context props we might use
-  const { onGatewayError } = useContext(AppContext)
+  // Get the global context and pass it to our stateful component
+  const context = useContext(AppContext)
 
-  return <EntityView onGatewayError={onGatewayError} />
+  return <EntityView {...context} />
 }
 
 type State = {
@@ -24,13 +24,17 @@ class EntityView extends Component<IAppContext, State> {
   state: State = {}
 
   componentDidMount() {
-    this.setState({ id: location.hash })
+    this.setState({ id: location.hash.substr(2) })
+
+    // TODO: FETCH METADATA
+
+    this.props.setTitle(`Entity ${location.hash.substr(2)}`)
   }
 
   render() {
     return <div id="entity-view">
       <p>Entity view</p>
-      <pre>{this.state.id}</pre>
+      <pre>I am {this.state.id}</pre>
     </div>
   }
 }

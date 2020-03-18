@@ -8,23 +8,33 @@ import AppContext, { IAppContext } from '../../components/app-context'
 
 // MAIN COMPONENT
 const PostViewPage = props => {
-  // Get the global context props we might use
-  const { onGatewayError } = useContext(AppContext)
+  // Get the global context and pass it to our stateful component
+  const context = useContext(AppContext)
 
-  return <PostView onGatewayError={onGatewayError} />
+  return <PostView {...context} />
 }
 
 type State = {
+  id?: string
   // TODO:
 }
 
 // Stateful component
 class PostView extends Component<IAppContext, State> {
-  state = {}
+  state: State = {}
+
+  componentDidMount() {
+    this.setState({ id: location.hash.substr(2) })
+
+    // TODO: FETCH METADATA
+
+    this.props.setTitle(`Post ${location.hash.substr(2)}`)
+  }
 
   render() {
     return <div id="post-view">
       <p>Post view</p>
+      <pre>I am {this.state.id}</pre>
     </div>
   }
 }

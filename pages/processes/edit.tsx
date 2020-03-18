@@ -8,23 +8,33 @@ import AppContext, { IAppContext } from '../../components/app-context'
 
 // MAIN COMPONENT
 const ProcessEditPage = props => {
-  // Get the global context props we might use
-  const { onGatewayError } = useContext(AppContext)
+  // Get the global context and pass it to our stateful component
+  const context = useContext(AppContext)
 
-  return <ProcessEdit onGatewayError={onGatewayError} />
+  return <ProcessEdit {...context} />
 }
 
 type State = {
+  id?: string
   // TODO:
 }
 
 // Stateful component
 class ProcessEdit extends Component<IAppContext, State> {
-  state = {}
+  state: State = {}
+
+  componentDidMount() {
+    this.setState({ id: location.hash.substr(2) })
+
+    // TODO: FETCH METADATA
+
+    this.props.setTitle(`Process ${location.hash.substr(2)}`)
+  }
 
   render() {
     return <div id="process-edit">
       <p>Process Edit</p>
+      <pre>I am {this.state.id}</pre>
     </div>
   }
 }

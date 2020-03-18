@@ -8,10 +8,10 @@ import AppContext, { IAppContext } from '../../components/app-context'
 
 // MAIN COMPONENT
 const ProcessNewPage = props => {
-  // Get the global context props we might use
-  const { onGatewayError } = useContext(AppContext)
+  // Get the global context and pass it to our stateful component
+  const context = useContext(AppContext)
 
-  return <ProcessNew onGatewayError={onGatewayError} />
+  return <ProcessNew {...context} />
 }
 
 type State = {
@@ -21,6 +21,10 @@ type State = {
 // Stateful component
 class ProcessNew extends Component<IAppContext, State> {
   state = {}
+
+  componentDidMount() {
+    this.props.setTitle("Create process")
+  }
 
   render() {
     return <div id="process-new">

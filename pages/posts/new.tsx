@@ -8,10 +8,10 @@ import AppContext, { IAppContext } from '../../components/app-context'
 
 // MAIN COMPONENT
 const PostNewPage = props => {
-    // Get the global context props we might use
-    const { onGatewayError } = useContext(AppContext)
-
-    return <PostNew onGatewayError={onGatewayError} />
+    // Get the global context and pass it to our stateful component
+    const context = useContext(AppContext)
+  
+    return <PostNew {...context} />
 }
 
 type State = {
@@ -21,6 +21,10 @@ type State = {
 // Stateful component
 class PostNew extends Component<IAppContext, State> {
     state = {}
+
+    componentDidMount() {
+        this.props.setTitle("Create post")
+    }
 
     render() {
         return <div id="post-new">

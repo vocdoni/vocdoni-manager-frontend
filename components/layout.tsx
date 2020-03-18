@@ -1,5 +1,6 @@
-// import Link from "next/link"
-// import AppContext from './app-context'
+import Link from "next/link"
+import AppContext from './app-context'
+import { useContext } from "react"
 
 
 type Props = {
@@ -7,12 +8,16 @@ type Props = {
     title: string
 }
 
-export default ({ children, title, ...props }: Props) => <div id="layout" {...props}>
-    <div className="top-bar">
-        <h2>{title || "Entities"}</h2>
-    </div>
+export default function ({ children, ...props }: Props) {
+    const { title } = useContext(AppContext)
 
-    <div className="content">
-        {children}
+    return <div id="layout" {...props}>
+        <div className="top-bar">
+            <Link href="/"><a><h2>{title || "Entities"}</h2></a></Link>
+        </div>
+
+        <div className="content">
+            {children}
+        </div>
     </div>
-</div>
+}

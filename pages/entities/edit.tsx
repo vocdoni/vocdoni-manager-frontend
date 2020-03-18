@@ -8,10 +8,10 @@ import Link from "next/link"
 
 // MAIN COMPONENT
 const EntityEditPage = props => {
-  // Get the global context props we might use
-  const { onGatewayError } = useContext(AppContext)
+  // Get the global context and pass it to our stateful component
+  const context = useContext(AppContext)
 
-  return <EntityEdit onGatewayError={onGatewayError} />
+  return <EntityEdit {...context} />
 }
 
 type State = {
@@ -24,13 +24,17 @@ class EntityEdit extends Component<IAppContext, State> {
   state: State = {}
 
   componentDidMount() {
-    this.setState({ id: location.hash })
+    this.setState({ id: location.hash.substr(2) })
+
+    // TODO: FETCH METADATA
+
+    this.props.setTitle(`Entity ${location.hash.substr(2)}`)
   }
 
   render() {
     return <div id="entity-edit">
       <p>Entity Edit</p>
-      <pre>{this.state.id}</pre>
+      <pre>I am {this.state.id}</pre>
     </div>
   }
 }
