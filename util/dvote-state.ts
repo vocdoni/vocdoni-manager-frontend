@@ -34,8 +34,7 @@ export async function connectClients() {
     const hideLoading = message.loading("Connecting", 0)
 
     try {
-        // const gwInfo = (BOOTNODES_URL) ? await getWorkingGatewayInfo(ETH_NETWORK_ID, BOOTNODES_URL) : await getWorkingGatewayInfo(ETH_NETWORK_ID)
-        const gwInfo = await getWorkingGatewayInfo(ETH_NETWORK_ID)
+        const gwInfo = (BOOTNODES_URL) ? await getWorkingGatewayInfo(ETH_NETWORK_ID, BOOTNODES_URL) : await getWorkingGatewayInfo(ETH_NETWORK_ID)
         web3Gateway = new Web3Gateway(gwInfo)
         dvoteGateway = new DVoteGateway(gwInfo)
 
