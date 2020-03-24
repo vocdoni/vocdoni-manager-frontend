@@ -6,7 +6,7 @@ stages:
   - build
 #   - test
 #   - preview
-#   - deploy
+  - deploy
 
 # Pick zero or more services to be used on all builds.
 # Only needed when using a docker container to run your tests in.
@@ -17,9 +17,9 @@ stages:
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-# cache:
-#   paths:
-#   - node_modules/
+cache:
+  paths:
+  - node_modules/
 
 ## INTEGRATION
 
@@ -29,12 +29,12 @@ build:
   script:
     - npm install
     - npm run export
-  artifacts:
-    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-    paths:
-      - build/
-  only:
-    - master
+#   artifacts:
+#     name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+#     paths:
+#       - build/
+#   only:
+#     - master
 
 # docker build:
 #   script: docker build -t voc/entity-manager:$CI_COMMIT_REF_SLUG .
@@ -42,6 +42,26 @@ build:
 #     changes:
 #       - Dockerfile
 #       - public/**/*
+
+dev-deploy:
+  image: alpine:3.7
+  stage: deploy
+  script:
+    - apk add curl
+    - curl ${DEV_WWW_UPGRADE_WEBHOOK}
+  only:
+    refs:
+      - master
+
+prod-deploy:
+  image: alpine:3.7
+  stage: deploy
+  script:
+    - apk add curl
+    - curl ${PROD_WWW_UPGRADE_WEBHOOK}
+  only:
+    refs:
+      - release
 
 ## PREVIEW
 
