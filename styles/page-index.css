@@ -1,0 +1,9 @@
+#index {
+    margin-top: 20px;
+}
+
+#index .card {
+    max-width: 400px;
+    margin: auto; /* centered */
+    text-align: center;
+}

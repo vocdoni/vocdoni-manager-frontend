@@ -41,7 +41,7 @@ export async function connectClients() {
 
         await dvoteGateway.connect()
         await dvoteGateway.getGatewayInfo()
-        
+
         if (EthereumManager.isEthereumAvailable()) {
             await EthereumManager.unlock()
             accountAddressState = await EthereumManager.getAddress()
@@ -129,10 +129,10 @@ export async function refreshMetadata(entityAddress: string): Promise<void> {
             return
         }
         if (err && (err === "The request timed out" || err.message === "The request timed out")) {
-            timedOut = true   
+            timedOut = true
             console.log('timedOut');
-             
-            return        
+
+            return
         }
         error = true
         console.log(err)

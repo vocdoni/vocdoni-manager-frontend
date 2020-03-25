@@ -13,7 +13,7 @@ export default function ({ children, ...props }: Props) {
 
     return <div id="layout" {...props}>
         <div className="top-bar">
-            <Link href="/"><a><h2>{title || "Entities"}</h2></a></Link>
+            <Link href="/"><a><span className="title">{title || "Entities"}</span></a></Link>
         </div>
 
         <div className="content">

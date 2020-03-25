@@ -6,8 +6,10 @@
     background-color: var(--main-color);
     padding: 15px;
 }
-#layout .top-bar h2 {
+#layout .top-bar .title {
     margin: 0;
+    font-size: 20px;
+    font-weight: bold;
 }
 #layout .top-bar a {
     text-decoration: none;

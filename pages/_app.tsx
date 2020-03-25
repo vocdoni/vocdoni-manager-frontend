@@ -13,6 +13,7 @@ import { message, Spin } from "antd"
 
 import "../styles/index.css"
 import 'antd/lib/message/style/index.css'
+import 'antd/lib/button/style/index.css'
 import 'antd/lib/input/style/index.css'
 import 'antd/lib/input-number/style/index.css'
 import 'antd/lib/date-picker/style/index.css'
