@@ -11,11 +11,11 @@ module.exports = {
     'process.env.ETH_NETWORK_ID': process.env.ETH_NETWORK_ID || "goerli",
 
     // GATEWAYS
-    'process.env.BOOTNODES_URL': process.env.BOOTNODES_URL || (process.env.DEVELOPMENT) ? "https://bootnodes.github.io/gateways.dev.json" :"https://bootnodes.github.io/gateways.priv.json",
+    'process.env.BOOTNODES_URL': process.env.BOOTNODES_URL || (process.env.DEVELOPMENT ? "https://bootnodes.github.io/gateways.dev.json" : "https://bootnodes.github.io/gateways.priv.json"),
 
     // VOCHAIN
     'process.env.BLOCK_TIME': 10, // 10 seconds
-    'process.env.ORACLE_CONFIRMATION_DELAY': 12*15, 
+    'process.env.ORACLE_CONFIRMATION_DELAY': 12 * 15,
 
     // USER REGISTRY + ACTIONS
     'process.env.REGISTER_URL': process.env.REGISTER_URL || "https://registry.vocdoni.net/api/actions/register",
