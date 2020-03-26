@@ -8,6 +8,7 @@ const { Entity } = API
 import QRCode from "qrcode.react"
 // import Router from 'next/router'
 import Link from "next/link"
+import { getEntityId } from 'dvote-js/dist/api/entity'
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -101,9 +102,10 @@ class EntityView extends Component<IAppContext, State> {
   }
 
   renderSideMenu() {
-    const { readOnly } = getNetworkState()
+    const { readOnly, address } = getNetworkState()
+    const ownEntityId = getEntityId(address)
 
-    if (readOnly) {
+    if (readOnly || this.state.entityId != ownEntityId) {
       return <div id="page-menu">
         <Menu mode="inline" defaultSelectedKeys={['profile']} style={{ width: 200 }}>
           <Menu.Item key="profile">

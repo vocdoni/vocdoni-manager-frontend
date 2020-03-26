@@ -10,7 +10,7 @@ import Link from "next/link"
 import Router from 'next/router'
 import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
-import { updateEntity } from 'dvote-js/dist/api/entity'
+import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -264,9 +264,10 @@ class EntityEdit extends Component<IAppContext, State> {
   }
 
   renderSideMenu() {
-    const { readOnly } = getNetworkState()
+    const { readOnly, address } = getNetworkState()
+    const ownEntityId = getEntityId(address)
 
-    if (readOnly) {
+    if (readOnly || this.state.entityId != ownEntityId) {
       return <div id="page-menu">
         <Menu mode="inline" defaultSelectedKeys={['edit']} style={{ width: 200 }}>
           <Menu.Item key="profile">

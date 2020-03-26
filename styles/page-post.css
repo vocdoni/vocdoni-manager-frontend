@@ -1,0 +1,28 @@
+/* VIEW */
+#post-view .body-card .ant-list-item-meta-avatar img{
+    max-width: 60px;
+}
+
+#post-view .body-card .ant-list-item-meta-title {
+    margin-top: 0;
+}
+
+#post-view .body-card .ant-list-item-action .icon-text {
+    line-height: 36px;
+}
+
+#post-view .body-card .ant-list-item-action a {
+    text-decoration: none;
+}
+
+#post-view .body-card .ant-list-item-action .icon-text:hover {
+    color: rgba(0, 0, 0, 0.75);
+}
+
+/* EDIT */
+
+#post-edit .body-card {
+
+}
+
+/* CREATE */
