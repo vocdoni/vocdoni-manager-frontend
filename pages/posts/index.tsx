@@ -112,9 +112,11 @@ class PostView extends Component<IAppContext, State> {
   }
 
   renderPostsList() {
-    const { readOnly } = getNetworkState()
-
     const entityId = location.hash.substr(2)
+    const { readOnly, address } = getNetworkState()
+    const ownEntityId = getEntityId(address)
+    const hideEditControls = readOnly || entityId != ownEntityId
+
     let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&`
     const { bootnodesReadOnly } = getNetworkState()
     if (Object.keys(bootnodesReadOnly).length >= 1) {
@@ -138,7 +140,7 @@ class PostView extends Component<IAppContext, State> {
         renderItem={(post: IFeedPost, idx: number) => (
           <List.Item
             key={idx}
-            actions={readOnly ? [] : [
+            actions={hideEditControls ? [] : [
               <Link href={`/posts/edit/#/${entityId}/${post.id}`}><a>
                 <IconText icon={EditOutlined} text="Edit post" key="edit" />
               </a></Link>,
@@ -177,8 +179,9 @@ class PostView extends Component<IAppContext, State> {
   renderSideMenu() {
     const { readOnly, address } = getNetworkState()
     const ownEntityId = getEntityId(address)
+    const hideEditControls = readOnly || this.state.entityId != ownEntityId
 
-    if (readOnly || this.state.entityId != ownEntityId) {
+    if (hideEditControls) {
       return <div id="page-menu">
         <Menu mode="inline" defaultSelectedKeys={['feed']} style={{ width: 200 }}>
           <Menu.Item key="profile">
@@ -215,6 +218,11 @@ class PostView extends Component<IAppContext, State> {
         <Menu.Item key="feed">
           <Link href={"/posts/" + location.hash}>
             <a>News feed</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="new-post">
+          <Link href={"/posts/new/"}>
+            <a>Create post</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="polls">

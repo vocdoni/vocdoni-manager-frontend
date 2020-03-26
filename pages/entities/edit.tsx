@@ -298,12 +298,17 @@ class EntityEdit extends Component<IAppContext, State> {
         </Menu.Item>
         <Menu.Item key="edit">
           <Link href={"/entities/edit/" + location.hash}>
-            <a>Edit details</a>
+            <a>Edit profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="feed">
           <Link href={"/posts/" + location.hash}>
             <a>News feed</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="new-post">
+          <Link href={"/posts/new/"}>
+            <a>Create post</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="polls">
