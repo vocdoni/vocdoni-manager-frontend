@@ -1,4 +1,4 @@
-/* Main Layout */
+/* BASE LAYOUT */
 
 #layout {}
 
@@ -16,6 +16,45 @@
     text-decoration: none;
 }
 
-#layout .content {
-    padding: 10px 20px;
+#layout .content > div {
+    display: flex;
+}
+
+/* COMMON LAYOUT ELEMENTS */
+
+#layout .content #page-menu {
+    width: 200px;
+    min-height: calc(100vh - 57px);
+    background-color: white;
+}
+
+#layout .content #page-menu .ant-menu-item {
+    max-width: 159px;
+}
+
+#layout .content #page-body {
+    width: calc(100% - 200px);
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+/* Align the content to the center */
+#layout .content #page-body.center {
+    align-items: center;
+}
+
+#layout .content #page-body .not-found{
+    text-align: center;
+}
+
+#layout .content #page-body .body-card {
+    width: 100%;
+
+    background-color: white;
+    box-shadow: 0 3px 6px 0 rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 24px 24px 48px;
 }

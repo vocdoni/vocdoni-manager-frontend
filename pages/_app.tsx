@@ -13,6 +13,9 @@ import { message, Spin } from "antd"
 // import { isServer } from '../lib/util'
 
 import "../styles/index.css"
+import 'antd/lib/grid/style/index.css'
+import 'antd/lib/skeleton/style/index.css'
+import 'antd/lib/divider/style/index.css'
 import 'antd/lib/message/style/index.css'
 import 'antd/lib/button/style/index.css'
 import 'antd/lib/menu/style/index.css'
@@ -20,8 +23,6 @@ import 'antd/lib/input/style/index.css'
 import 'antd/lib/input-number/style/index.css'
 import 'antd/lib/date-picker/style/index.css'
 import 'antd/lib/spin/style/index.css'
-import 'antd/lib/divider/style/index.css'
-import 'antd/lib/skeleton/style/index.css'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -135,8 +136,6 @@ class MainApp extends App<Props, State> {
                 return <GeneralError message={"Please, switch Metamask to the " + ETH_NETWORK_ID + " network"} />
             }
         }
-
-
 
         // Main render
 

@@ -31,7 +31,7 @@ class IndexView extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
-    this.props.setTitle("Entities")
+    this.props.setTitle("Vocdoni Entities")
 
     try {
       let userAddr = null

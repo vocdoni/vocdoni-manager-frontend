@@ -37,7 +37,7 @@ class EntityEdit extends Component<IAppContext, State> {
     if (getNetworkState().readOnly) {
       return Router.replace("/entities/" + location.hash)
     }
-    this.props.setTitle("Loading")
+    // this.props.setTitle("Loading")
 
     this.refreshInterval = setInterval(() => this.refreshMetadata(), 1000 * 30)
 
@@ -106,26 +106,6 @@ class EntityEdit extends Component<IAppContext, State> {
 // Custom layout
 EntityEditPage.Layout = props => <MainLayout>
 
-  <Menu
-    mode="inline"
-    defaultSelectedKeys={['1']}
-    defaultOpenKeys={['entity']}
-    style={{ height: '100vh', width: 200, borderRight: 0 }}
-  >
-    <Menu.Item key="home" onClick={() => Router.push(`/`)}>
-      {/* <Icon type="home" /> */}
-      <span>Overview</span>
-    </Menu.Item>
-    <Menu.Item key="metadata" onClick={() => Router.push(`/`)}>
-      Profile
-    </Menu.Item>
-    <Menu.Item key="diary" onClick={() => Router.push(`/`)}>
-      News feed
-    </Menu.Item>
-    <Menu.Item key="processes" onClick={() => Router.push(`/`)}>
-      Polls
-    </Menu.Item>
-  </Menu>
   <div>
     {props.children}
   </div>
