@@ -2,7 +2,7 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../components/app-context'
 import Link from "next/link"
 import { API, EntityMetadata } from "dvote-js"
-import { getGatewayClients, getGatewayState } from '../lib/gateways'
+import { getGatewayClients, getNetworkState } from '../lib/network'
 import { message, Button, Spin, Divider } from 'antd'
 import Web3Wallet from '../lib/web3-wallet'
 import { getEntityId } from 'dvote-js/dist/api/entity'
@@ -63,7 +63,7 @@ class IndexView extends Component<IAppContext, State> {
   }
 
   renderGetStarated() {
-    if (getGatewayState().readOnly) {
+    if (getNetworkState().readOnly) {
       return <>
         <p>To create an entity, install Metamask on your browser and try again.</p>
         <p><a href="https://metamask.io" target="_blank"><Button>Install Metamask</Button></a></p>
@@ -100,7 +100,7 @@ class IndexView extends Component<IAppContext, State> {
         <p><Link href="/posts/edit/#/0x12345-entity-id/<idx>"><a>News post edit</a></Link></p>
         <p><Link href="/posts/new/#/0x12345-entity-id/<idx>"><a>News post create</a></Link></p> */}
       </div>
-    </div >
+    </div>
   }
 }
 

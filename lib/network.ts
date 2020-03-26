@@ -1,9 +1,10 @@
-import { API, Wrappers, Network, EntityMetadata, IDVoteGateway, IWeb3Gateway, IEntityResolverContract, IVotingProcessContract } from "dvote-js"
+import { API, Wrappers, Network, EntityMetadata, IDVoteGateway, IWeb3Gateway, IEntityResolverContract, IVotingProcessContract, GatewayBootNodes } from "dvote-js"
 import { message } from "antd"
 import { Wallet, Signer, getDefaultProvider } from "ethers"
 import GatewayInfo from "dvote-js/dist/wrappers/gateway-info"
 import { Web3Gateway, DVoteGateway } from "dvote-js/dist/net/gateway"
 import Web3Wallet from "./web3-wallet"
+import { fetchFromBootNode } from "dvote-js/dist/net/gateway-bootnodes"
 
 const { Bootnodes: { getRandomGatewayInfo }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
 // const {GatewayInfo} = Wrappers
@@ -21,12 +22,16 @@ let dvoteGateway: IDVoteGateway
 let web3Gateway: IWeb3Gateway
 let accountAddressState: string
 
+let bootnodesReadOnly: GatewayBootNodes
+let bootnodesPrivate: GatewayBootNodes
+
 let isConnected = false
 let error: boolean = false
 let timedOut: boolean = false
 
-export function initGateways() {
-    return connectClients()
+export async function initNetwork() {
+    await connectClients()
+    await fetchBootnodes()
 }
 
 export async function connectClients() {
@@ -116,6 +121,18 @@ export async function connectClients() {
     isConnected = true
 }
 
+export async function fetchBootnodes() {
+    try {
+        bootnodesReadOnly = await fetchFromBootNode(BOOTNODES_URL_READ_ONLY)
+        if (!readOnly) {
+            bootnodesPrivate = await fetchFromBootNode(BOOTNODES_URL_RW)
+        }
+    }
+    catch (err) {
+        message.error("Connection error")
+    }
+}
+
 export function disconnect() {
     if (entityResolver && entityResolver.provider) {
         entityResolver.provider.removeAllListeners("TextChanged")
@@ -170,11 +187,13 @@ export function disconnect() {
 
 // GETTERS
 
-export function getGatewayState() {
+export function getNetworkState() {
     return {
         readOnly,
         isConnected,
         address: accountAddressState,
+        bootnodesReadOnly,
+        bootnodesPrivate,
         error,
         timedOut
     }

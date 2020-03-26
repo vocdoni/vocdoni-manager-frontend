@@ -1,14 +1,17 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin } from 'antd'
-import { getGatewayClients } from '../../lib/gateways'
-import { API, EntityMetadata } from "dvote-js"
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 const { Entity } = API
+import QRCode from "qrcode.react"
 import Link from "next/link"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
+
+const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 // MAIN COMPONENT
 const EntityViewPage = props => {
@@ -21,7 +24,7 @@ const EntityViewPage = props => {
 type State = {
   entityLoading?: boolean,
   entity?: EntityMetadata,
-  entityId?: string,
+  entityId?: string
 }
 
 // Stateful component
@@ -49,8 +52,18 @@ class EntityView extends Component<IAppContext, State> {
   }
 
   renderEntityInfo() {
+    const entityId = location.hash.substr(2)
+    let subscriptionLink = `vocdoni://vocdoni.app/entity?entityId=${entityId}&`
+    const { bootnodesReadOnly } = getNetworkState()
+    if (Object.keys(bootnodesReadOnly).length >= 1) {
+      subscriptionLink += bootnodesReadOnly[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
+    }
+
     return <>
       <img src={this.state.entity.media.avatar} className="avatar" />
+      <p>
+        <QRCode value={subscriptionLink} size={256} />
+      </p>
       <h4>{this.state.entity.name["default"]}</h4>
       <p>{this.state.entity.description["default"]}</p>
       <pre>{JSON.stringify(this.state.entity, null, 2)}</pre>

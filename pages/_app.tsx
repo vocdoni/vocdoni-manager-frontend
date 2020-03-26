@@ -4,9 +4,10 @@ import App from 'next/app'
 import AppContext, { IGlobalState } from '../components/app-context'
 import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
-import { initGateways, getGatewayState, getGatewayClients } from "../lib/gateways"
+import { initNetwork, getNetworkState, getGatewayClients } from "../lib/network"
 import { IAppContext } from "../components/app-context"
 import Web3Wallet, { AccountState } from "../lib/web3-wallet"
+import MetamaskState from '../components/metamask-state'
 import { message, Spin } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
@@ -14,13 +15,13 @@ import { message, Spin } from "antd"
 import "../styles/index.css"
 import 'antd/lib/message/style/index.css'
 import 'antd/lib/button/style/index.css'
+import 'antd/lib/menu/style/index.css'
 import 'antd/lib/input/style/index.css'
 import 'antd/lib/input-number/style/index.css'
 import 'antd/lib/date-picker/style/index.css'
 import 'antd/lib/spin/style/index.css'
 import 'antd/lib/divider/style/index.css'
 import 'antd/lib/skeleton/style/index.css'
-import MetamaskState from '../components/metamask-state'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -58,7 +59,7 @@ class MainApp extends App<Props, State> {
     // }
 
     componentDidMount() {
-        initGateways().then(() => {
+        initNetwork().then(() => {
             message.success("Connected")
             this.refreshWeb3Status()
         }).catch(err => {
@@ -82,7 +83,7 @@ class MainApp extends App<Props, State> {
         const { web3Gateway } = await getGatewayClients()
         const networkName = (await web3Gateway.getProvider().getNetwork()).name
 
-        const { isConnected } = getGatewayState();
+        const { isConnected } = getNetworkState();
         this.setState({
             isConnected,
             accountState: currentAccountState,
@@ -92,7 +93,7 @@ class MainApp extends App<Props, State> {
 
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
-        initGateways().then(() => {
+        initNetwork().then(() => {
             message.success("Connected")
             this.refreshWeb3Status()
         }).catch(err => {

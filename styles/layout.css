@@ -4,6 +4,7 @@
 
 #layout .top-bar {
     background-color: var(--main-color);
+    color: var(--clear);
     padding: 15px;
 }
 #layout .top-bar .title {

@@ -1,7 +1,12 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
+import { message, Spin, Button, Divider, Menu, Row, Col } from 'antd'
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
+import MainLayout from "../../components/layout"
+const { Entity } = API
 import Link from "next/link"
-// import MainLayout from "../../components/layout"
+import Router from 'next/router'
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
@@ -15,34 +20,115 @@ const EntityEditPage = props => {
 }
 
 type State = {
-  id?: string
-  // TODO:
+  entityLoading?: boolean,
+  entity?: EntityMetadata,
+  entityId?: string,
+  bootnodes?: GatewayBootNodes
 }
 
 // Stateful component
 class EntityEdit extends Component<IAppContext, State> {
   state: State = {}
 
-  componentDidMount() {
-    this.setState({ id: location.hash.substr(2) })
+  refreshInterval: any
 
-    // TODO: FETCH METADATA
+  async componentDidMount() {
+    // if readonly, show the view page
+    if (getNetworkState().readOnly) {
+      return Router.replace("/entities/" + location.hash)
+    }
+    this.props.setTitle("Loading")
 
-    this.props.setTitle(`Entity ${location.hash.substr(2)}`)
+    this.refreshInterval = setInterval(() => this.refreshMetadata(), 1000 * 30)
+
+    try {
+      await this.refreshMetadata()
+    }
+    catch (err) {
+      message.error("Could not read the entity metadata")
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.refreshInterval)
+  }
+
+  async refreshMetadata() {
+    try {
+      const entityId = location.hash.substr(2)
+      this.setState({ entityLoading: true, entityId })
+
+      const { web3Gateway, dvoteGateway } = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      if (!entity) throw new Error()
+
+      this.setState({ entity, entityId, entityLoading: false })
+      this.props.setTitle(entity.name["default"])
+    }
+    catch (err) {
+      this.setState({ entityLoading: false })
+      throw err
+    }
+  }
+
+  renderEntityInfo() {
+    return <>
+      <img src={this.state.entity.media.avatar} className="avatar" />
+      <h4>{this.state.entity.name["default"]}</h4>
+      <p>{this.state.entity.description["default"]}</p>
+      <pre>{JSON.stringify(this.state.entity, null, 2)}</pre>
+      {/* <p><Link href={`/entities/edit/#/${this.state.entityId}`}><a><Button>Manage my entity</Button></a></Link></p> */}
+    </>
+  }
+
+  renderNotFound() {
+    return <>
+      <h4>Entity not found</h4>
+      <p>The entity you are looking for cannot be found</p>
+    </>
+  }
+
+  renderLoading() {
+    return <div>Please, wait... <Spin size="small" /></div>
   }
 
   render() {
     return <div id="entity-edit">
-      <p>Entity Edit</p>
-      <pre>I am {this.state.id}</pre>
+      {
+        this.state.entityLoading ? this.renderLoading() :
+          this.state.entity ? this.renderEntityInfo() : this.renderNotFound()
+      }
     </div>
   }
 }
 
 
-// // Using a custom layout
-// EntityEditPage.Layout = props => <MainLayout>
-//   {props.children}
-// </MainLayout>
+// Custom layout
+EntityEditPage.Layout = props => <MainLayout>
+
+  <Menu
+    mode="inline"
+    defaultSelectedKeys={['1']}
+    defaultOpenKeys={['entity']}
+    style={{ height: '100vh', width: 200, borderRight: 0 }}
+  >
+    <Menu.Item key="home" onClick={() => Router.push(`/`)}>
+      {/* <Icon type="home" /> */}
+      <span>Overview</span>
+    </Menu.Item>
+    <Menu.Item key="metadata" onClick={() => Router.push(`/`)}>
+      Profile
+    </Menu.Item>
+    <Menu.Item key="diary" onClick={() => Router.push(`/`)}>
+      News feed
+    </Menu.Item>
+    <Menu.Item key="processes" onClick={() => Router.push(`/`)}>
+      Polls
+    </Menu.Item>
+  </Menu>
+  <div>
+    {props.children}
+  </div>
+</MainLayout>
 
 export default EntityEditPage
