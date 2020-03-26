@@ -15,6 +15,7 @@ import { message, Spin } from "antd"
 import "../styles/index.css"
 import 'antd/lib/grid/style/index.css'
 import 'antd/lib/list/style/index.css'
+import 'antd/lib/form/style/index.css'
 import 'antd/lib/pagination/style/index.css'
 import 'antd/lib/skeleton/style/index.css'
 import 'antd/lib/divider/style/index.css'

@@ -33,7 +33,7 @@ const PostViewPage = props => {
 }
 
 type State = {
-  entityLoading?: boolean,
+  dataLoading?: boolean,
   entity?: EntityMetadata,
   entityId?: string,
   newsFeed?: INewsFeed,
@@ -49,7 +49,7 @@ class PostView extends Component<IAppContext, State> {
   async componentDidMount() {
     try {
       const entityId = location.hash.substr(2)
-      this.setState({ entityLoading: true, entityId })
+      this.setState({ dataLoading: true, entityId })
 
       const { web3Gateway, dvoteGateway } = await getGatewayClients()
       const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
@@ -70,11 +70,11 @@ class PostView extends Component<IAppContext, State> {
         throw new Error()
       }
 
-      this.setState({ newsFeed, entity, entityId, entityLoading: false })
+      this.setState({ newsFeed, entity, entityId, dataLoading: false })
       this.props.setTitle(entity.name["default"])
     }
     catch (err) {
-      this.setState({ entityLoading: false })
+      this.setState({ dataLoading: false })
       message.error("Could not read the entity metadata")
     }
   }
@@ -238,12 +238,12 @@ class PostView extends Component<IAppContext, State> {
     return <div id="post-view">
       {this.renderSideMenu()}
       {
-        this.state.entityLoading ?
+        this.state.dataLoading ?
           <div id="page-body" className="center">
             {this.renderLoading()}
           </div>
           :
-          this.state.entity ?
+          (this.state.entity && this.state.newsFeed) ?
             <div id="page-body">
               {this.renderPostsList()}
             </div>

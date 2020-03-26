@@ -43,8 +43,6 @@ type State = {
 class EntityEdit extends Component<IAppContext, State> {
   state: State = {}
 
-  refreshInterval: any
-
   async componentDidMount() {
     // if readonly, show the view page
     if (getNetworkState().readOnly) {
@@ -52,21 +50,15 @@ class EntityEdit extends Component<IAppContext, State> {
     }
     // this.props.setTitle("Loading")
 
-    this.refreshInterval = setInterval(() => this.refreshMetadata(), 1000 * 30)
-
     try {
-      await this.refreshMetadata()
+      await this.fetchMetadata()
     }
     catch (err) {
       message.error("Could not read the entity metadata")
     }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.refreshInterval)
-  }
-
-  async refreshMetadata() {
+  async fetchMetadata() {
     try {
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
@@ -146,7 +138,7 @@ class EntityEdit extends Component<IAppContext, State> {
       const state = getNetworkState()
       return updateEntity(state.address, entity, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
     }).then(newOrigin => {
-      return this.refreshMetadata()
+      return this.fetchMetadata()
     }).then(() => {
       message.success("The entity has been updated")
       this.setState({ entityUpdating: false })
@@ -266,27 +258,10 @@ class EntityEdit extends Component<IAppContext, State> {
   renderSideMenu() {
     const { readOnly, address } = getNetworkState()
     const ownEntityId = getEntityId(address)
+    const hideEditControls = readOnly || this.state.entityId != ownEntityId
 
-    if (readOnly || this.state.entityId != ownEntityId) {
-      return <div id="page-menu">
-        <Menu mode="inline" defaultSelectedKeys={['edit']} style={{ width: 200 }}>
-          <Menu.Item key="profile">
-            <Link href={"/entities/" + location.hash}>
-              <a>Profile</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="feed">
-            <Link href={"/posts/" + location.hash}>
-              <a>News feed</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="polls">
-            <Link href={"/processes/" + location.hash}>
-              <a>Polls</a>
-            </Link>
-          </Menu.Item>
-        </Menu>
-      </div>
+    if (hideEditControls) {
+      return null
     }
 
     return <div id="page-menu">

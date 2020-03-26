@@ -104,8 +104,9 @@ class EntityView extends Component<IAppContext, State> {
   renderSideMenu() {
     const { readOnly, address } = getNetworkState()
     const ownEntityId = getEntityId(address)
+    const hideEditControls = readOnly || this.state.entityId != ownEntityId
 
-    if (readOnly || this.state.entityId != ownEntityId) {
+    if (hideEditControls) {
       return <div id="page-menu">
         <Menu mode="inline" defaultSelectedKeys={['profile']} style={{ width: 200 }}>
           <Menu.Item key="profile">
