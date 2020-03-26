@@ -1,6 +1,6 @@
 import { Component } from "react"
 import { Button, Spin } from 'antd'
-import Web3Manager, { AccountState } from "../lib/web3-wallet"
+import Web3Wallet, { AccountState } from "../lib/web3-wallet"
 
 import { Skeleton } from 'antd'
 
@@ -10,11 +10,11 @@ interface Props {
 
 export default class MetamaskState extends Component<Props> {
     onClickUnlockAccount() {
-        Web3Manager.unlock()
+        Web3Wallet.unlock()
     }
 
     renderPleaseWait() {
-        return <div className="main-skeleton">
+        return <div className="card main-skeleton">
             <Skeleton active />
             <br />
             <div>Please, wait... <Spin size="small" /></div>
@@ -22,28 +22,25 @@ export default class MetamaskState extends Component<Props> {
     }
 
     renderInstallMetaMask() {
-        return <div className="install">
+        return <div className="card install">
             <h2>Ethereum not detected</h2>
             <p>In order to connect to the blockchain you need to install Metamask.</p>
             <div className="main-button">
-                <Button
-                    type="default"
-                    size="large"
-                    target="_blank"
-                    href={"https://metamask.io/"}>
-                    Install Metamask
+                <a href="https://metamask.io" target="_blank">
+                    <Button type="default">
+                        Install Metamask
                 </Button>
+                </a>
             </div>
-        </div>
+        </div >
     }
     renderMetaMaskLogin() {
-        return <div className="login">
+        return <div className="card login">
             <h2>Metamask is locked</h2>
             <p>In order to connect to the blockchain you need to unlock Metamask.</p>
             <div className="main-button">
                 <Button
                     type="default"
-                    size="large"
                     onClick={() => this.onClickUnlockAccount()}>
                     Log in with Metamask
                 </Button>

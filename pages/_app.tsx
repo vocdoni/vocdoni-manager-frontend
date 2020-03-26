@@ -4,9 +4,9 @@ import App from 'next/app'
 import AppContext, { IGlobalState } from '../components/app-context'
 import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
-import { init, getState } from "../lib/gateways"
+import { initGateways, getGatewayState, getGatewayClients } from "../lib/gateways"
 import { IAppContext } from "../components/app-context"
-import Web3Manager, { AccountState } from "../lib/web3-wallet"
+import Web3Wallet, { AccountState } from "../lib/web3-wallet"
 import { message, Spin } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
@@ -18,16 +18,20 @@ import 'antd/lib/input/style/index.css'
 import 'antd/lib/input-number/style/index.css'
 import 'antd/lib/date-picker/style/index.css'
 import 'antd/lib/spin/style/index.css'
+import 'antd/lib/divider/style/index.css'
 import 'antd/lib/skeleton/style/index.css'
 import MetamaskState from '../components/metamask-state'
+
+const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 type Props = {
     // injectedArray: any[],
 }
 
-interface State {
+type State = {
     isConnected: boolean,
     accountState: AccountState,
+    networkName: string,
 
     // STATE SHARED WITH CHILDREN
     title: string,
@@ -38,6 +42,7 @@ class MainApp extends App<Props, State> {
         isConnected: false,
         accountState: AccountState.Unknown,
         title: "Entities",
+        networkName: null
     }
 
     refreshInterval: any
@@ -53,8 +58,7 @@ class MainApp extends App<Props, State> {
     // }
 
     componentDidMount() {
-        // TODO: Handle public and private GW's
-        init().then(() => {
+        initGateways().then(() => {
             message.success("Connected")
             this.refreshWeb3Status()
         }).catch(err => {
@@ -74,21 +78,21 @@ class MainApp extends App<Props, State> {
     }
 
     async refreshWeb3Status() {
-        const currentAccountState = await Web3Manager.getAccountState()
+        const currentAccountState = await Web3Wallet.getAccountState()
+        const { web3Gateway } = await getGatewayClients()
+        const networkName = (await web3Gateway.getProvider().getNetwork()).name
 
-        // TODO: In read-only we may not need metamask
-
-        // Is metadata different than it was? => sync
-        const { isConnected, address, entityMetadata, votingProcesses } = getState();
+        const { isConnected } = getGatewayState();
         this.setState({
             isConnected,
-            accountState: currentAccountState
+            accountState: currentAccountState,
+            networkName
         })
     }
 
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
-        init().then(() => {
+        initGateways().then(() => {
             message.success("Connected")
             this.refreshWeb3Status()
         }).catch(err => {
@@ -103,9 +107,17 @@ class MainApp extends App<Props, State> {
     }
 
     renderPleaseWait() {
-        return <div className="please-wait">
-            <div>Please, wait... <Spin size="small" /></div>
-        </div>
+        return null // The loading message will appear
+
+        // return <div id="global-loading">
+        //     <div><Spin size="small" /> &nbsp;Please, wait... </div>
+        // </div>
+    }
+
+    renderMetamaskState() {
+        return <MainLayout>
+            <MetamaskState accountState={this.state.accountState} />
+        </MainLayout>
     }
 
     render() {
@@ -114,9 +126,16 @@ class MainApp extends App<Props, State> {
         if (!this.state.isConnected) {
             return this.renderPleaseWait()
         }
-        else if (accountState !== AccountState.Ok) {
-            return <MetamaskState accountState={this.state.accountState} />
+        else if (Web3Wallet.isAvailable()) {
+            if (accountState !== AccountState.Ok) {
+                return this.renderMetamaskState()
+            }
+            else if (Web3Wallet.isAvailable() && Web3Wallet.getNetworkName() != ETH_NETWORK_ID) {
+                return <GeneralError message={"Please, switch Metamask to the " + ETH_NETWORK_ID + " network"} />
+            }
         }
+
+
 
         // Main render
 

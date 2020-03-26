@@ -3,7 +3,6 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin } from 'antd'
 import { getGatewayClients } from '../../lib/gateways'
 import { API, EntityMetadata } from "dvote-js"
-import { Divider } from '../../components/divider'
 const { Entity } = API
 import Link from "next/link"
 // import MainLayout from "../../components/layout"

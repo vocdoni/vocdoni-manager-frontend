@@ -4,12 +4,16 @@ import { useContext } from "react"
 
 
 type Props = {
-    children: Element[],
-    title: string
+    children: any,
+    title?: string
 }
 
 export default function ({ children, ...props }: Props) {
-    const { title } = useContext(AppContext)
+    let title = props && props.title
+    if (!title) {
+        const context = useContext(AppContext)
+        if (context) title = context.title
+    }
 
     return <div id="layout" {...props}>
         <div className="top-bar">

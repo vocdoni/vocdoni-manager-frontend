@@ -34,20 +34,16 @@ module.exports = {
 ///////////////////////////////////////////////////////////////////////////////
 
 async function generatePathMap() {
-  const paths = {
+  return {
     '/': { page: '/' },
     '/entities': { page: '/entities' },
+    '/entities/edit': { page: '/entities/edit' },
+    '/entities/new': { page: '/entities/new' },
     '/processes': { page: '/processes' },
+    '/processes/edit': { page: '/processes/edit' },
+    '/processes/new': { page: '/processes/new' },
     '/posts': { page: '/posts' },
+    '/posts/edit': { page: '/posts/edit' },
+    '/posts/new': { page: '/posts/new' },
   }
-
-  if (!env.READ_ONLY) {
-    paths['/entities/edit'] = { page: '/entities/edit' }
-    paths['/entities/new'] = { page: '/entities/new' }
-    paths['/processes/edit'] = { page: '/processes/edit' }
-    paths['/processes/new'] = { page: '/processes/new' }
-    paths['/posts/edit'] = { page: '/posts/edit' }
-    paths['/posts/new'] = { page: '/posts/new' }
-  }
-  return paths
 }

@@ -2,10 +2,9 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../components/app-context'
 import Link from "next/link"
 import { API, EntityMetadata } from "dvote-js"
-import { getGatewayClients } from '../lib/gateways'
-import { message, Button, Spin } from 'antd'
-import Web3Manager from '../lib/web3-wallet'
-import { Divider } from "../components/divider"
+import { getGatewayClients, getGatewayState } from '../lib/gateways'
+import { message, Button, Spin, Divider } from 'antd'
+import Web3Wallet from '../lib/web3-wallet'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 const { Entity } = API
 // import MainLayout from "../components/layout"
@@ -36,9 +35,9 @@ class IndexView extends Component<IAppContext, State> {
 
     try {
       let userAddr = null
-      if (Web3Manager.isEthereumAvailable() && Web3Manager.isWeb3Available()) {
+      if (Web3Wallet.isEthereumAvailable() && Web3Wallet.isWeb3Available()) {
         this.setState({ entityLoading: true })
-        userAddr = await Web3Manager.getAddress()
+        userAddr = await Web3Wallet.getAddress()
 
         const entityId = getEntityId(userAddr)
         const { web3Gateway, dvoteGateway } = await getGatewayClients()
@@ -48,6 +47,7 @@ class IndexView extends Component<IAppContext, State> {
       }
     }
     catch (err) {
+      console.log(err)
       this.setState({ entityLoading: false })
       message.error("Could not connect to the network")
     }
@@ -55,7 +55,6 @@ class IndexView extends Component<IAppContext, State> {
 
   renderEntityInfo() {
     return <>
-      <p>Your account has an Entity created</p>
       <Divider />
       <h4>{this.state.entity.name["default"]}</h4>
       <p>{this.state.entity.description["default"]}</p>
@@ -64,6 +63,13 @@ class IndexView extends Component<IAppContext, State> {
   }
 
   renderGetStarated() {
+    if (getGatewayState().readOnly) {
+      return <>
+        <p>To create an entity, install Metamask on your browser and try again.</p>
+        <p><a href="https://metamask.io" target="_blank"><Button>Install Metamask</Button></a></p>
+      </>
+    }
+
     return <>
       <p>You haven't created an entity yet</p>
       <p><Link href="/entities/new"><a><Button>Create an entity</Button></a></Link></p>
