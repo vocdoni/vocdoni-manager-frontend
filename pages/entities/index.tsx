@@ -3,10 +3,10 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin } from 'antd'
 import { Divider, Menu, Row, Col } from 'antd'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
+import { API, EntityMetadata } from "dvote-js"
 const { Entity } = API
 import QRCode from "qrcode.react"
-import Router from 'next/router'
+// import Router from 'next/router'
 import Link from "next/link"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"

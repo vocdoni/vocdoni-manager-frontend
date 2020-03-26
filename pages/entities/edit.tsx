@@ -4,24 +4,24 @@ import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'a
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
-import { by639_1 } from 'iso-language-codes'
+// import { by639_1 } from 'iso-language-codes'
 const { Entity } = API
 import Link from "next/link"
 import Router from 'next/router'
 import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity } from 'dvote-js/dist/api/entity'
-const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
+// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
-const { Option } = Select
+// const { Option } = Select
 
-const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {
-  if (!prev.includes(cur)) prev.push(cur)
-  return prev
-}, [])
+// const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {
+//   if (!prev.includes(cur)) prev.push(cur)
+//   return prev
+// }, [])
 
 // MAIN COMPONENT
 const EntityEditPage = props => {
@@ -95,17 +95,17 @@ class EntityEdit extends Component<IAppContext, State> {
     const entity = Object.assign({}, this.state.entity, { languages: defaultLang.concat(otherLang) })
     this.setState({ entity })
   }
-  onExistingNameChange(name: string, lang: string) {
+  onNameChange(name: string, lang: string) {
     const newName = Object.assign({}, this.state.entity.name, { [lang]: name })
     const entity = Object.assign({}, this.state.entity, { name: newName })
     this.setState({ entity })
   }
-  onExistingDescriptionChange(description: string, lang: string) {
+  onDescriptionChange(description: string, lang: string) {
     const newDescription = Object.assign({}, this.state.entity.description, { [lang]: description })
     const entity = Object.assign({}, this.state.entity, { description: newDescription })
     this.setState({ entity })
   }
-  onExistingFieldChange(key: string, subkey: string, value: string) {
+  onFieldChange(key: string, subkey: string, value: string) {
     if (subkey === null) {
       const entity = Object.assign({}, this.state.entity, { [key]: value })
       this.setState({ entity })
@@ -201,7 +201,7 @@ class EntityEdit extends Component<IAppContext, State> {
                 value={entity.name[lang]}
                 prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder={"Entity name"}
-                onChange={val => this.onExistingNameChange(val.target.value, lang)} />
+                onChange={val => this.onNameChange(val.target.value, lang)} />
               <br /><br />
             </div>)
           }
@@ -215,7 +215,7 @@ class EntityEdit extends Component<IAppContext, State> {
                 value={entity.description[lang]}
                 prefix={<BookOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder={"Description"}
-                onChange={val => this.onExistingDescriptionChange(val.target.value, lang)} />
+                onChange={val => this.onDescriptionChange(val.target.value, lang)} />
               <br /><br />
             </div>)
           }
@@ -227,7 +227,7 @@ class EntityEdit extends Component<IAppContext, State> {
             placeholder="Link to an avatar icon"
             prefix={<FileImageOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
             value={entity.media && entity.media.avatar}
-            onChange={ev => this.onExistingFieldChange("media", "avatar", ev.target.value)}
+            onChange={ev => this.onFieldChange("media", "avatar", ev.target.value)}
           />
           <br /><br />
           <label>Header Image (URL)</label>
@@ -235,7 +235,7 @@ class EntityEdit extends Component<IAppContext, State> {
             placeholder="Link to a header image"
             prefix={<FileImageOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
             value={entity.media && entity.media.header}
-            onChange={ev => this.onExistingFieldChange("media", "header", ev.target.value)}
+            onChange={ev => this.onFieldChange("media", "header", ev.target.value)}
           />
           <br /><br />
 

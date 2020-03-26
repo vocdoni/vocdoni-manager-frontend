@@ -47,8 +47,11 @@ class IndexView extends Component<IAppContext, State> {
       }
     }
     catch (err) {
-      console.log(err)
       this.setState({ entityLoading: false })
+      if (err && err.message == "The given entity has no metadata defined yet") {
+        return // nothing to show
+      }
+      console.log(err)
       message.error("Could not connect to the network")
     }
   }
