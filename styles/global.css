@@ -65,6 +65,14 @@ a {
     color: inherit;
 }
 
+.ant-menu-item a {
+    text-decoration: none;
+}
+
+.ant-input-affix-wrapper {
+    margin-top: 5px;
+}
+
 .card {
   background-color: white;
   box-shadow: 0 3px 6px 0 rgba(0,0,0,0.1);

@@ -72,6 +72,7 @@ class EntityView extends Component<IAppContext, State> {
           <img src={this.state.entity.media.avatar} className="avatar" />
           <h3>{this.state.entity.name["default"]}</h3>
           <p>{this.state.entity.description["default"]}</p>
+          <br />
           <Divider orientation="left">Participation</Divider>
           <p>{`${name} has ${activeProcs} active processes`}</p>
           <p>{`${name} has ${endedProcs} processes that already ended`}</p>
@@ -79,7 +80,8 @@ class EntityView extends Component<IAppContext, State> {
         <Col xs={24} sm={8}>
           <Divider orientation="left">Subscription code</Divider>
           <QRCode value={subscriptionLink} size={256} />
-
+          <br />
+          <br />
           <Divider orientation="left">Subscription link</Divider>
           <a href={subscriptionLink}>{"Subscribe to " + name}</a>
         </Col>
@@ -101,12 +103,23 @@ class EntityView extends Component<IAppContext, State> {
   renderSideMenu() {
     const { readOnly } = getNetworkState()
 
-    if (this.state.entityLoading || !this.state.entity || readOnly) {
+    if (readOnly) {
       return <div id="page-menu">
         <Menu mode="inline" defaultSelectedKeys={['profile']} style={{ width: 200 }}>
           <Menu.Item key="profile">
-            {/* <Icon type="home" /> */}
-            <span>Profile</span>
+            <Link href={"/entities/" + location.hash}>
+              <a>Profile</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="feed">
+            <Link href={"/posts/" + location.hash}>
+              <a>News feed</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="polls">
+            <Link href={"/processes/" + location.hash}>
+              <a>Polls</a>
+            </Link>
           </Menu.Item>
         </Menu>
       </div>
@@ -115,17 +128,24 @@ class EntityView extends Component<IAppContext, State> {
     return <div id="page-menu">
       <Menu mode="inline" defaultSelectedKeys={['profile']} style={{ width: 200 }}>
         <Menu.Item key="profile">
-          {/* <Icon type="home" /> */}
-          <span>Profile</span>
+          <Link href={"/entities/" + location.hash}>
+            <a>Profile</a>
+          </Link>
         </Menu.Item>
-        <Menu.Item key="edit" onClick={() => Router.push(`/`)}>
-          Edit details
+        <Menu.Item key="edit">
+          <Link href={"/entities/edit/" + location.hash}>
+            <a>Edit details</a>
+          </Link>
         </Menu.Item>
-        <Menu.Item key="feed" onClick={() => Router.push(`/`)}>
-          News feed
+        <Menu.Item key="feed">
+          <Link href={"/posts/" + location.hash}>
+            <a>News feed</a>
+          </Link>
         </Menu.Item>
-        <Menu.Item key="polls" onClick={() => Router.push(`/`)}>
-          Polls
+        <Menu.Item key="polls">
+          <Link href={"/processes/" + location.hash}>
+            <a>Polls</a>
+          </Link>
         </Menu.Item>
       </Menu>
     </div>
