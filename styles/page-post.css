@@ -38,6 +38,13 @@
     padding: 0 16px;
 }
 
+#post-edit .right-col {
+    text-align: right;
+}
+#post-edit img.preview {
+    max-width: 90%;
+}
+
 /* CREATE */
 
 #post-new .wrapper-box {
@@ -51,4 +58,11 @@
 
 #post-new .editor-box {
     padding: 0 16px;
+}
+
+#post-new .right-col {
+    text-align: right;
+}
+#post-new img.preview {
+    max-width: 90%;
 }

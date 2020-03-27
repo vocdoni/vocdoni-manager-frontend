@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col } from 'antd'
-import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined, RocketOutlined } from '@ant-design/icons'
+import { LoadingOutlined, RocketOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
@@ -21,15 +21,6 @@ let htmlToDraft: any // = await import('html-to-draftjs')
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
-// import MultiLine from '../components/multi-line-text'
-// import { } from '../lib/types'
-
-// const { Option } = Select
-
-// const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {
-//   if (!prev.includes(cur)) prev.push(cur)
-//   return prev
-// }, [])
 
 // MAIN COMPONENT
 const PostEditPage = props => {
@@ -108,6 +99,7 @@ class PostEdit extends Component<IAppContext, State> {
       const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
       if (!entity) throw new Error()
 
+      // TODO: MULTILANGUAGE
       const newsFeedOrigin = entity.newsFeed.default
       const payload = await fetchFileString(newsFeedOrigin, dvoteGateway)
 
@@ -173,7 +165,9 @@ class PostEdit extends Component<IAppContext, State> {
     const idx = newsFeed.items.findIndex(i => i.id == postId)
     if (idx < 0) return message.error("The post could not be updated")
 
-    newsFeed.items[idx] = this.state.newsPost
+    const post: JsonFeedPost = Object.assign({}, this.state.newsPost)
+    post.date_modified = new Date().toJSON()
+    newsFeed.items[idx] = post
 
     try {
       // TODO: The following removes the last post. Tested exactly the same in 
@@ -198,7 +192,7 @@ class PostEdit extends Component<IAppContext, State> {
       const feedContent = Buffer.from(JSON.stringify(newsFeed))
       const feedContentUri = await API.File.addFile(feedContent, `feed_${this.state.newsPost.id}.json`, Web3Wallet.signer as (Wallet | Signer), clients.dvoteGateway)
 
-      message.success("The news feed was pinned on IPFS successfully");
+      // message.success("The news feed was pinned on IPFS successfully");
 
       let entityMetadata = this.state.entity
       entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
