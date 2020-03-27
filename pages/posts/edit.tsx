@@ -14,6 +14,11 @@ import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
 import { fetchFileString } from 'dvote-js/dist/api/file'
 
+let Editor: any // = await import("react-draft-wysiwyg")
+let EditorState, ContentState, convertToRaw
+let draftToHtml: any // = await import('draftjs-to-html')
+let htmlToDraft: any // = await import('html-to-draftjs')
+
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -36,12 +41,13 @@ const PostEditPage = props => {
 
 type State = {
   dataLoading?: boolean,
-  entityUpdating?: boolean,
+  postUpdating?: boolean,
   entity?: EntityMetadata,
   entityId?: string,
   newsFeed?: JsonFeed,
   newsPost?: JsonFeedPost,
-  bootnodes?: GatewayBootNodes
+  bootnodes?: GatewayBootNodes,
+  editorState?: any
 }
 
 // Stateful component
@@ -63,6 +69,18 @@ class PostEdit extends Component<IAppContext, State> {
     if (getNetworkState().readOnly) {
       return Router.replace("/posts/#" + entityId)
     }
+
+    // Do the imports dynamically because `window` does not exist on SSR
+
+    Editor = (await import('react-draft-wysiwyg')).Editor
+    const DraftJS = await import('draft-js')
+    EditorState = DraftJS.EditorState
+    ContentState = DraftJS.ContentState
+    convertToRaw = DraftJS.convertToRaw
+    draftToHtml = (await import('draftjs-to-html')).default
+    htmlToDraft = (await import('html-to-draftjs')).default
+
+    this.setState({ editorState: EditorState.createEmpty() })
 
     try {
       await this.refreshMetadata()
@@ -106,6 +124,13 @@ class PostEdit extends Component<IAppContext, State> {
       }
 
       const newsPost = newsFeed.items.find(item => item.id == postId)
+      const html = newsPost.content_html || "<p></p>"
+      const contentBlock = htmlToDraft(html)
+      if (contentBlock) {
+        const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
+        const editorState = EditorState.createWithContent(contentState)
+        this.setState({ editorState })
+      }
 
       this.setState({ newsPost, newsFeed, entity, entityId, dataLoading: false })
       this.props.setTitle(entity.name["default"])
@@ -163,6 +188,7 @@ class PostEdit extends Component<IAppContext, State> {
     }
 
     const hideLoading = message.loading('Action in progress...', 0)
+    this.setState({ postUpdating: true })
 
     try {
       const clients = await getGatewayClients()
@@ -179,12 +205,14 @@ class PostEdit extends Component<IAppContext, State> {
 
       await updateEntity(state.address, entityMetadata, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
       hideLoading()
+      this.setState({ postUpdating: false })
 
       message.success("The post has been successfully updated")
       Router.reload()
     }
     catch (err) {
       hideLoading()
+      this.setState({ postUpdating: false })
       console.error("The new post could not be created", err)
       message.error("The new post could not be created")
     }
@@ -203,6 +231,17 @@ class PostEdit extends Component<IAppContext, State> {
     let newsPost = Object.assign({}, this.state.newsPost)
     this.setNestedKey(newsPost, path, value)
     this.setState({ newsPost })
+  }
+
+  editorContentChanged(state) {
+    this.setState({ editorState: state })
+
+    const newHtml = draftToHtml(convertToRaw(state.getCurrentContent()))
+    const element = document.createElement("div")
+    element.innerHTML = newHtml
+    const newText = element.innerText
+    this.setselectedPostField(["content_text"], newText)
+    this.setselectedPostField(["content_html"], newHtml)
   }
 
   renderPostEdit() {
@@ -238,22 +277,26 @@ class PostEdit extends Component<IAppContext, State> {
 
             <Form.Item>
               <label>Content</label>
-              <Input.TextArea
-                placeholder="<p>Your text goes here</p>"
-                value={this.state.newsPost.content_html}
-                onChange={ev => this.setselectedPostField(["content_html"], ev.target.value)}
-              />
+              {
+                Editor ? <Editor
+                  editorState={this.state.editorState}
+                  toolbarClassName="toolbar-box"
+                  wrapperClassName="wrapper-box"
+                  editorClassName="editor-box"
+                  onEditorStateChange={state => this.editorContentChanged(state)}
+                /> : null
+              }
             </Form.Item>
           </Form>
 
           <Divider />
 
           <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
-            <Button
-              type="primary"
-              size={'large'}
-              onClick={() => this.submit()}>
-              <RocketOutlined /> Publish Post</Button>
+            {this.state.postUpdating ?
+              <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
+              <Button type="primary" size={'large'} onClick={() => this.submit()}>
+                <RocketOutlined /> Publish Post</Button>
+            }
           </div>
         </Col>
       </Row>
@@ -288,7 +331,7 @@ class PostEdit extends Component<IAppContext, State> {
           </Link>
         </Menu.Item>
         <Menu.Item key="edit">
-          <Link href={"/entities/edit/" + location.hash}>
+          <Link href={"/entities/edit/#/" + this.state.entityId}>
             <a>Edit profile</a>
           </Link>
         </Menu.Item>

@@ -25,4 +25,30 @@
 
 }
 
+#post-edit .wrapper-box {
+    border: 1px solid #F1F1F1;
+}
+
+#post-edit .toolbar-box {
+    border: none;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+#post-edit .editor-box {
+    padding: 0 16px;
+}
+
 /* CREATE */
+
+#post-new .wrapper-box {
+    border: 1px solid #F1F1F1;
+}
+
+#post-new .toolbar-box {
+    border: none;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+#post-new .editor-box {
+    padding: 0 16px;
+}

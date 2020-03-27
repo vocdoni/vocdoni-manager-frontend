@@ -1,36 +1,38 @@
-// NEWS FEED
+// // NEWS FEED
 
-export interface INewsFeed {
-    // OWN FIELDS
-    version: string,
-    title: string,
-    homePageUrl: string,
-    description: string,
-    feedUrl: string,
-    icon: string,
-    favicon: string,
-    expired: boolean,
-    items: IFeedPost[],
+// export interface INewsFeed {
+//     // OWN FIELDS
+//     version: string,
+//     title: string,
+//     homePageUrl: string,
+//     description: string,
+//     feedUrl: string,
+//     icon: string,
+//     favicon: string,
+//     expired: boolean,
+//     items: IFeedPost[],
 
-    // INDEXING FIELDS
-    entityId: string,
-    language: string
-}
+//     // INDEXING FIELDS
+//     entityId: string,
+//     language: string
+// }
 
-export interface IFeedPost {
-    id: string,
-    title: string,
-    summary: string,
-    contentText: string,
-    contentHtml: string,
-    url: string,
-    image: string,
-    tags: string[],
-    datePublished: string,
-    dateModified: string,
+// export interface IFeedPost {
+//     id: string,
+//     title: string,
+//     summary: string,
+//     contentText: string,
+//     contentHtml: string,
+//     url: string,
+//     image: string,
+//     tags: string[],
+//     datePublished: string,
+//     dateModified: string,
 
-    author: {
-        name: string,
-        url: string
-    }
-}
+//     author: {
+//         name: string,
+//         url: string
+//     }
+// }
+
+export {}

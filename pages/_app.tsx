@@ -27,6 +27,8 @@ import 'antd/lib/input-number/style/index.css'
 import 'antd/lib/date-picker/style/index.css'
 import 'antd/lib/spin/style/index.css'
 
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 type Props = {
