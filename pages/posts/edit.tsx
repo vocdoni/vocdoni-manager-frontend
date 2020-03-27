@@ -340,12 +340,12 @@ class PostEdit extends Component<IAppContext, State> {
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-active">
-          <Link href={"/processes/active" + location.hash}>
+          <Link href={"/processes/active/" + location.hash}>
             <a>Active votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended" + location.hash}>
+          <Link href={"/processes/ended/" + location.hash}>
             <a>Ended votes</a>
           </Link>
         </Menu.Item>

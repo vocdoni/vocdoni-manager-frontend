@@ -155,7 +155,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
                         >
                             <List.Item.Meta
                                 avatar={<Avatar src={this.state.entity.media.avatar} />}
-                                title={((vote as any).data as ProcessMetadata).details.title["default"]}
+                                title={
+                                    <Link href={`/processes/#/${entityId}/${(vote as any).id}`}>
+                                        <a>{((vote as any).data as ProcessMetadata).details.title["default"]}</a>
+                                    </Link>
+                                }
                                 description={((vote as any).data as ProcessMetadata).details.description["default"]}
                             />
                         </List.Item>
@@ -167,7 +171,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     renderNotFound() {
         return <div className="not-found">
-            <h4>Entity  or active processes not found</h4>
+            <h4>Entity or active processes not found</h4>
             <p>The entity you are looking for cannot be found</p>
         </div>
     }
@@ -195,12 +199,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="processes-active">
-                        <Link href={"/processes/active" + location.hash}>
+                        <Link href={"/processes/active/" + location.hash}>
                             <a>Active votes</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="processes-ended">
-                        <Link href={"/processes/ended" + location.hash}>
+                        <Link href={"/processes/ended/" + location.hash}>
                             <a>Ended votes</a>
                         </Link>
                     </Menu.Item>
@@ -231,12 +235,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="processes-active">
-                    <Link href={"/processes/active" + location.hash}>
+                    <Link href={"/processes/active/" + location.hash}>
                         <a>Active votes</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="processes-ended">
-                    <Link href={"/processes/ended" + location.hash}>
+                    <Link href={"/processes/ended/" + location.hash}>
                         <a>Ended votes</a>
                     </Link>
                 </Menu.Item>
@@ -250,7 +254,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 
     render() {
-        return <div id="post-view">
+        return <div id="process-view">
             {this.renderSideMenu()}
             {
                 this.state.dataLoading ?
