@@ -10,10 +10,9 @@ const { Entity } = API
 import Link from "next/link"
 import Router from 'next/router'
 import Web3Wallet from '../../lib/web3-wallet'
-import { Wallet, Signer } from 'ethers'
+// import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
-import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
-import { fetchFileString } from 'dvote-js/dist/api/file'
+// import { checkValidProcessMetadata } from 'dvote-js/dist/models/voting-process'
 import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
 import { getBlockHeight, createVotingProcess } from 'dvote-js/dist/api/vote'
 const { RangePicker } = DatePicker
@@ -41,7 +40,7 @@ const ProcessNewPage = props => {
 
 type State = {
   dataLoading?: boolean,
-  postUpdating?: boolean,
+  processCreating?: boolean,
   entity?: EntityMetadata,
   entityId?: string,
   process?: ProcessMetadata,
@@ -95,6 +94,7 @@ class ProcessNew extends Component<IAppContext, State> {
     try {
       await this.refreshBlockHeight()
       await this.refreshMetadata()
+      this.setDateRange(moment().add(1, 'days'), moment().add(3, 'days'))
       this.refreshInterval = setInterval(() => this.refreshBlockHeight(), parseInt(process.env.BLOCK_TIME || "10") || 10)
     }
     catch (err) {
@@ -280,17 +280,23 @@ class ProcessNew extends Component<IAppContext, State> {
     let newProcess = this.state.process
     newProcess.startBlock = this.state.startBlock
     newProcess.numberOfBlocks = this.state.numberOfBlocks
+    newProcess.details.entityId = this.state.entityId
+    newProcess.details.encryptionPublicKey = "0x0"
 
     const hideLoading = message.loading('Action in progress..', 0)
+    this.setState({ processCreating: true })
 
     return createVotingProcess(newProcess, Web3Wallet.signer, clients.web3Gateway, clients.dvoteGateway)
       .then(processId => {
         message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
         hideLoading()
+        this.setState({ processCreating: false })
 
-        Router.push("/processes/#/" + processId)
+        Router.push("/processes/#/" + this.state.entityId + "/" + processId)
       }).catch(err => {
         hideLoading()
+        this.setState({ processCreating: false })
+
         console.error("The voting process could not be created", err);
         message.error("The voting process could not be created")
       })
@@ -458,7 +464,7 @@ class ProcessNew extends Component<IAppContext, State> {
           <Divider />
 
           <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
-            {this.state.postUpdating ?
+            {this.state.processCreating ?
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
               <Button type="primary" size={'large'} onClick={() => this.submit()}>
                 <RocketOutlined /> Create process</Button>
@@ -572,17 +578,17 @@ class ProcessNew extends Component<IAppContext, State> {
     return <div id="page-menu">
       <Menu mode="inline" defaultSelectedKeys={['process-new']} style={{ width: 200 }}>
         <Menu.Item key="profile">
-          <Link href={"/entities/#/" + this.state.entityId}>
+          <Link href={"/entities/#/" + ownEntityId}>
             <a>Profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="edit">
-          <Link href={"/entities/edit/#/" + this.state.entityId}>
+          <Link href={"/entities/edit/#/" + ownEntityId}>
             <a>Edit profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="feed">
-          <Link href={"/posts/#/" + this.state.entityId}>
+          <Link href={"/posts/#/" + ownEntityId}>
             <a>News feed</a>
           </Link>
         </Menu.Item>
@@ -592,12 +598,12 @@ class ProcessNew extends Component<IAppContext, State> {
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-active">
-          <Link href={"/processes/active/" + location.hash}>
+          <Link href={"/processes/active/#/" + ownEntityId}>
             <a>Active votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/" + location.hash}>
+          <Link href={"/processes/ended/#/" + ownEntityId}>
             <a>Ended votes</a>
           </Link>
         </Menu.Item>

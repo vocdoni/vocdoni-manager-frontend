@@ -160,13 +160,13 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
   renderNotFound() {
     return <div className="not-found">
-      <h4>Entity or active processes not found</h4>
+      <h4>Entity or vote not found</h4>
       <p>The entity you are looking for cannot be found</p>
     </div>
   }
 
   renderLoading() {
-    return <div>Loading the votes of the entity...  <Spin size="small" /></div>
+    return <div>Loading the vote details...  <Spin size="small" /></div>
   }
 
   renderSideMenu() {
