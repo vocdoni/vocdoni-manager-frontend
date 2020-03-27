@@ -315,7 +315,7 @@ class PostNew extends Component<IAppContext, State> {
     }
 
     return <div id="page-menu">
-      <Menu mode="inline" style={{ width: 200 }}>
+      <Menu mode="inline" defaultSelectedKeys={['new-post']} style={{ width: 200 }}>
         <Menu.Item key="profile">
           <Link href={"/entities/#/" + this.state.entityId}>
             <a>Profile</a>

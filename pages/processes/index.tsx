@@ -136,15 +136,17 @@ class ProcessActiveView extends Component<IAppContext, State> {
             <Col xs={24} sm={12}>
               <h4>Start block number</h4>
               <p>{process.startBlock}</p>
-              <h4>Start date (estimated)</h4>
-              <p>-</p>
+              {/* TODO: Compute the start/end date */}
+              {/* <h4>Start date (estimated)</h4> */}
+              {/* <p>-</p> */}
             </Col>
-            {/* <Col xs={24} sm={12}>
+            <Col xs={24} sm={12}>
               <h4>End block</h4>
               <p>{process.startBlock + process.numberOfBlocks}</p>
-              <h4>End date (estimated)</h4>
-              <p>-</p>
-            </Col> */}
+              {/* TODO: Compute the start/end date */}
+              {/* <h4>End date (estimated)</h4> */}
+              {/* <p>-</p> */}
+            </Col>
           </Row>
 
         </Col>

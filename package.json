@@ -24,7 +24,7 @@
     "@ant-design/icons": "^4.0.2",
     "@types/node": "^13.7.4",
     "@types/react": "^16.9.21",
-    "antd": "^4.0.1",
+    "antd": "^4.0.4",
     "dexie": "^2.0.4",
     "draft-js": "^0.11.5",
     "draftjs-to-html": "^0.9.1",
