@@ -119,9 +119,14 @@ class EntityView extends Component<IAppContext, State> {
               <a>News feed</a>
             </Link>
           </Menu.Item>
-          <Menu.Item key="polls">
-            <Link href={"/processes/" + location.hash}>
-              <a>Polls</a>
+          <Menu.Item key="processes-active">
+            <Link href={"/processes/active" + location.hash}>
+              <a>Active votes</a>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="processes-ended">
+            <Link href={"/processes/ended" + location.hash}>
+              <a>Ended votes</a>
             </Link>
           </Menu.Item>
         </Menu>
@@ -150,9 +155,19 @@ class EntityView extends Component<IAppContext, State> {
             <a>Create post</a>
           </Link>
         </Menu.Item>
-        <Menu.Item key="polls">
-          <Link href={"/processes/" + location.hash}>
-            <a>Polls</a>
+        <Menu.Item key="processes-active">
+          <Link href={"/processes/active" + location.hash}>
+            <a>Active votes</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="processes-ended">
+          <Link href={"/processes/ended" + location.hash}>
+            <a>Ended votes</a>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="new-vote">
+          <Link href={"/processes/new/"}>
+            <a>Create vote</a>
           </Link>
         </Menu.Item>
       </Menu>

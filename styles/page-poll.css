@@ -1,0 +1,68 @@
+/* VIEW */
+#poll-view .body-card .ant-list-item-meta-avatar img{
+    max-width: 60px;
+}
+
+#poll-view .body-card .ant-list-item-meta-title {
+    margin-top: 0;
+}
+
+#poll-view .body-card .ant-list-item-action .icon-text {
+    line-height: 36px;
+}
+
+#poll-view .body-card .ant-list-item-action a {
+    text-decoration: none;
+}
+
+#poll-view .body-card .ant-list-item-action .icon-text:hover {
+    color: rgba(0, 0, 0, 0.75);
+}
+
+/* EDIT */
+
+#poll-edit .body-card {
+
+}
+
+#poll-edit .wrapper-box {
+    border: 1px solid #F1F1F1;
+}
+
+#poll-edit .toolbar-box {
+    border: none;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+#poll-edit .editor-box {
+    padding: 0 16px;
+}
+
+#poll-edit .right-col {
+    text-align: right;
+}
+#poll-edit img.preview {
+    max-width: 90%;
+}
+
+/* CREATE */
+
+#poll-new .wrapper-box {
+    border: 1px solid #F1F1F1;
+}
+
+#poll-new .toolbar-box {
+    border: none;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+#poll-new .editor-box {
+    padding: 0 16px;
+}
+
+#poll-new .right-col {
+    text-align: right;
+}
+#poll-new img.preview {
+    max-width: 90%;
+}
