@@ -117,6 +117,17 @@ class PostEdit extends Component<IAppContext, State> {
   }
 
   async submit() {
+    const params = location.hash.substr(2).split("/")
+    if (params.length != 2) {
+      message.error("The requested data is not valid")
+      Router.replace("/")
+      return
+    }
+
+    const entityId = params[0]
+    const postId = params[1]
+
+
     // TODO: Make a singnature and use it for next transactions
     // Web3Wallet.signer.signMessage("democracy")
     // .then(payload => {
@@ -133,9 +144,11 @@ class PostEdit extends Component<IAppContext, State> {
     // el Dexie es un nice to have... con esto se puede montar una DB local, però también podríamos tirar de momento son
     // la única pega es que si se cierra el browser, se pierde todo
 
-    // TODO:  Add new post in Items (state.feed.items)
-    let newsFeed = this.state.newsFeed
-    newsFeed.items = [this.state.newsPost].concat(newsFeed.items)  // Add as the first item
+    const newsFeed = this.state.newsFeed
+    const idx = newsFeed.items.findIndex(i => i.id == postId)
+    if (idx < 0) return message.error("The post could not be updated")
+
+    newsFeed.items[idx] = this.state.newsPost
 
     try {
       // TODO: The following removes the last post. Tested exactly the same in 
