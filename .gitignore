@@ -1,5 +1,3 @@
-node_modules
-public/backend/db
-internal/backend/db
 build
 .next
+node_modules

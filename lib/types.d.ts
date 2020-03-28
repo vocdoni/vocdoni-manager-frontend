@@ -21,13 +21,13 @@ export interface IFeedPost {
     id: string,
     title: string,
     summary: string,
-    contentText: string,
-    contentHtml: string,
+    content_text: string,
+    content_html: string,
     url: string,
     image: string,
     tags: string[],
-    datePublished: string,
-    dateModified: string,
+    date_published: string,
+    date_modified: string,
 
     author: {
         name: string,

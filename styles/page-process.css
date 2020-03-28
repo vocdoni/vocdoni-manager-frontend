@@ -1,0 +1,72 @@
+/* VIEW */
+#process-view .body-card .ant-list-item-meta-avatar img{
+    max-width: 60px;
+}
+
+#process-view .body-card .ant-list-item-meta-title {
+    margin-top: 0;
+}
+
+#process-view .body-card .ant-list-item-action .icon-text {
+    line-height: 36px;
+}
+
+#process-view .body-card .ant-list-item-action a {
+    text-decoration: none;
+}
+
+#process-view .body-card .ant-list-item-action .icon-text:hover {
+    color: rgba(0, 0, 0, 0.75);
+}
+
+#process-view img.header-image {
+    max-width: 90%;
+}
+
+/* EDIT */
+
+#process-edit .body-card {
+
+}
+
+#process-edit .wrapper-box {
+    border: 1px solid #F1F1F1;
+}
+
+#process-edit .toolbar-box {
+    border: none;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+#process-edit .editor-box {
+    padding: 0 16px;
+}
+
+#process-edit .right-col {
+    text-align: right;
+}
+#process-edit img.preview {
+    max-width: 90%;
+}
+
+/* CREATE */
+
+#process-new .wrapper-box {
+    border: 1px solid #F1F1F1;
+}
+
+#process-new .toolbar-box {
+    border: none;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+#process-new .editor-box {
+    padding: 0 16px;
+}
+
+#process-new .right-col {
+    text-align: right;
+}
+#process-new img.preview {
+    max-width: 90%;
+}

@@ -1,0 +1,13 @@
+/* VIEW */
+#entity-view .body-card .ant-col img.avatar {
+    max-width: 60px;
+    float: right;
+}
+
+/* EDIT */
+
+#entity-edit .body-card {
+
+}
+
+/* CREATE */

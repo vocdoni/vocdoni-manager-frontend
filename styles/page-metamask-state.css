@@ -1,0 +1,18 @@
+#metamask-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    
+    padding: 24px;
+    padding-top: 0;
+}
+
+/* 
+#metamask-state .login, #metamask-state .install {
+    padding-top: 30px;
+}
+#metamask-state .main-button, #metamask-state .main-skeleton {
+    padding-top: 30px;
+    text-align: center;
+} */

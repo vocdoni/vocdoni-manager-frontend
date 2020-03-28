@@ -1,69 +1,77 @@
 import Dexie from 'dexie'
-import axios from "axios"
+// import fetch from "isomorphic-unfetch"
 
-import {
-    INewsFeed
-} from "./types"
+// import {
+//     IEntity,
+//     IProcess
+// } from './types'
+// import { throwIfNotBrowser } from './util'
 
-const CACHE_REFRESH_INTERVAL = 1000 * 60 // 1 minute
+// const CACHE_REFRESH_INTERVAL = process.env.NODE_ENV == "production" ? 1000 * 60 * 2 : 1000 * 10
 
-export class NewsFeeds extends Dexie {
-    lastUpdate: number = 0   // when the bootstrap was last fetched
-    updating: Promise<void> = null
+// // BOOTSTRAP CACHE
 
-    feeds: Dexie.Table<INewsFeed, number> // number = type of the primkey
+// export class DataCache extends Dexie {
+//     lastUpdate: number = 0   // when the bootstrap was last fetched
+//     updating: Promise<void> = null
 
-    constructor() {
-        super("NewsFeeds")
-        ensureWebBrowser()
+//     entities: Dexie.Table<IEntity, number> // number = type of the primkey
+//     processes: Dexie.Table<IProcess, number> // number = type of the primkey
 
-        this.version(1).stores({
-            feeds: '_id, name',
-            // singleton: '_id',
-        })
+//     constructor() {
+//         super("DataCache")
+//         throwIfNotBrowser()
 
-        // The following lines are needed if your typescript
-        // is compiled using babel instead of tsc:
-        this.feeds = this.table("feeds")
+//         // Every new version must keep the schema definition of the older ones
+//         this.version(1).stores({ menus: 'idx', entities: '_id,slug', processes: '_id' })
 
-        // this.refresh("").catch(err => console.error("Unable to refresh the news feed storage"))
-    }
+//         // The following lines are needed if your typescript
+//         // is compiled using babel instead of tsc:
+//         this.entities = this.table("entities")
+//         this.processes = this.table("processes")
 
-    // async refresh(url: string): Promise<void> {
-    //     if (this.updating) return this.updating
+//         // REFRESH UPON CREATION
+//         this.refresh().catch(err => console.error("Unable to refresh the bootstrap", err))
+//     }
 
-    //     this.updating = axios.get(url)
-    //         .then(response => response.data)
-    //         .then((bootstrap: BootstrapData) => {
-    //             // if (!bootstrap || !bootstrap.singleton) throw new Error("Invalid bootstrap data")
+//     async refresh(): Promise<void> {
+//         if (this.updating) return this.updating
 
-    //             return this.populate(bootstrap)
-    //         })
+//         this.updating = fetch("...").then(res => res.json())
+//             .then((bootstrap: DataCahce) => {
+//                 if (!bootstrap || !bootstrap.menus) throw new Error("Invalid bootstrap data")
 
-    //     await this.updating
-    //     this.updating = null
-    //     this.lastUpdate = Date.now()
-    // }
+//                 return this.populateDb(bootstrap)
+//             })
 
-    // private async populate(bootstrap: BootstrapData): Promise<any> {
-    //     return Promise.all([
-    //         this.feeds.bulkPut(bootstrap.feeds),
-    //         // this.singleton.put(bootstrap.singleton),    // WARNING: ADD A SINGLE ONE
-    //     ])
-    // }
+//         await this.updating
+//         this.updating = null
+//         this.lastUpdate = Date.now()
+//     }
 
-    // async get(): Promise<BootstrapData> {
-    //     if (this.lastUpdate + CACHE_REFRESH_INTERVAL < Date.now()) {
-    //         await this.refresh()
-    //     }
+//     private async populateDb(bootstrap: DataCahce): Promise<any> {
+//         return this.cleanData()
+//             .then(() => Promise.all([
+//                 this.entities.bulkPut(bootstrap.entities),
+//                 this.processes.bulkPut(bootstrap.processes),
+//             ]))
+//     }
 
-    //     return {
-    //         feeds: await this.feeds.toArray(),
-    //         // singleton: (await this.singleton.toArray())[0],    // STORED INTERNALLY AS AN ARRAY + CONSUMED AS A SINGLETON
-    //     }
-    // }
-}
+//     private async cleanData(): Promise<any> {
+//         return Promise.all([
+//             this.entities.clear().catch(err => null),
+//             this.processes.clear().catch(err => null),
+//         ])
+//     }
 
-function ensureWebBrowser() {
-    if (typeof window == "undefined") throw new Error("The storage component should only be used on the web browser side")
-}
+//     async get(): Promise<DataCahce> {
+//         if (this.lastUpdate + CACHE_REFRESH_INTERVAL < Date.now()) {
+//             await this.refresh()
+//         }
+
+//         return {
+//             entities: await this.entities.toArray().catch(err => []),
+//             processes: await this.processes.toArray().catch(err => []),
+//         }
+//     }
+// }
