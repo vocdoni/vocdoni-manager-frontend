@@ -174,8 +174,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
     const entityId = params[0]
 
     const { readOnly, address } = getNetworkState()
-    const ownEntityId = getEntityId(address)
-    const hideEditControls = readOnly || this.state.entityId != ownEntityId
+    let hideEditControls = readOnly || !address
+    if(!hideEditControls) {
+        const ownEntityId = getEntityId(address)
+        hideEditControls = this.state.entityId != ownEntityId
+    }
 
     if (hideEditControls) {
       return <div id="page-menu">

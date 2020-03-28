@@ -568,8 +568,11 @@ class ProcessNew extends Component<IAppContext, State> {
 
   renderSideMenu() {
     const { readOnly, address } = getNetworkState()
-    const ownEntityId = getEntityId(address)
-    const hideEditControls = readOnly || this.state.entityId != ownEntityId
+    let hideEditControls = readOnly || !address
+    if(!hideEditControls) {
+        const ownEntityId = getEntityId(address)
+        hideEditControls = this.state.entityId != ownEntityId
+    }
 
     if (hideEditControls) {
       return null
@@ -578,17 +581,17 @@ class ProcessNew extends Component<IAppContext, State> {
     return <div id="page-menu">
       <Menu mode="inline" defaultSelectedKeys={['process-new']} style={{ width: 200 }}>
         <Menu.Item key="profile">
-          <Link href={"/entities/#/" + ownEntityId}>
+          <Link href={"/entities/#/" + this.state.entityId}>
             <a>Profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="edit">
-          <Link href={"/entities/edit/#/" + ownEntityId}>
+          <Link href={"/entities/edit/#/" + this.state.entityId}>
             <a>Edit profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="feed">
-          <Link href={"/posts/#/" + ownEntityId}>
+          <Link href={"/posts/#/" + this.state.entityId}>
             <a>News feed</a>
           </Link>
         </Menu.Item>
@@ -598,12 +601,12 @@ class ProcessNew extends Component<IAppContext, State> {
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-active">
-          <Link href={"/processes/active/#/" + ownEntityId}>
+          <Link href={"/processes/active/#/" + this.state.entityId}>
             <a>Active votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/#/" + ownEntityId}>
+          <Link href={"/processes/ended/#/" + this.state.entityId}>
             <a>Ended votes</a>
           </Link>
         </Menu.Item>

@@ -126,10 +126,13 @@ class ProcessEndedView extends Component<IAppContext, State> {
     }
 
     renderProcessesList() {
-        const entityId = location.hash.substr(2)
+        // const entityId = location.hash.substr(2)
         const { readOnly, address } = getNetworkState()
-        const ownEntityId = getEntityId(address)
-        const hideEditControls = readOnly || entityId != ownEntityId
+        let hideEditControls = readOnly || !address
+        if (!hideEditControls) {
+            const ownEntityId = getEntityId(address)
+            hideEditControls = this.state.entityId != ownEntityId
+        }
 
         return <div className="body-card">
             <Divider orientation="left">Ended votes</Divider>
@@ -179,8 +182,11 @@ class ProcessEndedView extends Component<IAppContext, State> {
 
     renderSideMenu() {
         const { readOnly, address } = getNetworkState()
-        const ownEntityId = getEntityId(address)
-        const hideEditControls = readOnly || this.state.entityId != ownEntityId
+        let hideEditControls = readOnly || !address
+        if (!hideEditControls) {
+            const ownEntityId = getEntityId(address)
+            hideEditControls = this.state.entityId != ownEntityId
+        }
 
         if (hideEditControls) {
             return <div id="page-menu">

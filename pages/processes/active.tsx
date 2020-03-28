@@ -127,8 +127,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
     renderProcessesList() {
         const entityId = location.hash.substr(2)
         const { readOnly, address } = getNetworkState()
-        const ownEntityId = getEntityId(address)
-        const hideEditControls = readOnly || entityId != ownEntityId
+        let hideEditControls = readOnly || !address
+        if (!hideEditControls) {
+            const ownEntityId = getEntityId(address)
+            hideEditControls = this.state.entityId != ownEntityId
+        }
 
         return <div className="body-card">
             <Divider orientation="left">Active votes</Divider>
@@ -151,7 +154,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                             actions={hideEditControls ? [] : [
                                 <IconText icon={CloseCircleOutlined} text="Mark as ended" onClick={() => this.markAsEnded((vote as any).id)} key="mark-as-ended" />,
                             ]}
-                            extra={<img width={272} alt="Header" src={((vote as any).data as ProcessMetadata).details.headerImage} />}
+                            extra={<img width={272} alt="Header not found" src={((vote as any).data as ProcessMetadata).details.headerImage} />}
                         >
                             <List.Item.Meta
                                 avatar={<Avatar src={this.state.entity.media.avatar} />}
@@ -182,8 +185,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     renderSideMenu() {
         const { readOnly, address } = getNetworkState()
-        const ownEntityId = getEntityId(address)
-        const hideEditControls = readOnly || this.state.entityId != ownEntityId
+        let hideEditControls = readOnly || !address
+        if (!hideEditControls) {
+            const ownEntityId = getEntityId(address)
+            hideEditControls = this.state.entityId != ownEntityId
+        }
 
         if (hideEditControls) {
             return <div id="page-menu">

@@ -257,8 +257,11 @@ class EntityEdit extends Component<IAppContext, State> {
 
   renderSideMenu() {
     const { readOnly, address } = getNetworkState()
-    const ownEntityId = getEntityId(address)
-    const hideEditControls = readOnly || this.state.entityId != ownEntityId
+    let hideEditControls = readOnly || !address
+    if(!hideEditControls) {
+        const ownEntityId = getEntityId(address)
+        hideEditControls = this.state.entityId != ownEntityId
+    }
 
     if (hideEditControls) {
       return null
