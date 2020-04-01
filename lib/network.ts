@@ -29,12 +29,19 @@ let isConnected = false
 let error: boolean = false
 let timedOut: boolean = false
 
+let connecting: Promise<void>
+
 export async function initNetwork() {
     await connectClients()
     await fetchBootnodes()
 }
 
 export async function connectClients() {
+    if (connecting) {
+        await connecting
+        if (isConnected) return
+    }
+
     const hideLoading = message.loading("Connecting to the network. Please wait...", 0)
 
     try {
@@ -88,6 +95,7 @@ export async function connectClients() {
             // PROCESS CONTRACT
             votingProcess = await getVotingProcessInstance({ provider: web3Gateway.getProvider(), signer: Web3Wallet.signer as (Wallet | Signer) })
         }
+        isConnected = true
     }
     catch (err) {
         console.error(err)
@@ -118,7 +126,7 @@ export async function connectClients() {
     //     })
 
     hideLoading()
-    isConnected = true
+    // isConnected = true
 }
 
 export async function fetchBootnodes() {

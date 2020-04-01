@@ -99,13 +99,14 @@ class MainApp extends App<Props, State> {
 
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
-        initNetwork().then(() => {
-            message.success("Connected")
-            this.refreshWeb3Status()
-        }).catch(err => {
-            this.refreshWeb3Status()
-            message.error("Could not connect")
-        });
+        new Promise(resolve => setTimeout(resolve, 1000 * 2))
+            .then(() => initNetwork()).then(() => {
+                // message.success("Connected")
+                this.refreshWeb3Status()
+            }).catch(err => {
+                this.refreshWeb3Status()
+                message.error("Could not connect")
+            });
     }
 
     componentDidCatch(error: Error, _errorInfo: any/*ErrorInfo*/) {
