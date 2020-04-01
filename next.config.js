@@ -40,7 +40,7 @@ async function generatePathMap() {
     '/entities/edit': { page: '/entities/edit' },
     '/entities/new': { page: '/entities/new' },
     '/processes': { page: '/processes' },
-    '/processes/edit': { page: '/processes/edit' },
+    // '/processes/edit': { page: '/processes/edit' },
     '/processes/new': { page: '/processes/new' },
     '/processes/active': { page: '/processes/active' },
     '/processes/ended': { page: '/processes/ended' },
