@@ -3,6 +3,7 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Avatar } from 'antd'
 import { Divider, Menu, List } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 import { EditOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage } from "dvote-js"
@@ -176,7 +177,7 @@ class PostView extends Component<IAppContext, State> {
     }
 
     renderLoading() {
-        return <div>Loading the details of the entity...  <Spin size="small" /></div>
+        return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
     renderSideMenu() {

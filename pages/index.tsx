@@ -4,6 +4,7 @@ import Link from "next/link"
 import { API, EntityMetadata } from "dvote-js"
 import { getGatewayClients, getNetworkState } from '../lib/network'
 import { message, Button, Spin, Divider } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 import Web3Wallet from '../lib/web3-wallet'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 const { Entity } = API
@@ -80,7 +81,7 @@ class IndexView extends Component<IAppContext, State> {
   }
 
   renderLoading() {
-    return <div>Please, wait... <Spin size="small" /></div>
+    return <div>Please, wait... <Spin indicator={<LoadingOutlined />} /></div>
   }
 
   render() {

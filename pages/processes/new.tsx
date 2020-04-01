@@ -95,7 +95,7 @@ class ProcessNew extends Component<IAppContext, State> {
             await this.refreshBlockHeight()
             await this.refreshMetadata()
             this.setDateRange(moment().add(1, 'days'), moment().add(3, 'days'))
-            
+
             const interval = (parseInt(process.env.BLOCK_TIME || "10") || 10) * 1000
             this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
         }
@@ -565,7 +565,7 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     renderLoading() {
-        return <div>Loading the details of the entity...  <Spin size="small" /></div>
+        return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
     renderSideMenu() {

@@ -2,6 +2,7 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin } from 'antd'
 import { Divider, Menu, Row, Col } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata } from "dvote-js"
 const { Entity } = API
@@ -98,7 +99,7 @@ class EntityView extends Component<IAppContext, State> {
   }
 
   renderLoading() {
-    return <div>Loading the details of the entity...  <Spin size="small" /></div>
+    return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
   }
 
   renderSideMenu() {

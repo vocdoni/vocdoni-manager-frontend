@@ -4,6 +4,7 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Avatar, Skeleton } from 'antd'
 import { Divider, Menu, List } from 'antd'
 import { EditOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage, ProcessMetadata } from "dvote-js"
 const { Entity } = API
@@ -180,7 +181,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 
     renderLoading() {
-        return <div>Loading the votes of the entity...  <Spin size="small" /></div>
+        return <div>Loading the votes of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
     renderSideMenu() {

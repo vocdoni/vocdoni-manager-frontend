@@ -1,6 +1,7 @@
 import { Component } from "react"
 import { Button, Spin } from 'antd'
 import Web3Wallet, { AccountState } from "../lib/web3-wallet"
+import { LoadingOutlined } from '@ant-design/icons'
 
 import { Skeleton } from 'antd'
 
@@ -17,7 +18,7 @@ export default class MetamaskState extends Component<Props> {
         return <div className="card main-skeleton">
             <Skeleton active />
             <br />
-            <div>Please, wait... <Spin size="small" /></div>
+            <div>Please, wait... <Spin indicator={<LoadingOutlined />} /></div>
         </div>
     }
 

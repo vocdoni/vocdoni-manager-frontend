@@ -252,7 +252,7 @@ class EntityEdit extends Component<IAppContext, State> {
   }
 
   renderLoading() {
-    return <div>Loading the details of the entity...  <Spin size="small" /></div>
+    return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
   }
 
   renderSideMenu() {

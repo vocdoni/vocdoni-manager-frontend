@@ -118,7 +118,7 @@ class MainApp extends App<Props, State> {
         return null // The loading message will appear
 
         // return <div id="global-loading">
-        //     <div><Spin size="small" /> &nbsp;Please, wait... </div>
+        //     <div><Spin indicator={<LoadingOutlined />} /> &nbsp;Please, wait... </div>
         // </div>
     }
 
