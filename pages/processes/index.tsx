@@ -100,6 +100,13 @@ class ProcessActiveView extends Component<IAppContext, State> {
     const processId = params[1]
     const { process } = this.state
 
+    // TODO: human readable dates
+    // const { process, currentBlock, currentDate } = this.state
+
+    // const startTimestamp = currentDate.valueOf() + (process.startBlock - currentBlock) * BLOCK_TIME * 1000
+    // const startDate = moment(startTimestamp)
+    // const endDate = moment(startTimestamp + process.numberOfBlocks * BLOCK_TIME * 1000)
+
     return <div className="body-card">
       <Row justify="space-between">
         <Col xs={24} sm={15}>

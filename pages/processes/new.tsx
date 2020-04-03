@@ -11,7 +11,7 @@ import Link from "next/link"
 import Router from 'next/router'
 import Web3Wallet from '../../lib/web3-wallet'
 // import { Wallet, Signer } from 'ethers'
-import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
+import { getEntityId } from 'dvote-js/dist/api/entity'
 // import { checkValidProcessMetadata } from 'dvote-js/dist/models/voting-process'
 import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
 import { getBlockHeight, createVotingProcess } from 'dvote-js/dist/api/vote'
