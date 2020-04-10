@@ -17,6 +17,7 @@ import { getVoteMetadata } from "dvote-js/dist/api/vote"
 // import { } from '../lib/types'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
+const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10") || 10
 
 // MAIN COMPONENT
 const ProcessActiveViewPage = props => {
@@ -61,7 +62,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
             await this.refreshBlockHeight()
             await this.refreshMetadata()
             await this.loadProcessResults()
-            const interval = (parseInt(process.env.BLOCK_TIME || "10") || 10) * 1000
+            const interval = BLOCK_TIME * 1000
             this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
         }
         catch (err) {
@@ -150,14 +151,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
         const entityId = params[0]
         const processId = params[1]
-        const { process } = this.state
 
-        // TODO: human readable dates
-        // const { process, currentBlock, currentDate } = this.state
+        const { process, currentBlock, currentDate } = this.state
 
-        // const startTimestamp = currentDate.valueOf() + (process.startBlock - currentBlock) * BLOCK_TIME * 1000
-        // const startDate = moment(startTimestamp)
-        // const endDate = moment(startTimestamp + process.numberOfBlocks * BLOCK_TIME * 1000)
+        const startTimestamp = currentDate.valueOf() + (process.startBlock - currentBlock) * BLOCK_TIME * 1000
+        const startDate = moment(startTimestamp)
+        const endDate = moment(startTimestamp + process.numberOfBlocks * BLOCK_TIME * 1000)
 
         const procQuestions = this.state.process.details.questions
         const resultQuestions = this.state.results && this.state.results.questions && this.state.results.questions || []
@@ -197,18 +196,16 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     <Divider orientation="left">Time frame</Divider>
                     <Row>
                         <Col xs={24} sm={12}>
+                            <h4>Start date (estimated)</h4>
+                            <p>{startDate.format("D/M/YYYY H:mm[h]")}</p>
                             <h4>Start block number</h4>
                             <p>{process.startBlock}</p>
-                            {/* TODO: Compute the start/end date */}
-                            {/* <h4>Start date (estimated)</h4> */}
-                            {/* <p>-</p> */}
                         </Col>
                         <Col xs={24} sm={12}>
+                            <h4>End date (estimated)</h4>
+                            <p>{endDate.format("D/M/YYYY H:mm[h]")}</p>
                             <h4>End block</h4>
                             <p>{process.startBlock + process.numberOfBlocks}</p>
-                            {/* TODO: Compute the start/end date */}
-                            {/* <h4>End date (estimated)</h4> */}
-                            {/* <p>-</p> */}
                         </Col>
                     </Row>
                 </Col>
