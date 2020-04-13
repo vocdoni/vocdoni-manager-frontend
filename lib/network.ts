@@ -1,12 +1,11 @@
 import { API, Wrappers, Network, EntityMetadata, IDVoteGateway, IWeb3Gateway, IEntityResolverContract, IVotingProcessContract, GatewayBootNodes } from "dvote-js"
 import { message } from "antd"
 import { Wallet, Signer, getDefaultProvider } from "ethers"
-import GatewayInfo from "dvote-js/dist/wrappers/gateway-info"
-import { Web3Gateway, DVoteGateway } from "dvote-js/dist/net/gateway"
+import { Web3Gateway } from "dvote-js/dist/net/gateway"
 import Web3Wallet from "./web3-wallet"
 import { fetchFromBootNode } from "dvote-js/dist/net/gateway-bootnodes"
 
-const { Bootnodes: { getRandomGatewayInfo }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
+const { Bootnodes: { getGatewaysFromBootNode }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
 // const {GatewayInfo} = Wrappers
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
@@ -45,24 +44,35 @@ export async function connectClients() {
     const hideLoading = message.loading("Connecting to the network. Please wait...", 0)
 
     try {
-        let gwInfo: GatewayInfo
-
         readOnly = !Web3Wallet.isAvailable()
 
         if (readOnly) {
             // USE PUBLIC GATEWAYS
             // SKIP METAMASK
 
-            const infos = await getRandomGatewayInfo(ETH_NETWORK_ID, BOOTNODES_URL_READ_ONLY)
-
+            const infos = await getGatewaysFromBootNode(BOOTNODES_URL_RW)
             if (!infos || !infos[ETH_NETWORK_ID]) throw new Error("Could not connect to the network")
+            else if (!infos[ETH_NETWORK_ID].dvote || !infos[ETH_NETWORK_ID].dvote.length) throw new Error("Could not connect to the network")
+            else if (!infos[ETH_NETWORK_ID].web3 || !infos[ETH_NETWORK_ID].web3.length) throw new Error("Could not connect to the network")
+
+            // Get working DvoteGW
+            let success = false
+            for (let gw of infos[ETH_NETWORK_ID].dvote) {
+                try {
+                    await gw.connect()
+                    await gw.getGatewayInfo()
+                    dvoteGateway = gw
+                    success = true
+                }
+                catch (err) {
+                    continue
+                }
+            }
+            if (!success) throw new Error("Could not connect to the network")
+            // console.log("Connected to", await dvoteGateway.getUri())
 
             const provider = getDefaultProvider(ETH_NETWORK_ID)
             web3Gateway = new Web3Gateway(provider)
-            dvoteGateway = new DVoteGateway(infos[ETH_NETWORK_ID])
-
-            await dvoteGateway.connect()
-            await dvoteGateway.getGatewayInfo()
 
             entityResolver = await getEntityResolverInstance({ provider })
             votingProcess = await getVotingProcessInstance({ provider })
@@ -71,29 +81,53 @@ export async function connectClients() {
             // USE PRIVATE GATEWAYS
             // USE METAMASK
 
-            const infos = await getRandomGatewayInfo(ETH_NETWORK_ID, BOOTNODES_URL_RW)
-
+            const infos = await getGatewaysFromBootNode(BOOTNODES_URL_RW)
             if (!infos || !infos[ETH_NETWORK_ID]) throw new Error("Could not connect to the network")
+            else if (!infos[ETH_NETWORK_ID].dvote || !infos[ETH_NETWORK_ID].dvote.length) throw new Error("Could not connect to the network")
+            else if (!infos[ETH_NETWORK_ID].web3 || !infos[ETH_NETWORK_ID].web3.length) throw new Error("Could not connect to the network")
 
-            gwInfo = infos[ETH_NETWORK_ID]
-            web3Gateway = new Web3Gateway(gwInfo)
-            dvoteGateway = new DVoteGateway(gwInfo)
+            // Get working DvoteGW
+            let success = false
+            for (let gw of infos[ETH_NETWORK_ID].dvote) {
+                try {
+                    await gw.connect()
+                    await gw.getGatewayInfo()
+                    dvoteGateway = gw
+                    success = true
+                }
+                catch (err) {
+                    continue
+                }
+            }
+            if (!success) throw new Error("Could not connect to the network")
+            // console.log("Connected to", await dvoteGateway.getUri())
 
-            await dvoteGateway.connect()
-            await dvoteGateway.getGatewayInfo()
-
+            // Get working Web3GW
             await Web3Wallet.unlock()
             accountAddressState = await Web3Wallet.getAddress()
 
-            // RESOLVER CONTRACT
-            entityResolver = await getEntityResolverInstance({ provider: web3Gateway.getProvider(), signer: Web3Wallet.signer as (Wallet | Signer) })
+            success = false
+            for (let w3 of infos[ETH_NETWORK_ID].web3) {
+                try {
+                    // RESOLVER CONTRACT
+                    entityResolver = await getEntityResolverInstance({ provider: w3.getProvider(), signer: Web3Wallet.signer as (Wallet | Signer) })
 
-            // // React on all events (by now)
-            // entityResolver.on("TextChanged", () => refreshMetadata(accountAddressState))
-            // entityResolver.on("ListItemChanged", () => refreshMetadata(accountAddressState))
+                    // // React on all events (by now)
+                    // entityResolver.on("TextChanged", () => refreshMetadata(accountAddressState))
+                    // entityResolver.on("ListItemChanged", () => refreshMetadata(accountAddressState))
 
-            // PROCESS CONTRACT
-            votingProcess = await getVotingProcessInstance({ provider: web3Gateway.getProvider(), signer: Web3Wallet.signer as (Wallet | Signer) })
+                    // PROCESS CONTRACT
+                    votingProcess = await getVotingProcessInstance({ provider: w3.getProvider(), signer: Web3Wallet.signer as (Wallet | Signer) })
+
+                    web3Gateway = w3
+                    success = true
+                }
+                catch (err) {
+                    continue
+                }
+            }
+            if (!success) throw new Error("Could not connect to the network")
+            // console.log("Connected to", web3Gateway.getProvider())
         }
         isConnected = true
     }

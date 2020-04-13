@@ -99,7 +99,7 @@ class MainApp extends App<Props, State> {
 
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
-        new Promise(resolve => setTimeout(resolve, 1000 * 2))
+        new Promise(resolve => setTimeout(resolve, 1000 * 3))
             .then(() => initNetwork()).then(() => {
                 // message.success("Connected")
                 this.refreshWeb3Status()
