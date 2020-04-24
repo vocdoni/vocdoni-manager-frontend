@@ -3,7 +3,8 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'antd'
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
+import { API, EntityMetadata, GatewayBootNodes, EtherUtils } from "dvote-js"
+
 const { Entity } = API
 // import { by639_1 } from 'iso-language-codes'
 import Link from "next/link"
@@ -12,6 +13,7 @@ import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { EntityMetadataTemplate } from 'dvote-js/dist/models/entity'
+import { isRegExp } from 'util'
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -36,7 +38,9 @@ type State = {
     entityLoading?: boolean,
     entityUpdating?: boolean,
     entity?: EntityMetadata,
-    bootnodes?: GatewayBootNodes
+    bootnodes?: GatewayBootNodes,
+    passphrase?: string,
+    seed?: string,
 }
 
 // Stateful component
@@ -46,25 +50,24 @@ class EntityNew extends Component<IAppContext, State> {
     }
 
     async componentDidMount() {
-        // if readonly, show the view page
-        if (getNetworkState().readOnly) {
-            return Router.replace("/")
-        }
         this.props.setTitle("New entity")
 
-        try {
-            await this.checkExistingEntity()
-        }
-        catch (err) {
-            message.error("Could not check your account")
+        // Redirecting if user address has already an associated entity
+        if(this.props.wallet.isAvailable()){
+            try {
+                await this.checkExistingEntity();
+            }
+            catch (err) {
+                message.error("Could not check your account")
+            }
         }
     }
 
     async checkExistingEntity() {
         try {
-            const userAddr = await Web3Wallet.getAddress()
-            const entityId = getEntityId(userAddr)
-            this.setState({ entityLoading: true })
+            const userAddr = await this.props.wallet.getAddress();
+            const entityId = getEntityId(userAddr);
+            this.setState({ entityLoading: true });
 
             const { web3Gateway, dvoteGateway } = await getGatewayClients()
             const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
@@ -118,7 +121,29 @@ class EntityNew extends Component<IAppContext, State> {
         }
     }
 
-    submitEntity() {
+    async onPasswordChange(passphrase: string){
+        try {
+            const seed = EtherUtils.Signers.generateRandomHexSeed();
+            this.setState({ passphrase, seed });
+        }catch (e){
+            console.log(e.message);
+        }
+    }
+
+    async createWebWallet(){
+        try {           
+            await this.props.wallet.store(this.state.entity.name.default, this.state.seed, this.state.passphrase);
+            await this.props.wallet.load(this.state.entity.name.default, this.state.passphrase);
+            
+            //await this.props.wallet.fillGas();
+        }catch (e){
+            console.log(e.message);
+        }
+    }
+
+    async submitEntity() {
+        await this.createWebWallet();
+
         this.setState({ entityUpdating: true })
 
         const entity = Object.assign({}, this.state.entity)
@@ -144,11 +169,11 @@ class EntityNew extends Component<IAppContext, State> {
 
         return getGatewayClients().then(clients => {
             const state = getNetworkState()
-            return updateEntity(state.address, entity, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            return updateEntity(state.address, entity, this.props.wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
         }).then(newOrigin => {
             return this.checkExistingEntity()
-        }).then(() => {
-            return Web3Wallet.getAddress()
+        }).then(async () => {
+            return await this.props.wallet.getAddress();
         }).then(userAddr => {
             const entityId = getEntityId(userAddr)
             Router.push("/entities/edit/#/" + entityId)
@@ -195,6 +220,17 @@ class EntityNew extends Component<IAppContext, State> {
         return <div className="body-card">
             <Row justify="start">
                 <Col xs={24} sm={20} md={14}>
+                    <Divider orientation="left">Your Account</Divider>
+                    {
+                        <>
+                        <label>Password</label>
+                        <Input type="password"
+                            placeholder={"Your new password"}
+                            onChange={val => this.onPasswordChange(val.target.value)} />
+                        <br /><br />
+                        </>
+                    }
+
                     <Divider orientation="left">Profile</Divider>
                     {/*<h2>Name</h2> */}
                     {

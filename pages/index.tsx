@@ -5,7 +5,6 @@ import { API, EntityMetadata } from "dvote-js"
 import { getGatewayClients, getNetworkState } from '../lib/network'
 import { message, Button, Spin, Divider } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import Web3Wallet from '../lib/web3-wallet'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 const { Entity } = API
 // import MainLayout from "../components/layout"
@@ -36,9 +35,9 @@ class IndexView extends Component<IAppContext, State> {
 
     try {
       let userAddr = null
-      if (Web3Wallet.isEthereumAvailable() && Web3Wallet.isWeb3Available()) {
+      if (this.props.wallet.isAvailable()) {
         this.setState({ entityLoading: true })
-        userAddr = await Web3Wallet.getAddress()
+        userAddr = await this.props.wallet.getAddress()
 
         const entityId = getEntityId(userAddr)
         const { web3Gateway, dvoteGateway } = await getGatewayClients()
@@ -67,17 +66,7 @@ class IndexView extends Component<IAppContext, State> {
   }
 
   renderGetStarated() {
-    if (getNetworkState().readOnly) {
-      return <>
-        <p>To create an entity, install Metamask on your browser and try again.</p>
-        <p><a href="https://metamask.io" target="_blank"><Button>Install Metamask</Button></a></p>
-      </>
-    }
-
-    return <>
-      <p>You haven't created an entity yet</p>
-      <p><Link href="/entities/new"><a><Button>Create an entity</Button></a></Link></p>
-    </>
+    return <p>You can <Link href="/entities/new"><a><Button>Create a new Entity</Button></a></Link> OR pick an existing one!</p>;
   }
 
   renderLoading() {

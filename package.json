@@ -28,7 +28,7 @@
     "dexie": "^2.0.4",
     "draft-js": "^0.11.5",
     "draftjs-to-html": "^0.9.1",
-    "dvote-js": "^0.13.1",
+    "dvote-js": "^0.14.0",
     "ethers": "^4.0.46",
     "html-to-draftjs": "^1.5.0",
     "immutable": "^4.0.0-rc.12",

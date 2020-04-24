@@ -7,8 +7,7 @@ import GeneralError from '../components/error'
 import { initNetwork, getNetworkState, getGatewayClients } from "../lib/network"
 import { IAppContext } from "../components/app-context"
 import Web3Wallet, { AccountState } from "../lib/web3-wallet"
-import MetamaskState from '../components/metamask-state'
-import { message, Spin } from "antd"
+import { message } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
 
@@ -28,6 +27,7 @@ import 'antd/lib/date-picker/style/index.css'
 import 'antd/lib/spin/style/index.css'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { Wallet } from 'ethers'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -42,6 +42,7 @@ type State = {
 
     // STATE SHARED WITH CHILDREN
     title: string,
+    wallet: Web3Wallet,
 }
 
 class MainApp extends App<Props, State> {
@@ -49,7 +50,8 @@ class MainApp extends App<Props, State> {
         isConnected: false,
         accountState: AccountState.Unknown,
         title: "Entities",
-        networkName: null
+        networkName: null,
+        wallet: new Web3Wallet(),
     }
 
     refreshInterval: any
@@ -65,7 +67,7 @@ class MainApp extends App<Props, State> {
     // }
 
     componentDidMount() {
-        initNetwork().then(() => {
+        initNetwork(this.state.wallet).then(() => {
             message.success("Connected")
             this.refreshWeb3Status()
         }).catch(err => {
@@ -85,7 +87,10 @@ class MainApp extends App<Props, State> {
     }
 
     async refreshWeb3Status() {
-        const currentAccountState = await Web3Wallet.getAccountState()
+        //
+        // TODO: 
+        const currentAccountState = this.state.wallet.getAccountState()
+
         const { web3Gateway } = await getGatewayClients()
         const networkName = (await web3Gateway.getProvider().getNetwork()).name
 
@@ -100,7 +105,7 @@ class MainApp extends App<Props, State> {
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
         new Promise(resolve => setTimeout(resolve, 1000 * 3))
-            .then(() => initNetwork()).then(() => {
+            .then(() => initNetwork(this.state.wallet)).then(() => {
                 // message.success("Connected")
                 this.refreshWeb3Status()
             }).catch(err => {
@@ -122,25 +127,11 @@ class MainApp extends App<Props, State> {
         // </div>
     }
 
-    renderMetamaskState() {
-        return <MainLayout>
-            <MetamaskState accountState={this.state.accountState} />
-        </MainLayout>
-    }
-
     render() {
         const accountState = this.state.accountState
 
         if (!this.state.isConnected) {
             return this.renderPleaseWait()
-        }
-        else if (Web3Wallet.isAvailable()) {
-            if (accountState !== AccountState.Ok) {
-                return this.renderMetamaskState()
-            }
-            else if (Web3Wallet.isAvailable() && Web3Wallet.getNetworkName() != ETH_NETWORK_ID) {
-                return <GeneralError message={"Please, switch Metamask to the " + ETH_NETWORK_ID + " network"} />
-            }
         }
 
         // Main render
@@ -153,7 +144,8 @@ class MainApp extends App<Props, State> {
         const injectedGlobalContext: IAppContext = {
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
-            onGatewayError: this.onGatewayError
+            onGatewayError: this.onGatewayError,
+            wallet: this.state.wallet,
         }
 
 

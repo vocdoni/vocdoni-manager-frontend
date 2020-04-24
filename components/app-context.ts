@@ -1,4 +1,5 @@
 import { createContext } from 'react'
+import Web3Wallet from '../lib/web3-wallet'
 
 export interface IGlobalState {
     title: string,
@@ -9,6 +10,7 @@ export interface IAppContext {
     // globalState: IGlobalState,
 
     title: string,
+    wallet: Web3Wallet,
     setTitle: (title: string) => void
     onGatewayError: (type: "private" | "public") => void
 }

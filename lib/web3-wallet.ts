@@ -1,62 +1,74 @@
-import { providers } from "ethers"
+import { Wallet, providers } from "ethers"
+import { EtherUtils } from "dvote-js";
+import { DataCache } from "./storage";
+import { Key } from "react";
+import { IWallet } from "./types";
 
-let provider: providers.Web3Provider = null
+let provider: providers.JsonRpcProvider = null
 
 export enum AccountState {
     Unknown = "Unknown",
-    NoWeb3 = "Web3 is not detected on your browser",
-    NoEthereum = "Ethereum is not detected on your browser",
-    Locked = "Account is locked",
     Ok = "Ok"
 }
 
 export default class Web3Wallet {
-    static get provider() { return provider }
-    static get signer() { return provider.getSigner() }
+    private wallet: Wallet;
+    public acountState: AccountState = AccountState.Unknown;
 
-    static isAvailable() {
-        return Web3Wallet.isWeb3Available() && Web3Wallet.isEthereumAvailable()
+    public getWallet(): Wallet {
+      if(!this.isAvailable) throw new Error('Wallet not available');
+      return this.wallet;
     }
 
-    static isWeb3Available() {
-        return typeof window["web3"] !== 'undefined'
+    // Generates a wallet and stores it on IndexedDB
+    public async store(name: string, seed: string, passphrase: string): Promise<Key> {
+      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, seed);
+      const db = new DataCache();
+      return await db.wallets.put({ name, seed, publicKey: wallet["signingKey"].publicKey });
     }
 
-    static isEthereumAvailable() {
-        return typeof window["ethereum"] !== 'undefined'
+    // Gets all the stored wallet accounts from IndexedDB
+    public async getStored(): Promise<Array<IWallet>>  {
+      const db = new DataCache();
+      return await db.wallets.toArray();
     }
 
-    static connect() {
-        if (provider != null) provider.polling = false
-        provider = new providers.Web3Provider(window["web3"].currentProvider)
+    // Loads a wallet form IndexedDB if the provided passphrase is correct
+    public async load(name: string, passphrase: string): Promise<boolean> {
+      const db = new DataCache();
+      const storedWallet = await db.wallets.get({ name });
+
+      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, storedWallet.seed);
+
+      // We need to verify the generated wallet publicKey = stored public Key
+      if(wallet["signingKey"].publicKey === storedWallet.publicKey){
+        this.wallet = wallet;
+        this.acountState = AccountState.Ok;
+      }else{
+        throw new Error('Wrong passphrase for wallet!');
+      }
+
+      return true;
     }
 
-    public static unlock(): Promise<void> {
-        if (!provider) this.connect()
-        return window["ethereum"].enable()
+    public isAvailable(): boolean {
+      return this.getAccountState() === AccountState.Ok;
     }
 
-    public static getAccountState(): Promise<AccountState> {
-        if (!Web3Wallet.isWeb3Available()) return Promise.resolve(AccountState.NoWeb3)
-        else if (!Web3Wallet.isEthereumAvailable()) return Promise.resolve(AccountState.NoEthereum)
-        else if (!provider) return Promise.resolve(AccountState.Locked)
-
-        return provider.listAccounts()
-            .then(accounts => {
-                if (accounts && accounts[0]) return AccountState.Ok
-                else return AccountState.Locked
-            })
+    public getAccountState(): AccountState {
+        return this.acountState;
     }
 
-    public static getAddress(): Promise<string> {
-        if (!provider) this.connect()
-        return provider.getSigner().getAddress()
+    public async getAddress(): Promise<string> {
+      if(!this.isAvailable) throw new Error('Wallet not available');
+
+      return await this.wallet.getAddress();
     }
 
-    public static getNetworkName(): string {
-        if (!Web3Wallet.isAvailable()) return ""
-        
-        if (!provider) this.connect()
-        return provider.network.name
+    // TODO: Sends some ETH to the active wallet
+    public async fillGas(): Promise<boolean> {
+      if(!this.isAvailable) throw new Error('Wallet not available');
+
+      return true;
     }
 }

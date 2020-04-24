@@ -34,3 +34,9 @@ export interface IFeedPost {
         url: string
     }
 }
+
+export interface IWallet {
+    name: string,
+    seed: string,
+    publicKey: string,
+}
