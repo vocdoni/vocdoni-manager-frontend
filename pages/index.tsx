@@ -3,9 +3,10 @@ import AppContext, { IAppContext } from '../components/app-context'
 import Link from "next/link"
 import { API, EntityMetadata } from "dvote-js"
 import { getGatewayClients, getNetworkState } from '../lib/network'
-import { message, Button, Spin, Divider } from 'antd'
+import { message, Button, Spin, Divider, Input, Select } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { getEntityId } from 'dvote-js/dist/api/entity'
+import { IWallet } from '../lib/types'
 const { Entity } = API
 // import MainLayout from "../components/layout"
 // import { main } from "../i18n"
@@ -24,6 +25,11 @@ type State = {
   entityLoading?: boolean,
   entity?: EntityMetadata,
   entityId?: string,
+
+  storedWallets?: Array<IWallet>,
+  
+  selectedWallet?: string,
+  passphrase?: string,
 }
 
 // Stateful component
@@ -34,17 +40,10 @@ class IndexView extends Component<IAppContext, State> {
     this.props.setTitle("Vocdoni Entities")
 
     try {
-      let userAddr = null
-      if (this.props.wallet.isAvailable()) {
-        this.setState({ entityLoading: true })
-        userAddr = await this.props.wallet.getAddress()
+      this.redirectToEntityIfAvailable();
 
-        const entityId = getEntityId(userAddr)
-        const { web3Gateway, dvoteGateway } = await getGatewayClients()
-        const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
-
-        this.setState({ entity, entityId, entityLoading: false })
-      }
+      const storedWallets = await this.props.web3Wallet.getStored();
+      this.setState({ storedWallets });
     }
     catch (err) {
       this.setState({ entityLoading: false })
@@ -53,6 +52,37 @@ class IndexView extends Component<IAppContext, State> {
       }
       console.log(err)
       message.error("Could not connect to the network")
+    }
+  }
+
+  redirectToEntityIfAvailable = async () => {
+    let userAddr = null
+    if (this.props.web3Wallet.isAvailable()) {
+      this.setState({ entityLoading: true })
+      userAddr = await this.props.web3Wallet.getAddress()
+
+      const entityId = getEntityId(userAddr)
+      const { web3Gateway, dvoteGateway } = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+
+      this.setState({ entity, entityId, entityLoading: false })
+    }
+  }
+
+  onWalletSelectChange = (name: string) => {
+    this.setState({ selectedWallet: name });
+  }
+
+  onPassphraseChange = (passphrase: string) => {
+    this.setState({ passphrase });
+  }
+
+  unlockWallet = async () => {
+    try{
+      await this.props.web3Wallet.load(this.state.selectedWallet, this.state.passphrase);
+      this.redirectToEntityIfAvailable();
+    }catch(e){
+      message.error("Could not unlock the wallet. Wrong password?");
     }
   }
 
@@ -65,8 +95,23 @@ class IndexView extends Component<IAppContext, State> {
     </>
   }
 
-  renderGetStarated() {
-    return <p>You can <Link href="/entities/new"><a><Button>Create a new Entity</Button></a></Link> OR pick an existing one!</p>;
+  renderGetStarted() {
+    return <>
+        {this.state.storedWallets && 
+          <>
+          <Input.Group compact>
+            <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name}>
+              { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
+            </Select>
+            <Input onChange={val => this.onPassphraseChange(val.target.value)} style={{ width: '40%' }} type="password" placeholder="passphrase" />
+          </Input.Group>
+          <br />
+          <Button size='large' type='primary' onClick={this.unlockWallet}>Login</Button>
+          <Divider />
+          </>
+        }
+        <p><Link href="/entities/new"><a><Button>Create a new Entity</Button></a></Link></p>
+      </>;
   }
 
   renderLoading() {
@@ -80,7 +125,7 @@ class IndexView extends Component<IAppContext, State> {
 
         {
           this.state.entityLoading ? this.renderLoading() :
-            (this.state.entity ? this.renderEntityInfo() : this.renderGetStarated())
+            (this.state.entity ? this.renderEntityInfo() : this.renderGetStarted())
         }
 
         {/* <p><Link href="/entities/#/0x1234-entity-id"><a>Entity view (info, processes and news)</a></Link></p>

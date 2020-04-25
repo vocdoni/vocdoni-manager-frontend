@@ -53,7 +53,7 @@ class EntityNew extends Component<IAppContext, State> {
         this.props.setTitle("New entity")
 
         // Redirecting if user address has already an associated entity
-        if(this.props.wallet.isAvailable()){
+        if(this.props.web3Wallet.isAvailable()){
             try {
                 await this.checkExistingEntity();
             }
@@ -65,7 +65,7 @@ class EntityNew extends Component<IAppContext, State> {
 
     async checkExistingEntity() {
         try {
-            const userAddr = await this.props.wallet.getAddress();
+            const userAddr = await this.props.web3Wallet.getAddress();
             const entityId = getEntityId(userAddr);
             this.setState({ entityLoading: true });
 
@@ -132,10 +132,10 @@ class EntityNew extends Component<IAppContext, State> {
 
     async createWebWallet(){
         try {           
-            await this.props.wallet.store(this.state.entity.name.default, this.state.seed, this.state.passphrase);
-            await this.props.wallet.load(this.state.entity.name.default, this.state.passphrase);
+            await this.props.web3Wallet.store(this.state.entity.name.default, this.state.seed, this.state.passphrase);
+            await this.props.web3Wallet.load(this.state.entity.name.default, this.state.passphrase);
             
-            //await this.props.wallet.fillGas();
+            //await this.props.web3Wallet.fillGas();
         }catch (e){
             console.log(e.message);
         }
@@ -169,11 +169,11 @@ class EntityNew extends Component<IAppContext, State> {
 
         return getGatewayClients().then(clients => {
             const state = getNetworkState()
-            return updateEntity(state.address, entity, this.props.wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            return updateEntity(state.address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
         }).then(newOrigin => {
             return this.checkExistingEntity()
         }).then(async () => {
-            return await this.props.wallet.getAddress();
+            return await this.props.web3Wallet.getAddress();
         }).then(userAddr => {
             const entityId = getEntityId(userAddr)
             Router.push("/entities/edit/#/" + entityId)

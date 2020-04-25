@@ -15,6 +15,7 @@ import "../styles/index.css"
 import 'antd/lib/grid/style/index.css'
 import 'antd/lib/list/style/index.css'
 import 'antd/lib/form/style/index.css'
+import 'antd/lib/select/style/index.css'
 import 'antd/lib/pagination/style/index.css'
 import 'antd/lib/skeleton/style/index.css'
 import 'antd/lib/divider/style/index.css'
@@ -27,7 +28,6 @@ import 'antd/lib/date-picker/style/index.css'
 import 'antd/lib/spin/style/index.css'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { Wallet } from 'ethers'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -42,7 +42,7 @@ type State = {
 
     // STATE SHARED WITH CHILDREN
     title: string,
-    wallet: Web3Wallet,
+    web3Wallet: Web3Wallet,
 }
 
 class MainApp extends App<Props, State> {
@@ -51,7 +51,7 @@ class MainApp extends App<Props, State> {
         accountState: AccountState.Unknown,
         title: "Entities",
         networkName: null,
-        wallet: new Web3Wallet(),
+        web3Wallet: new Web3Wallet(),
     }
 
     refreshInterval: any
@@ -67,7 +67,7 @@ class MainApp extends App<Props, State> {
     // }
 
     componentDidMount() {
-        initNetwork(this.state.wallet).then(() => {
+        initNetwork(this.state.web3Wallet).then(() => {
             message.success("Connected")
             this.refreshWeb3Status()
         }).catch(err => {
@@ -89,7 +89,7 @@ class MainApp extends App<Props, State> {
     async refreshWeb3Status() {
         //
         // TODO: 
-        const currentAccountState = this.state.wallet.getAccountState()
+        const currentAccountState = this.state.web3Wallet.getAccountState()
 
         const { web3Gateway } = await getGatewayClients()
         const networkName = (await web3Gateway.getProvider().getNetwork()).name
@@ -105,7 +105,7 @@ class MainApp extends App<Props, State> {
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
         new Promise(resolve => setTimeout(resolve, 1000 * 3))
-            .then(() => initNetwork(this.state.wallet)).then(() => {
+            .then(() => initNetwork(this.state.web3Wallet)).then(() => {
                 // message.success("Connected")
                 this.refreshWeb3Status()
             }).catch(err => {
@@ -145,7 +145,7 @@ class MainApp extends App<Props, State> {
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
             onGatewayError: this.onGatewayError,
-            wallet: this.state.wallet,
+            web3Wallet: this.state.web3Wallet,
         }
 
 

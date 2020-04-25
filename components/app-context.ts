@@ -10,7 +10,7 @@ export interface IAppContext {
     // globalState: IGlobalState,
 
     title: string,
-    wallet: Web3Wallet,
+    web3Wallet: Web3Wallet,
     setTitle: (title: string) => void
     onGatewayError: (type: "private" | "public") => void
 }
