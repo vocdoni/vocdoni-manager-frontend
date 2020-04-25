@@ -7,6 +7,7 @@ import { message, Button, Spin, Divider, Input, Select } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import { IWallet } from '../lib/types'
+import Router from 'next/router'
 const { Entity } = API
 // import MainLayout from "../components/layout"
 // import { main } from "../i18n"
@@ -66,6 +67,7 @@ class IndexView extends Component<IAppContext, State> {
       const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
 
       this.setState({ entity, entityId, entityLoading: false })
+      Router.push("/entities/edit/#/" + entityId);
     }
   }
 
@@ -97,7 +99,7 @@ class IndexView extends Component<IAppContext, State> {
 
   renderGetStarted() {
     return <>
-        {this.state.storedWallets && 
+        {this.state.storedWallets && this.state.storedWallets.length > 0 &&
           <>
           <Input.Group compact>
             <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name}>

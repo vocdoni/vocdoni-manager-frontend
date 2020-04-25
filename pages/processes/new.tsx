@@ -9,7 +9,6 @@ import moment from 'moment'
 const { Entity } = API
 import Link from "next/link"
 import Router from 'next/router'
-import Web3Wallet from '../../lib/web3-wallet'
 // import { Wallet, Signer } from 'ethers'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 // import { checkValidProcessMetadata } from 'dvote-js/dist/models/voting-process'
@@ -288,7 +287,7 @@ class ProcessNew extends Component<IAppContext, State> {
         const hideLoading = message.loading('Action in progress..', 0)
         this.setState({ processCreating: true })
 
-        return createVotingProcess(newProcess, Web3Wallet.signer, clients.web3Gateway, clients.dvoteGateway)
+        return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), clients.web3Gateway, clients.dvoteGateway)
             .then(processId => {
                 message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
                 hideLoading()

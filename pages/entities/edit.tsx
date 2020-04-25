@@ -8,7 +8,6 @@ import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 const { Entity } = API
 import Link from "next/link"
 import Router from 'next/router'
-import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -136,7 +135,7 @@ class EntityEdit extends Component<IAppContext, State> {
 
     return getGatewayClients().then(clients => {
       const state = getNetworkState()
-      return updateEntity(state.address, entity, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      return updateEntity(state.address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
     }).then(newOrigin => {
       return this.fetchMetadata()
     }).then(() => {

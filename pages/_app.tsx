@@ -66,10 +66,10 @@ class MainApp extends App<Props, State> {
     //     return { injectedArray, ...appProps }
     // }
 
-    componentDidMount() {
-        initNetwork(this.state.web3Wallet).then(() => {
+    async componentDidMount() {
+        await initNetwork(this.state.web3Wallet).then(async () => {
             message.success("Connected")
-            this.refreshWeb3Status()
+            await this.refreshWeb3Status()
         }).catch(err => {
             this.refreshWeb3Status()
             message.error("Could not connect")
@@ -89,7 +89,7 @@ class MainApp extends App<Props, State> {
     async refreshWeb3Status() {
         //
         // TODO: 
-        const currentAccountState = this.state.web3Wallet.getAccountState()
+        const currentAccountState = this.state.web3Wallet.getAccountState();
 
         const { web3Gateway } = await getGatewayClients()
         const networkName = (await web3Gateway.getProvider().getNetwork()).name

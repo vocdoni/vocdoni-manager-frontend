@@ -2,7 +2,7 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'antd'
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { getGatewayClients, getNetworkState, connectClients } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, EtherUtils } from "dvote-js"
 
 const { Entity } = API
@@ -131,18 +131,22 @@ class EntityNew extends Component<IAppContext, State> {
     }
 
     async createWebWallet(){
-        try {           
-            await this.props.web3Wallet.store(this.state.entity.name.default, this.state.seed, this.state.passphrase);
-            await this.props.web3Wallet.load(this.state.entity.name.default, this.state.passphrase);
-            
-            //await this.props.web3Wallet.fillGas();
-        }catch (e){
-            console.log(e.message);
-        }
+        await this.props.web3Wallet.store(this.state.entity.name.default, this.state.seed, this.state.passphrase);
+        await this.props.web3Wallet.load(this.state.entity.name.default, this.state.passphrase);
+        return await this.props.web3Wallet.fillGas();
     }
 
     async submitEntity() {
-        await this.createWebWallet();
+        const key = 'creatingWallet';
+        try{
+            message.loading({ content: 'Creating account, Please wait...', duration: 0, key });
+            await this.createWebWallet();
+            message.success({ content: 'Done creating account!', key });
+        }catch (e){
+            console.log(e.message);
+            message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key });
+            return false;
+        }
 
         this.setState({ entityUpdating: true })
 
@@ -167,23 +171,22 @@ class EntityNew extends Component<IAppContext, State> {
         // Filter extraneous actions
         entity.actions = entity.actions.filter(meta => !!meta.actionKey)
 
-        return getGatewayClients().then(clients => {
-            const state = getNetworkState()
-            return updateEntity(state.address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
-        }).then(newOrigin => {
-            return this.checkExistingEntity()
-        }).then(async () => {
-            return await this.props.web3Wallet.getAddress();
-        }).then(userAddr => {
-            const entityId = getEntityId(userAddr)
+        try {
+            await connectClients();
+            const clients = await getGatewayClients();
+            const state = getNetworkState();
+
+            await updateEntity(state.address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway);
+            message.success("The entity has been registered")
+
+            const entityId = getEntityId(state.address)
             Router.push("/entities/edit/#/" + entityId)
 
-            message.success("The entity has been registered")
             this.setState({ entityUpdating: false })
-        }).catch(err => {
+        } catch(err) {
             message.error("The entity could not be registered")
             this.setState({ entityUpdating: false })
-        })
+        }
     }
 
     // renderSupportedLanaguages(entity) {

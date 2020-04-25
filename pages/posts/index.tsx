@@ -15,7 +15,6 @@ import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
 import { fetchFileString } from 'dvote-js/dist/api/file'
 import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { IFeedPost } from "../../lib/types"
-import Web3Wallet from "../../lib/web3-wallet"
 import { Wallet, Signer } from "ethers"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
@@ -92,14 +91,14 @@ class PostView extends Component<IAppContext, State> {
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(feed))
-            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, Web3Wallet.signer as (Wallet | Signer), clients.dvoteGateway)
+            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.dvoteGateway)
 
             message.success("The news feed was pinned on IPFS successfully");
 
             let entityMetadata = this.state.entity
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
-            await updateEntity(state.address, entityMetadata, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            await updateEntity(state.address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
             message.success("The post has been deleted successfully")

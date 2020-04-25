@@ -78,6 +78,8 @@ export async function connectClients() {
 
             entityResolver = await getEntityResolverInstance({ provider })
             votingProcess = await getVotingProcessInstance({ provider })
+
+            web3Wallet.setProvider(provider);
         }
         else {
             // USE PRIVATE GATEWAYS
@@ -92,15 +94,17 @@ export async function connectClients() {
             success = false
             for (let w3 of infos[ETH_NETWORK_ID].web3) {
                 try {
+                    web3Wallet.setProvider(w3.getProvider());
+
                     // RESOLVER CONTRACT
-                    entityResolver = await getEntityResolverInstance({ provider: w3.getProvider(), signer: web3Wallet.getWallet() as (Wallet | Signer) })
+                    entityResolver = await getEntityResolverInstance({ provider: web3Wallet.getProvider(), signer: web3Wallet.getWallet() as (Wallet | Signer) })
 
                     // // React on all events (by now)
                     // entityResolver.on("TextChanged", () => refreshMetadata(accountAddressState))
                     // entityResolver.on("ListItemChanged", () => refreshMetadata(accountAddressState))
 
                     // PROCESS CONTRACT
-                    votingProcess = await getVotingProcessInstance({ provider: w3.getProvider(), signer: web3Wallet.getWallet() as (Wallet | Signer) })
+                    votingProcess = await getVotingProcessInstance({ provider: web3Wallet.getProvider(), signer: web3Wallet.getWallet() as (Wallet | Signer) })
 
                     web3Gateway = w3
                     success = true
