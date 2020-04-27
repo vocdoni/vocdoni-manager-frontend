@@ -2,7 +2,7 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'antd'
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { getGatewayClients, getNetworkState, connectClients } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
 const { Entity } = API
@@ -43,6 +43,8 @@ class EntityEdit extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
+    await connectClients();
+
     // if readonly, show the view page
     if (getNetworkState().readOnly) {
       return Router.replace("/entities/" + location.hash)
