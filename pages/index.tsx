@@ -45,6 +45,9 @@ class IndexView extends Component<IAppContext, State> {
 
       const storedWallets = await this.props.web3Wallet.getStored();
       this.setState({ storedWallets });
+      if(storedWallets.length > 0){
+        this.setState({ selectedWallet: storedWallets[0].name });
+      }
     }
     catch (err) {
       this.setState({ entityLoading: false })
