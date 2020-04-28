@@ -19,7 +19,6 @@ let votingProcess: IVotingProcessContract = null
 let readOnly: boolean = true
 let dvoteGateway: IDVoteGateway
 let web3Gateway: IWeb3Gateway
-let accountAddressState: string
 
 let bootnodesReadOnly: GatewayBootNodes
 let bootnodesPrivate: GatewayBootNodes
@@ -46,8 +45,6 @@ export async function connectClients() {
     const hideLoading = message.loading("Connecting to the network. Please wait...", 0)
 
     try {
-        readOnly = !web3Wallet.isAvailable()
-
         const infos = await getGatewaysFromBootNode(BOOTNODES_URL_RW)
         if (!infos || !infos[ETH_NETWORK_ID]) throw new Error("Could not connect to the network")
         else if (!infos[ETH_NETWORK_ID].dvote || !infos[ETH_NETWORK_ID].dvote.length) throw new Error("Could not connect to the network")
@@ -69,7 +66,7 @@ export async function connectClients() {
         if (!success) throw new Error("Could not connect to the network")
         // console.log("Connected to", await dvoteGateway.getUri())
 
-        if (readOnly) {
+        if (!web3Wallet || !web3Wallet.isAvailable()) {
             // USE PUBLIC GATEWAYS
             // SKIP METAMASK
 
@@ -89,8 +86,6 @@ export async function connectClients() {
             // TODO: 
             // Get working Web3GW
 
-            accountAddressState = await web3Wallet.getAddress();
-
             success = false
             for (let w3 of infos[ETH_NETWORK_ID].web3) {
                 try {
@@ -100,8 +95,8 @@ export async function connectClients() {
                     entityResolver = await getEntityResolverInstance({ provider: web3Wallet.getProvider(), signer: web3Wallet.getWallet() as (Wallet | Signer) })
 
                     // // React on all events (by now)
-                    // entityResolver.on("TextChanged", () => refreshMetadata(accountAddressState))
-                    // entityResolver.on("ListItemChanged", () => refreshMetadata(accountAddressState))
+                    // entityResolver.on("TextChanged", () => refreshMetadata(walletAddress))
+                    // entityResolver.on("ListItemChanged", () => refreshMetadata(walletAddress))
 
                     // PROCESS CONTRACT
                     votingProcess = await getVotingProcessInstance({ provider: web3Wallet.getProvider(), signer: web3Wallet.getWallet() as (Wallet | Signer) })
@@ -127,17 +122,17 @@ export async function connectClients() {
 
     // // Listen selectively
     // votingProcess.on(
-    //     votingProcess.filters.ProcessCreated(accountAddressState),
-    //     () => refreshMetadata(accountAddressState))
+    //     votingProcess.filters.ProcessCreated(walletAddress),
+    //     () => refreshMetadata(walletAddress))
     // votingProcess.on(
-    //     votingProcess.filters.ProcessCanceled(accountAddressState),
-    //     () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("RelayAdded", () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("BatchRegistered", () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("RelayDisabled", () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("PrivateKeyRevealed", () => refreshMetadata(accountAddressState))
+    //     votingProcess.filters.ProcessCanceled(walletAddress),
+    //     () => refreshMetadata(walletAddress))
+    // // votingProcess.on("RelayAdded", () => refreshMetadata(walletAddress))
+    // // votingProcess.on("BatchRegistered", () => refreshMetadata(walletAddress))
+    // // votingProcess.on("RelayDisabled", () => refreshMetadata(walletAddress))
+    // // votingProcess.on("PrivateKeyRevealed", () => refreshMetadata(walletAddress))
 
-    // return refreshMetadata(accountAddressState)
+    // return refreshMetadata(walletAddress)
     //     .then(() => {
     //         hideLoading()
     //         isConnected = true
@@ -194,7 +189,7 @@ export function disconnect() {
 
 //     try {
 //         if (Web3Wallet.isEthereumAvailable()) {
-//             accountAddressState = await Web3Wallet.getAddress()
+//             walletAddress = await Web3Wallet.getAddress()
 //         }
 //         entityState = await getEntityMetadataByAddress(entityAddress, web3Gateway, dvoteGateway)
 //         entityLoading = false
@@ -219,9 +214,8 @@ export function disconnect() {
 
 export function getNetworkState() {
     return {
-        readOnly,
+        readOnly: !web3Gateway || !web3Wallet.isAvailable(),
         isConnected,
-        address: accountAddressState,
         bootnodesReadOnly,
         bootnodesPrivate,
         error,

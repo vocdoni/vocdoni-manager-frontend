@@ -43,9 +43,6 @@ class EntityEdit extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
-    await connectClients();
-
-    // if readonly, show the view page
     if (getNetworkState().readOnly) {
       return Router.replace("/entities/" + location.hash)
     }
@@ -137,7 +134,7 @@ class EntityEdit extends Component<IAppContext, State> {
 
     return getGatewayClients().then(clients => {
       const state = getNetworkState()
-      return updateEntity(state.address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      return updateEntity(this.props.web3Wallet.getAddress(), entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
     }).then(newOrigin => {
       return this.fetchMetadata()
     }).then(() => {
@@ -257,7 +254,8 @@ class EntityEdit extends Component<IAppContext, State> {
   }
 
   renderSideMenu() {
-    const { readOnly, address } = getNetworkState()
+    const { readOnly } = getNetworkState()
+    const address = this.props.web3Wallet.getAddress()
     let hideEditControls = readOnly || !address
     if(!hideEditControls) {
         const ownEntityId = getEntityId(address)

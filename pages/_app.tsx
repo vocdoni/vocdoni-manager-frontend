@@ -6,7 +6,7 @@ import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
 import { initNetwork, getNetworkState, getGatewayClients } from "../lib/network"
 import { IAppContext } from "../components/app-context"
-import Web3Wallet, { AccountState } from "../lib/web3-wallet"
+import Web3Wallet from "../lib/web3-wallet"
 import { message } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
@@ -37,8 +37,6 @@ type Props = {
 
 type State = {
     isConnected: boolean,
-    accountState: AccountState,
-    networkName: string,
 
     // STATE SHARED WITH CHILDREN
     title: string,
@@ -48,9 +46,7 @@ type State = {
 class MainApp extends App<Props, State> {
     state: State = {
         isConnected: false,
-        accountState: AccountState.Unknown,
         title: "Entities",
-        networkName: null,
         web3Wallet: new Web3Wallet(),
     }
 
@@ -87,19 +83,8 @@ class MainApp extends App<Props, State> {
     }
 
     async refreshWeb3Status() {
-        //
-        // TODO: 
-        const currentAccountState = this.state.web3Wallet.getAccountState();
-
-        const { web3Gateway } = await getGatewayClients()
-        const networkName = (await web3Gateway.getProvider().getNetwork()).name
-
         const { isConnected } = getNetworkState();
-        this.setState({
-            isConnected,
-            accountState: currentAccountState,
-            networkName
-        })
+        this.setState({ isConnected })
     }
 
     onGatewayError(type: "private" | "public") {
@@ -128,8 +113,6 @@ class MainApp extends App<Props, State> {
     }
 
     render() {
-        const accountState = this.state.accountState
-
         if (!this.state.isConnected) {
             return this.renderPleaseWait()
         }
@@ -144,8 +127,8 @@ class MainApp extends App<Props, State> {
         const injectedGlobalContext: IAppContext = {
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
-            onGatewayError: this.onGatewayError,
             web3Wallet: this.state.web3Wallet,
+            onGatewayError: this.onGatewayError,
         }
 
 

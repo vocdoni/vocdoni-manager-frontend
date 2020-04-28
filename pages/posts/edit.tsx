@@ -196,7 +196,8 @@ class PostEdit extends Component<IAppContext, State> {
       let entityMetadata = this.state.entity
       entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
-      await updateEntity(state.address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      const address = this.props.web3Wallet.getAddress()
+      await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
       hideLoading()
       this.setState({ postUpdating: false })
 
@@ -308,7 +309,8 @@ class PostEdit extends Component<IAppContext, State> {
   }
 
   renderSideMenu() {
-    const { readOnly, address } = getNetworkState()
+    const { readOnly } = getNetworkState()
+    const address = this.props.web3Wallet.getAddress()
     let hideEditControls = readOnly || !address
     if(!hideEditControls) {
         const ownEntityId = getEntityId(address)

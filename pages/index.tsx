@@ -83,10 +83,10 @@ class IndexView extends Component<IAppContext, State> {
   }
 
   unlockWallet = async () => {
-    try{
+    try {
       await this.props.web3Wallet.load(this.state.selectedWallet, this.state.passphrase);
       this.redirectToEntityIfAvailable();
-    }catch(e){
+    } catch(e) {
       message.error("Could not unlock the wallet. Wrong password?");
     }
   }
