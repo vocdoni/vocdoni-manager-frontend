@@ -253,7 +253,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const params = location.hash.substr(2).split("/")
         const entityId = params[0]
 
-        const { readOnly, address } = getNetworkState()
+        const address = this.props.web3Wallet.getAddress()
+        const { readOnly } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
             const ownEntityId = getEntityId(address)

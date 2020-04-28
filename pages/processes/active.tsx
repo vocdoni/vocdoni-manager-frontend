@@ -239,7 +239,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="new-post">
-                    <Link href={"/posts/new/"}>
+                    <Link href={"/posts/new"}>
                         <a>Create post</a>
                     </Link>
                 </Menu.Item>

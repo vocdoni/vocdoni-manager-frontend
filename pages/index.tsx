@@ -87,7 +87,7 @@ class IndexView extends Component<IAppContext, State> {
       await this.props.web3Wallet.load(this.state.selectedWallet, this.state.passphrase);
       this.redirectToEntityIfAvailable();
     } catch(e) {
-      message.error("Could not unlock the wallet. Wrong password?");
+      message.error("Could not unlock the wallet. Please, check your password.");
     }
   }
 
@@ -96,7 +96,7 @@ class IndexView extends Component<IAppContext, State> {
       <Divider />
       <h4>{this.state.entity.name["default"]}</h4>
       <p>{this.state.entity.description["default"]}</p>
-      <p><Link href={`/entities/edit/#/${this.state.entityId}`}><a><Button>Manage my entity</Button></a></Link></p>
+      <p><Link href={`/entities/edit#/${this.state.entityId}`}><a><Button>Manage my entity</Button></a></Link></p>
     </>
   }
 
@@ -133,15 +133,15 @@ class IndexView extends Component<IAppContext, State> {
             (this.state.entity ? this.renderEntityInfo() : this.renderGetStarted())
         }
 
-        {/* <p><Link href="/entities/#/0x1234-entity-id"><a>Entity view (info, processes and news)</a></Link></p>
-        <p><Link href="/entities/edit/#/0x1234-entity-id"><a>Entity edit</a></Link></p>
+        {/* <p><Link href="/entities#/0x1234-entity-id"><a>Entity view (info, processes and news)</a></Link></p>
+        <p><Link href="/entities/edit#/0x1234-entity-id"><a>Entity edit</a></Link></p>
         <p><Link href="/entities/new"><a>Entity create</a></Link></p>
-        <p><Link href="/processes/#/0x2345-entity-id"><a>Process view</a></Link></p>
-        <p><Link href="/processes/new/#/0x1234-entity-id"><a>Process create</a></Link></p>
-        <p><Link href="/processes/edit/#/0x2345-entity-id"><a>Process edit</a></Link></p>
-        <p><Link href="/posts/#/0x12345-entity-id/<idx>"><a>News post view</a></Link></p>
-        <p><Link href="/posts/edit/#/0x12345-entity-id/<idx>"><a>News post edit</a></Link></p>
-        <p><Link href="/posts/new/#/0x12345-entity-id/<idx>"><a>News post create</a></Link></p> */}
+        <p><Link href="/processes#/0x2345-entity-id"><a>Process view</a></Link></p>
+        <p><Link href="/processes/new#/0x1234-entity-id"><a>Process create</a></Link></p>
+        <p><Link href="/processes/edit#/0x2345-entity-id"><a>Process edit</a></Link></p>
+        <p><Link href="/posts#/0x12345-entity-id/<idx>"><a>News post view</a></Link></p>
+        <p><Link href="/posts/edit#/0x12345-entity-id/<idx>"><a>News post edit</a></Link></p>
+        <p><Link href="/posts/new#/0x12345-entity-id/<idx>"><a>News post create</a></Link></p> */}
       </div>
     </div>
   }

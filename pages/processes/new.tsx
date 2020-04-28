@@ -115,8 +115,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
     async refreshMetadata() {
         try {
-            const { address } = getNetworkState()
-            const entityId = getEntityId(address)
+            const entityId = getEntityId(this.props.web3Wallet.getAddress())
 
             this.setState({ dataLoading: true, entityId })
 
@@ -568,7 +567,8 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     renderSideMenu() {
-        const { readOnly, address } = getNetworkState()
+        const address = this.props.web3Wallet.getAddress()
+        const { readOnly } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
             const ownEntityId = getEntityId(address)

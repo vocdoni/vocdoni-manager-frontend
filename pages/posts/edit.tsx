@@ -339,7 +339,7 @@ class PostEdit extends Component<IAppContext, State> {
           </Link>
         </Menu.Item>
         <Menu.Item key="new-post">
-          <Link href={"/posts/new/"}>
+          <Link href={"/posts/new"}>
             <a>Create post</a>
           </Link>
         </Menu.Item>
@@ -354,7 +354,7 @@ class PostEdit extends Component<IAppContext, State> {
           </Link>
         </Menu.Item>
         <Menu.Item key="new-vote">
-          <Link href={"/processes/new/"}>
+          <Link href={"/processes/new"}>
             <a>Create vote</a>
           </Link>
         </Menu.Item>

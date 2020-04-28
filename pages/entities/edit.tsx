@@ -2,7 +2,7 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'antd'
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState, connectClients } from '../../lib/network'
+import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
 const { Entity } = API
@@ -49,7 +49,7 @@ class EntityEdit extends Component<IAppContext, State> {
     // this.props.setTitle("Loading")
 
     try {
-      await this.fetchMetadata()
+        await this.fetchMetadata()
     }
     catch (err) {
       message.error("Could not read the entity metadata")
