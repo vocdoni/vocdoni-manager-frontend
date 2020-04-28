@@ -71,7 +71,7 @@ class MainApp extends App<Props, State> {
         }).catch(err => {
             this.refreshWeb3Status()
             message.error("Could not connect")
-        });
+        })
 
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
     }

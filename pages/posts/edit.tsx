@@ -202,7 +202,7 @@ class PostEdit extends Component<IAppContext, State> {
       this.setState({ postUpdating: false })
 
       message.success("The post has been successfully updated")
-      Router.reload()
+      this.refreshMetadata()
     }
     catch (err) {
       hideLoading()

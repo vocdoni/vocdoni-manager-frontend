@@ -17,7 +17,7 @@ import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { IFeedPost } from "../../lib/types"
 import Web3Wallet from "../../lib/web3-wallet"
 import { Wallet, Signer } from "ethers"
-import { getVoteMetadata } from "dvote-js/dist/api/vote"
+import { getVoteMetadata, isCanceled, cancelProcess } from "dvote-js/dist/api/vote"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -93,20 +93,14 @@ class ProcessEndedView extends Component<IAppContext, State> {
     }
 
     async removeFromEnded(processId: string) {
-        // TODO: 
-        let activeProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.active))
-        let endedProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.ended))
-        activeProcesses = activeProcesses.filter(id => id != processId)
-        endedProcesses.unshift(processId)
+        let activeProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.active)).filter(id => id != processId)
+        let endedProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.ended)).filter(id => id != processId)
 
-        const hideLoading = message.loading('Action in progress...', 0)
+        const hideLoading = message.loading('Removing the process...', 0)
 
         try {
             const clients = await getGatewayClients()
             const state = getNetworkState()
-
-            // TODO: Check if the process has actually ended before proceeding consulting the
-            // actual block number of Vochain and the finishBlock
 
             let entityMetadata = this.state.entity
             entityMetadata.votingProcesses.active = activeProcesses
@@ -115,13 +109,17 @@ class ProcessEndedView extends Component<IAppContext, State> {
             await updateEntity(state.address, entityMetadata, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
-            message.success("The process has ended successfully")
-            Router.reload()
+            if (!(await isCanceled(processId, clients.web3Gateway))) {
+                await cancelProcess(processId, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway)
+            }
+
+            message.success("The process has been removed successfully")
+            this.componentDidMount() // reload process list
         }
         catch (err) {
             hideLoading()
-            console.error("The process could not be ended", err)
-            message.error("The process could not be ended")
+            console.error("The process could not be removed", err)
+            message.error("The process could not be removed")
         }
 
     }
@@ -154,7 +152,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
                         <List.Item
                             key={idx}
                             actions={hideEditControls ? [] : [
-                                <IconText icon={CloseCircleOutlined} text="Mark as ended" onClick={() => this.removeFromEnded((vote as any).id)} key="mark-as-ended" />,
+                                <IconText icon={CloseCircleOutlined} text="Remove permanently" onClick={() => this.removeFromEnded((vote as any).id)} key="mark-as-ended" />,
                             ]}
                             extra={<img width={272} alt="Header" src={((vote as any).data as ProcessMetadata).details.headerImage} />}
                         >

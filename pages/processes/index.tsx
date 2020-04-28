@@ -10,7 +10,7 @@ import moment from 'moment'
 import Router from 'next/router'
 import Link from "next/link"
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
-import { getVoteMetadata } from "dvote-js/dist/api/vote"
+import { getVoteMetadata, isCanceled } from "dvote-js/dist/api/vote"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -36,7 +36,8 @@ type State = {
     processId?: string,
     process?: ProcessMetadata,
     results: ProcessResults
-    totalVotes: number
+    totalVotes: number,
+    canceled: boolean
 }
 
 // Stateful component
@@ -45,7 +46,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
         currentBlock: null,
         currentDate: moment(),
         results: null,
-        totalVotes: 0
+        totalVotes: 0,
+        canceled: false
     }
 
     refreshInterval = null
@@ -98,8 +100,9 @@ class ProcessActiveView extends Component<IAppContext, State> {
             if (!entity) throw new Error()
 
             const voteMetadata = await getVoteMetadata(processId, web3Gateway, dvoteGateway)
+            const canceled = await isCanceled(processId, web3Gateway)
 
-            this.setState({ entity, process: voteMetadata, dataLoading: false })
+            this.setState({ entity, process: voteMetadata, canceled, dataLoading: false })
             this.props.setTitle(entity.name["default"])
         }
         catch (err) {
@@ -167,6 +170,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     <Divider orientation="left">Vote details</Divider>
                     <h3>{process.details.title.default}</h3>
                     <p>{process.details.description.default}</p>
+                    {this.state.canceled ? <p className="warning">Voting for this process is no longer available</p> : null}
 
                     {
                         procQuestions.map((question, idx) => <div key={idx}>

@@ -17,7 +17,7 @@ import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { IFeedPost } from "../../lib/types"
 import Web3Wallet from "../../lib/web3-wallet"
 import { Wallet, Signer } from "ethers"
-import { getVoteMetadata } from "dvote-js/dist/api/vote"
+import { getVoteMetadata, cancelProcess, isCanceled } from "dvote-js/dist/api/vote"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -98,7 +98,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         activeProcesses = activeProcesses.filter(id => id != processId)
         endedProcesses.unshift(processId)
 
-        const hideLoading = message.loading('Action in progress...', 0)
+        const hideLoading = message.loading('Ending the process...', 0)
 
         try {
             const clients = await getGatewayClients()
@@ -114,8 +114,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
             await updateEntity(state.address, entityMetadata, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
+            if (!(await isCanceled(processId, clients.web3Gateway))) {
+                await cancelProcess(processId, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway)
+            }
+
             message.success("The process has ended successfully")
-            Router.reload()
+            this.componentDidMount() // reload process list
         }
         catch (err) {
             hideLoading()
