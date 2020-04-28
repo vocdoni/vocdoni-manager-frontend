@@ -1,104 +1,94 @@
 import { Wallet } from "ethers"
-import { Provider } from "ethers/providers";
-import { EtherUtils } from "dvote-js";
-import { DataCache } from "./storage";
-import { Key } from "react";
-import { IWallet } from "./types";
-import { BigNumber } from "ethers/utils";
-
-export enum AccountState {
-    Unknown = "Unknown",
-    Ok = "Ok"
-}
+import { Provider } from "ethers/providers"
+import { EtherUtils } from "dvote-js"
+import { DataCache } from "./storage"
+import { Key } from "react"
+import { IWallet } from "./types"
+import { BigNumber } from "ethers/utils"
 
 export default class Web3Wallet {
-    private wallet: Wallet;
-    public provider: Provider;
-    public acountState: AccountState = AccountState.Unknown;
+    private wallet: Wallet
+    private provider: Provider
+    private walletAddress: string
 
     public getWallet(): Wallet {
-      if(!this.isAvailable) throw new Error('Wallet not available');
-      return this.wallet;
+      return this.wallet
     }
 
     public setProvider(provider: Provider): void {
-      this.provider = provider;
+      this.provider = provider
     }
 
     public getProvider(): Provider {
-      return this.provider;
+      return this.provider
     }
 
     // Generates a wallet and stores it on IndexedDB
-    public async store(name: string, seed: string, passphrase: string): Promise<Key> {
-      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, seed);
-      const db = new DataCache();
-      return await db.wallets.put({ name, seed, publicKey: wallet["signingKey"].publicKey });
+    public store(name: string, seed: string, passphrase: string): Promise<Key> {
+      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, seed)
+      const db = new DataCache()
+      return db.wallets.put({ name, seed, publicKey: wallet["signingKey"].publicKey }) // TODO: These queries should be abstracted on the own class
     }
 
     // Gets all the stored wallet accounts from IndexedDB
-    public async getStored(): Promise<Array<IWallet>>  {
-      const db = new DataCache();
-      return await db.wallets.toArray();
+    public getStored(): Promise<Array<IWallet>>  {
+      const db = new DataCache()
+      return db.wallets.toArray() // TODO: These queries should be abstracted on the own class
     }
 
     // Loads a wallet form IndexedDB if the provided passphrase is correct
     public async load(name: string, passphrase: string): Promise<boolean> {
-      const db = new DataCache();
-      const storedWallet = await db.wallets.get({ name });
+      const db = new DataCache()
+      const storedWallet = await db.wallets.get({ name }) // TODO: These queries should be abstracted on the own class
 
-      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, storedWallet.seed);
+      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, storedWallet.seed)
+      this.walletAddress = await wallet.getAddress()
 
       // We need to verify the generated wallet publicKey = stored public Key
       if(wallet["signingKey"].publicKey === storedWallet.publicKey){
-        this.wallet = wallet;
-        this.acountState = AccountState.Ok;
-      }else{
-        throw new Error('Wrong passphrase for wallet!');
+        this.wallet = wallet
+      } else {
+        throw new Error('Wrong passphrase for wallet!')
       }
 
-      return true;
+      return true
     }
 
     public isAvailable(): boolean {
-      return this.getAccountState() === AccountState.Ok;
+      return !!this.wallet
     }
 
-    public getAccountState(): AccountState {
-        return this.acountState;
-    }
+    public getAddress(): string {
+      if(!this.isAvailable) throw new Error('Wallet not available')
 
-    public async getAddress(): Promise<string> {
-      if(!this.isAvailable) throw new Error('Wallet not available');
-
-      return await this.wallet.getAddress();
+      return this.walletAddress
     }
 
     public async getBalance(): Promise<string> {
-      const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress());
-      return balance.toString();
+      const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
+      return balance.toString()
     }
 
     
-    public async fillGas(): Promise<boolean> {
-      if(!this.isAvailable) throw new Error('Wallet not available');
+    public async waitForGas(): Promise<boolean> {
+      if(!this.isAvailable) throw new Error('Wallet not available')
       
-      console.log('Trying to get some gas to: ', await this.wallet.getAddress());
+      console.log('Trying to get some gas to: ', await this.wallet.getAddress())
 
       //
       // TODO: Sends some ETH to the active wallet
       //
 
-      let counter: number = 1;
+      let counter: number = 1
       while(true){
-        if(counter > 20) throw new Error('Timeout waiting for user to get gas');
+        if(counter > 20) throw new Error('Timeout waiting for user to get gas')
 
         if(+(await this.getBalance()) > 0){
-          return true;
+          return true
         }
 
-        await new Promise(r => setTimeout(r, 5000)); // Sleeps for 5 seconds
-        counter += 1;
+        await new Promise(r => setTimeout(r, 5000)) // Sleeps for 5 seconds
+        counter += 1
       }
     }
 }

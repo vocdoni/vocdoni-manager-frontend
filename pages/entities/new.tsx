@@ -52,15 +52,10 @@ class EntityNew extends Component<IAppContext, State> {
     async componentDidMount() {
         this.props.setTitle("New entity")
 
-        // Redirecting if user address has already an associated entity
-        if(this.props.web3Wallet.isAvailable()){
-            try {
-                await this.checkExistingEntity();
-            }
-            catch (err) {
-                message.error("Could not check your account")
-            }
+        if (getNetworkState().readOnly) {
+            return Router.replace("/")
         }
+        this.checkExistingEntity()
     }
 
     async checkExistingEntity() {
@@ -121,28 +116,28 @@ class EntityNew extends Component<IAppContext, State> {
         }
     }
 
-    async onPasswordChange(passphrase: string){
+    async onPasswordChange(passphrase: string) {
         try {
             const seed = EtherUtils.Signers.generateRandomHexSeed();
             this.setState({ passphrase, seed });
-        }catch (e){
+        } catch (e) {
             console.log(e.message);
         }
     }
 
-    async createWebWallet(){
+    async createWebWallet() {
         await this.props.web3Wallet.store(this.state.entity.name.default, this.state.seed, this.state.passphrase);
         await this.props.web3Wallet.load(this.state.entity.name.default, this.state.passphrase);
-        return await this.props.web3Wallet.fillGas();
+        return await this.props.web3Wallet.waitForGas();
     }
 
     async submitEntity() {
         const key = 'creatingWallet';
-        try{
+        try {
             message.loading({ content: 'Creating account, Please wait...', duration: 0, key });
             await this.createWebWallet();
             message.success({ content: 'Done creating account!', key });
-        }catch (e){
+        } catch (e) {
             console.log(e.message);
             message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key });
             return false;
@@ -176,14 +171,15 @@ class EntityNew extends Component<IAppContext, State> {
             const clients = await getGatewayClients();
             const state = getNetworkState();
 
-            await updateEntity(state.address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway);
+            const address = this.props.web3Wallet.getAddress()
+            await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway);
             message.success("The entity has been registered")
 
-            const entityId = getEntityId(state.address)
+            const entityId = getEntityId(address)
             Router.push("/entities/edit/#/" + entityId)
 
             this.setState({ entityUpdating: false })
-        } catch(err) {
+        } catch (err) {
             message.error("The entity could not be registered")
             this.setState({ entityUpdating: false })
         }
@@ -226,11 +222,11 @@ class EntityNew extends Component<IAppContext, State> {
                     <Divider orientation="left">Your Account</Divider>
                     {
                         <>
-                        <label>Password</label>
-                        <Input type="password"
-                            placeholder={"Your new password"}
-                            onChange={val => this.onPasswordChange(val.target.value)} />
-                        <br /><br />
+                            <label>Password</label>
+                            <Input type="password"
+                                placeholder={"Your new password"}
+                                onChange={val => this.onPasswordChange(val.target.value)} />
+                            <br /><br />
                         </>
                     }
 
@@ -296,13 +292,6 @@ class EntityNew extends Component<IAppContext, State> {
         </div>
     }
 
-    renderNotFound() {
-        return <div className="not-found">
-            <h4>Entity not found</h4>
-            <p>The entity you are looking for cannot be found</p>
-        </div>
-    }
-
     renderLoading() {
         return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
@@ -332,9 +321,7 @@ class EntityNew extends Component<IAppContext, State> {
                         <div id="page-body">
                             {this.renderEntityNew()}
                         </div>
-                        : <div id="page-body" className="center">
-                            {this.renderNotFound()}
-                        </div>
+                        : <div id="page-body" className="center"></div>
             }
         </div >
     }

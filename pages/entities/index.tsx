@@ -103,7 +103,8 @@ class EntityView extends Component<IAppContext, State> {
   }
 
   renderSideMenu() {
-    const { readOnly, address } = getNetworkState()
+    const { readOnly } = getNetworkState()
+    const address = this.props.web3Wallet.getAddress()
     let hideEditControls = readOnly || !address
     if(!hideEditControls) {
         const ownEntityId = getEntityId(address)

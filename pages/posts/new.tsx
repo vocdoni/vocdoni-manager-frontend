@@ -45,7 +45,8 @@ class PostNew extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
-    const { readOnly, address } = getNetworkState()
+    const { readOnly } = getNetworkState()
+    const address = this.props.web3Wallet.getAddress()
     const entityId = getEntityId(address)
 
     // if readonly, show the view page
@@ -76,7 +77,7 @@ class PostNew extends Component<IAppContext, State> {
 
   async refreshMetadata() {
     try {
-      const { address } = getNetworkState()
+      const address = this.props.web3Wallet.getAddress()
       const entityId = getEntityId(address)
 
       this.setState({ dataLoading: true, entityId })
@@ -187,7 +188,8 @@ class PostNew extends Component<IAppContext, State> {
       let entityMetadata = this.state.entity
       entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
-      await updateEntity(state.address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      const address = this.props.web3Wallet.getAddress()
+      await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
       hideLoading()
       this.setState({ postUpdating: false })
 
@@ -305,7 +307,8 @@ class PostNew extends Component<IAppContext, State> {
   }
 
   renderSideMenu() {
-    const { readOnly, address } = getNetworkState()
+    const { readOnly } = getNetworkState()
+    const address = this.props.web3Wallet.getAddress()
     let hideEditControls = readOnly || !address
     if(!hideEditControls) {
         const ownEntityId = getEntityId(address)

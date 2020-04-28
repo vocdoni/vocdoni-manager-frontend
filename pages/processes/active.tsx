@@ -110,7 +110,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
             entityMetadata.votingProcesses.active = activeProcesses
             entityMetadata.votingProcesses.ended = endedProcesses
 
-            await updateEntity(state.address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            const address = this.props.web3Wallet.getAddress()
+            await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
             hideLoading()
 
             message.success("The process has ended successfully")
@@ -126,7 +127,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     renderProcessesList() {
         const entityId = location.hash.substr(2)
-        const { readOnly, address } = getNetworkState()
+        const address = this.props.web3Wallet.getAddress()
+        const { readOnly } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
             const ownEntityId = getEntityId(address)
@@ -184,7 +186,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 
     renderSideMenu() {
-        const { readOnly, address } = getNetworkState()
+        const address = this.props.web3Wallet.getAddress()
+        const { readOnly } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
             const ownEntityId = getEntityId(address)
