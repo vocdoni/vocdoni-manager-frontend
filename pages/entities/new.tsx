@@ -51,35 +51,6 @@ class EntityNew extends Component<IAppContext, State> {
 
     async componentDidMount() {
         this.props.setTitle("New entity")
-
-        if (getNetworkState().readOnly) {
-            return Router.replace("/")
-        }
-        this.checkExistingEntity()
-    }
-
-    async checkExistingEntity() {
-        try {
-            const userAddr = await this.props.web3Wallet.getAddress();
-            const entityId = getEntityId(userAddr);
-            this.setState({ entityLoading: true });
-
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
-            this.setState({ entityLoading: false })
-
-            if (entity) {
-                message.warning("Your Ethereum account already has an Entity created")
-                Router.push("/entities/edit#/" + entityId)
-            }
-        }
-        catch (err) {
-            this.setState({ entityLoading: false })
-            if (err && err.message == "The given entity has no metadata defined yet") {
-                return // nothing to show
-            }
-            throw err
-        }
     }
 
     // EVENTS
