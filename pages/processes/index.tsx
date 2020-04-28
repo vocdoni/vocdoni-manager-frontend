@@ -161,6 +161,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const startDate = moment(startTimestamp)
         const endDate = moment(startTimestamp + process.numberOfBlocks * BLOCK_TIME * 1000)
 
+        let processType: string
+        switch (this.state.process.type) {
+            case "poll-vote": processType = "Standard Poll"; break
+            case "encrypted-poll-vote": processType = "Encrypted Poll"; break
+            case "petition-sign": processType = "Petition signing"; break
+            case "snark-vote": processType = "Anonymous vote"; break
+            default: processType = ""; break
+        }
+
         const procQuestions = this.state.process.details.questions
         const resultQuestions = this.state.results && this.state.results.questions && this.state.results.questions || []
 
@@ -189,6 +198,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     <br />
 
                     <Divider orientation="left">General</Divider>
+                    <h4>Process Type</h4>
+                    <p>{processType}</p>
                     <h4>Process ID</h4>
                     <pre>{processId}</pre>
                     <h4>Census Merkle Root</h4>

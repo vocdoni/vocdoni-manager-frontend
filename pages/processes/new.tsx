@@ -1,6 +1,6 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, DatePicker } from 'antd'
+import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, DatePicker, Radio } from 'antd'
 import { LoadingOutlined, RocketOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage, ProcessMetadata } from "dvote-js"
@@ -333,20 +333,6 @@ class ProcessNew extends Component<IAppContext, State> {
                                 onChange={ev => this.setNewProcessField(['details', 'title', 'default'], ev.target.value)}
                             />
                         </Form.Item>
-                        {/* <Form.Item>
-                    <label>Type</label>
-                    <Select
-                        showSearch
-                        style={{ width: 200 }}
-                        value={this.state.process.type}
-                        placeholder="Select a process type"
-                        onChange={value => this.setNewProcessField(['type'], value)}
-                    >
-                        <Select.Option value="snark-vote" disabled>Anonymous Vote</Select.Option>
-                        <Select.Option value="poll-vote">Poll</Select.Option>
-                        <Select.Option value="petition-sign" disabled>Petition</Select.Option>
-                    </Select>
-                </Form.Item> */}
                         <Form.Item>
                             <label>Description</label>
                             <Input.TextArea
@@ -366,6 +352,19 @@ class ProcessNew extends Component<IAppContext, State> {
                             <small style={{ lineHeight: "35px" }}>
                                 <a href="https://unsplash.com/" target="_blank">Browse images in Unsplash.com</a>
                             </small>
+                        </Form.Item>
+                        <Form.Item>
+                            <label>Process type</label>
+                            <br />
+                            <Radio.Group buttonStyle="solid" value={this.state.process.type} onChange={e => this.setNewProcessField(["type"], e.target.value)}>
+                                <Radio.Button value="poll-vote">Public Poll</Radio.Button>
+                                <Radio.Button value="encrypted-poll-vote">Encrypted Poll</Radio.Button>
+                            </Radio.Group>
+                            {
+                                this.state.process.type == "poll-vote" ?
+                                    <p><small>On a standard poll, all votes become public as soon as they are registered. <br />Participants are not anonymous.</small></p> :
+                                    <p><small>On an encrypted poll, votes remain encrypted until the process has ended. <br />Participants are not anonymous.</small></p>
+                            }
                         </Form.Item>
                     </Form>
 

@@ -125,7 +125,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
     }
 
     renderProcessesList() {
-        // const entityId = location.hash.substr(2)
+        const entityId = location.hash.substr(2)
         const { readOnly, address } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
@@ -158,7 +158,11 @@ class ProcessEndedView extends Component<IAppContext, State> {
                         >
                             <List.Item.Meta
                                 avatar={<Avatar src={this.state.entity.media.avatar} />}
-                                title={((vote as any).data as ProcessMetadata).details.title["default"]}
+                                title={
+                                    <Link href={`/processes/#/${entityId}/${(vote as any).id}`}>
+                                        <a>{((vote as any).data as ProcessMetadata).details.title["default"]}</a>
+                                    </Link>
+                                }
                                 description={((vote as any).data as ProcessMetadata).details.description["default"]}
                             />
                         </List.Item>
