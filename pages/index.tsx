@@ -70,7 +70,7 @@ class IndexView extends Component<IAppContext, State> {
       const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
 
       this.setState({ entity, entityId, entityLoading: false })
-      Router.push("/entities/edit/#/" + entityId);
+      Router.push("/entities/edit#/" + entityId);
     }
   }
 

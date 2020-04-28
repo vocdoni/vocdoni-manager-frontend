@@ -44,7 +44,7 @@ class EntityEdit extends Component<IAppContext, State> {
 
   async componentDidMount() {
     if (getNetworkState().readOnly) {
-      return Router.replace("/entities/" + location.hash)
+      return Router.replace("/entities" + location.hash)
     }
     // this.props.setTitle("Loading")
 
@@ -269,37 +269,37 @@ class EntityEdit extends Component<IAppContext, State> {
     return <div id="page-menu">
       <Menu mode="inline" defaultSelectedKeys={['edit']} style={{ width: 200 }}>
         <Menu.Item key="profile">
-          <Link href={"/entities/" + location.hash}>
+          <Link href={"/entities" + location.hash}>
             <a>Profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="edit">
-          <Link href={"/entities/edit/" + location.hash}>
+          <Link href={"/entities/edit" + location.hash}>
             <a>Edit profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="feed">
-          <Link href={"/posts/" + location.hash}>
+          <Link href={"/posts" + location.hash}>
             <a>News feed</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="new-post">
-          <Link href={"/posts/new/"}>
+          <Link href={"/posts/new"}>
             <a>Create post</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-active">
-          <Link href={"/processes/active/" + location.hash}>
+          <Link href={"/processes/active" + location.hash}>
             <a>Active votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/" + location.hash}>
+          <Link href={"/processes/ended" + location.hash}>
             <a>Ended votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="new-vote">
-          <Link href={"/processes/new/"}>
+          <Link href={"/processes/new"}>
             <a>Create vote</a>
           </Link>
         </Menu.Item>

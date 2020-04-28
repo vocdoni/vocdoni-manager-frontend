@@ -271,7 +271,7 @@ class EntityNew extends Component<IAppContext, State> {
         return <div id="page-menu">
             <Menu mode="inline" defaultSelectedKeys={['new']} style={{ width: 200 }}>
                 <Menu.Item key="new">
-                    <Link href={"/entities/new/"}>
+                    <Link href={"/entities/new"}>
                         <a>Entity details</a>
                     </Link>
                 </Menu.Item>

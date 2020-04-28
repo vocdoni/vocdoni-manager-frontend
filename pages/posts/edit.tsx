@@ -57,7 +57,7 @@ class PostEdit extends Component<IAppContext, State> {
 
     // if readonly, show the view page
     if (getNetworkState().readOnly) {
-      return Router.replace("/posts/#" + entityId)
+      return Router.replace("/posts#" + entityId)
     }
 
     // Do the imports dynamically because `window` does not exist on SSR
@@ -324,17 +324,17 @@ class PostEdit extends Component<IAppContext, State> {
     return <div id="page-menu">
       <Menu mode="inline" style={{ width: 200 }}>
         <Menu.Item key="profile">
-          <Link href={"/entities/#/" + this.state.entityId}>
+          <Link href={"/entities#/" + this.state.entityId}>
             <a>Profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="edit">
-          <Link href={"/entities/edit/#/" + this.state.entityId}>
+          <Link href={"/entities/edit#/" + this.state.entityId}>
             <a>Edit profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="feed">
-          <Link href={"/posts/#/" + this.state.entityId}>
+          <Link href={"/posts#/" + this.state.entityId}>
             <a>News feed</a>
           </Link>
         </Menu.Item>
@@ -344,12 +344,12 @@ class PostEdit extends Component<IAppContext, State> {
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-active">
-          <Link href={"/processes/active/" + location.hash}>
+          <Link href={"/processes/active" + location.hash}>
             <a>Active votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/" + location.hash}>
+          <Link href={"/processes/ended" + location.hash}>
             <a>Ended votes</a>
           </Link>
         </Menu.Item>

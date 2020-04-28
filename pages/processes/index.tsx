@@ -264,27 +264,27 @@ class ProcessActiveView extends Component<IAppContext, State> {
             return <div id="page-menu">
                 <Menu mode="inline" defaultSelectedKeys={['processes-details']} style={{ width: 200 }}>
                     <Menu.Item key="profile">
-                        <Link href={"/entities/#/" + entityId}>
+                        <Link href={"/entities#/" + entityId}>
                             <a>Profile</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="feed">
-                        <Link href={"/posts/#/" + entityId}>
+                        <Link href={"/posts#/" + entityId}>
                             <a>News feed</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="processes-active">
-                        <Link href={"/processes/active/#/" + entityId}>
+                        <Link href={"/processes/active#/" + entityId}>
                             <a>Active votes</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="processes-ended">
-                        <Link href={"/processes/ended/#/" + entityId}>
+                        <Link href={"/processes/ended#/" + entityId}>
                             <a>Ended votes</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="processes-details">
-                        <Link href={"/processes/#/" + entityId}>
+                        <Link href={"/processes#/" + entityId}>
                             <a>Vote details</a>
                         </Link>
                     </Menu.Item>
@@ -295,42 +295,42 @@ class ProcessActiveView extends Component<IAppContext, State> {
         return <div id="page-menu">
             <Menu mode="inline" defaultSelectedKeys={['processes-details']} style={{ width: 200 }}>
                 <Menu.Item key="profile">
-                    <Link href={"/entities/#/" + entityId}>
+                    <Link href={"/entities#/" + entityId}>
                         <a>Profile</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="edit">
-                    <Link href={"/entities/edit/#/" + entityId}>
+                    <Link href={"/entities/edit#/" + entityId}>
                         <a>Edit details</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="feed">
-                    <Link href={"/posts/#/" + entityId}>
+                    <Link href={"/posts#/" + entityId}>
                         <a>News feed</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="new-post">
-                    <Link href={"/posts/new/"}>
+                    <Link href={"/posts/new"}>
                         <a>Create post</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="processes-active">
-                    <Link href={"/processes/active/#/" + entityId}>
+                    <Link href={"/processes/active#/" + entityId}>
                         <a>Active votes</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="processes-ended">
-                    <Link href={"/processes/ended/#/" + entityId}>
+                    <Link href={"/processes/ended#/" + entityId}>
                         <a>Ended votes</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="processes-details">
-                    <Link href={"/processes/#/" + entityId}>
+                    <Link href={"/processes#/" + entityId}>
                         <a>Vote details</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="new-vote">
-                    <Link href={"/processes/new/"}>
+                    <Link href={"/processes/new"}>
                         <a>Create vote</a>
                     </Link>
                 </Menu.Item>

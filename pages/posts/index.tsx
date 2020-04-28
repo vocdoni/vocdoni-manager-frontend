@@ -146,7 +146,7 @@ class PostView extends Component<IAppContext, State> {
                     <List.Item
                         key={idx}
                         actions={hideEditControls ? [] : [
-                            <Link href={`/posts/edit/#/${entityId}/${post.id}`}><a>
+                            <Link href={`/posts/edit#/${entityId}/${post.id}`}><a>
                                 <IconText icon={EditOutlined} text="Edit post" key="edit" />
                             </a></Link>,
                             <IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.deletePost(this.state.startIndex + idx)} key="remove" />,
@@ -194,22 +194,22 @@ class PostView extends Component<IAppContext, State> {
             return <div id="page-menu">
                 <Menu mode="inline" defaultSelectedKeys={['feed']} style={{ width: 200 }}>
                     <Menu.Item key="profile">
-                        <Link href={"/entities/" + location.hash}>
+                        <Link href={"/entities" + location.hash}>
                             <a>Profile</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="feed">
-                        <Link href={"/posts/" + location.hash}>
+                        <Link href={"/posts" + location.hash}>
                             <a>News feed</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="processes-active">
-                        <Link href={"/processes/active/" + location.hash}>
+                        <Link href={"/processes/active" + location.hash}>
                             <a>Active votes</a>
                         </Link>
                     </Menu.Item>
                     <Menu.Item key="processes-ended">
-                        <Link href={"/processes/ended/" + location.hash}>
+                        <Link href={"/processes/ended" + location.hash}>
                             <a>Ended votes</a>
                         </Link>
                     </Menu.Item>
@@ -220,37 +220,37 @@ class PostView extends Component<IAppContext, State> {
         return <div id="page-menu">
             <Menu mode="inline" defaultSelectedKeys={['feed']} style={{ width: 200 }}>
                 <Menu.Item key="profile">
-                    <Link href={"/entities/" + location.hash}>
+                    <Link href={"/entities" + location.hash}>
                         <a>Profile</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="edit">
-                    <Link href={"/entities/edit/" + location.hash}>
+                    <Link href={"/entities/edit" + location.hash}>
                         <a>Edit details</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="feed">
-                    <Link href={"/posts/" + location.hash}>
+                    <Link href={"/posts" + location.hash}>
                         <a>News feed</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="new-post">
-                    <Link href={"/posts/new/"}>
+                    <Link href={"/posts/new"}>
                         <a>Create post</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="processes-active">
-                    <Link href={"/processes/active/" + location.hash}>
+                    <Link href={"/processes/active" + location.hash}>
                         <a>Active votes</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="processes-ended">
-                    <Link href={"/processes/ended/" + location.hash}>
+                    <Link href={"/processes/ended" + location.hash}>
                         <a>Ended votes</a>
                     </Link>
                 </Menu.Item>
                 <Menu.Item key="new-vote">
-                    <Link href={"/processes/new/"}>
+                    <Link href={"/processes/new"}>
                         <a>Create vote</a>
                     </Link>
                 </Menu.Item>

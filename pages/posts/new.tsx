@@ -51,7 +51,7 @@ class PostNew extends Component<IAppContext, State> {
 
     // if readonly, show the view page
     if (readOnly) {
-      return Router.replace("/posts/#" + entityId)
+      return Router.replace("/posts#" + entityId)
     }
     this.props.setTitle("New post")
 
@@ -109,7 +109,7 @@ class PostNew extends Component<IAppContext, State> {
         summary: "",
         content_text: "",
         content_html: "<p>Your text goes here</p>",
-        url: location.protocol + "//" + location.host + "/posts/#/" + entityId + "/" + id,
+        url: location.protocol + "//" + location.host + "/posts#/" + entityId + "/" + id,
         image: "",
         tags: [],
         date_published: "",
@@ -194,7 +194,7 @@ class PostNew extends Component<IAppContext, State> {
       this.setState({ postUpdating: false })
 
       message.success("The post has been successfully updated")
-      Router.push("/posts/#/" + this.state.entityId)
+      Router.push("/posts#/" + this.state.entityId)
     }
     catch (err) {
       hideLoading()
@@ -322,37 +322,37 @@ class PostNew extends Component<IAppContext, State> {
     return <div id="page-menu">
       <Menu mode="inline" defaultSelectedKeys={['new-post']} style={{ width: 200 }}>
         <Menu.Item key="profile">
-          <Link href={"/entities/#/" + this.state.entityId}>
+          <Link href={"/entities#/" + this.state.entityId}>
             <a>Profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="edit">
-          <Link href={"/entities/edit/#/" + this.state.entityId}>
+          <Link href={"/entities/edit#/" + this.state.entityId}>
             <a>Edit profile</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="feed">
-          <Link href={"/posts/#/" + this.state.entityId}>
+          <Link href={"/posts#/" + this.state.entityId}>
             <a>News feed</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="new-post">
-          <Link href={"/posts/new/"}>
+          <Link href={"/posts/new"}>
             <a>Create post</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-active">
-          <Link href={"/processes/active/#/" + this.state.entityId}>
+          <Link href={"/processes/active#/" + this.state.entityId}>
             <a>Active votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/#/" + this.state.entityId}>
+          <Link href={"/processes/ended#/" + this.state.entityId}>
             <a>Ended votes</a>
           </Link>
         </Menu.Item>
         <Menu.Item key="new-vote">
-          <Link href={"/processes/new/"}>
+          <Link href={"/processes/new"}>
             <a>Create vote</a>
           </Link>
         </Menu.Item>
