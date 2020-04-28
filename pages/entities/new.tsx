@@ -75,7 +75,7 @@ class EntityNew extends Component<IAppContext, State> {
 
             if (entity) {
                 message.warning("Your Ethereum account already has an Entity created")
-                Router.push("/entities/edit/#/" + entityId)
+                Router.push("/entities/edit#" + entityId)
             }
         }
         catch (err) {
@@ -180,7 +180,7 @@ class EntityNew extends Component<IAppContext, State> {
             message.success("The entity has been registered")
 
             const entityId = getEntityId(state.address)
-            Router.push("/entities/edit/#/" + entityId)
+            Router.push("/entities/edit#/" + entityId)
 
             this.setState({ entityUpdating: false })
         } catch(err) {
