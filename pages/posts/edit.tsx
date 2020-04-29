@@ -12,6 +12,7 @@ import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
 import { fetchFileString } from 'dvote-js/dist/api/file'
+import SideMenu from '../../components/side-menu'
 
 let Editor: any // = await import("react-draft-wysiwyg")
 let EditorState, ContentState, convertToRaw
@@ -308,63 +309,9 @@ class PostEdit extends Component<IAppContext, State> {
     return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
   }
 
-  renderSideMenu() {
-    const { readOnly } = getNetworkState()
-    const address = this.props.web3Wallet.getAddress()
-    let hideEditControls = readOnly || !address
-    if(!hideEditControls) {
-        const ownEntityId = getEntityId(address)
-        hideEditControls = this.state.entityId != ownEntityId
-    }
-
-    if (hideEditControls) {
-      return null
-    }
-
-    return <div id="page-menu">
-      <Menu mode="inline" style={{ width: 200 }}>
-        <Menu.Item key="profile">
-          <Link href={"/entities#/" + this.state.entityId}>
-            <a>Profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="edit">
-          <Link href={"/entities/edit#/" + this.state.entityId}>
-            <a>Edit profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="feed">
-          <Link href={"/posts#/" + this.state.entityId}>
-            <a>News feed</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-post">
-          <Link href={"/posts/new"}>
-            <a>Create post</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-active">
-          <Link href={"/processes/active" + location.hash}>
-            <a>Active votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended" + location.hash}>
-            <a>Ended votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-vote">
-          <Link href={"/processes/new"}>
-            <a>Create vote</a>
-          </Link>
-        </Menu.Item>
-      </Menu>
-    </div>
-  }
-
   render() {
     return <div id="post-edit">
-      {this.renderSideMenu()}
+      {/*<SideMenu entityId={this.state.entityId} selected="" />*/}
       {
         this.state.dataLoading ?
           <div id="page-body" className="center">

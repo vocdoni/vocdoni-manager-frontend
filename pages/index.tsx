@@ -8,6 +8,7 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import { IWallet } from '../lib/types'
 import Router from 'next/router'
+
 const { Entity } = API
 // import MainLayout from "../components/layout"
 // import { main } from "../i18n"
@@ -109,7 +110,7 @@ class IndexView extends Component<IAppContext, State> {
             <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name}>
               { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
             </Select>
-            <Input onChange={val => this.onPassphraseChange(val.target.value)} style={{ width: '40%' }} type="password" placeholder="passphrase" />
+            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} style={{ width: '40%' }} type="password" placeholder="passphrase" />
             <Button type='primary' onClick={this.unlockWallet}>Login</Button>
           </Input.Group>
           <br />

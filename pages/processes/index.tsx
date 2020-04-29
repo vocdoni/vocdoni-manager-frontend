@@ -11,6 +11,7 @@ import Router from 'next/router'
 import Link from "next/link"
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
 import { getVoteMetadata } from "dvote-js/dist/api/vote"
+import SideMenu from '../../components/side-menu'
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -249,99 +250,9 @@ class ProcessActiveView extends Component<IAppContext, State> {
         return <div>Loading the vote details...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    renderSideMenu() {
-        const params = location.hash.substr(2).split("/")
-        const entityId = params[0]
-
-        const address = this.props.web3Wallet.getAddress()
-        const { readOnly } = getNetworkState()
-        let hideEditControls = readOnly || !address
-        if (!hideEditControls) {
-            const ownEntityId = getEntityId(address)
-            hideEditControls = this.state.entityId != ownEntityId
-        }
-
-        if (hideEditControls) {
-            return <div id="page-menu">
-                <Menu mode="inline" defaultSelectedKeys={['processes-details']} style={{ width: 200 }}>
-                    <Menu.Item key="profile">
-                        <Link href={"/entities#/" + entityId}>
-                            <a>Profile</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="feed">
-                        <Link href={"/posts#/" + entityId}>
-                            <a>News feed</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-active">
-                        <Link href={"/processes/active#/" + entityId}>
-                            <a>Active votes</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-ended">
-                        <Link href={"/processes/ended#/" + entityId}>
-                            <a>Ended votes</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-details">
-                        <Link href={"/processes#/" + entityId}>
-                            <a>Vote details</a>
-                        </Link>
-                    </Menu.Item>
-                </Menu>
-            </div>
-        }
-
-        return <div id="page-menu">
-            <Menu mode="inline" defaultSelectedKeys={['processes-details']} style={{ width: 200 }}>
-                <Menu.Item key="profile">
-                    <Link href={"/entities#/" + entityId}>
-                        <a>Profile</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="edit">
-                    <Link href={"/entities/edit#/" + entityId}>
-                        <a>Edit details</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="feed">
-                    <Link href={"/posts#/" + entityId}>
-                        <a>News feed</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="new-post">
-                    <Link href={"/posts/new"}>
-                        <a>Create post</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-active">
-                    <Link href={"/processes/active#/" + entityId}>
-                        <a>Active votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-ended">
-                    <Link href={"/processes/ended#/" + entityId}>
-                        <a>Ended votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-details">
-                    <Link href={"/processes#/" + entityId}>
-                        <a>Vote details</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="new-vote">
-                    <Link href={"/processes/new"}>
-                        <a>Create vote</a>
-                    </Link>
-                </Menu.Item>
-            </Menu>
-        </div>
-    }
-
     render() {
         return <div id="process-view">
-            {this.renderSideMenu()}
+            <SideMenu entityId={this.state.entityId} selected="processes-details" />
             {
                 this.state.dataLoading ?
                     <div id="page-body" className="center">
