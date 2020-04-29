@@ -101,21 +101,33 @@ class IndexView extends Component<IAppContext, State> {
   }
 
   renderGetStarted() {
+    const showStored = (this.state.storedWallets && this.state.storedWallets.length > 0);
     return <>
-        {this.state.storedWallets && this.state.storedWallets.length > 0 &&
+        {showStored &&
           <>
           <Input.Group compact>
             <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name}>
               { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
             </Select>
             <Input onChange={val => this.onPassphraseChange(val.target.value)} style={{ width: '40%' }} type="password" placeholder="passphrase" />
+            <Button type='primary' onClick={this.unlockWallet}>Login</Button>
           </Input.Group>
           <br />
-          <Button size='large' type='primary' onClick={this.unlockWallet}>Login</Button>
-          <Divider />
+          <div>
+            <Link href="/account/import"><Button>Import an account</Button></Link>
+          </div>
+          <Divider>or</Divider>
           </>
         }
-        <p><Link href="/entities/new"><a><Button>Create a new Entity</Button></a></Link></p>
+
+        <Link href="/account/new"><Button type="primary">Sign Up</Button></Link>
+
+        {!showStored &&
+          <>
+          <Divider>or</Divider>
+          <Link href="/account/import"><Button>Import an account</Button></Link>
+          </>
+        }
       </>;
   }
 

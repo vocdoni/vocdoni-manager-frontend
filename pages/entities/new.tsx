@@ -39,8 +39,6 @@ type State = {
     entityUpdating?: boolean,
     entity?: EntityMetadata,
     bootnodes?: GatewayBootNodes,
-    passphrase?: string,
-    seed?: string,
 }
 
 // Stateful component
@@ -51,6 +49,9 @@ class EntityNew extends Component<IAppContext, State> {
 
     async componentDidMount() {
         this.props.setTitle("New entity")
+        if (getNetworkState().readOnly) {
+            return Router.replace("/")
+        }
     }
 
     // EVENTS
@@ -87,33 +88,7 @@ class EntityNew extends Component<IAppContext, State> {
         }
     }
 
-    async onPasswordChange(passphrase: string) {
-        try {
-            const seed = EtherUtils.Signers.generateRandomHexSeed();
-            this.setState({ passphrase, seed });
-        } catch (e) {
-            console.log(e.message);
-        }
-    }
-
-    async createWebWallet() {
-        await this.props.web3Wallet.store(this.state.entity.name.default, this.state.seed, this.state.passphrase);
-        await this.props.web3Wallet.load(this.state.entity.name.default, this.state.passphrase);
-        return await this.props.web3Wallet.waitForGas();
-    }
-
     async submitEntity() {
-        const key = 'creatingWallet';
-        try {
-            message.loading({ content: 'Creating account, Please wait...', duration: 0, key });
-            await this.createWebWallet();
-            message.success({ content: 'Done creating account!', key });
-        } catch (e) {
-            console.log(e.message);
-            message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key });
-            return false;
-        }
-
         this.setState({ entityUpdating: true })
 
         const entity = Object.assign({}, this.state.entity)
@@ -190,17 +165,6 @@ class EntityNew extends Component<IAppContext, State> {
         return <div className="body-card">
             <Row justify="start">
                 <Col xs={24} sm={20} md={14}>
-                    <Divider orientation="left">Your Account</Divider>
-                    {
-                        <>
-                            <label>Password</label>
-                            <Input type="password"
-                                placeholder={"Your new password"}
-                                onChange={val => this.onPasswordChange(val.target.value)} />
-                            <br /><br />
-                        </>
-                    }
-
                     <Divider orientation="left">Profile</Divider>
                     {/*<h2>Name</h2> */}
                     {
@@ -255,7 +219,7 @@ class EntityNew extends Component<IAppContext, State> {
                     <div style={{ textAlign: "center" }}>
                         {this.state.entityUpdating ?
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                            <Button size='large' type='primary' onClick={() => this.submitEntity()}>Update metadata</Button>
+                            <Button size='large' type='primary' onClick={() => this.submitEntity()}>Create</Button>
                         }
                     </div>
                 </Col>
