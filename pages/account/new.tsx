@@ -33,35 +33,35 @@ class AccountNew extends Component<IAppContext, State> {
   }
 
   createWebWallet = async (name: string, passphrase: string) => {
-    const seed = EtherUtils.Signers.generateRandomHexSeed();
-    await this.props.web3Wallet.store(name, seed, passphrase);
-    await this.props.web3Wallet.load(name, passphrase);
+    const seed = EtherUtils.Signers.generateRandomHexSeed()
+    await this.props.web3Wallet.store(name, seed, passphrase)
+    await this.props.web3Wallet.load(name, passphrase)
     
-    this.setState({ seed, address: this.props.web3Wallet.getAddress() });
+    this.setState({ seed, address: this.props.web3Wallet.getAddress() })
   }
 
   onFinish = async (values) => {
-    this.setState({ creatingAccount: true, name: values.name, passphrase: values.passphrase });
+    this.setState({ creatingAccount: true, name: values.name, passphrase: values.passphrase })
 
-    const key = 'creatingWallet';
+    const key = 'creatingWallet'
     try {
-      message.loading({ content: 'Creating account, Please wait...', duration: 0, key });
-      await this.createWebWallet(values.name, values.passphrase);
-      message.success({ content: 'Done creating account!', key });
-      this.setState({ creatingAccount: false });
+      message.loading({ content: 'Creating account, Please wait...', duration: 0, key })
+      await this.createWebWallet(values.name, values.passphrase)
+      message.success({ content: 'Done creating account!', key })
+      this.setState({ creatingAccount: false })
     } catch (e) {
-      console.log(e.message);
-      message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key });
-      this.setState({ creatingAccount: false });
-      return false;
+      console.log(e.message)
+      message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key })
+      this.setState({ creatingAccount: false })
+      return false
     }
   }
 
   onConfirmBackup = async () => {
-    this.setState({ accountConfirmedBackup: true, accountWaitingForGas: true });
-    await this.props.web3Wallet.waitForGas();
-    this.setState({ accountWaitingForGas: false });
-    Router.push("/entities/new");
+    this.setState({ accountConfirmedBackup: true, accountWaitingForGas: true })
+    await this.props.web3Wallet.waitForGas()
+    this.setState({ accountWaitingForGas: false })
+    Router.push("/entities/new")
   }
 
   renderSideMenu() {
@@ -78,10 +78,10 @@ class AccountNew extends Component<IAppContext, State> {
     const layout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 18 },
-    };
+    }
     const tailLayout = {
       wrapperCol: { offset: 8, span: 10 },
-    };
+    }
 
     return <div id="entity-new">
       {this.renderSideMenu()}
@@ -120,9 +120,9 @@ class AccountNew extends Component<IAppContext, State> {
                       ({ getFieldValue }) => ({
                         validator(rule, value) {
                           if (!value || getFieldValue('passphrase') === value) {
-                            return Promise.resolve();
+                            return Promise.resolve()
                           }
-                          return Promise.reject('The two passphrases that you entered do not match!');
+                          return Promise.reject('The two passphrases that you entered do not match!')
                         },
                       }),
                     ]}

@@ -21,11 +21,11 @@ class AccountImport extends Component<IAppContext> {
 
   onFinish = async (values) => {
     try {
-      await this.props.web3Wallet.store(values.name, values.seed, values.passphrase);
-      await this.props.web3Wallet.load(values.name, values.passphrase);
+      await this.props.web3Wallet.store(values.name, values.seed, values.passphrase)
+      await this.props.web3Wallet.load(values.name, values.passphrase)
     } catch (e) {
-      message.error('An error ocurred trying import the account. Please, try it again', 3);
-      return false;
+      message.error('An error ocurred trying import the account. Please, try it again', 3)
+      return false
     }
 
     const address = this.props.web3Wallet.getAddress()
@@ -37,10 +37,10 @@ class AccountImport extends Component<IAppContext> {
     const layout = {
       labelCol: { span: 8 },
       wrapperCol: { span: 16 },
-    };
+    }
     const tailLayout = {
       wrapperCol: { offset: 6, span: 10 },
-    };
+    }
 
     return <div id="index">
       <div className="card">
