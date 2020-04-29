@@ -158,7 +158,7 @@ class AccountNew extends Component<IAppContext, State> {
               { this.state.accountWaitingForGas &&
                 <>
                   <h3>Waiting for gas:</h3>
-                  <p>Please, fill your address with some gas using the <Link href={`https://goerli-faucet.slock.it/?address=${this.state.address}`}><a target="_blank">Görli Faucet</a></Link></p>
+                  <p>Please, fill your address with some gas using the <a href={`https://goerli-faucet.slock.it/?address=${this.state.address}`} target="_blank">Görli Faucet</a></p>
                   <br />
                   <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} />
                 </>

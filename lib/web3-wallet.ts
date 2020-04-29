@@ -10,6 +10,11 @@ export default class Web3Wallet {
     private wallet: Wallet
     private provider: Provider
     private walletAddress: string
+    private db: DataCache;
+
+    constructor() {
+      if (process.browser) this.db = new DataCache()
+    }
 
     public getWallet(): Wallet {
       return this.wallet
@@ -26,20 +31,17 @@ export default class Web3Wallet {
     // Generates a wallet and stores it on IndexedDB
     public store(name: string, seed: string, passphrase: string): Promise<Key> {
       const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, seed)
-      const db = new DataCache()
-      return db.wallets.put({ name, seed, publicKey: wallet["signingKey"].publicKey }) // TODO: These queries should be abstracted on the own class
+      return this.db.addWallet({ name, seed, publicKey: wallet["signingKey"].publicKey });
     }
 
     // Gets all the stored wallet accounts from IndexedDB
     public getStored(): Promise<Array<IWallet>>  {
-      const db = new DataCache()
-      return db.wallets.toArray() // TODO: These queries should be abstracted on the own class
+      return this.db.getAllWallets();
     }
 
     // Loads a wallet form IndexedDB if the provided passphrase is correct
     public async load(name: string, passphrase: string): Promise<boolean> {
-      const db = new DataCache()
-      const storedWallet = await db.wallets.get({ name }) // TODO: These queries should be abstracted on the own class
+      const storedWallet = await this.db.getWallet(name)
 
       const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, storedWallet.seed)
       this.walletAddress = await wallet.getAddress()

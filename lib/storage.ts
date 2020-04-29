@@ -3,6 +3,7 @@ import Dexie from 'dexie'
 
 import { IWallet } from './types'
 import { throwIfNotBrowser } from './util'
+import { Key } from 'react';
 
 // const CACHE_REFRESH_INTERVAL = process.env.NODE_ENV == "production" ? 1000 * 60 * 2 : 1000 * 10
 
@@ -26,6 +27,18 @@ export class DataCache extends Dexie {
 
         // REFRESH UPON CREATION
         // this.refresh().catch(err => console.error("Unable to refresh the bootstrap", err))
+    }
+
+    async getAllWallets(): Promise<IWallet[]> {
+        return this.wallets.toArray()
+    }
+
+    async getWallet(name: string): Promise<IWallet> {
+        return this.wallets.get({ name });
+    }
+
+    async addWallet(item: IWallet): Promise<Key> {
+        return this.wallets.put(item);
     }
 
     // async refresh(): Promise<void> {
