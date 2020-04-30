@@ -54,15 +54,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
             const entityId = location.hash.substr(2)
             this.setState({ dataLoading: true, entityId })
 
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+            const gateway = await getGatewayClients()
+            const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
             const processIds = entity.votingProcesses.active || []
             this.setState({ processes: processIds })
 
             await Promise.all((processIds).map(id => {
-                return getVoteMetadata(id, web3Gateway, dvoteGateway).then(voteMetadata => {
+                return getVoteMetadata(id, gateway).then(voteMetadata => {
                     const updatedProcesses: ({ id: string, data: ProcessMetadata } | string)[] = [].concat(this.state.processes)
                     for (let i = 0; i < this.state.processes.length; i++) {
                         if (typeof updatedProcesses[i] == "string" && updatedProcesses[i] == id) {
@@ -101,7 +101,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const hideLoading = message.loading('Action in progress...', 0)
 
         try {
-            const clients = await getGatewayClients()
+            const gateway = await getGatewayClients()
             const state = getNetworkState()
 
             // TODO: Check if the process has actually ended before proceeding consulting the
@@ -112,7 +112,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
             entityMetadata.votingProcesses.ended = endedProcesses
 
             const address = this.props.web3Wallet.getAddress()
-            await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             hideLoading()
 
             message.success("The process has ended successfully")

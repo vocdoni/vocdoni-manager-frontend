@@ -32,10 +32,10 @@ class AccountImport extends Component<IAppContext> {
     const address = this.props.web3Wallet.getAddress()
     const entityId = getEntityId(address)
 
-    const { web3Gateway, dvoteGateway } = await getGatewayClients()
+    const gateway = await getGatewayClients()
     let entity: EntityMetadata;
     try{
-      entity = await API.Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      entity = await API.Entity.getEntityMetadata(entityId, gateway)
       Router.push("/entities/edit#/" + entityId)
     } catch (e) {
       Modal.confirm({

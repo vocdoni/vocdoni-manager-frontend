@@ -65,10 +65,11 @@ class IndexView extends Component<IAppContext, State> {
     if (this.props.web3Wallet.isAvailable()) {
       this.setState({ entityLoading: true })
       userAddr = await this.props.web3Wallet.getAddress()
-
+      console.log("Adddress",userAddr);
       const entityId = getEntityId(userAddr)
-      const { web3Gateway, dvoteGateway } = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      console.log(entityId)
+      const gateway = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, gateway)
 
       this.setState({ entity, entityId, entityLoading: false })
       Router.push("/entities/edit#/" + entityId);

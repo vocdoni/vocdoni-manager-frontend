@@ -75,8 +75,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 
     async refreshBlockHeight() {
-        const clients = await getGatewayClients()
-        const currentBlock = await getBlockHeight(clients.dvoteGateway)
+        const gateway = await getGatewayClients()
+        const currentBlock = await getBlockHeight(gateway)
         this.setState({ currentBlock, currentDate: moment() })
     }
 
@@ -94,11 +94,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
             this.setState({ dataLoading: true, entityId, processId })
 
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+            const gateway = await getGatewayClients()
+            const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
-            const voteMetadata = await getVoteMetadata(processId, web3Gateway, dvoteGateway)
+            const voteMetadata = await getVoteMetadata(processId, gateway)
 
             this.setState({ entity, process: voteMetadata, dataLoading: false })
             this.props.setTitle(entity.name["default"])
@@ -119,11 +119,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
         else if (!this.state.currentBlock || this.state.process.startBlock > this.state.currentBlock) return
 
         try {
-            const { dvoteGateway, web3Gateway } = await getGatewayClients()
+            const gateway = await getGatewayClients()
 
             const hideLoading = message.loading("Loading results...")
-            const resultsDigest = await getResultsDigest(this.state.processId, web3Gateway, dvoteGateway)
-            const totalVotes = await getEnvelopeHeight(this.state.processId, dvoteGateway)
+            const resultsDigest = await getResultsDigest(this.state.processId, gateway)
+            const totalVotes = await getEnvelopeHeight(this.state.processId, gateway)
             this.setState({ results: resultsDigest, totalVotes })
             hideLoading()
         }

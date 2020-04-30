@@ -114,11 +114,11 @@ class EntityNew extends Component<IAppContext, State> {
 
         try {
             await connectClients()
-            const clients = await getGatewayClients()
+            const gateway = await getGatewayClients()
             const state = getNetworkState()
 
             const address = this.props.web3Wallet.getAddress()
-            await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             message.success("The entity has been registered")
 
             const entityId = getEntityId(address)

@@ -109,8 +109,8 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     async refreshBlockHeight() {
-        const clients = await getGatewayClients()
-        const currentBlock = await getBlockHeight(clients.dvoteGateway)
+        const gateway = await getGatewayClients()
+        const currentBlock = await getBlockHeight(gateway)
         this.setState({ currentBlock, currentDate: moment() })
     }
 
@@ -120,8 +120,8 @@ class ProcessNew extends Component<IAppContext, State> {
 
             this.setState({ dataLoading: true, entityId })
 
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+            const gateway = await getGatewayClients()
+            const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
             /* HTML EDITOR
@@ -234,7 +234,7 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     async checkFields(): Promise<boolean> {
-        const { dvoteGateway } = await getGatewayClients()
+        const gateway = await getGatewayClients()
 
         if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
             message.error("Poll dates where not defined correctly")
@@ -257,7 +257,7 @@ class ProcessNew extends Component<IAppContext, State> {
             return false
         }
 
-        const currentBlock = await getBlockHeight(dvoteGateway)
+        const currentBlock = await getBlockHeight(gateway)
         const blocksOracleDelay = ORACLE_CONFIRMATION_DELAY / parseInt(process.env.BLOCK_TIME)
         if (this.state.startBlock <= currentBlock + BLOCK_MARGIN + blocksOracleDelay) {
             const blocksSincePageLoaded = currentBlock - this.state.currentBlock
@@ -272,7 +272,7 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     async submit() {
-        const clients = await getGatewayClients()
+        const gateway = await getGatewayClients()
 
         if (!(await this.checkFields())) {
             return message.warn("The metadata fields are not valid")
@@ -287,7 +287,7 @@ class ProcessNew extends Component<IAppContext, State> {
         const hideLoading = message.loading('Action in progress..', 0)
         this.setState({ processCreating: true })
 
-        return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), clients.web3Gateway, clients.dvoteGateway)
+        return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), gateway)
             .then(processId => {
                 message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
                 hideLoading()

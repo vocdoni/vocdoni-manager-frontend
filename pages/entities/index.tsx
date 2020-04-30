@@ -43,8 +43,8 @@ class EntityView extends Component<IAppContext, State> {
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
-      const { web3Gateway, dvoteGateway } = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      const gateway = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, gateway)
       if (!entity) throw new Error()
 
       this.setState({ entity, entityId, entityLoading: false })

@@ -83,13 +83,13 @@ class PostNew extends Component<IAppContext, State> {
 
       this.setState({ dataLoading: true, entityId })
 
-      const { web3Gateway, dvoteGateway } = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      const gateway = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, gateway)
       if (!entity) throw new Error()
 
       // TODO: MULTILANGUAGE
       const newsFeedOrigin = entity.newsFeed.default
-      const payload = await fetchFileString(newsFeedOrigin, dvoteGateway)
+      const payload = await fetchFileString(newsFeedOrigin, gateway)
 
       let newsFeed: JsonFeed
       try {
@@ -177,12 +177,12 @@ class PostNew extends Component<IAppContext, State> {
     this.setState({ postUpdating: true })
 
     try {
-      const clients = await getGatewayClients()
+      const gateway = await getGatewayClients()
       const state = getNetworkState()
 
       // TODO: Check why for some reason addFile doesn't work without Buffer
       const feedContent = Buffer.from(JSON.stringify(newsFeed))
-      const feedContentUri = await API.File.addFile(feedContent, `feed_${this.state.newsPost.id}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.dvoteGateway)
+      const feedContentUri = await API.File.addFile(feedContent, `feed_${this.state.newsPost.id}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
       // message.success("The news feed was pinned on IPFS successfully");
 
@@ -190,7 +190,7 @@ class PostNew extends Component<IAppContext, State> {
       entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
       const address = this.props.web3Wallet.getAddress()
-      await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
       hideLoading()
       this.setState({ postUpdating: false })
 

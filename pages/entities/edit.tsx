@@ -62,8 +62,8 @@ class EntityEdit extends Component<IAppContext, State> {
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
-      const { web3Gateway, dvoteGateway } = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      const gateway = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, gateway)
       if (!entity) throw new Error()
 
       this.setState({ entity, entityId, entityLoading: false })
@@ -133,9 +133,9 @@ class EntityEdit extends Component<IAppContext, State> {
     // Filter extraneous actions
     entity.actions = entity.actions.filter(meta => !!meta.actionKey)
 
-    return getGatewayClients().then(clients => {
+    return getGatewayClients().then(gateway => {
       const state = getNetworkState()
-      return updateEntity(this.props.web3Wallet.getAddress(), entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      return updateEntity(this.props.web3Wallet.getAddress(), entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
     }).then(newOrigin => {
       return this.fetchMetadata()
     }).then(() => {
