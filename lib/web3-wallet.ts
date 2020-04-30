@@ -83,7 +83,7 @@ export default class Web3Wallet {
 
       let counter: number = 1
       while(true){
-        if(counter > 20) throw new Error('Timeout waiting for user to get gas')
+        if(counter > 50) throw new Error('Timeout waiting for user to get gas')
 
         if(+(await this.getBalance()) > 0){
           return true

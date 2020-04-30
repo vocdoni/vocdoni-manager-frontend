@@ -1,12 +1,13 @@
 import { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
-import { Form, Input, Button, message } from 'antd'
-import { connectClients, getGatewayClients, getNetworkState } from '../../lib/network'
-import { getEntityId } from 'dvote-js/dist/api/entity'
 import Router from 'next/router'
+import AppContext, { IAppContext } from '../../components/app-context'
+import { Form, Input, Button, message, Modal } from 'antd'
+import { connectClients, getGatewayClients, getNetworkState } from '../../lib/network'
+import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
+import { getEntityId } from 'dvote-js/dist/api/entity'
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 
-// MAIN COMPONENT
 const AccountImportPage = props => {
   // Get the global context and pass it to our stateful component
   const context = useContext(AppContext)
@@ -30,7 +31,25 @@ class AccountImport extends Component<IAppContext> {
 
     const address = this.props.web3Wallet.getAddress()
     const entityId = getEntityId(address)
-    Router.push("/entities/edit#/" + entityId)
+
+    const { web3Gateway, dvoteGateway } = await getGatewayClients()
+    let entity: EntityMetadata;
+    try{
+      entity = await API.Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      Router.push("/entities/edit#/" + entityId)
+    } catch (e) {
+      Modal.confirm({
+        title: "Oops! Entity not found!",
+        icon: <ExclamationCircleOutlined />,
+        content: "We couldn't find an Entity with the imported account data. Do you want to continue and create it?",
+        okText: "Create a new Entity",
+        okType: "default",
+        cancelText: "No",
+        onOk() {
+          Router.push("/entities/new")
+        },
+      });
+    }
   }
 
   render() {
@@ -39,7 +58,7 @@ class AccountImport extends Component<IAppContext> {
       wrapperCol: { span: 16 },
     }
     const tailLayout = {
-      wrapperCol: { offset: 6, span: 10 },
+      wrapperCol: { offset: 8, span: 10 },
     }
 
     return <div id="index">
@@ -60,7 +79,7 @@ class AccountImport extends Component<IAppContext> {
           </Form.Item>
 
           <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="submit">Login</Button>
+            <Button type="primary" htmlType="submit">Import and login</Button>
           </Form.Item>
         </Form>
       </div>

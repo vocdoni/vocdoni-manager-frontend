@@ -59,7 +59,13 @@ class AccountNew extends Component<IAppContext, State> {
 
   onConfirmBackup = async () => {
     this.setState({ accountConfirmedBackup: true, accountWaitingForGas: true })
-    await this.props.web3Wallet.waitForGas()
+    try{ 
+      await this.props.web3Wallet.waitForGas()
+    } catch (e) {
+      message.error({ content: 'Timeout waiting for user to get gas. Please, try it again' })
+      this.setState({ creatingAccount: false })
+      return false
+    }
     this.setState({ accountWaitingForGas: false })
     Router.push("/entities/new")
   }
@@ -161,6 +167,14 @@ class AccountNew extends Component<IAppContext, State> {
                   <p>Please, fill your address with some gas using the <a href={`https://goerli-faucet.slock.it/?address=${this.state.address}`} target="_blank">Görli Faucet</a></p>
                   <br />
                   <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} />
+                </>
+              }
+
+              { this.state.address && 
+                this.state.accountConfirmedBackup &&
+                !this.state.accountWaitingForGas &&
+                <>
+                  <h3>Please wait...<Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /></h3>
                 </>
               }
 

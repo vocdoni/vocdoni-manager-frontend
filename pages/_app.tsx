@@ -26,6 +26,7 @@ import 'antd/lib/input/style/index.css'
 import 'antd/lib/input-number/style/index.css'
 import 'antd/lib/date-picker/style/index.css'
 import 'antd/lib/spin/style/index.css'
+import 'antd/lib/modal/style/index.css'
 
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
