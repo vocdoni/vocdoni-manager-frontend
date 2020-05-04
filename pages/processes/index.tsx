@@ -10,7 +10,7 @@ import moment from 'moment'
 import Router from 'next/router'
 import Link from "next/link"
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
-import { getVoteMetadata } from "dvote-js/dist/api/vote"
+import { getVoteMetadata, isCanceled } from "dvote-js/dist/api/vote"
 import SideMenu from '../../components/side-menu'
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
@@ -37,7 +37,8 @@ type State = {
     processId?: string,
     process?: ProcessMetadata,
     results: ProcessResults
-    totalVotes: number
+    totalVotes: number,
+    canceled: boolean
 }
 
 // Stateful component
@@ -46,7 +47,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
         currentBlock: null,
         currentDate: moment(),
         results: null,
-        totalVotes: 0
+        totalVotes: 0,
+        canceled: false
     }
 
     refreshInterval = null
@@ -99,8 +101,9 @@ class ProcessActiveView extends Component<IAppContext, State> {
             if (!entity) throw new Error()
 
             const voteMetadata = await getVoteMetadata(processId, gateway)
+            const canceled = await isCanceled(processId, gateway)
 
-            this.setState({ entity, process: voteMetadata, dataLoading: false })
+            this.setState({ entity, process: voteMetadata, canceled, dataLoading: false })
             this.props.setTitle(entity.name["default"])
         }
         catch (err) {
@@ -159,6 +162,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const startDate = moment(startTimestamp)
         const endDate = moment(startTimestamp + process.numberOfBlocks * BLOCK_TIME * 1000)
 
+        let processType: string
+        switch (this.state.process.type) {
+            case "poll-vote": processType = "Standard Poll"; break
+            case "encrypted-poll-vote": processType = "Encrypted Poll"; break
+            case "petition-sign": processType = "Petition signing"; break
+            case "snark-vote": processType = "Anonymous vote"; break
+            default: processType = ""; break
+        }
+
         const procQuestions = this.state.process.details.questions
         const resultQuestions = this.state.results && this.state.results.questions && this.state.results.questions || []
 
@@ -168,6 +180,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     <Divider orientation="left">Vote details</Divider>
                     <h3>{process.details.title.default}</h3>
                     <p>{process.details.description.default}</p>
+                    {this.state.canceled ? <p className="warning">Voting for this process is no longer available</p> : null}
 
                     {
                         procQuestions.map((question, idx) => <div key={idx}>
@@ -186,6 +199,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     <br />
 
                     <Divider orientation="left">General</Divider>
+                    <h4>Process Type</h4>
+                    <p>{processType}</p>
                     <h4>Process ID</h4>
                     <pre>{processId}</pre>
                     <h4>Census Merkle Root</h4>

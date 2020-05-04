@@ -92,6 +92,11 @@ a {
   box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
 }
 
+.warning {
+    color: #b77f00;
+    font-size: 90%;
+}
+
 /* 
 #global-loading {
     padding-top: 200px;

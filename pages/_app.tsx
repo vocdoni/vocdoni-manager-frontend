@@ -17,6 +17,7 @@ import 'antd/lib/list/style/index.css'
 import 'antd/lib/form/style/index.css'
 import 'antd/lib/select/style/index.css'
 import 'antd/lib/pagination/style/index.css'
+import 'antd/lib/radio/style/index.css'
 import 'antd/lib/skeleton/style/index.css'
 import 'antd/lib/divider/style/index.css'
 import 'antd/lib/message/style/index.css'
@@ -77,7 +78,7 @@ class MainApp extends App<Props, State> {
         }).catch(err => {
             this.refreshWeb3Status()
             message.error("Could not connect")
-        });
+        })
 
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
     }
