@@ -10,7 +10,7 @@ import QRCode from "qrcode.react"
 // import Router from 'next/router'
 import Link from "next/link"
 import { getEntityId } from 'dvote-js/dist/api/entity'
-import SideMenu from '../../components/side-menu'
+
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -49,6 +49,8 @@ class EntityView extends Component<IAppContext, State> {
 
       this.setState({ entity, entityId, entityLoading: false })
       this.props.setTitle(entity.name["default"])
+      this.props.setMenuSelected("profile");
+      this.props.setEntityId(entityId);
     }
     catch (err) {
       this.setState({ entityLoading: false })
@@ -105,7 +107,6 @@ class EntityView extends Component<IAppContext, State> {
 
   render() {
     return <div id="entity-view">
-      <SideMenu entityId={this.state.entityId} selected="profile" />
       {
         this.state.entityLoading ?
           <div id="page-body" className="center">

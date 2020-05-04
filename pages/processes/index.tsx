@@ -11,7 +11,6 @@ import Router from 'next/router'
 import Link from "next/link"
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
 import { getVoteMetadata, isCanceled } from "dvote-js/dist/api/vote"
-import SideMenu from '../../components/side-menu'
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -105,6 +104,10 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
             this.setState({ entity, process: voteMetadata, canceled, dataLoading: false })
             this.props.setTitle(entity.name["default"])
+
+            this.props.setEntityId(entityId)
+            this.props.setProcessId(processId)
+            this.props.setMenuSelected("processes-details")
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -267,7 +270,6 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     render() {
         return <div id="process-view">
-            <SideMenu entityId={this.state.entityId} selected="processes-details" />
             {
                 this.state.dataLoading ?
                     <div id="page-body" className="center">

@@ -1,12 +1,28 @@
+/* eslint-disable */
 const env = require("./env-config.js")
+const withCss = require('@zeit/next-css')
+const withLess = require('@zeit/next-less')
+const lessToJS = require('less-vars-to-js')
+const fs = require('fs')
+const path = require('path')
 
-module.exports = {
+// Where your antd-custom.less file lives
+const themeVariables = lessToJS(
+  fs.readFileSync(path.resolve(__dirname, './styles/antd-custom.less'), 'utf8')
+)
+
+
+module.exports = withCss(withLess({
   env,
   exportTrailingSlash: true,
   exportPathMap: () => generatePathMap(),
+  lessLoaderOptions: {
+    javascriptEnabled: true,
+    modifyVars: themeVariables, // make your antd custom effective
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
-      const antStyles = /antd\/.*?\/style\/css.*?/
+      const antStyles = /antd\/.*?\/style.*?/
       const origExternals = [...config.externals]
       config.externals = [
         (context, request, callback) => {
@@ -27,7 +43,7 @@ module.exports = {
     }
     return config
   },
-}
+}))
 
 ///////////////////////////////////////////////////////////////////////////////
 // HELPERS

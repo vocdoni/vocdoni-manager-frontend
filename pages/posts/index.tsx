@@ -16,7 +16,6 @@ import { fetchFileString } from 'dvote-js/dist/api/file'
 import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { IFeedPost } from "../../lib/types"
 import { Wallet, Signer } from "ethers"
-import SideMenu from "../../components/side-menu"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -73,6 +72,8 @@ class PostView extends Component<IAppContext, State> {
 
             this.setState({ newsFeed, entity, entityId, dataLoading: false })
             this.props.setTitle(entity.name["default"])
+            this.props.setEntityId(entityId)
+            this.props.setMenuSelected("feed")
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -184,21 +185,20 @@ class PostView extends Component<IAppContext, State> {
 
     render() {
         return <div id="post-view">
-            <SideMenu entityId={this.state.entityId} selected="feed" />
-            {
-                this.state.dataLoading ?
-                    <div id="page-body" className="center">
-                        {this.renderLoading()}
+        {
+            this.state.dataLoading ?
+                <div id="page-body" className="center">
+                    {this.renderLoading()}
+                </div>
+                :
+                (this.state.entity && this.state.newsFeed) ?
+                    <div id="page-body">
+                        {this.renderPostsList()}
                     </div>
-                    :
-                    (this.state.entity && this.state.newsFeed) ?
-                        <div id="page-body">
-                            {this.renderPostsList()}
-                        </div>
-                        : <div id="page-body" className="center">
-                            {this.renderNotFound()}
-                        </div>
-            }
+                    : <div id="page-body" className="center">
+                        {this.renderNotFound()}
+                    </div>
+        }
         </div >
     }
 }

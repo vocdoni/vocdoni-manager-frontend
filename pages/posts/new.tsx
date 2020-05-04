@@ -12,7 +12,6 @@ import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
 import { fetchFileString } from 'dvote-js/dist/api/file'
-import SideMenu from '../../components/side-menu'
 
 let Editor: any // = await import("react-draft-wysiwyg")
 let EditorState, ContentState, convertToRaw
@@ -55,6 +54,8 @@ class PostNew extends Component<IAppContext, State> {
       return Router.replace("/posts#" + entityId)
     }
     this.props.setTitle("New post")
+    this.props.setEntityId(entityId)
+    this.props.setMenuSelected("new-post")
 
     // Do the imports dynamically because `window` does not exist on SSR
 
@@ -309,7 +310,6 @@ class PostNew extends Component<IAppContext, State> {
 
   render() {
     return <div id="post-new">
-      <SideMenu entityId={this.state.entityId} selected="new-post" />
       {
         this.state.dataLoading ?
           <div id="page-body" className="center">

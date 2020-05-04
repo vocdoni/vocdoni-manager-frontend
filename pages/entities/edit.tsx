@@ -10,7 +10,7 @@ import Link from "next/link"
 import Router from 'next/router'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
-import SideMenu from '../../components/side-menu'
+
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -68,6 +68,8 @@ class EntityEdit extends Component<IAppContext, State> {
 
       this.setState({ entity, entityId, entityLoading: false })
       this.props.setTitle(entity.name["default"])
+      this.props.setEntityId(entityId)
+      this.props.setMenuSelected("entity-edit")
     }
     catch (err) {
       this.setState({ entityLoading: false })
@@ -256,7 +258,6 @@ class EntityEdit extends Component<IAppContext, State> {
 
   render() {
     return <div id="entity-edit">
-      <SideMenu entityId={this.state.entityId} selected="entity-edit" />
       {
         this.state.entityLoading ?
           <div id="page-body" className="center">

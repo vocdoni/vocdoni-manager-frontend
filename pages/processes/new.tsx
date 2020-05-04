@@ -14,7 +14,6 @@ import { getEntityId } from 'dvote-js/dist/api/entity'
 // import { checkValidProcessMetadata } from 'dvote-js/dist/models/voting-process'
 import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
 import { getBlockHeight, createVotingProcess } from 'dvote-js/dist/api/vote'
-import SideMenu from '../../components/side-menu'
 const { RangePicker } = DatePicker
 
 const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180")
@@ -76,6 +75,7 @@ class ProcessNew extends Component<IAppContext, State> {
         }
 
         this.props.setTitle("New vote")
+        this.props.setMenuSelected("new-vote")
 
         /* HTML EDITOR
         // Do the imports dynamically because `window` does not exist on SSR
@@ -135,6 +135,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
             this.setState({ entity, entityId, dataLoading: false })
             this.props.setTitle(entity.name["default"])
+            this.props.setEntityId(entityId)
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -568,7 +569,6 @@ class ProcessNew extends Component<IAppContext, State> {
 
     render() {
         return <div id="process-new">
-            <SideMenu entityId={this.state.entityId} selected="new-vote" />
             {
                 this.state.dataLoading ?
                     <div id="page-body" className="center">

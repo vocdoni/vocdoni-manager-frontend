@@ -3,8 +3,8 @@ import AppContext, { IAppContext } from '../components/app-context'
 import Link from "next/link"
 import { API, EntityMetadata } from "dvote-js"
 import { getGatewayClients, getNetworkState } from '../lib/network'
-import { message, Button, Spin, Divider, Input, Select } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { message, Button, Spin, Divider, Input, Select, Col, Row, Card, Modal } from 'antd'
+import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import { IWallet } from '../lib/types'
 import Router from 'next/router'
@@ -40,6 +40,7 @@ class IndexView extends Component<IAppContext, State> {
 
   async componentDidMount() {
     this.props.setTitle("Vocdoni Entities")
+    this.props.setMenuVisible(false)
 
     try {
       this.redirectToEntityIfAvailable();
@@ -67,12 +68,29 @@ class IndexView extends Component<IAppContext, State> {
       userAddr = await this.props.web3Wallet.getAddress()
       
       const entityId = getEntityId(userAddr)
-
       const gateway = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, gateway)
 
-      this.setState({ entity, entityId, entityLoading: false })
-      Router.push("/entities/edit#/" + entityId);
+      let entity: EntityMetadata;
+      try{
+        entity = await API.Entity.getEntityMetadata(entityId, gateway)
+        this.setState({ entity, entityId, entityLoading: false })
+        Router.push("/entities/edit#/" + entityId);
+      } catch (e) {
+        Modal.confirm({
+          title: "Oops! Entity not found!",
+          icon: <ExclamationCircleOutlined />,
+          content: "We couldn't find an Entity with the account data. Do you want to continue and create it?",
+          okText: "Create a new Entity",
+          okType: "default",
+          cancelText: "No",
+          onOk() {
+            Router.push("/entities/new")
+          },
+          onCancel() {
+            Router.reload();
+          },
+        })
+      }
     }
   }
 
@@ -95,7 +113,6 @@ class IndexView extends Component<IAppContext, State> {
 
   renderEntityInfo() {
     return <>
-      <Divider />
       <h4>{this.state.entity.name["default"]}</h4>
       <p>{this.state.entity.description["default"]}</p>
       <p><Link href={`/entities/edit#/${this.state.entityId}`}><a><Button>Manage my entity</Button></a></Link></p>
@@ -108,26 +125,30 @@ class IndexView extends Component<IAppContext, State> {
         {showStored &&
           <>
           <Input.Group compact>
-            <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name}>
+            <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '20%' }}>
               { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
             </Select>
-            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} style={{ width: '40%' }} type="password" placeholder="passphrase" />
+            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} style={{ width: '60%' }} type="password" placeholder="passphrase" />
             <Button type='primary' onClick={this.unlockWallet}>Login</Button>
           </Input.Group>
           <br />
-          <div>
+          <div style={{textAlign: "center"}}>
             <Link href="/account/import"><Button>Import an account</Button></Link>
           </div>
           <Divider>or</Divider>
           </>
         }
 
-        <Link href="/account/new"><Button type="primary">Sign Up</Button></Link>
+        <div style={{textAlign: "center"}}>
+          <Link href="/account/new"><Button type="primary">Sign Up</Button></Link>
+        </div>
 
         {!showStored &&
           <>
           <Divider>or</Divider>
-          <Link href="/account/import"><Button>Import an account</Button></Link>
+          <div style={{textAlign: "center"}}>
+            <Link href="/account/import"><Button>Import an account</Button></Link>
+          </div>
           </>
         }
       </>;
@@ -139,24 +160,26 @@ class IndexView extends Component<IAppContext, State> {
 
   render() {
     return <div id="index">
-      <div className="card">
-        <h3>Welcome to Vocdoni</h3>
+      <Row justify="center" align="middle">
+        <Col xs={24} sm={18} md={10}>
+          <Card title="Welcome to Vocdoni" className="card">
+            {
+              this.state.entityLoading ? this.renderLoading() :
+                (this.state.entity ? this.renderEntityInfo() : this.renderGetStarted())
+            }
 
-        {
-          this.state.entityLoading ? this.renderLoading() :
-            (this.state.entity ? this.renderEntityInfo() : this.renderGetStarted())
-        }
-
-        {/* <p><Link href="/entities#/0x1234-entity-id"><a>Entity view (info, processes and news)</a></Link></p>
-        <p><Link href="/entities/edit#/0x1234-entity-id"><a>Entity edit</a></Link></p>
-        <p><Link href="/entities/new"><a>Entity create</a></Link></p>
-        <p><Link href="/processes#/0x2345-entity-id"><a>Process view</a></Link></p>
-        <p><Link href="/processes/new#/0x1234-entity-id"><a>Process create</a></Link></p>
-        <p><Link href="/processes/edit#/0x2345-entity-id"><a>Process edit</a></Link></p>
-        <p><Link href="/posts#/0x12345-entity-id/<idx>"><a>News post view</a></Link></p>
-        <p><Link href="/posts/edit#/0x12345-entity-id/<idx>"><a>News post edit</a></Link></p>
-        <p><Link href="/posts/new#/0x12345-entity-id/<idx>"><a>News post create</a></Link></p> */}
-      </div>
+            {/* <p><Link href="/entities#/0x1234-entity-id"><a>Entity view (info, processes and news)</a></Link></p>
+            <p><Link href="/entities/edit#/0x1234-entity-id"><a>Entity edit</a></Link></p>
+            <p><Link href="/entities/new"><a>Entity create</a></Link></p>
+            <p><Link href="/processes#/0x2345-entity-id"><a>Process view</a></Link></p>
+            <p><Link href="/processes/new#/0x1234-entity-id"><a>Process create</a></Link></p>
+            <p><Link href="/processes/edit#/0x2345-entity-id"><a>Process edit</a></Link></p>
+            <p><Link href="/posts#/0x12345-entity-id/<idx>"><a>News post view</a></Link></p>
+            <p><Link href="/posts/edit#/0x12345-entity-id/<idx>"><a>News post edit</a></Link></p>
+            <p><Link href="/posts/new#/0x12345-entity-id/<idx>"><a>News post create</a></Link></p> */}
+          </Card>
+        </Col>
+      </Row>
     </div>
   }
 }

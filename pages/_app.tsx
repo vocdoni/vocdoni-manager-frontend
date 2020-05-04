@@ -1,10 +1,10 @@
 import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
-import AppContext, { IGlobalState } from '../components/app-context'
+import AppContext, {ISelected} from '../components/app-context'
 import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
-import { initNetwork, getNetworkState, getGatewayClients } from "../lib/network"
+import { initNetwork, getNetworkState } from "../lib/network"
 import { IAppContext } from "../components/app-context"
 import Web3Wallet from "../lib/web3-wallet"
 import { message } from "antd"
@@ -12,23 +12,6 @@ import { message } from "antd"
 // import { isServer } from '../lib/util'
 
 import "../styles/index.css"
-import 'antd/lib/grid/style/index.css'
-import 'antd/lib/list/style/index.css'
-import 'antd/lib/form/style/index.css'
-import 'antd/lib/select/style/index.css'
-import 'antd/lib/pagination/style/index.css'
-import 'antd/lib/radio/style/index.css'
-import 'antd/lib/skeleton/style/index.css'
-import 'antd/lib/divider/style/index.css'
-import 'antd/lib/message/style/index.css'
-import 'antd/lib/button/style/index.css'
-import 'antd/lib/menu/style/index.css'
-import 'antd/lib/input/style/index.css'
-import 'antd/lib/input-number/style/index.css'
-import 'antd/lib/date-picker/style/index.css'
-import 'antd/lib/spin/style/index.css'
-import 'antd/lib/modal/style/index.css'
-
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -43,6 +26,11 @@ type State = {
     // STATE SHARED WITH CHILDREN
     title: string,
     web3Wallet: Web3Wallet,
+    menuVisible: boolean,
+    menuSelected?: ISelected, 
+    menuCollapsed?: boolean, 
+    entityId?: string, 
+    processId?: string,
 }
 
 class MainApp extends App<Props, State> {
@@ -50,6 +38,11 @@ class MainApp extends App<Props, State> {
         isConnected: false,
         title: "Entities",
         web3Wallet: new Web3Wallet(),
+        menuVisible: true,
+        menuSelected: "profile", 
+        menuCollapsed: false, 
+        entityId: '', 
+        processId: '',
     }
 
     refreshInterval: any
@@ -91,6 +84,22 @@ class MainApp extends App<Props, State> {
 
     setTitle(title: string) {
         this.setState({ title })
+    }
+    setMenuVisible(menuVisible: boolean) {
+        this.setState({ menuVisible })
+    }
+    setMenuSelected(menuSelected: ISelected) {
+        this.setState({ menuSelected})
+        this.setMenuVisible(true)
+    }
+    setMenuCollapsed(menuCollapsed: boolean) {
+        this.setState({ menuCollapsed })
+    }
+    setEntityId(entityId: string) {
+        this.setState({ entityId })
+    }
+    setProcessId(processId: string) {
+        this.setState({ processId })
     }
 
     async refreshWeb3Status() {
@@ -140,6 +149,16 @@ class MainApp extends App<Props, State> {
             setTitle: (title) => this.setTitle(title),
             web3Wallet: this.state.web3Wallet,
             onGatewayError: this.onGatewayError,
+            setEntityId: (id) => this.setEntityId(id),
+            setProcessId: (id) => this.setProcessId(id),
+            menuVisible: this.state.menuVisible,
+            menuSelected: this.state.menuSelected,
+            menuCollapsed: this.state.menuCollapsed,
+            entityId: this.state.entityId,
+            processId: this.state.processId,
+            setMenuVisible: (visible) => this.setMenuVisible(visible),
+            setMenuSelected: (selected) => this.setMenuSelected(selected),
+            setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
         }
 
 

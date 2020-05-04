@@ -12,7 +12,6 @@ import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
 import { fetchFileString } from 'dvote-js/dist/api/file'
-import SideMenu from '../../components/side-menu'
 
 let Editor: any // = await import("react-draft-wysiwyg")
 let EditorState, ContentState, convertToRaw
@@ -126,6 +125,9 @@ class PostEdit extends Component<IAppContext, State> {
 
       this.setState({ newsPost, newsFeed, entity, entityId, dataLoading: false })
       this.props.setTitle(entity.name["default"])
+
+      this.props.setEntityId(entityId)
+      this.props.setMenuSelected("new-post")
     }
     catch (err) {
       this.setState({ dataLoading: false })
@@ -311,7 +313,6 @@ class PostEdit extends Component<IAppContext, State> {
 
   render() {
     return <div id="post-edit">
-      {/*<SideMenu entityId={this.state.entityId} selected="" />*/}
       {
         this.state.dataLoading ?
           <div id="page-body" className="center">

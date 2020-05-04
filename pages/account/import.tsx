@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import Router from 'next/router'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Form, Input, Button, message, Modal } from 'antd'
+import { Form, Input, Button, message, Modal, Row, Col, Card } from 'antd'
 import { connectClients, getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import { getEntityId } from 'dvote-js/dist/api/entity'
@@ -18,6 +18,7 @@ const AccountImportPage = props => {
 class AccountImport extends Component<IAppContext> {
   async componentDidMount() {
     this.props.setTitle("Vocdoni Entities")
+    this.props.setMenuVisible(false)
   }
 
   onFinish = async (values) => {
@@ -47,8 +48,8 @@ class AccountImport extends Component<IAppContext> {
         cancelText: "No",
         onOk() {
           Router.push("/entities/new")
-        },
-      });
+        }
+      })
     }
   }
 
@@ -62,27 +63,29 @@ class AccountImport extends Component<IAppContext> {
     }
 
     return <div id="index">
-      <div className="card">
-        <h3>Import and unlock an account</h3>
+      <Row justify="center" align="middle">
+        <Col xs={24} sm={18} md={10}>
+          <Card title="Import and unlock an account" className="card">
+            <Form {...layout} onFinish={this.onFinish}>
+              <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
+                <Input />
+              </Form.Item>
 
-        <Form {...layout} onFinish={this.onFinish}>
-          <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
-            <Input />
-          </Form.Item>
+              <Form.Item label="Seed" name="seed" rules={[{ required: true, message: 'Please input a seed!' }]}>
+                <Input.Password />
+              </Form.Item>
 
-          <Form.Item label="Seed" name="seed" rules={[{ required: true, message: 'Please input a seed!' }]}>
-            <Input.Password />
-          </Form.Item>
+              <Form.Item label="Passphrase" name="passphrase" rules={[{ required: true, message: 'Please input a Passphrase!' }]}>
+                <Input.Password />
+              </Form.Item>
 
-          <Form.Item label="Passphrase" name="passphrase" rules={[{ required: true, message: 'Please input a Passphrase!' }]}>
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item {...tailLayout}>
-            <Button type="primary" htmlType="submit">Import and login</Button>
-          </Form.Item>
-        </Form>
-      </div>
+              <Form.Item {...tailLayout}>
+                <Button type="primary" htmlType="submit">Import and login</Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
+      </Row>
     </div>
   }
 }

@@ -1,6 +1,6 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Form, Input, Button, message, Menu, Row, Col, Spin } from 'antd'
+import { Form, Input, Button, message, Row, Col, Spin, Card } from 'antd'
 import Router from 'next/router'
 import Link from 'next/link'
 import { EtherUtils } from 'dvote-js'
@@ -30,6 +30,7 @@ class AccountNew extends Component<IAppContext, State> {
 
   async componentDidMount() {
     this.props.setTitle("New account")
+    this.props.setMenuVisible(false);
   }
 
   createWebWallet = async (name: string, passphrase: string) => {
@@ -70,16 +71,6 @@ class AccountNew extends Component<IAppContext, State> {
     Router.push("/entities/new")
   }
 
-  renderSideMenu() {
-      return <div id="page-menu">
-        <Menu mode="inline" defaultSelectedKeys={['new']} style={{ width: 200 }}>
-          <Menu.Item key="new">
-            <Link href={"/account/new"}><a>Account details</a></Link>
-          </Menu.Item>
-        </Menu>
-      </div>
-  }
-
   render() {
     const layout = {
       labelCol: { span: 8 },
@@ -89,100 +80,94 @@ class AccountNew extends Component<IAppContext, State> {
       wrapperCol: { offset: 8, span: 10 },
     }
 
-    return <div id="entity-new">
-      {this.renderSideMenu()}
-      <div id="page-body">
-        <div className="body-card">
-          <Row>
-            <Col xs={24} sm={20} md={14}>
+    return <div id="index">
+      <Row justify="center" align="middle">
+        <Col xs={24} sm={18} md={10}>
+          <Card title="Create an account" className="card">
+            { !this.state.address && !this.state.accountConfirmedBackup && !this.state.accountWaitingForGas && 
+              <Form {...layout} onFinish={this.onFinish}>
+                <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
+                  <Input />
+                </Form.Item>
 
-              { !this.state.address && !this.state.accountConfirmedBackup && !this.state.accountWaitingForGas && 
-                <Form {...layout} onFinish={this.onFinish}>
-                  <h3>Create an account</h3>
-                  <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
-                    <Input />
-                  </Form.Item>
+                <Form.Item 
+                  label="Passphrase" 
+                  name="passphrase" 
+                  rules={[
+                    { required: true, message: 'Please input a Passphrase' },
+                    { pattern: RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"), message: 'Minimum eight characters, one upper case, one lower case and one number'}
+                  ]}
+                  validateTrigger="onBlur">
+                  <Input.Password />
+                </Form.Item>
 
-                  <Form.Item 
-                    label="Passphrase" 
-                    name="passphrase" 
-                    rules={[
-                      { required: true, message: 'Please input a Passphrase' },
-                      { pattern: RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"), message: 'Minimum eight characters, one upper case, one lower case and one number'}
-                    ]}
-                    validateTrigger="onBlur">
-                    <Input.Password />
-                  </Form.Item>
-
-                  <Form.Item 
-                    label="Confirm Passphrase" 
-                    name="passphraseConfirm" 
-                    dependencies={['passphrase']} 
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please confirm your Passphrase',
+                <Form.Item 
+                  label="Confirm Passphrase" 
+                  name="passphraseConfirm" 
+                  dependencies={['passphrase']} 
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please confirm your Passphrase',
+                    },
+                    ({ getFieldValue }) => ({
+                      validator(rule, value) {
+                        if (!value || getFieldValue('passphrase') === value) {
+                          return Promise.resolve()
+                        }
+                        return Promise.reject('The two passphrases that you entered do not match!')
                       },
-                      ({ getFieldValue }) => ({
-                        validator(rule, value) {
-                          if (!value || getFieldValue('passphrase') === value) {
-                            return Promise.resolve()
-                          }
-                          return Promise.reject('The two passphrases that you entered do not match!')
-                        },
-                      }),
-                    ]}
-                    validateTrigger="onBlur"
-                  >
-                    <Input.Password />
-                  </Form.Item>
+                    }),
+                  ]}
+                  validateTrigger="onBlur"
+                >
+                  <Input.Password />
+                </Form.Item>
 
-                  <Form.Item {...tailLayout}>
-                    {this.state.creatingAccount ?
-                      <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                      <Button type="primary" htmlType="submit">Create</Button>
-                    }
-                  </Form.Item>
-                </Form>
-              }
+                <Form.Item {...tailLayout}>
+                  {this.state.creatingAccount ?
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
+                    <Button type="primary" htmlType="submit">Create</Button>
+                  }
+                </Form.Item>
+              </Form>
+            }
 
-              { this.state.address && !this.state.accountConfirmedBackup &&
-                <>
-                  <h3>Please, backup this data before proceeding:</h3>
+            { this.state.address && !this.state.accountConfirmedBackup &&
+              <>
+                <h3>Please, backup this data before proceeding:</h3>
 
-                  <h4>Address:</h4>
-                  <pre>{this.state.address}</pre>
-                  <h4>Name:</h4>
-                  <pre>{this.state.name}</pre>
-                  <h4>Seed:</h4>
-                  <pre>{this.state.seed}</pre>
-                  <br />
-                  <Button type="primary" onClick={this.onConfirmBackup}>I've backed up my seed and passphrase</Button>
-                </>
-              }
+                <h4>Address:</h4>
+                <pre>{this.state.address}</pre>
+                <h4>Name:</h4>
+                <pre>{this.state.name}</pre>
+                <h4>Seed:</h4>
+                <pre>{this.state.seed}</pre>
+                <br />
+                <Button type="primary" onClick={this.onConfirmBackup}>I've backed up my seed and passphrase</Button>
+              </>
+            }
 
-              { this.state.accountWaitingForGas &&
-                <>
-                  <h3>Waiting for gas:</h3>
-                  <p>Please, fill your address with some gas using the <a href={`https://goerli-faucet.slock.it/?address=${this.state.address}`} target="_blank">Görli Faucet</a></p>
-                  <br />
-                  <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} />
-                </>
-              }
+            { this.state.accountWaitingForGas &&
+              <>
+                <h3>Waiting for gas:</h3>
+                <p>Please, fill your address with some gas using the <a href={`https://goerli-faucet.slock.it/?address=${this.state.address}`} target="_blank">Görli Faucet</a></p>
+                <br />
+                <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} />
+              </>
+            }
 
-              { this.state.address && 
-                this.state.accountConfirmedBackup &&
-                !this.state.accountWaitingForGas &&
-                <>
-                  <h3>Please wait...<Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /></h3>
-                </>
-              }
-
-            </Col>
-          </Row>
-        </div>
+            { this.state.address && 
+              this.state.accountConfirmedBackup &&
+              !this.state.accountWaitingForGas &&
+              <>
+                <h3>Please wait...<Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /></h3>
+              </>
+            }
+          </Card>
+        </Col>
+        </Row>
       </div>
-    </div>
   }
 }
 

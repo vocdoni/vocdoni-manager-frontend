@@ -10,10 +10,11 @@ body {
 
 :root {
     --clear: #FFFFFF;
-    --clear-95: #F7F7F7;
+    /*--clear-95: #F7F7F7;*/
+    --clear-95: #f0f2f5;
 
     --dark: #222;
-    --dark-90: #3c3c3c;
+    --dark-90: #4b4040;
     
     --main-color: #25658a;
 }
@@ -61,10 +62,6 @@ body {
 
 /* COMMON */
 
-a {
-    color: inherit;
-}
-
 .ant-menu-item a {
     text-decoration: none;
 }
@@ -73,33 +70,11 @@ a {
     margin-top: 5px;
 }
 
-.card {
-  background-color: white;
-  box-shadow: 0 3px 6px 0 rgba(0,0,0,0.1);
-  transition: 0.3s;
-  border-radius: 4px;
-  padding: 16px;
-
-  min-height: 110px;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+pre {
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    word-break: break-all;
 }
-
-.card:hover {
-  box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
-}
-
-.warning {
-    color: #b77f00;
-    font-size: 90%;
-}
-
-/* 
-#global-loading {
-    padding-top: 200px;
-    text-align: center;
-    font-weight: 300;
-} */
