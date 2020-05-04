@@ -1,7 +1,7 @@
 import React from "react"
 import Link from "next/link"
 import { Menu, Layout, Button } from "antd"
-import { MenuUnfoldOutlined, MenuFoldOutlined, TeamOutlined, GroupOutlined } from '@ant-design/icons';
+import { MenuUnfoldOutlined, MenuFoldOutlined, TeamOutlined, GroupOutlined, HomeOutlined } from '@ant-design/icons';
 import { getNetworkState } from "../lib/network"
 import { getEntityId } from "dvote-js/dist/api/entity"
 import { useContext, useState } from "react"
@@ -20,9 +20,6 @@ const SideMenu = () => {
     const ownEntityId = getEntityId(address)
     hideEditControls = entityId != ownEntityId
   }
-  {/* <Button type="primary" onClick={() => setCollapsed(!collapsed)} style={{ marginBottom: 16 }}>
-    { React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined) }
-  </Button> */}
   
   return <Menu mode="inline" defaultSelectedKeys={[selectedKeys]} defaultOpenKeys={['entity', 'census']} style={{ height: '100%', borderRight: 0 }}>
     <Menu.SubMenu title="Entity" key="entity">

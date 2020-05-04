@@ -11,6 +11,7 @@ import { message } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
 
+import 'antd/dist/antd.css';
 import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
@@ -68,14 +69,14 @@ class MainApp extends App<Props, State> {
 
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
 
-        if (!getNetworkState().readOnly) {
-            window.addEventListener('beforeunload', function (e) {
+        window.addEventListener('beforeunload', function (e) {
+            if (!getNetworkState().readOnly) {
                 // Cancel the event
                 e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
                 // Chrome requires returnValue to be set
                 e.returnValue = '';
-            });
-        }
+            }
+        });
     }
 
     componentWillUnmount() {
