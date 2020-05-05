@@ -95,7 +95,7 @@ class PostView extends Component<IAppContext, State> {
             const feedContent = Buffer.from(JSON.stringify(feed))
             const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
-            message.success("The news feed was pinned on IPFS successfully");
+            // message.success("The news feed was pinned on IPFS successfully");
 
             let entityMetadata = this.state.entity
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>

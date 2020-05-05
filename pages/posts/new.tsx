@@ -249,7 +249,7 @@ class PostNew extends Component<IAppContext, State> {
               />
 
               <p style={{ marginBottom: 0 }}>
-                <a href="https://unsplash.com" target="_blank">Browse images in Unsplash.com</a>
+                <a href="https://unsplash.com" target="_blank"><small>Browse images on unsplash.com</small></a>
               </p>
             </Form.Item>
 
