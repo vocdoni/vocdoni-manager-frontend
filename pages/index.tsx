@@ -124,7 +124,7 @@ class IndexView extends Component<IAppContext, State> {
     return <>
         {showStored &&
           <>
-          <Input.Group compact>
+          <Input.Group style={{ width: "100%", whiteSpace: "nowrap" }} compact>
             <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '20%' }}>
               { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
             </Select>
