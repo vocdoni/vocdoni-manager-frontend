@@ -241,6 +241,10 @@ class EntityEdit extends Component<IAppContext, State> {
             }
           </div>
         </Col>
+        <Col xs={0} md={10} className="right-col">
+          <Divider orientation="left">Media</Divider>
+          <img src={this.state.entity.media.header} className="header-image" />
+        </Col>
       </Row>
     </div>
   }

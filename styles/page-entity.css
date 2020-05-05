@@ -10,4 +10,11 @@
 
 }
 
+#entity-edit .body-card img.header-image {
+    max-width: 90%;
+}
+#entity-edit .body-card .right-col {
+    text-align: right;
+}
+
 /* CREATE */

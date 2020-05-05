@@ -1,15 +1,16 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin } from 'antd'
-import { Divider, Menu, Row, Col } from 'antd'
+import { Divider, Typography, Row, Col } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata } from "dvote-js"
 const { Entity } = API
 import QRCode from "qrcode.react"
 // import Router from 'next/router'
-import Link from "next/link"
-import { getEntityId } from 'dvote-js/dist/api/entity'
+// import Link from "next/link"
+// import { getEntityId } from 'dvote-js/dist/api/entity'
+const { Paragraph } = Typography
 
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
@@ -84,11 +85,15 @@ class EntityView extends Component<IAppContext, State> {
         </Col>
         <Col xs={24} sm={8}>
           <Divider orientation="left">Subscription code</Divider>
-          <QRCode value={subscriptionLink} size={256} />
-          <br />
-          <br />
-          <Divider orientation="left">Subscription link</Divider>
-          <a href={subscriptionLink}>{"Subscribe to " + name}</a>
+          <a href={subscriptionLink} style={{cursor: "default"}}>
+              <QRCode value={subscriptionLink} size={256} />
+          </a>
+          <Paragraph><small>Scan the QR code from a mobile device to <br />visit and follow {name}</small></Paragraph>
+          <Divider orientation="left">Subscription links</Divider>
+          <ul>
+            <li><Paragraph copyable={{ text: subscriptionLink }}>Link for mobile devices</Paragraph></li>
+            <li><Paragraph copyable={{ text: typeof window != "undefined" ? window.location.href : "" }}>Link for desktop browsers</Paragraph></li>
+          </ul>
         </Col>
       </Row>
     </div>

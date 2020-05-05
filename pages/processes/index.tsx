@@ -156,7 +156,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
             return
         }
 
-        const entityId = params[0]
+        // const entityId = params[0]
         const processId = params[1]
 
         const { process, currentBlock, currentDate } = this.state
@@ -179,7 +179,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
         return <div className="body-card">
             <Row justify="space-between">
-                <Col xs={24} sm={15}>
+                <Col xs={24} sm={20} md={14}>
                     <Divider orientation="left">Vote details</Divider>
                     <h3>{process.details.title.default}</h3>
                     <p>{process.details.description.default}</p>
