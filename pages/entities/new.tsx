@@ -49,6 +49,7 @@ class EntityNew extends Component<IAppContext, State> {
 
     async componentDidMount() {
         this.props.setTitle("New entity")
+        this.props.setMenuSelected("entity-edit")
         if (getNetworkState().readOnly) {
             return Router.replace("/")
         }
@@ -231,21 +232,8 @@ class EntityNew extends Component<IAppContext, State> {
         return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    renderSideMenu() {
-        return <div id="page-menu">
-            <Menu mode="inline" defaultSelectedKeys={['new']} style={{ width: 200 }}>
-                <Menu.Item key="new">
-                    <Link href={"/entities/new"}>
-                        <a>Entity details</a>
-                    </Link>
-                </Menu.Item>
-            </Menu>
-        </div>
-    }
-
     render() {
         return <div id="entity-new">
-            {this.renderSideMenu()}
             {
                 this.state.entityLoading ?
                     <div id="page-body" className="center">

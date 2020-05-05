@@ -43,14 +43,26 @@
 }
 
 /* Align the content to the center */
-/*#layout .content #page-body.center {
+#layout .content #page-body.center {
     align-items: center;
+    width:100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#layout .content > div{
+    height:100%;
 }
 
 #layout .content #page-body .not-found{
     text-align: center;
 }
-*/
+
+    #layout .content #page-body .not-found h4{
+        font-weight: bold;
+    }
+
 #layout .content #page-body .body-card {
     width: 100%;
 

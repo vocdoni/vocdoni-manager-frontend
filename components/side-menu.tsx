@@ -1,10 +1,10 @@
 import React from "react"
 import Link from "next/link"
-import { Menu, Layout, Button } from "antd"
-import { MenuUnfoldOutlined, MenuFoldOutlined, TeamOutlined, GroupOutlined, HomeOutlined } from '@ant-design/icons';
+import { Menu } from "antd"
+import { HomeOutlined } from '@ant-design/icons';
 import { getNetworkState } from "../lib/network"
 import { getEntityId } from "dvote-js/dist/api/entity"
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import AppContext from "./app-context"
 
 const SideMenu = () => {
@@ -22,7 +22,7 @@ const SideMenu = () => {
   }
   
   return <Menu mode="inline" defaultSelectedKeys={[selectedKeys]} defaultOpenKeys={['entity', 'census']} style={{ height: '100%', borderRight: 0 }}>
-    <Menu.SubMenu title="Entity" key="entity">
+    <Menu.SubMenu title="Entity" key="entity" icon={<HomeOutlined />}>
       <Menu.Item key="profile">
         <Link href={"/entities#/" + entityId}>
           <a>Profile</a>
