@@ -19,6 +19,7 @@ export interface IAppContext {
     menuVisible: boolean,
     menuSelected: ISelected, 
     menuCollapsed: boolean, 
+    menuDisabled: boolean, 
     entityId: string, 
     processId: string,
     setTitle: (title: string) => void
@@ -26,6 +27,7 @@ export interface IAppContext {
     setMenuVisible: (menuVisible: boolean) => void
     setMenuSelected: (menuSelected: ISelected) => void
     setMenuCollapsed: (menuCollapsed: boolean) => void
+    setMenuDisabled: (menuDisabled: boolean) => void
     setEntityId: (entityId: string) => void
     setProcessId: (processId: string) => void
 }

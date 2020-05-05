@@ -30,6 +30,7 @@ type State = {
     menuVisible: boolean,
     menuSelected?: ISelected, 
     menuCollapsed?: boolean, 
+    menuDisabled?: boolean, 
     entityId?: string, 
     processId?: string,
 }
@@ -42,6 +43,7 @@ class MainApp extends App<Props, State> {
         menuVisible: true,
         menuSelected: "profile", 
         menuCollapsed: false, 
+        menuDisabled: false, 
         entityId: '', 
         processId: '',
     }
@@ -95,6 +97,9 @@ class MainApp extends App<Props, State> {
     }
     setMenuCollapsed(menuCollapsed: boolean) {
         this.setState({ menuCollapsed })
+    }
+    setMenuDisabled(menuDisabled: boolean) {
+        this.setState({ menuDisabled })
     }
     setEntityId(entityId: string) {
         this.setState({ entityId })
@@ -155,11 +160,13 @@ class MainApp extends App<Props, State> {
             menuVisible: this.state.menuVisible,
             menuSelected: this.state.menuSelected,
             menuCollapsed: this.state.menuCollapsed,
+            menuDisabled: this.state.menuDisabled,
             entityId: this.state.entityId,
             processId: this.state.processId,
             setMenuVisible: (visible) => this.setMenuVisible(visible),
             setMenuSelected: (selected) => this.setMenuSelected(selected),
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
+            setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
         }
 
 

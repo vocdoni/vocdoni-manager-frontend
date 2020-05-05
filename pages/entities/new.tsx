@@ -50,6 +50,7 @@ class EntityNew extends Component<IAppContext, State> {
     async componentDidMount() {
         this.props.setTitle("New entity")
         this.props.setMenuSelected("entity-edit")
+        this.props.setMenuDisabled(true)
         if (getNetworkState().readOnly) {
             return Router.replace("/")
         }
