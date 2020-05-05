@@ -1,16 +1,35 @@
 import { createContext } from 'react'
+import Web3Wallet from '../lib/web3-wallet'
 
-export interface IGlobalState {
-    title: string,
-    setTitle: (title: string) => void
-}
+export type ISelected = "profile"
+                | "entity-edit"
+                | "feed" 
+                | "new-post"
+                | "processes-active"
+                | "processes-ended"
+                | "new-vote"
+                | "processes-details"
+                | "census1"
+                | "census2"
+                | "census3"
 
 export interface IAppContext {
-    // globalState: IGlobalState,
-
     title: string,
+    web3Wallet: Web3Wallet,
+    menuVisible: boolean,
+    menuSelected: ISelected, 
+    menuCollapsed: boolean, 
+    menuDisabled: boolean, 
+    entityId: string, 
+    processId: string,
     setTitle: (title: string) => void
     onGatewayError: (type: "private" | "public") => void
+    setMenuVisible: (menuVisible: boolean) => void
+    setMenuSelected: (menuSelected: ISelected) => void
+    setMenuCollapsed: (menuCollapsed: boolean) => void
+    setMenuDisabled: (menuDisabled: boolean) => void
+    setEntityId: (entityId: string) => void
+    setProcessId: (processId: string) => void
 }
 
 // Global context provided to every page

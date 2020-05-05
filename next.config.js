@@ -1,12 +1,14 @@
+/* eslint-disable */
 const env = require("./env-config.js")
 
+// Where your antd-custom.less file lives
 module.exports = {
   env,
   exportTrailingSlash: true,
   exportPathMap: () => generatePathMap(),
   webpack: (config, { isServer }) => {
     if (isServer) {
-      const antStyles = /antd\/.*?\/style\/css.*?/
+      const antStyles = /antd\/.*?\/style.*?/
       const origExternals = [...config.externals]
       config.externals = [
         (context, request, callback) => {

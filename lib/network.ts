@@ -1,11 +1,10 @@
-import { API, Wrappers, Network, EntityMetadata, IDVoteGateway, IWeb3Gateway, IEntityResolverContract, IVotingProcessContract, GatewayBootNodes } from "dvote-js"
+import { API, Wrappers, Network, EntityMetadata, IGatewayPool, GatewayDiscoveryParameters, IEntityResolverContract, IVotingProcessContract, GatewayBootNodes } from "dvote-js"
 import { message } from "antd"
 import { Wallet, Signer, getDefaultProvider } from "ethers"
-import { Web3Gateway } from "dvote-js/dist/net/gateway"
 import Web3Wallet from "./web3-wallet"
 import { fetchFromBootNode } from "dvote-js/dist/net/gateway-bootnodes"
 
-const { Bootnodes: { getGatewaysFromBootNode }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
+const { Pool: { GatewayPool }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
 // const {GatewayInfo} = Wrappers
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
@@ -17,9 +16,7 @@ let votingProcess: IVotingProcessContract = null
 
 // STATE DATA
 let readOnly: boolean = true
-let dvoteGateway: IDVoteGateway
-let web3Gateway: IWeb3Gateway
-let accountAddressState: string
+let gateway: IGatewayPool
 
 let bootnodesReadOnly: GatewayBootNodes
 let bootnodesPrivate: GatewayBootNodes
@@ -29,8 +26,10 @@ let error: boolean = false
 let timedOut: boolean = false
 
 let connecting: Promise<void>
+let web3Wallet: Web3Wallet;
 
-export async function initNetwork() {
+export async function initNetwork(wallet: Web3Wallet) {
+    web3Wallet = wallet;
     await connectClients()
     await fetchBootnodes()
 }
@@ -44,90 +43,45 @@ export async function connectClients() {
     const hideLoading = message.loading("Connecting to the network. Please wait...", 0)
 
     try {
-        readOnly = !Web3Wallet.isAvailable()
 
-        if (readOnly) {
+        if (!web3Wallet || !web3Wallet.isAvailable()) {
             // USE PUBLIC GATEWAYS
             // SKIP METAMASK
 
-            const infos = await getGatewaysFromBootNode(BOOTNODES_URL_RW)
-            if (!infos || !infos[ETH_NETWORK_ID]) throw new Error("Could not connect to the network")
-            else if (!infos[ETH_NETWORK_ID].dvote || !infos[ETH_NETWORK_ID].dvote.length) throw new Error("Could not connect to the network")
-            else if (!infos[ETH_NETWORK_ID].web3 || !infos[ETH_NETWORK_ID].web3.length) throw new Error("Could not connect to the network")
-
-            // Get working DvoteGW
-            let success = false
-            for (let gw of infos[ETH_NETWORK_ID].dvote) {
-                try {
-                    await gw.connect()
-                    await gw.getGatewayInfo()
-                    dvoteGateway = gw
-                    success = true
-                }
-                catch (err) {
-                    continue
-                }
+            const options: GatewayDiscoveryParameters = {
+                networkId: ETH_NETWORK_ID,
+                bootnodesContentUri: BOOTNODES_URL_READ_ONLY,
+                numberOfGateways: 2,
+                race: true,
+                timeout: 3000,
             }
-            if (!success) throw new Error("Could not connect to the network")
-            // console.log("Connected to", await dvoteGateway.getUri())
+            gateway = await GatewayPool.discover(options)
+            
+            entityResolver = await gateway.getEntityResolverInstance()
+            votingProcess = await gateway.getVotingProcessInstance()
 
-            const provider = getDefaultProvider(ETH_NETWORK_ID)
-            web3Gateway = new Web3Gateway(provider)
-
-            entityResolver = await getEntityResolverInstance({ provider })
-            votingProcess = await getVotingProcessInstance({ provider })
+            web3Wallet.setProvider(gateway.getProvider());
         }
         else {
             // USE PRIVATE GATEWAYS
-            // USE METAMASK
+            // USE WALLET
 
-            const infos = await getGatewaysFromBootNode(BOOTNODES_URL_RW)
-            if (!infos || !infos[ETH_NETWORK_ID]) throw new Error("Could not connect to the network")
-            else if (!infos[ETH_NETWORK_ID].dvote || !infos[ETH_NETWORK_ID].dvote.length) throw new Error("Could not connect to the network")
-            else if (!infos[ETH_NETWORK_ID].web3 || !infos[ETH_NETWORK_ID].web3.length) throw new Error("Could not connect to the network")
-
-            // Get working DvoteGW
-            let success = false
-            for (let gw of infos[ETH_NETWORK_ID].dvote) {
-                try {
-                    await gw.connect()
-                    await gw.getGatewayInfo()
-                    dvoteGateway = gw
-                    success = true
-                }
-                catch (err) {
-                    continue
-                }
-            }
-            if (!success) throw new Error("Could not connect to the network")
-            // console.log("Connected to", await dvoteGateway.getUri())
-
+            //
+            // TODO: 
             // Get working Web3GW
-            await Web3Wallet.unlock()
-            accountAddressState = await Web3Wallet.getAddress()
 
-            success = false
-            for (let w3 of infos[ETH_NETWORK_ID].web3) {
-                try {
-                    // RESOLVER CONTRACT
-                    entityResolver = await getEntityResolverInstance({ provider: w3.getProvider(), signer: Web3Wallet.signer as (Wallet | Signer) })
-
-                    // // React on all events (by now)
-                    // entityResolver.on("TextChanged", () => refreshMetadata(accountAddressState))
-                    // entityResolver.on("ListItemChanged", () => refreshMetadata(accountAddressState))
-
-                    // PROCESS CONTRACT
-                    votingProcess = await getVotingProcessInstance({ provider: w3.getProvider(), signer: Web3Wallet.signer as (Wallet | Signer) })
-
-                    web3Gateway = w3
-                    success = true
-                }
-                catch (err) {
-                    continue
-                }
+            const options: GatewayDiscoveryParameters = {
+                networkId: ETH_NETWORK_ID,
+                bootnodesContentUri: BOOTNODES_URL_RW,
+                numberOfGateways: 2,
+                race: false,
+                timeout: 3000,
             }
-            if (!success) throw new Error("Could not connect to the network")
-            // console.log("Connected to", web3Gateway.getProvider())
+            gateway = await GatewayPool.discover(options)
+            //TODO: Using web3 provider or gateway provider?
+            // web3Wallet.setProvider(gateway.getProvider())
+            entityResolver = await gateway.getEntityResolverInstance(web3Wallet.getWallet())
+            votingProcess = await gateway.getVotingProcessInstance(web3Wallet.getWallet())
         }
         isConnected = true
     }
@@ -139,17 +93,17 @@ export async function connectClients() {
 
     // // Listen selectively
     // votingProcess.on(
-    //     votingProcess.filters.ProcessCreated(accountAddressState),
-    //     () => refreshMetadata(accountAddressState))
+    //     votingProcess.filters.ProcessCreated(walletAddress),
+    //     () => refreshMetadata(walletAddress))
     // votingProcess.on(
-    //     votingProcess.filters.ProcessCanceled(accountAddressState),
-    //     () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("RelayAdded", () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("BatchRegistered", () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("RelayDisabled", () => refreshMetadata(accountAddressState))
-    // // votingProcess.on("PrivateKeyRevealed", () => refreshMetadata(accountAddressState))
+    //     votingProcess.filters.ProcessCanceled(walletAddress),
+    //     () => refreshMetadata(walletAddress))
+    // // votingProcess.on("RelayAdded", () => refreshMetadata(walletAddress))
+    // // votingProcess.on("BatchRegistered", () => refreshMetadata(walletAddress))
+    // // votingProcess.on("RelayDisabled", () => refreshMetadata(walletAddress))
+    // // votingProcess.on("PrivateKeyRevealed", () => refreshMetadata(walletAddress))
 
-    // return refreshMetadata(accountAddressState)
+    // return refreshMetadata(walletAddress)
     //     .then(() => {
     //         hideLoading()
     //         isConnected = true
@@ -191,10 +145,9 @@ export function disconnect() {
         // votingProcess.provider.removeAllListeners("PrivateKeyRevealed")
         if (votingProcess.provider['polling']) votingProcess.provider['polling'] = false
     }
-    if (dvoteGateway && dvoteGateway.disconnect) dvoteGateway.disconnect()
+    if (gateway) gateway.disconnect()
 
-    dvoteGateway = null
-    web3Gateway = null
+    gateway = null
 
     isConnected = false
 }
@@ -206,9 +159,9 @@ export function disconnect() {
 
 //     try {
 //         if (Web3Wallet.isEthereumAvailable()) {
-//             accountAddressState = await Web3Wallet.getAddress()
+//             walletAddress = await Web3Wallet.getAddress()
 //         }
-//         entityState = await getEntityMetadataByAddress(entityAddress, web3Gateway, dvoteGateway)
+//         entityState = await getEntityMetadataByAddress(entityAddress, gateway )
 //         entityLoading = false
 //     }
 //     catch (err) {
@@ -231,9 +184,8 @@ export function disconnect() {
 
 export function getNetworkState() {
     return {
-        readOnly,
+        readOnly: !gateway || !web3Wallet.isAvailable(),
         isConnected,
-        address: accountAddressState,
         bootnodesReadOnly,
         bootnodesPrivate,
         error,
@@ -248,8 +200,5 @@ export function getNetworkState() {
 export async function getGatewayClients() {
     if (!isConnected) await connectClients()
 
-    return {
-        dvoteGateway,
-        web3Gateway
-    }
+    return gateway
 }

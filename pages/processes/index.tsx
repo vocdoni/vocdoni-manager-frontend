@@ -76,13 +76,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 
     async refreshBlockHeight() {
-        const clients = await getGatewayClients()
-        const currentBlock = await getBlockHeight(clients.dvoteGateway)
+        const gateway = await getGatewayClients()
+        const currentBlock = await getBlockHeight(gateway)
         this.setState({ currentBlock, currentDate: moment() })
     }
 
     async refreshMetadata() {
         try {
+            this.props.setMenuSelected("processes-details")
+            
             const params = location.hash.substr(2).split("/")
             if (params.length != 2) {
                 message.error("The requested data is not valid")
@@ -95,15 +97,18 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
             this.setState({ dataLoading: true, entityId, processId })
 
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+            const gateway = await getGatewayClients()
+            const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
-            const voteMetadata = await getVoteMetadata(processId, web3Gateway, dvoteGateway)
-            const canceled = await isCanceled(processId, web3Gateway)
+            const voteMetadata = await getVoteMetadata(processId, gateway)
+            const canceled = await isCanceled(processId, gateway)
 
             this.setState({ entity, process: voteMetadata, canceled, dataLoading: false })
             this.props.setTitle(entity.name["default"])
+
+            this.props.setEntityId(entityId)
+            this.props.setProcessId(processId)
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -121,11 +126,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
         else if (!this.state.currentBlock || this.state.process.startBlock > this.state.currentBlock) return
 
         try {
-            const { dvoteGateway, web3Gateway } = await getGatewayClients()
+            const gateway = await getGatewayClients()
 
             const hideLoading = message.loading("Loading results...")
-            const resultsDigest = await getResultsDigest(this.state.processId, web3Gateway, dvoteGateway)
-            const totalVotes = await getEnvelopeHeight(this.state.processId, dvoteGateway)
+            const resultsDigest = await getResultsDigest(this.state.processId, gateway)
+            const totalVotes = await getEnvelopeHeight(this.state.processId, gateway)
             this.setState({ results: resultsDigest, totalVotes })
             hideLoading()
         }
@@ -152,7 +157,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
             return
         }
 
-        const entityId = params[0]
+        // const entityId = params[0]
         const processId = params[1]
 
         const { process, currentBlock, currentDate } = this.state
@@ -175,7 +180,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
         return <div className="body-card">
             <Row justify="space-between">
-                <Col xs={24} sm={15}>
+                <Col xs={24} sm={20} md={14}>
                     <Divider orientation="left">Vote details</Divider>
                     <h3>{process.details.title.default}</h3>
                     <p>{process.details.description.default}</p>
@@ -264,98 +269,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
         return <div>Loading the vote details...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    renderSideMenu() {
-        const params = location.hash.substr(2).split("/")
-        const entityId = params[0]
-
-        const { readOnly, address } = getNetworkState()
-        let hideEditControls = readOnly || !address
-        if (!hideEditControls) {
-            const ownEntityId = getEntityId(address)
-            hideEditControls = this.state.entityId != ownEntityId
-        }
-
-        if (hideEditControls) {
-            return <div id="page-menu">
-                <Menu mode="inline" defaultSelectedKeys={['processes-details']} style={{ width: 200 }}>
-                    <Menu.Item key="profile">
-                        <Link href={"/entities/#/" + entityId}>
-                            <a>Profile</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="feed">
-                        <Link href={"/posts/#/" + entityId}>
-                            <a>News feed</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-active">
-                        <Link href={"/processes/active/#/" + entityId}>
-                            <a>Active votes</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-ended">
-                        <Link href={"/processes/ended/#/" + entityId}>
-                            <a>Ended votes</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-details">
-                        <Link href={"/processes/#/" + entityId}>
-                            <a>Vote details</a>
-                        </Link>
-                    </Menu.Item>
-                </Menu>
-            </div>
-        }
-
-        return <div id="page-menu">
-            <Menu mode="inline" defaultSelectedKeys={['processes-details']} style={{ width: 200 }}>
-                <Menu.Item key="profile">
-                    <Link href={"/entities/#/" + entityId}>
-                        <a>Profile</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="edit">
-                    <Link href={"/entities/edit/#/" + entityId}>
-                        <a>Edit details</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="feed">
-                    <Link href={"/posts/#/" + entityId}>
-                        <a>News feed</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="new-post">
-                    <Link href={"/posts/new/"}>
-                        <a>Create post</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-active">
-                    <Link href={"/processes/active/#/" + entityId}>
-                        <a>Active votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-ended">
-                    <Link href={"/processes/ended/#/" + entityId}>
-                        <a>Ended votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-details">
-                    <Link href={"/processes/#/" + entityId}>
-                        <a>Vote details</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="new-vote">
-                    <Link href={"/processes/new/"}>
-                        <a>Create vote</a>
-                    </Link>
-                </Menu.Item>
-            </Menu>
-        </div>
-    }
-
     render() {
         return <div id="process-view">
-            {this.renderSideMenu()}
             {
                 this.state.dataLoading ?
                     <div id="page-body" className="center">

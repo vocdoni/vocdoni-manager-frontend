@@ -9,7 +9,6 @@ import moment from 'moment'
 const { Entity } = API
 import Link from "next/link"
 import Router from 'next/router'
-import Web3Wallet from '../../lib/web3-wallet'
 // import { Wallet, Signer } from 'ethers'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 // import { checkValidProcessMetadata } from 'dvote-js/dist/models/voting-process'
@@ -69,6 +68,8 @@ class ProcessNew extends Component<IAppContext, State> {
     refreshInterval = null
 
     async componentDidMount() {
+        this.props.setMenuSelected("new-vote")
+        
         const { readOnly } = getNetworkState()
         // if readonly, show the view page
         if (readOnly) {
@@ -109,20 +110,19 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     async refreshBlockHeight() {
-        const clients = await getGatewayClients()
-        const currentBlock = await getBlockHeight(clients.dvoteGateway)
+        const gateway = await getGatewayClients()
+        const currentBlock = await getBlockHeight(gateway)
         this.setState({ currentBlock, currentDate: moment() })
     }
 
     async refreshMetadata() {
         try {
-            const { address } = getNetworkState()
-            const entityId = getEntityId(address)
+            const entityId = getEntityId(this.props.web3Wallet.getAddress())
 
             this.setState({ dataLoading: true, entityId })
 
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+            const gateway = await getGatewayClients()
+            const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
             /* HTML EDITOR
@@ -136,6 +136,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
             this.setState({ entity, entityId, dataLoading: false })
             this.props.setTitle(entity.name["default"])
+            this.props.setEntityId(entityId)
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -235,7 +236,7 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     async checkFields(): Promise<boolean> {
-        const { dvoteGateway } = await getGatewayClients()
+        const gateway = await getGatewayClients()
 
         if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
             message.error("Poll dates where not defined correctly")
@@ -258,7 +259,7 @@ class ProcessNew extends Component<IAppContext, State> {
             return false
         }
 
-        const currentBlock = await getBlockHeight(dvoteGateway)
+        const currentBlock = await getBlockHeight(gateway)
         const blocksOracleDelay = ORACLE_CONFIRMATION_DELAY / parseInt(process.env.BLOCK_TIME)
         if (this.state.startBlock <= currentBlock + BLOCK_MARGIN + blocksOracleDelay) {
             const blocksSincePageLoaded = currentBlock - this.state.currentBlock
@@ -273,7 +274,7 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     async submit() {
-        const clients = await getGatewayClients()
+        const gateway = await getGatewayClients()
 
         if (!(await this.checkFields())) {
             return message.warn("The metadata fields are not valid")
@@ -288,13 +289,13 @@ class ProcessNew extends Component<IAppContext, State> {
         const hideLoading = message.loading('Action in progress..', 0)
         this.setState({ processCreating: true })
 
-        return createVotingProcess(newProcess, Web3Wallet.signer, clients.web3Gateway, clients.dvoteGateway)
+        return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), gateway)
             .then(processId => {
                 message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
                 hideLoading()
                 this.setState({ processCreating: false })
 
-                Router.push("/processes/#/" + this.state.entityId + "/" + processId)
+                Router.push("/processes#/" + this.state.entityId + "/" + processId)
             }).catch(err => {
                 hideLoading()
                 this.setState({ processCreating: false })
@@ -567,62 +568,8 @@ class ProcessNew extends Component<IAppContext, State> {
         return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    renderSideMenu() {
-        const { readOnly, address } = getNetworkState()
-        let hideEditControls = readOnly || !address
-        if (!hideEditControls) {
-            const ownEntityId = getEntityId(address)
-            hideEditControls = this.state.entityId != ownEntityId
-        }
-
-        if (hideEditControls) {
-            return null
-        }
-
-        return <div id="page-menu">
-            <Menu mode="inline" defaultSelectedKeys={['process-new']} style={{ width: 200 }}>
-                <Menu.Item key="profile">
-                    <Link href={"/entities/#/" + this.state.entityId}>
-                        <a>Profile</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="edit">
-                    <Link href={"/entities/edit/#/" + this.state.entityId}>
-                        <a>Edit profile</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="feed">
-                    <Link href={"/posts/#/" + this.state.entityId}>
-                        <a>News feed</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="new-post">
-                    <Link href={"/posts/new/"}>
-                        <a>Create post</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-active">
-                    <Link href={"/processes/active/#/" + this.state.entityId}>
-                        <a>Active votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-ended">
-                    <Link href={"/processes/ended/#/" + this.state.entityId}>
-                        <a>Ended votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="process-new">
-                    <Link href={"/processes/new/"}>
-                        <a>Create vote</a>
-                    </Link>
-                </Menu.Item>
-            </Menu>
-        </div>
-    }
-
     render() {
         return <div id="process-new">
-            {this.renderSideMenu()}
             {
                 this.state.dataLoading ?
                     <div id="page-body" className="center">

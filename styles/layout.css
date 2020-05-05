@@ -3,9 +3,8 @@
 #layout {}
 
 #layout .top-bar {
-    background-color: var(--main-color);
     color: var(--clear);
-    padding: 15px;
+    background-color:var(--main-color);
 }
 #layout .top-bar .title {
     margin: 0;
@@ -14,14 +13,16 @@
 }
 #layout .top-bar a {
     text-decoration: none;
+    color: var(--clear);
 }
-
+/*
 #layout .content > div {
     display: flex;
 }
-
+*/
 /* COMMON LAYOUT ELEMENTS */
 
+/* 
 #layout .content #page-menu {
     width: 200px;
     min-height: calc(100vh - 57px);
@@ -31,24 +32,36 @@
 #layout .content #page-menu .ant-menu-item {
     max-width: 159px;
 }
-
+*/
 #layout .content #page-body {
-    width: calc(100% - 200px);
+    /* width: calc(100% - 200px);
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: flex-start;
+    align-items: flex-start; */
     padding: 20px;
 }
 
 /* Align the content to the center */
 #layout .content #page-body.center {
     align-items: center;
+    width:100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+#layout .content > div{
+    height:100%;
 }
 
 #layout .content #page-body .not-found{
     text-align: center;
 }
+
+    #layout .content #page-body .not-found h4{
+        font-weight: bold;
+    }
 
 #layout .content #page-body .body-card {
     width: 100%;
@@ -57,4 +70,16 @@
     box-shadow: 0 3px 6px 0 rgba(0,0,0,0.1);
     border-radius: 4px;
     padding: 24px 24px 48px;
+} 
+
+#layout .ant-layout-header{
+    padding:0 20px;
+}
+
+@media (max-width: 768px) {
+    aside.ant-layout-sider {
+        position: absolute;
+        background: white;
+        z-index: 100;
+    }
 }

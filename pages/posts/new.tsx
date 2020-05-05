@@ -8,7 +8,6 @@ import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from "dvote-js"
 const { Entity } = API
 import Link from "next/link"
 import Router from 'next/router'
-import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
@@ -46,14 +45,18 @@ class PostNew extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
-    const { readOnly, address } = getNetworkState()
+    this.props.setMenuSelected("new-post")
+    
+    const { readOnly } = getNetworkState()
+    const address = this.props.web3Wallet.getAddress()
     const entityId = getEntityId(address)
 
     // if readonly, show the view page
     if (readOnly) {
-      return Router.replace("/posts/#" + entityId)
+      return Router.replace("/posts#" + entityId)
     }
     this.props.setTitle("New post")
+    this.props.setEntityId(entityId)
 
     // Do the imports dynamically because `window` does not exist on SSR
 
@@ -77,18 +80,18 @@ class PostNew extends Component<IAppContext, State> {
 
   async refreshMetadata() {
     try {
-      const { address } = getNetworkState()
+      const address = this.props.web3Wallet.getAddress()
       const entityId = getEntityId(address)
 
       this.setState({ dataLoading: true, entityId })
 
-      const { web3Gateway, dvoteGateway } = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      const gateway = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, gateway)
       if (!entity) throw new Error()
 
       // TODO: MULTILANGUAGE
       const newsFeedOrigin = entity.newsFeed.default
-      const payload = await fetchFileString(newsFeedOrigin, dvoteGateway)
+      const payload = await fetchFileString(newsFeedOrigin, gateway)
 
       let newsFeed: JsonFeed
       try {
@@ -109,7 +112,7 @@ class PostNew extends Component<IAppContext, State> {
         summary: "",
         content_text: "",
         content_html: "<p>Your text goes here</p>",
-        url: location.protocol + "//" + location.host + "/posts/#/" + entityId + "/" + id,
+        url: location.protocol + "//" + location.host + "/posts#/" + entityId + "/" + id,
         image: "",
         tags: [],
         date_published: "",
@@ -176,24 +179,25 @@ class PostNew extends Component<IAppContext, State> {
     this.setState({ postUpdating: true })
 
     try {
-      const clients = await getGatewayClients()
+      const gateway = await getGatewayClients()
       const state = getNetworkState()
 
       // TODO: Check why for some reason addFile doesn't work without Buffer
       const feedContent = Buffer.from(JSON.stringify(newsFeed))
-      const feedContentUri = await API.File.addFile(feedContent, `feed_${this.state.newsPost.id}.json`, Web3Wallet.signer as (Wallet | Signer), clients.dvoteGateway)
+      const feedContentUri = await API.File.addFile(feedContent, `feed_${this.state.newsPost.id}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
       // message.success("The news feed was pinned on IPFS successfully");
 
       let entityMetadata = this.state.entity
       entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
-      await updateEntity(state.address, entityMetadata, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      const address = this.props.web3Wallet.getAddress()
+      await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
       hideLoading()
       this.setState({ postUpdating: false })
 
       message.success("The post has been successfully updated")
-      Router.push("/posts/#/" + this.state.entityId)
+      Router.push("/posts#/" + this.state.entityId)
     }
     catch (err) {
       hideLoading()
@@ -246,7 +250,7 @@ class PostNew extends Component<IAppContext, State> {
               />
 
               <p style={{ marginBottom: 0 }}>
-                <a href="https://unsplash.com" target="_blank">Browse images in Unsplash.com</a>
+                <a href="https://unsplash.com" target="_blank"><small>Browse images on unsplash.com</small></a>
               </p>
             </Form.Item>
 
@@ -305,62 +309,8 @@ class PostNew extends Component<IAppContext, State> {
     return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
   }
 
-  renderSideMenu() {
-    const { readOnly, address } = getNetworkState()
-    let hideEditControls = readOnly || !address
-    if(!hideEditControls) {
-        const ownEntityId = getEntityId(address)
-        hideEditControls = this.state.entityId != ownEntityId
-    }
-
-    if (hideEditControls) {
-      return null
-    }
-
-    return <div id="page-menu">
-      <Menu mode="inline" defaultSelectedKeys={['new-post']} style={{ width: 200 }}>
-        <Menu.Item key="profile">
-          <Link href={"/entities/#/" + this.state.entityId}>
-            <a>Profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="edit">
-          <Link href={"/entities/edit/#/" + this.state.entityId}>
-            <a>Edit profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="feed">
-          <Link href={"/posts/#/" + this.state.entityId}>
-            <a>News feed</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-post">
-          <Link href={"/posts/new/"}>
-            <a>Create post</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-active">
-          <Link href={"/processes/active/#/" + this.state.entityId}>
-            <a>Active votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/#/" + this.state.entityId}>
-            <a>Ended votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-vote">
-          <Link href={"/processes/new/"}>
-            <a>Create vote</a>
-          </Link>
-        </Menu.Item>
-      </Menu>
-    </div>
-  }
-
   render() {
     return <div id="post-new">
-      {this.renderSideMenu()}
       {
         this.state.dataLoading ?
           <div id="page-body" className="center">

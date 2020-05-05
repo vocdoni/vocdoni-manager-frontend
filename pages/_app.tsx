@@ -1,33 +1,18 @@
 import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
-import AppContext, { IGlobalState } from '../components/app-context'
+import AppContext, { ISelected } from '../components/app-context'
 import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
-import { initNetwork, getNetworkState, getGatewayClients } from "../lib/network"
+import { initNetwork, getNetworkState } from "../lib/network"
 import { IAppContext } from "../components/app-context"
-import Web3Wallet, { AccountState } from "../lib/web3-wallet"
-import MetamaskState from '../components/metamask-state'
-import { message, Spin } from "antd"
+import Web3Wallet from "../lib/web3-wallet"
+import { message } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
 
+import 'antd/dist/antd.css';
 import "../styles/index.css"
-import 'antd/lib/grid/style/index.css'
-import 'antd/lib/list/style/index.css'
-import 'antd/lib/form/style/index.css'
-import 'antd/lib/pagination/style/index.css'
-import 'antd/lib/radio/style/index.css'
-import 'antd/lib/skeleton/style/index.css'
-import 'antd/lib/divider/style/index.css'
-import 'antd/lib/message/style/index.css'
-import 'antd/lib/button/style/index.css'
-import 'antd/lib/menu/style/index.css'
-import 'antd/lib/input/style/index.css'
-import 'antd/lib/input-number/style/index.css'
-import 'antd/lib/date-picker/style/index.css'
-import 'antd/lib/spin/style/index.css'
-
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -38,19 +23,29 @@ type Props = {
 
 type State = {
     isConnected: boolean,
-    accountState: AccountState,
-    networkName: string,
 
     // STATE SHARED WITH CHILDREN
     title: string,
+    web3Wallet: Web3Wallet,
+    menuVisible: boolean,
+    menuSelected?: ISelected,
+    menuCollapsed?: boolean,
+    menuDisabled?: boolean,
+    entityId?: string,
+    processId?: string,
 }
 
 class MainApp extends App<Props, State> {
     state: State = {
         isConnected: false,
-        accountState: AccountState.Unknown,
         title: "Entities",
-        networkName: null
+        web3Wallet: new Web3Wallet(),
+        menuVisible: true,
+        menuSelected: "profile",
+        menuCollapsed: false,
+        menuDisabled: false,
+        entityId: '',
+        processId: '',
     }
 
     refreshInterval: any
@@ -65,43 +60,67 @@ class MainApp extends App<Props, State> {
     //     return { injectedArray, ...appProps }
     // }
 
-    componentDidMount() {
-        initNetwork().then(() => {
+    async componentDidMount() {
+        await initNetwork(this.state.web3Wallet).then(async () => {
             message.success("Connected")
-            this.refreshWeb3Status()
+            await this.refreshWeb3Status()
         }).catch(err => {
             this.refreshWeb3Status()
             message.error("Could not connect")
         })
 
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
+
+        window.addEventListener('beforeunload', this.beforeUnload)
     }
 
     componentWillUnmount() {
         clearInterval(this.refreshInterval)
+        window.removeEventListener('beforeunload', this.beforeUnload)
+    }
+
+    beforeUnload(e: BeforeUnloadEvent) {
+        if (!getNetworkState().readOnly) {
+            // Cancel the event
+            e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+            // Chrome requires returnValue to be set
+            e.returnValue = '';
+        }
     }
 
     setTitle(title: string) {
         this.setState({ title })
     }
+    setMenuVisible(menuVisible: boolean) {
+        this.setState({ menuVisible })
+    }
+    setMenuSelected(menuSelected: ISelected) {
+        this.setState({ menuSelected })
+        this.setMenuVisible(true)
+        this.setMenuDisabled(false)
+    }
+    setMenuCollapsed(menuCollapsed: boolean) {
+        this.setState({ menuCollapsed })
+    }
+    setMenuDisabled(menuDisabled: boolean) {
+        this.setState({ menuDisabled })
+    }
+    setEntityId(entityId: string) {
+        this.setState({ entityId })
+    }
+    setProcessId(processId: string) {
+        this.setState({ processId })
+    }
 
     async refreshWeb3Status() {
-        const currentAccountState = await Web3Wallet.getAccountState()
-        const { web3Gateway } = await getGatewayClients()
-        const networkName = (await web3Gateway.getProvider().getNetwork()).name
-
         const { isConnected } = getNetworkState();
-        this.setState({
-            isConnected,
-            accountState: currentAccountState,
-            networkName
-        })
+        this.setState({ isConnected })
     }
 
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
         new Promise(resolve => setTimeout(resolve, 1000 * 3))
-            .then(() => initNetwork()).then(() => {
+            .then(() => initNetwork(this.state.web3Wallet)).then(() => {
                 // message.success("Connected")
                 this.refreshWeb3Status()
             }).catch(err => {
@@ -123,25 +142,9 @@ class MainApp extends App<Props, State> {
         // </div>
     }
 
-    renderMetamaskState() {
-        return <MainLayout>
-            <MetamaskState accountState={this.state.accountState} />
-        </MainLayout>
-    }
-
     render() {
-        const accountState = this.state.accountState
-
         if (!this.state.isConnected) {
             return this.renderPleaseWait()
-        }
-        else if (Web3Wallet.isAvailable()) {
-            if (accountState !== AccountState.Ok) {
-                return this.renderMetamaskState()
-            }
-            else if (Web3Wallet.isAvailable() && Web3Wallet.getNetworkName() != ETH_NETWORK_ID) {
-                return <GeneralError message={"Please, switch Metamask to the " + ETH_NETWORK_ID + " network"} />
-            }
         }
 
         // Main render
@@ -154,7 +157,20 @@ class MainApp extends App<Props, State> {
         const injectedGlobalContext: IAppContext = {
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
-            onGatewayError: this.onGatewayError
+            web3Wallet: this.state.web3Wallet,
+            onGatewayError: this.onGatewayError,
+            setEntityId: (id) => this.setEntityId(id),
+            setProcessId: (id) => this.setProcessId(id),
+            menuVisible: this.state.menuVisible,
+            menuSelected: this.state.menuSelected,
+            menuCollapsed: this.state.menuCollapsed,
+            menuDisabled: this.state.menuDisabled,
+            entityId: this.state.entityId,
+            processId: this.state.processId,
+            setMenuVisible: (visible) => this.setMenuVisible(visible),
+            setMenuSelected: (selected) => this.setMenuSelected(selected),
+            setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
+            setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
         }
 
 

@@ -1,15 +1,17 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin } from 'antd'
-import { Divider, Menu, Row, Col } from 'antd'
+import { Divider, Typography, Row, Col } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata } from "dvote-js"
 const { Entity } = API
 import QRCode from "qrcode.react"
 // import Router from 'next/router'
-import Link from "next/link"
-import { getEntityId } from 'dvote-js/dist/api/entity'
+// import Link from "next/link"
+// import { getEntityId } from 'dvote-js/dist/api/entity'
+const { Paragraph } = Typography
+
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -39,15 +41,18 @@ class EntityView extends Component<IAppContext, State> {
     // this.props.setTitle("Loading")
 
     try {
+      this.props.setMenuSelected("profile")
+
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
-      const { web3Gateway, dvoteGateway } = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      const gateway = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, gateway)
       if (!entity) throw new Error()
 
       this.setState({ entity, entityId, entityLoading: false })
       this.props.setTitle(entity.name["default"])
+      this.props.setEntityId(entityId)
     }
     catch (err) {
       this.setState({ entityLoading: false })
@@ -81,11 +86,15 @@ class EntityView extends Component<IAppContext, State> {
         </Col>
         <Col xs={24} sm={8}>
           <Divider orientation="left">Subscription code</Divider>
-          <QRCode value={subscriptionLink} size={256} />
-          <br />
-          <br />
-          <Divider orientation="left">Subscription link</Divider>
-          <a href={subscriptionLink}>{"Subscribe to " + name}</a>
+          <a href={subscriptionLink} style={{cursor: "default"}}>
+              <QRCode value={subscriptionLink} size={256} />
+          </a>
+          <Paragraph><small>Scan the QR code from a mobile device to <br />visit and follow {name}</small></Paragraph>
+          <Divider orientation="left">Subscription links</Divider>
+          <ul>
+            <li><Paragraph copyable={{ text: subscriptionLink }}>Link for mobile devices</Paragraph></li>
+            <li><Paragraph copyable={{ text: typeof window != "undefined" ? window.location.href : "" }}>Link for desktop browsers</Paragraph></li>
+          </ul>
         </Col>
       </Row>
     </div>
@@ -102,85 +111,8 @@ class EntityView extends Component<IAppContext, State> {
     return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
   }
 
-  renderSideMenu() {
-    const { readOnly, address } = getNetworkState()
-    let hideEditControls = readOnly || !address
-    if(!hideEditControls) {
-        const ownEntityId = getEntityId(address)
-        hideEditControls = this.state.entityId != ownEntityId
-    }
-
-    if (hideEditControls) {
-      return <div id="page-menu">
-        <Menu mode="inline" defaultSelectedKeys={['profile']} style={{ width: 200 }}>
-          <Menu.Item key="profile">
-            <Link href={"/entities/" + location.hash}>
-              <a>Profile</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="feed">
-            <Link href={"/posts/" + location.hash}>
-              <a>News feed</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="processes-active">
-            <Link href={"/processes/active/" + location.hash}>
-              <a>Active votes</a>
-            </Link>
-          </Menu.Item>
-          <Menu.Item key="processes-ended">
-            <Link href={"/processes/ended/" + location.hash}>
-              <a>Ended votes</a>
-            </Link>
-          </Menu.Item>
-        </Menu>
-      </div>
-    }
-
-    return <div id="page-menu">
-      <Menu mode="inline" defaultSelectedKeys={['profile']} style={{ width: 200 }}>
-        <Menu.Item key="profile">
-          <Link href={"/entities/" + location.hash}>
-            <a>Profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="edit">
-          <Link href={"/entities/edit/" + location.hash}>
-            <a>Edit profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="feed">
-          <Link href={"/posts/" + location.hash}>
-            <a>News feed</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-post">
-          <Link href={"/posts/new/"}>
-            <a>Create post</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-active">
-          <Link href={"/processes/active/" + location.hash}>
-            <a>Active votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/" + location.hash}>
-            <a>Ended votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-vote">
-          <Link href={"/processes/new/"}>
-            <a>Create vote</a>
-          </Link>
-        </Menu.Item>
-      </Menu>
-    </div>
-  }
-
   render() {
     return <div id="entity-view">
-      {this.renderSideMenu()}
       {
         this.state.entityLoading ?
           <div id="page-body" className="center">

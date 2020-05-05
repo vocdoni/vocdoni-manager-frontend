@@ -1,62 +1,96 @@
-import { providers } from "ethers"
-
-let provider: providers.Web3Provider = null
-
-export enum AccountState {
-    Unknown = "Unknown",
-    NoWeb3 = "Web3 is not detected on your browser",
-    NoEthereum = "Ethereum is not detected on your browser",
-    Locked = "Account is locked",
-    Ok = "Ok"
-}
+import { Wallet } from "ethers"
+import { Provider } from "ethers/providers"
+import { EtherUtils } from "dvote-js"
+import { DataCache } from "./storage"
+import { Key } from "react"
+import { IWallet } from "./types"
+import { BigNumber } from "ethers/utils"
 
 export default class Web3Wallet {
-    static get provider() { return provider }
-    static get signer() { return provider.getSigner() }
+    private wallet: Wallet
+    private provider: Provider
+    private walletAddress: string
+    private db: DataCache;
 
-    static isAvailable() {
-        return Web3Wallet.isWeb3Available() && Web3Wallet.isEthereumAvailable()
+    constructor() {
+      if (process.browser) this.db = new DataCache()
     }
 
-    static isWeb3Available() {
-        return typeof window["web3"] !== 'undefined'
+    public getWallet(): Wallet {
+      return this.wallet
     }
 
-    static isEthereumAvailable() {
-        return typeof window["ethereum"] !== 'undefined'
+    public setProvider(provider: Provider): void {
+      this.provider = provider
     }
 
-    static connect() {
-        if (provider != null) provider.polling = false
-        provider = new providers.Web3Provider(window["web3"].currentProvider)
+    public getProvider(): Provider {
+      return this.provider
     }
 
-    public static unlock(): Promise<void> {
-        if (!provider) this.connect()
-        return window["ethereum"].enable()
+    // Generates a wallet and stores it on IndexedDB
+    public store(name: string, seed: string, passphrase: string): Promise<Key> {
+      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, seed)
+      return this.db.addWallet({ name, seed, publicKey: wallet["signingKey"].publicKey });
     }
 
-    public static getAccountState(): Promise<AccountState> {
-        if (!Web3Wallet.isWeb3Available()) return Promise.resolve(AccountState.NoWeb3)
-        else if (!Web3Wallet.isEthereumAvailable()) return Promise.resolve(AccountState.NoEthereum)
-        else if (!provider) return Promise.resolve(AccountState.Locked)
-
-        return provider.listAccounts()
-            .then(accounts => {
-                if (accounts && accounts[0]) return AccountState.Ok
-                else return AccountState.Locked
-            })
+    // Gets all the stored wallet accounts from IndexedDB
+    public getStored(): Promise<Array<IWallet>>  {
+      return this.db.getAllWallets();
     }
 
-    public static getAddress(): Promise<string> {
-        if (!provider) this.connect()
-        return provider.getSigner().getAddress()
+    // Loads a wallet form IndexedDB if the provided passphrase is correct
+    public async load(name: string, passphrase: string): Promise<boolean> {
+      const storedWallet = await this.db.getWallet(name)
+
+      const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, storedWallet.seed)
+      this.walletAddress = await wallet.getAddress()
+
+      // We need to verify the generated wallet publicKey = stored public Key
+      if(wallet["signingKey"].publicKey === storedWallet.publicKey){
+        this.wallet = wallet
+      } else {
+        throw new Error('Wrong passphrase for wallet!')
+      }
+
+      return true
     }
 
-    public static getNetworkName(): string {
-        if (!Web3Wallet.isAvailable()) return ""
-        
-        if (!provider) this.connect()
-        return provider.network.name
+    public isAvailable(): boolean {
+      return !!this.wallet
+    }
+
+    public getAddress(): string {
+      if(!this.isAvailable) throw new Error('Wallet not available')
+
+      return this.walletAddress
+    }
+
+    public async getBalance(): Promise<string> {
+      const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
+      return balance.toString()
+    }
+
+    
+    public async waitForGas(): Promise<boolean> {
+      if(!this.isAvailable) throw new Error('Wallet not available')
+      
+      console.log('Trying to get some gas to: ', await this.wallet.getAddress())
+
+      //
+      // TODO: Sends some ETH to the active wallet
+      //
+
+      let counter: number = 1
+      while(true){
+        if(counter > 50) throw new Error('Timeout waiting for user to get gas')
+
+        if(+(await this.getBalance()) > 0){
+          return true
+        }
+
+        await new Promise(r => setTimeout(r, 5000)) // Sleeps for 5 seconds
+        counter += 1
+      }
     }
 }

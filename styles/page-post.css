@@ -21,6 +21,10 @@
 
 /* EDIT */
 
+#post-edit a {
+    color: inherit;
+}
+
 #post-edit .body-card {
 
 }
@@ -46,6 +50,10 @@
 }
 
 /* CREATE */
+
+#post-new a {
+    color: inherit;
+}
 
 #post-new .wrapper-box {
     border: 1px solid #F1F1F1;

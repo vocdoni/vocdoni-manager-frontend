@@ -15,7 +15,6 @@ import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
 import { fetchFileString } from 'dvote-js/dist/api/file'
 import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { IFeedPost } from "../../lib/types"
-import Web3Wallet from "../../lib/web3-wallet"
 import { Wallet, Signer } from "ethers"
 import { getVoteMetadata, cancelProcess, isCanceled } from "dvote-js/dist/api/vote"
 // import MainLayout from "../../components/layout"
@@ -51,18 +50,20 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     async componentDidMount() {
         try {
+            this.props.setMenuSelected("processes-active")
+            
             const entityId = location.hash.substr(2)
             this.setState({ dataLoading: true, entityId })
 
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+            const gateway = await getGatewayClients()
+            const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
             const processIds = entity.votingProcesses.active || []
             this.setState({ processes: processIds })
 
             await Promise.all((processIds).map(id => {
-                return getVoteMetadata(id, web3Gateway, dvoteGateway).then(voteMetadata => {
+                return getVoteMetadata(id, gateway).then(voteMetadata => {
                     const updatedProcesses: ({ id: string, data: ProcessMetadata } | string)[] = [].concat(this.state.processes)
                     for (let i = 0; i < this.state.processes.length; i++) {
                         if (typeof updatedProcesses[i] == "string" && updatedProcesses[i] == id) {
@@ -79,6 +80,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
             this.setState({ entity, entityId, dataLoading: false })
             this.props.setTitle(entity.name["default"])
+            this.props.setEntityId(entityId)
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -101,7 +103,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const hideLoading = message.loading('Ending the process...', 0)
 
         try {
-            const clients = await getGatewayClients()
+            const gateway = await getGatewayClients()
             const state = getNetworkState()
 
             // TODO: Check if the process has actually ended before proceeding consulting the
@@ -111,11 +113,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
             entityMetadata.votingProcesses.active = activeProcesses
             entityMetadata.votingProcesses.ended = endedProcesses
 
-            await updateEntity(state.address, entityMetadata, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+            const address = this.props.web3Wallet.getAddress()
+            await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             hideLoading()
 
-            if (!(await isCanceled(processId, clients.web3Gateway))) {
-                await cancelProcess(processId, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway)
+            if (!(await isCanceled(processId, gateway))) {
+                await cancelProcess(processId, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             }
 
             message.success("The process has ended successfully")
@@ -131,7 +134,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     renderProcessesList() {
         const entityId = location.hash.substr(2)
-        const { readOnly, address } = getNetworkState()
+        const address = this.props.web3Wallet.getAddress()
+        const { readOnly } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
             const ownEntityId = getEntityId(address)
@@ -164,7 +168,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                             <List.Item.Meta
                                 avatar={<Avatar src={this.state.entity.media.avatar} />}
                                 title={
-                                    <Link href={`/processes/#/${entityId}/${(vote as any).id}`}>
+                                    <Link href={`/processes#/${entityId}/${(vote as any).id}`}>
                                         <a>{((vote as any).data as ProcessMetadata).details.title["default"]}</a>
                                     </Link>
                                 }
@@ -188,85 +192,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
         return <div>Loading the votes of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    renderSideMenu() {
-        const { readOnly, address } = getNetworkState()
-        let hideEditControls = readOnly || !address
-        if (!hideEditControls) {
-            const ownEntityId = getEntityId(address)
-            hideEditControls = this.state.entityId != ownEntityId
-        }
-
-        if (hideEditControls) {
-            return <div id="page-menu">
-                <Menu mode="inline" defaultSelectedKeys={['processes-active']} style={{ width: 200 }}>
-                    <Menu.Item key="profile">
-                        <Link href={"/entities/" + location.hash}>
-                            <a>Profile</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="feed">
-                        <Link href={"/posts/" + location.hash}>
-                            <a>News feed</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-active">
-                        <Link href={"/processes/active/" + location.hash}>
-                            <a>Active votes</a>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="processes-ended">
-                        <Link href={"/processes/ended/" + location.hash}>
-                            <a>Ended votes</a>
-                        </Link>
-                    </Menu.Item>
-                </Menu>
-            </div>
-        }
-
-        return <div id="page-menu">
-            <Menu mode="inline" defaultSelectedKeys={['processes-active']} style={{ width: 200 }}>
-                <Menu.Item key="profile">
-                    <Link href={"/entities/" + location.hash}>
-                        <a>Profile</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="edit">
-                    <Link href={"/entities/edit/" + location.hash}>
-                        <a>Edit details</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="feed">
-                    <Link href={"/posts/" + location.hash}>
-                        <a>News feed</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="new-post">
-                    <Link href={"/posts/new/"}>
-                        <a>Create post</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-active">
-                    <Link href={"/processes/active/" + location.hash}>
-                        <a>Active votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="processes-ended">
-                    <Link href={"/processes/ended/" + location.hash}>
-                        <a>Ended votes</a>
-                    </Link>
-                </Menu.Item>
-                <Menu.Item key="new-vote">
-                    <Link href={"/processes/new/"}>
-                        <a>Create vote</a>
-                    </Link>
-                </Menu.Item>
-            </Menu>
-        </div>
-    }
-
     render() {
         return <div id="process-view">
-            {this.renderSideMenu()}
             {
                 this.state.dataLoading ?
                     <div id="page-body" className="center">

@@ -2,8 +2,9 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'antd'
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
+import { getGatewayClients, getNetworkState, connectClients } from '../../lib/network'
+import { API, EntityMetadata, GatewayBootNodes, EtherUtils } from "dvote-js"
+
 const { Entity } = API
 // import { by639_1 } from 'iso-language-codes'
 import Link from "next/link"
@@ -12,6 +13,7 @@ import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { EntityMetadataTemplate } from 'dvote-js/dist/models/entity'
+import { isRegExp } from 'util'
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -36,7 +38,7 @@ type State = {
     entityLoading?: boolean,
     entityUpdating?: boolean,
     entity?: EntityMetadata,
-    bootnodes?: GatewayBootNodes
+    bootnodes?: GatewayBootNodes,
 }
 
 // Stateful component
@@ -46,41 +48,12 @@ class EntityNew extends Component<IAppContext, State> {
     }
 
     async componentDidMount() {
-        // if readonly, show the view page
+        this.props.setMenuSelected("entity-edit")
+        this.props.setTitle("New entity")
+        this.props.setMenuDisabled(true)
+        
         if (getNetworkState().readOnly) {
             return Router.replace("/")
-        }
-        this.props.setTitle("New entity")
-
-        try {
-            await this.checkExistingEntity()
-        }
-        catch (err) {
-            message.error("Could not check your account")
-        }
-    }
-
-    async checkExistingEntity() {
-        try {
-            const userAddr = await Web3Wallet.getAddress()
-            const entityId = getEntityId(userAddr)
-            this.setState({ entityLoading: true })
-
-            const { web3Gateway, dvoteGateway } = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
-            this.setState({ entityLoading: false })
-
-            if (entity) {
-                message.warning("Your Ethereum account already has an Entity created")
-                Router.push("/entities/edit/#/" + entityId)
-            }
-        }
-        catch (err) {
-            this.setState({ entityLoading: false })
-            if (err && err.message == "The given entity has no metadata defined yet") {
-                return // nothing to show
-            }
-            throw err
         }
     }
 
@@ -118,7 +91,7 @@ class EntityNew extends Component<IAppContext, State> {
         }
     }
 
-    submitEntity() {
+    async submitEntity() {
         this.setState({ entityUpdating: true })
 
         const entity = Object.assign({}, this.state.entity)
@@ -142,23 +115,23 @@ class EntityNew extends Component<IAppContext, State> {
         // Filter extraneous actions
         entity.actions = entity.actions.filter(meta => !!meta.actionKey)
 
-        return getGatewayClients().then(clients => {
+        try {
+            await connectClients()
+            const gateway = await getGatewayClients()
             const state = getNetworkState()
-            return updateEntity(state.address, entity, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
-        }).then(newOrigin => {
-            return this.checkExistingEntity()
-        }).then(() => {
-            return Web3Wallet.getAddress()
-        }).then(userAddr => {
-            const entityId = getEntityId(userAddr)
-            Router.push("/entities/edit/#/" + entityId)
 
+            const address = this.props.web3Wallet.getAddress()
+            await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             message.success("The entity has been registered")
+
+            const entityId = getEntityId(address)
+            Router.push("/entities/edit#/" + entityId)
+
             this.setState({ entityUpdating: false })
-        }).catch(err => {
+        } catch (err) {
             message.error("The entity could not be registered")
             this.setState({ entityUpdating: false })
-        })
+        }
     }
 
     // renderSupportedLanaguages(entity) {
@@ -249,7 +222,7 @@ class EntityNew extends Component<IAppContext, State> {
                     <div style={{ textAlign: "center" }}>
                         {this.state.entityUpdating ?
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                            <Button size='large' type='primary' onClick={() => this.submitEntity()}>Update metadata</Button>
+                            <Button size='large' type='primary' onClick={() => this.submitEntity()}>Create</Button>
                         }
                     </div>
                 </Col>
@@ -257,32 +230,12 @@ class EntityNew extends Component<IAppContext, State> {
         </div>
     }
 
-    renderNotFound() {
-        return <div className="not-found">
-            <h4>Entity not found</h4>
-            <p>The entity you are looking for cannot be found</p>
-        </div>
-    }
-
     renderLoading() {
         return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    renderSideMenu() {
-        return <div id="page-menu">
-            <Menu mode="inline" defaultSelectedKeys={['new']} style={{ width: 200 }}>
-                <Menu.Item key="new">
-                    <Link href={"/entities/new/"}>
-                        <a>Entity details</a>
-                    </Link>
-                </Menu.Item>
-            </Menu>
-        </div>
-    }
-
     render() {
         return <div id="entity-new">
-            {this.renderSideMenu()}
             {
                 this.state.entityLoading ?
                     <div id="page-body" className="center">
@@ -293,9 +246,7 @@ class EntityNew extends Component<IAppContext, State> {
                         <div id="page-body">
                             {this.renderEntityNew()}
                         </div>
-                        : <div id="page-body" className="center">
-                            {this.renderNotFound()}
-                        </div>
+                        : <div id="page-body" className="center"></div>
             }
         </div >
     }

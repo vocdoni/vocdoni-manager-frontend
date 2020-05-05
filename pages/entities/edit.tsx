@@ -8,9 +8,9 @@ import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 const { Entity } = API
 import Link from "next/link"
 import Router from 'next/router'
-import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
+
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -44,14 +44,13 @@ class EntityEdit extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
-    // if readonly, show the view page
     if (getNetworkState().readOnly) {
-      return Router.replace("/entities/" + location.hash)
+      return Router.replace("/entities" + location.hash)
     }
     // this.props.setTitle("Loading")
 
     try {
-      await this.fetchMetadata()
+        await this.fetchMetadata()
     }
     catch (err) {
       message.error("Could not read the entity metadata")
@@ -60,15 +59,18 @@ class EntityEdit extends Component<IAppContext, State> {
 
   async fetchMetadata() {
     try {
+      this.props.setMenuSelected("entity-edit")
+      
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
-      const { web3Gateway, dvoteGateway } = await getGatewayClients()
-      const entity = await Entity.getEntityMetadata(entityId, web3Gateway, dvoteGateway)
+      const gateway = await getGatewayClients()
+      const entity = await Entity.getEntityMetadata(entityId, gateway)
       if (!entity) throw new Error()
 
       this.setState({ entity, entityId, entityLoading: false })
       this.props.setTitle(entity.name["default"])
+      this.props.setEntityId(entityId)
     }
     catch (err) {
       this.setState({ entityLoading: false })
@@ -134,9 +136,9 @@ class EntityEdit extends Component<IAppContext, State> {
     // Filter extraneous actions
     entity.actions = entity.actions.filter(meta => !!meta.actionKey)
 
-    return getGatewayClients().then(clients => {
+    return getGatewayClients().then(gateway => {
       const state = getNetworkState()
-      return updateEntity(state.address, entity, Web3Wallet.signer as (Wallet | Signer), clients.web3Gateway, clients.dvoteGateway)
+      return updateEntity(this.props.web3Wallet.getAddress(), entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
     }).then(newOrigin => {
       return this.fetchMetadata()
     }).then(() => {
@@ -240,6 +242,10 @@ class EntityEdit extends Component<IAppContext, State> {
             }
           </div>
         </Col>
+        <Col xs={0} md={10} className="right-col">
+          <Divider orientation="left">Media</Divider>
+          <img src={this.state.entity.media.header} className="header-image" />
+        </Col>
       </Row>
     </div>
   }
@@ -255,62 +261,8 @@ class EntityEdit extends Component<IAppContext, State> {
     return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
   }
 
-  renderSideMenu() {
-    const { readOnly, address } = getNetworkState()
-    let hideEditControls = readOnly || !address
-    if(!hideEditControls) {
-        const ownEntityId = getEntityId(address)
-        hideEditControls = this.state.entityId != ownEntityId
-    }
-
-    if (hideEditControls) {
-      return null
-    }
-
-    return <div id="page-menu">
-      <Menu mode="inline" defaultSelectedKeys={['edit']} style={{ width: 200 }}>
-        <Menu.Item key="profile">
-          <Link href={"/entities/" + location.hash}>
-            <a>Profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="edit">
-          <Link href={"/entities/edit/" + location.hash}>
-            <a>Edit profile</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="feed">
-          <Link href={"/posts/" + location.hash}>
-            <a>News feed</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-post">
-          <Link href={"/posts/new/"}>
-            <a>Create post</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-active">
-          <Link href={"/processes/active/" + location.hash}>
-            <a>Active votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="processes-ended">
-          <Link href={"/processes/ended/" + location.hash}>
-            <a>Ended votes</a>
-          </Link>
-        </Menu.Item>
-        <Menu.Item key="new-vote">
-          <Link href={"/processes/new/"}>
-            <a>Create vote</a>
-          </Link>
-        </Menu.Item>
-      </Menu>
-    </div>
-  }
-
   render() {
     return <div id="entity-edit">
-      {this.renderSideMenu()}
       {
         this.state.entityLoading ?
           <div id="page-body" className="center">
