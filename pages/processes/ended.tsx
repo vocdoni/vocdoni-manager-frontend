@@ -50,6 +50,8 @@ class ProcessEndedView extends Component<IAppContext, State> {
 
     async componentDidMount() {
         try {
+            this.props.setMenuSelected("processes-ended")
+            
             const entityId = location.hash.substr(2)
             this.setState({ dataLoading: true, entityId })
 
@@ -79,7 +81,6 @@ class ProcessEndedView extends Component<IAppContext, State> {
             this.setState({ entity, entityId, dataLoading: false })
             this.props.setTitle(entity.name["default"])
             this.props.setEntityId(entityId)
-            this.props.setMenuSelected("processes-ended")
         }
         catch (err) {
             this.setState({ dataLoading: false })

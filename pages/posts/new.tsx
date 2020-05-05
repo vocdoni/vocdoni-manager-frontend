@@ -45,6 +45,8 @@ class PostNew extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
+    this.props.setMenuSelected("new-post")
+    
     const { readOnly } = getNetworkState()
     const address = this.props.web3Wallet.getAddress()
     const entityId = getEntityId(address)
@@ -55,7 +57,6 @@ class PostNew extends Component<IAppContext, State> {
     }
     this.props.setTitle("New post")
     this.props.setEntityId(entityId)
-    this.props.setMenuSelected("new-post")
 
     // Do the imports dynamically because `window` does not exist on SSR
 

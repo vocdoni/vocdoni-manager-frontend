@@ -68,6 +68,8 @@ class ProcessNew extends Component<IAppContext, State> {
     refreshInterval = null
 
     async componentDidMount() {
+        this.props.setMenuSelected("new-vote")
+        
         const { readOnly } = getNetworkState()
         // if readonly, show the view page
         if (readOnly) {
@@ -75,7 +77,6 @@ class ProcessNew extends Component<IAppContext, State> {
         }
 
         this.props.setTitle("New vote")
-        this.props.setMenuSelected("new-vote")
 
         /* HTML EDITOR
         // Do the imports dynamically because `window` does not exist on SSR

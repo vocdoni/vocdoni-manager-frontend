@@ -41,6 +41,8 @@ class EntityView extends Component<IAppContext, State> {
     // this.props.setTitle("Loading")
 
     try {
+      this.props.setMenuSelected("profile")
+
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
@@ -50,8 +52,7 @@ class EntityView extends Component<IAppContext, State> {
 
       this.setState({ entity, entityId, entityLoading: false })
       this.props.setTitle(entity.name["default"])
-      this.props.setMenuSelected("profile");
-      this.props.setEntityId(entityId);
+      this.props.setEntityId(entityId)
     }
     catch (err) {
       this.setState({ entityLoading: false })

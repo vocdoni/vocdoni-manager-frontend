@@ -82,6 +82,8 @@ class PostEdit extends Component<IAppContext, State> {
 
   async refreshMetadata() {
     try {
+      this.props.setMenuSelected("new-post")
+      
       const params = location.hash.substr(2).split("/")
       if (params.length != 2) {
         message.error("The requested data is not valid")
@@ -127,7 +129,6 @@ class PostEdit extends Component<IAppContext, State> {
       this.props.setTitle(entity.name["default"])
 
       this.props.setEntityId(entityId)
-      this.props.setMenuSelected("new-post")
     }
     catch (err) {
       this.setState({ dataLoading: false })

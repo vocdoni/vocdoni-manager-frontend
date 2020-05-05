@@ -59,6 +59,8 @@ class EntityEdit extends Component<IAppContext, State> {
 
   async fetchMetadata() {
     try {
+      this.props.setMenuSelected("entity-edit")
+      
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
@@ -69,7 +71,6 @@ class EntityEdit extends Component<IAppContext, State> {
       this.setState({ entity, entityId, entityLoading: false })
       this.props.setTitle(entity.name["default"])
       this.props.setEntityId(entityId)
-      this.props.setMenuSelected("entity-edit")
     }
     catch (err) {
       this.setState({ entityLoading: false })

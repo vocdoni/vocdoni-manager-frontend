@@ -83,6 +83,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     async refreshMetadata() {
         try {
+            this.props.setMenuSelected("processes-details")
+            
             const params = location.hash.substr(2).split("/")
             if (params.length != 2) {
                 message.error("The requested data is not valid")
@@ -107,7 +109,6 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
             this.props.setEntityId(entityId)
             this.props.setProcessId(processId)
-            this.props.setMenuSelected("processes-details")
         }
         catch (err) {
             this.setState({ dataLoading: false })

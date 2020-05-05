@@ -21,7 +21,7 @@ const SideMenu = () => {
     hideEditControls = entityId != ownEntityId
   }
 
-  return <Menu mode="inline" defaultSelectedKeys={[selectedKeys]} defaultOpenKeys={['entity', 'census']} style={{ height: '100%', borderRight: 0 }}>
+  return <Menu mode="inline" selectedKeys={[selectedKeys]} defaultOpenKeys={['entity', 'census']} style={{ height: '100%', borderRight: 0 }}>
     <Menu.SubMenu title="Entity" key="entity" icon={<HomeOutlined />} disabled={context.menuDisabled}>
       <Menu.Item key="profile" disabled={context.menuDisabled}>
         <Link href={"/entities#/" + entityId}>

@@ -1,7 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
-import AppContext, {ISelected} from '../components/app-context'
+import AppContext, { ISelected } from '../components/app-context'
 import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
 import { initNetwork, getNetworkState } from "../lib/network"
@@ -28,10 +28,10 @@ type State = {
     title: string,
     web3Wallet: Web3Wallet,
     menuVisible: boolean,
-    menuSelected?: ISelected, 
-    menuCollapsed?: boolean, 
-    menuDisabled?: boolean, 
-    entityId?: string, 
+    menuSelected?: ISelected,
+    menuCollapsed?: boolean,
+    menuDisabled?: boolean,
+    entityId?: string,
     processId?: string,
 }
 
@@ -41,10 +41,10 @@ class MainApp extends App<Props, State> {
         title: "Entities",
         web3Wallet: new Web3Wallet(),
         menuVisible: true,
-        menuSelected: "profile", 
-        menuCollapsed: false, 
-        menuDisabled: false, 
-        entityId: '', 
+        menuSelected: "profile",
+        menuCollapsed: false,
+        menuDisabled: false,
+        entityId: '',
         processId: '',
     }
 
@@ -71,18 +71,21 @@ class MainApp extends App<Props, State> {
 
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
 
-        window.addEventListener('beforeunload', function (e) {
-            if (!getNetworkState().readOnly) {
-                // Cancel the event
-                e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
-                // Chrome requires returnValue to be set
-                e.returnValue = '';
-            }
-        });
+        window.addEventListener('beforeunload', this.beforeUnload)
     }
 
     componentWillUnmount() {
         clearInterval(this.refreshInterval)
+        window.removeEventListener('beforeunload', this.beforeUnload)
+    }
+
+    beforeUnload(e: BeforeUnloadEvent) {
+        if (!getNetworkState().readOnly) {
+            // Cancel the event
+            e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+            // Chrome requires returnValue to be set
+            e.returnValue = '';
+        }
     }
 
     setTitle(title: string) {
@@ -92,7 +95,7 @@ class MainApp extends App<Props, State> {
         this.setState({ menuVisible })
     }
     setMenuSelected(menuSelected: ISelected) {
-        this.setState({ menuSelected})
+        this.setState({ menuSelected })
         this.setMenuVisible(true)
         this.setMenuDisabled(false)
     }

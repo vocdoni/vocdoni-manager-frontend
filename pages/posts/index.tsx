@@ -48,6 +48,8 @@ class PostView extends Component<IAppContext, State> {
 
     async componentDidMount() {
         try {
+            this.props.setMenuSelected("feed")
+            
             const entityId = location.hash.substr(2)
             this.setState({ dataLoading: true, entityId })
 
@@ -73,7 +75,6 @@ class PostView extends Component<IAppContext, State> {
             this.setState({ newsFeed, entity, entityId, dataLoading: false })
             this.props.setTitle(entity.name["default"])
             this.props.setEntityId(entityId)
-            this.props.setMenuSelected("feed")
         }
         catch (err) {
             this.setState({ dataLoading: false })
