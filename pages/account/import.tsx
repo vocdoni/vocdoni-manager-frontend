@@ -21,7 +21,7 @@ class AccountImport extends Component<IAppContext> {
     this.props.setMenuVisible(false)
   }
 
-  onFinish = async (values) => {
+  async onFinish(values) {
     try {
       await this.props.web3Wallet.store(values.name, values.seed, values.passphrase)
       await this.props.web3Wallet.load(values.name, values.passphrase)
@@ -34,22 +34,27 @@ class AccountImport extends Component<IAppContext> {
     const entityId = getEntityId(address)
 
     const gateway = await getGatewayClients()
-    let entity: EntityMetadata;
+    let entity: EntityMetadata
+    const self = this
     try{
       entity = await API.Entity.getEntityMetadata(entityId, gateway)
       Router.push("/entities/edit#/" + entityId)
     } catch (e) {
-      Modal.confirm({
-        title: "Oops! Entity not found!",
-        icon: <ExclamationCircleOutlined />,
-        content: "We couldn't find an Entity with the imported account data. Do you want to continue and create it?",
-        okText: "Create a new Entity",
-        okType: "default",
-        cancelText: "No",
-        onOk() {
-          Router.push("/entities/new")
-        }
-      })
+        Modal.confirm({
+            title: "Entity not found",
+            icon: <ExclamationCircleOutlined />,
+            content: "It looks like your account is not linked to an existing entity. Do you want to create it now?",
+            okText: "Create Entity",
+            okType: "primary",
+            cancelText: "Not now",
+            onOk() {
+              Router.push("/entities/new")
+            },
+            onCancel() {
+              // Router.reload()
+              self.setState({ entityLoading: false })
+            },
+        })
     }
   }
 
@@ -66,12 +71,12 @@ class AccountImport extends Component<IAppContext> {
       <Row justify="center" align="middle">
         <Col xs={24} sm={18} md={10}>
           <Card title="Import and unlock an account" className="card">
-            <Form {...layout} onFinish={this.onFinish}>
+            <Form {...layout} onFinish={values => this.onFinish(values)}>
               <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
                 <Input />
               </Form.Item>
 
-              <Form.Item label="Seed" name="seed" rules={[{ required: true, message: 'Please input a seed!' }]}>
+              <Form.Item label="Account seed" name="seed" rules={[{ required: true, message: 'Please input a seed!' }]}>
                 <Input.Password />
               </Form.Item>
 
@@ -80,7 +85,7 @@ class AccountImport extends Component<IAppContext> {
               </Form.Item>
 
               <Form.Item {...tailLayout}>
-                <Button type="primary" htmlType="submit">Import and login</Button>
+                <Button type="primary" htmlType="submit">Import and log in</Button>
               </Form.Item>
             </Form>
           </Card>

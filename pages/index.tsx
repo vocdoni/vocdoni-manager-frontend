@@ -61,7 +61,7 @@ class IndexView extends Component<IAppContext, State> {
     }
   }
 
-  redirectToEntityIfAvailable = async () => {
+  async redirectToEntityIfAvailable() {
     let userAddr = null
     if (this.props.web3Wallet.isAvailable()) {
       this.setState({ entityLoading: true })
@@ -70,24 +70,26 @@ class IndexView extends Component<IAppContext, State> {
       const entityId = getEntityId(userAddr)
       const gateway = await getGatewayClients()
 
-      let entity: EntityMetadata;
-      try{
+      let entity: EntityMetadata
+      const self = this
+      try {
         entity = await API.Entity.getEntityMetadata(entityId, gateway)
         this.setState({ entity, entityId, entityLoading: false })
         Router.push("/entities/edit#/" + entityId);
       } catch (e) {
         Modal.confirm({
-          title: "Oops! Entity not found!",
+          title: "Entity not found",
           icon: <ExclamationCircleOutlined />,
-          content: "We couldn't find an Entity with the account data. Do you want to continue and create it?",
-          okText: "Create a new Entity",
-          okType: "default",
-          cancelText: "No",
+          content: "It looks like your account is not linked to an existing entity. Do you want to create it now?",
+          okText: "Create Entity",
+          okType: "primary",
+          cancelText: "Not now",
           onOk() {
             Router.push("/entities/new")
           },
           onCancel() {
-            Router.reload();
+            // Router.reload()
+            self.setState({ entityLoading: false })
           },
         })
       }
@@ -102,13 +104,10 @@ class IndexView extends Component<IAppContext, State> {
     this.setState({ passphrase });
   }
 
-  unlockWallet = async () => {
-    try {
-      await this.props.web3Wallet.load(this.state.selectedWallet, this.state.passphrase);
-      this.redirectToEntityIfAvailable();
-    } catch(e) {
-      message.error("Could not unlock the wallet. Please, check your password.");
-    }
+  unlockWallet() {
+    return this.props.web3Wallet.load(this.state.selectedWallet, this.state.passphrase)
+    .then(() => this.redirectToEntityIfAvailable())
+    .catch(() => message.error("Could not unlock the wallet. Please, check your password."))
   }
 
   renderEntityInfo() {
@@ -130,8 +129,8 @@ class IndexView extends Component<IAppContext, State> {
             </Select>
 
             <Input.Group compact>
-                <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} type="password" placeholder="Passphrase" style={{width:"75%"}} />
-                <Button type='primary' onClick={this.unlockWallet} style={{width:"25%"}}>Login</Button>
+                <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={() => this.unlockWallet()} type="password" placeholder="Passphrase" style={{width:"75%"}} />
+                <Button type='primary' onClick={() => this.unlockWallet()} style={{width:"25%"}}>Sign in</Button>
             </Input.Group>
 
             <Divider>or</Divider>

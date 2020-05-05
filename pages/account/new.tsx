@@ -1,8 +1,8 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Form, Input, Button, message, Row, Col, Spin, Card } from 'antd'
+import { Form, Input, Button, message, Row, Col, Spin, Card, Divider } from 'antd'
 import Router from 'next/router'
-import Link from 'next/link'
+// import Link from 'next/link'
 import { EtherUtils } from 'dvote-js'
 import { LoadingOutlined } from '@ant-design/icons'
 
@@ -135,25 +135,28 @@ class AccountNew extends Component<IAppContext, State> {
 
             { this.state.address && !this.state.accountConfirmedBackup &&
               <>
-                <h3>Please, backup this data before proceeding:</h3>
+                <p>Please, make a copy of the following details beore you continue</p>
 
-                <h4>Address:</h4>
-                <pre>{this.state.address}</pre>
                 <h4>Name:</h4>
                 <pre>{this.state.name}</pre>
-                <h4>Seed:</h4>
+                <h4>Account seed:</h4>
                 <pre>{this.state.seed}</pre>
-                <br />
-                <Button type="primary" onClick={this.onConfirmBackup}>I've backed up my seed and passphrase</Button>
+                {/* <h4>Address:</h4> */}
+                {/* <pre>{this.state.address}</pre> */}
+                
+                <Divider />
+                <div style={{textAlign: "center"}}>
+                    <Button type="primary" onClick={this.onConfirmBackup}>I have copied my account details</Button>
+                </div>
               </>
             }
 
             { this.state.accountWaitingForGas &&
               <>
-                <h3>Waiting for gas:</h3>
+                <h3>Get some coins</h3>
                 <p>Please, fill your address with some gas using the <a href={`https://goerli-faucet.slock.it/?address=${this.state.address}`} target="_blank">Görli Faucet</a></p>
                 <br />
-                <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} />
+                <Spin indicator={<LoadingOutlined style={{ fontSize: 22 }} />} />
               </>
             }
 
@@ -161,7 +164,7 @@ class AccountNew extends Component<IAppContext, State> {
               this.state.accountConfirmedBackup &&
               !this.state.accountWaitingForGas &&
               <>
-                <h3>Please wait...<Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /></h3>
+                <h3>Please wait... <Spin indicator={<LoadingOutlined style={{ fontSize: 22 }} />} /></h3>
               </>
             }
           </Card>
