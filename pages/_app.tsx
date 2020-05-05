@@ -94,6 +94,7 @@ class MainApp extends App<Props, State> {
     setMenuSelected(menuSelected: ISelected) {
         this.setState({ menuSelected})
         this.setMenuVisible(true)
+        this.setMenuDisabled(false)
     }
     setMenuCollapsed(menuCollapsed: boolean) {
         this.setState({ menuCollapsed })
