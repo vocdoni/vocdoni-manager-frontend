@@ -129,10 +129,12 @@ class IndexView extends Component<IAppContext, State> {
           </Select>
 
           <Input.Group compact>
-            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} type="password" placeholder="passphrase" style={{width:"85%"}} />
-            <Button type='primary' onClick={this.unlockWallet} style={{width:"15%"}}>Login</Button>
+            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} type="password" placeholder="passphrase" style={{width:"75%"}} />
+            <Button type='primary' onClick={this.unlockWallet} style={{width:"25%"}}>Login</Button>
           </Input.Group>
-          <br />
+
+          <Divider>or</Divider>
+
           <div style={{textAlign: "center"}}>
             <Link href="/account/import"><Button>Import an account</Button></Link>
           </div>
