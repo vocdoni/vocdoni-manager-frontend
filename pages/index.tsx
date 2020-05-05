@@ -124,26 +124,27 @@ class IndexView extends Component<IAppContext, State> {
     return <>
         {showStored &&
           <>
-          <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom:10 }}>
-            { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
-          </Select>
+            <p>Select your entity and enter your passphrase to continue</p>
+            <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom:10 }}>
+                { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
+            </Select>
 
-          <Input.Group compact>
-            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} type="password" placeholder="passphrase" style={{width:"75%"}} />
-            <Button type='primary' onClick={this.unlockWallet} style={{width:"25%"}}>Login</Button>
-          </Input.Group>
+            <Input.Group compact>
+                <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} type="password" placeholder="Passphrase" style={{width:"75%"}} />
+                <Button type='primary' onClick={this.unlockWallet} style={{width:"25%"}}>Login</Button>
+            </Input.Group>
 
-          <Divider>or</Divider>
+            <Divider>or</Divider>
 
-          <div style={{textAlign: "center"}}>
-            <Link href="/account/import"><Button>Import an account</Button></Link>
-          </div>
-          <Divider>or</Divider>
+            <div style={{textAlign: "center"}}>
+                <Link href="/account/import"><Button>Import another account</Button></Link>
+            </div>
+            <Divider>or</Divider>
           </>
         }
 
         <div style={{textAlign: "center"}}>
-          <Link href="/account/new"><Button type="primary">Sign Up</Button></Link>
+          <Link href="/account/new"><Button type="primary">Create a new account</Button></Link>
         </div>
 
         {!showStored &&
