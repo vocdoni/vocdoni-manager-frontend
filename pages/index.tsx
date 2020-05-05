@@ -124,12 +124,13 @@ class IndexView extends Component<IAppContext, State> {
     return <>
         {showStored &&
           <>
-          <Input.Group style={{ width: "100%", whiteSpace: "nowrap" }} compact>
-            <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '20%' }}>
-              { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
-            </Select>
-            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} style={{ width: '60%' }} type="password" placeholder="passphrase" />
-            <Button type='primary' onClick={this.unlockWallet}>Login</Button>
+          <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom:10 }}>
+            { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
+          </Select>
+
+          <Input.Group compact>
+            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={this.unlockWallet} type="password" placeholder="passphrase" style={{width:"85%"}} />
+            <Button type='primary' onClick={this.unlockWallet} style={{width:"15%"}}>Login</Button>
           </Input.Group>
           <br />
           <div style={{textAlign: "center"}}>
