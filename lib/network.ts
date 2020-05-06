@@ -61,11 +61,11 @@ export async function initNetwork() {
                 timeout: 3000,
             }
             gateway = await GatewayPool.discover(options)
+            web3Wallet.connect(gateway.getProvider())
 
             entityResolver = await gateway.getEntityResolverInstance(web3Wallet.getWallet())
             votingProcess = await gateway.getVotingProcessInstance(web3Wallet.getWallet())
         }
-        web3Wallet.connect(gateway.getProvider())
         isConnected = true
     }
     catch (err) {

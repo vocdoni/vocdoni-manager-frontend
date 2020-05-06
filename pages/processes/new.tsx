@@ -274,7 +274,7 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     async submit() {
-        const gateway = await getGatewayClients()
+        const gwPool = await getGatewayClients()
 
         if (!(await this.checkFields())) {
             return message.warn("The metadata fields are not valid")
@@ -289,7 +289,7 @@ class ProcessNew extends Component<IAppContext, State> {
         const hideLoading = message.loading('Action in progress..', 0)
         this.setState({ processCreating: true })
 
-        return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), gateway)
+        return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), gwPool)
             .then(processId => {
                 message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
                 hideLoading()

@@ -41,7 +41,10 @@ export default class Web3Wallet {
 
     public connect(newProvider: Provider) {
       this.setProvider(newProvider)
-      return this.wallet = this.wallet.connect(newProvider)
+      if (this.hasWallet()) {
+        this.wallet = this.wallet.connect(newProvider)
+      }
+      return this.wallet
     }
 
     // Generates a wallet and stores it on IndexedDB

@@ -170,7 +170,7 @@ class MainApp extends App<Props, State> {
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
             web3Wallet: getWeb3Wallet(),
-            onNewWallet: wallet => this.useNewWallet(wallet),
+            onNewWallet: (wallet: Wallet) => this.useNewWallet(wallet),
             onGatewayError: this.onGatewayError,
             setEntityId: (id) => this.setEntityId(id),
             setProcessId: (id) => this.setProcessId(id),
