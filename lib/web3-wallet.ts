@@ -6,6 +6,13 @@ import { Key } from "react"
 import { IWallet } from "./types"
 import { BigNumber } from "ethers/utils"
 
+let web3Wallet: Web3Wallet
+
+export function getWeb3Wallet() {
+  if (!web3Wallet) web3Wallet = new Web3Wallet()
+  return web3Wallet
+}
+
 export default class Web3Wallet {
     private wallet: Wallet
     private provider: Provider
@@ -19,6 +26,10 @@ export default class Web3Wallet {
     public getWallet(): Wallet {
       return this.wallet
     }
+    
+    public setWallet(newWallet: Wallet) {
+      this.wallet = newWallet
+    }
 
     public setProvider(provider: Provider): void {
       this.provider = provider
@@ -26,6 +37,11 @@ export default class Web3Wallet {
 
     public getProvider(): Provider {
       return this.provider
+    }
+
+    public connect(newProvider: Provider) {
+      this.setProvider(newProvider)
+      return this.wallet = this.wallet.connect(newProvider)
     }
 
     // Generates a wallet and stores it on IndexedDB
@@ -56,12 +72,12 @@ export default class Web3Wallet {
       return true
     }
 
-    public isAvailable(): boolean {
+    public hasWallet(): boolean {
       return !!this.wallet
     }
 
     public getAddress(): string {
-      if(!this.isAvailable) throw new Error('Wallet not available')
+      if(!this.hasWallet) throw new Error('Wallet not available')
 
       return this.walletAddress
     }
@@ -73,7 +89,7 @@ export default class Web3Wallet {
 
     
     public async waitForGas(): Promise<boolean> {
-      if(!this.isAvailable) throw new Error('Wallet not available')
+      if(!this.hasWallet) throw new Error('Wallet not available')
       
       console.log('Trying to get some gas to: ', await this.wallet.getAddress())
 

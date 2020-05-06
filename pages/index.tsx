@@ -29,7 +29,7 @@ type State = {
   entityId?: string,
 
   storedWallets?: Array<IWallet>,
-  
+
   selectedWallet?: string,
   passphrase?: string,
 }
@@ -47,7 +47,7 @@ class IndexView extends Component<IAppContext, State> {
 
       const storedWallets = await this.props.web3Wallet.getStored();
       this.setState({ storedWallets });
-      if(storedWallets.length > 0){
+      if (storedWallets.length > 0) {
         this.setState({ selectedWallet: storedWallets[0].name });
       }
     }
@@ -56,17 +56,17 @@ class IndexView extends Component<IAppContext, State> {
       if (err && err.message == "The given entity has no metadata defined yet") {
         return // nothing to show
       }
-      console.log(err)
+      // console.log(err)
       message.error("Could not connect to the network")
     }
   }
 
   async redirectToEntityIfAvailable() {
     let userAddr = null
-    if (this.props.web3Wallet.isAvailable()) {
+    if (this.props.web3Wallet.hasWallet()) {
       this.setState({ entityLoading: true })
       userAddr = await this.props.web3Wallet.getAddress()
-      
+
       const entityId = getEntityId(userAddr)
       const gateway = await getGatewayClients()
 
@@ -106,8 +106,11 @@ class IndexView extends Component<IAppContext, State> {
 
   unlockWallet() {
     return this.props.web3Wallet.load(this.state.selectedWallet, this.state.passphrase)
-    .then(() => this.redirectToEntityIfAvailable())
-    .catch(() => message.error("Could not unlock the wallet. Please, check your password."))
+      .then(() => {
+        this.props.onNewWallet(this.props.web3Wallet.getWallet())
+        return this.redirectToEntityIfAvailable()
+      })
+      .catch(() => message.error("Could not unlock the wallet. Please, check your password."))
   }
 
   renderEntityInfo() {
@@ -121,40 +124,40 @@ class IndexView extends Component<IAppContext, State> {
   renderGetStarted() {
     const showStored = (this.state.storedWallets && this.state.storedWallets.length > 0);
     return <>
-        {showStored &&
-          <>
-            <p>Select your entity and enter your passphrase to continue</p>
-            <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom:10 }}>
-                { this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>) }
-            </Select>
+      {showStored &&
+        <>
+          <p>Select your entity and enter your passphrase to continue</p>
+          <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom: 10 }}>
+            {this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>)}
+          </Select>
 
-            <Input.Group compact>
-                <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={() => this.unlockWallet()} type="password" placeholder="Passphrase" style={{width:"75%"}} />
-                <Button type='primary' onClick={() => this.unlockWallet()} style={{width:"25%"}}>Sign in</Button>
-            </Input.Group>
+          <Input.Group compact>
+            <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={() => this.unlockWallet()} type="password" placeholder="Passphrase" style={{ width: "75%" }} />
+            <Button type='primary' onClick={() => this.unlockWallet()} style={{ width: "25%" }}>Sign in</Button>
+          </Input.Group>
 
-            <Divider>or</Divider>
-
-            <div style={{textAlign: "center"}}>
-                <Link href="/account/import"><Button>Import another account</Button></Link>
-            </div>
-            <Divider>or</Divider>
-          </>
-        }
-
-        <div style={{textAlign: "center"}}>
-          <Link href="/account/new"><Button type="primary">Create a new account</Button></Link>
-        </div>
-
-        {!showStored &&
-          <>
           <Divider>or</Divider>
-          <div style={{textAlign: "center"}}>
+
+          <div style={{ textAlign: "center" }}>
+            <Link href="/account/import"><Button>Import another account</Button></Link>
+          </div>
+          <Divider>or</Divider>
+        </>
+      }
+
+      <div style={{ textAlign: "center" }}>
+        <Link href="/account/new"><Button type="primary">Create a new account</Button></Link>
+      </div>
+
+      {!showStored &&
+        <>
+          <Divider>or</Divider>
+          <div style={{ textAlign: "center" }}>
             <Link href="/account/import"><Button>Import an account</Button></Link>
           </div>
-          </>
-        }
-      </>;
+        </>
+      }
+    </>;
   }
 
   renderLoading() {
@@ -170,16 +173,6 @@ class IndexView extends Component<IAppContext, State> {
               this.state.entityLoading ? this.renderLoading() :
                 (this.state.entity ? this.renderEntityInfo() : this.renderGetStarted())
             }
-
-            {/* <p><Link href="/entities#/0x1234-entity-id"><a>Entity view (info, processes and news)</a></Link></p>
-            <p><Link href="/entities/edit#/0x1234-entity-id"><a>Entity edit</a></Link></p>
-            <p><Link href="/entities/new"><a>Entity create</a></Link></p>
-            <p><Link href="/processes#/0x2345-entity-id"><a>Process view</a></Link></p>
-            <p><Link href="/processes/new#/0x1234-entity-id"><a>Process create</a></Link></p>
-            <p><Link href="/processes/edit#/0x2345-entity-id"><a>Process edit</a></Link></p>
-            <p><Link href="/posts#/0x12345-entity-id/<idx>"><a>News post view</a></Link></p>
-            <p><Link href="/posts/edit#/0x12345-entity-id/<idx>"><a>News post edit</a></Link></p>
-            <p><Link href="/posts/new#/0x12345-entity-id/<idx>"><a>News post create</a></Link></p> */}
           </Card>
         </Col>
       </Row>

@@ -6,7 +6,7 @@ import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
 import { initNetwork, getNetworkState } from "../lib/network"
 import { IAppContext } from "../components/app-context"
-import Web3Wallet from "../lib/web3-wallet"
+import Web3Wallet, { getWeb3Wallet } from "../lib/web3-wallet"
 import { message } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
@@ -14,6 +14,7 @@ import { message } from "antd"
 import 'antd/dist/antd.css';
 import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { Wallet } from 'ethers'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -26,7 +27,6 @@ type State = {
 
     // STATE SHARED WITH CHILDREN
     title: string,
-    web3Wallet: Web3Wallet,
     menuVisible: boolean,
     menuSelected?: ISelected,
     menuCollapsed?: boolean,
@@ -39,7 +39,6 @@ class MainApp extends App<Props, State> {
     state: State = {
         isConnected: false,
         title: "Entities",
-        web3Wallet: new Web3Wallet(),
         menuVisible: true,
         menuSelected: "profile",
         menuCollapsed: false,
@@ -61,7 +60,7 @@ class MainApp extends App<Props, State> {
     // }
 
     async componentDidMount() {
-        await initNetwork(this.state.web3Wallet).then(async () => {
+        await initNetwork().then(async () => {
             message.success("Connected")
             await this.refreshWeb3Status()
         }).catch(err => {
@@ -86,6 +85,19 @@ class MainApp extends App<Props, State> {
             // Chrome requires returnValue to be set
             e.returnValue = '';
         }
+    }
+
+    useNewWallet(newWallet: Wallet) {
+        getWeb3Wallet().setWallet(newWallet)
+        initNetwork().then(async () => {
+            message.success("Connected")
+            return this.refreshWeb3Status()
+        }).then(() => {
+            this.setState({})
+        }).catch(err => {
+            this.refreshWeb3Status()
+            message.error("Could not connect")
+        })
     }
 
     setTitle(title: string) {
@@ -120,7 +132,7 @@ class MainApp extends App<Props, State> {
     onGatewayError(type: "private" | "public") {
         // TODO: reconnect or shift
         new Promise(resolve => setTimeout(resolve, 1000 * 3))
-            .then(() => initNetwork(this.state.web3Wallet)).then(() => {
+            .then(() => initNetwork()).then(() => {
                 // message.success("Connected")
                 this.refreshWeb3Status()
             }).catch(err => {
@@ -157,7 +169,8 @@ class MainApp extends App<Props, State> {
         const injectedGlobalContext: IAppContext = {
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
-            web3Wallet: this.state.web3Wallet,
+            web3Wallet: getWeb3Wallet(),
+            onNewWallet: wallet => this.useNewWallet(wallet),
             onGatewayError: this.onGatewayError,
             setEntityId: (id) => this.setEntityId(id),
             setProcessId: (id) => this.setProcessId(id),

@@ -2,7 +2,7 @@ import { useContext, Component } from 'react'
 import Router from 'next/router'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { Form, Input, Button, message, Modal, Row, Col, Card } from 'antd'
-import { connectClients, getGatewayClients, getNetworkState } from '../../lib/network'
+import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
@@ -25,6 +25,7 @@ class AccountImport extends Component<IAppContext> {
     try {
       await this.props.web3Wallet.store(values.name, values.seed, values.passphrase)
       await this.props.web3Wallet.load(values.name, values.passphrase)
+      this.props.onNewWallet(this.props.web3Wallet.getWallet())
     } catch (e) {
       message.error('An error ocurred trying import the account. Please, try it again', 3)
       return false
@@ -36,25 +37,25 @@ class AccountImport extends Component<IAppContext> {
     const gateway = await getGatewayClients()
     let entity: EntityMetadata
     const self = this
-    try{
+    try {
       entity = await API.Entity.getEntityMetadata(entityId, gateway)
       Router.push("/entities/edit#/" + entityId)
     } catch (e) {
-        Modal.confirm({
-            title: "Entity not found",
-            icon: <ExclamationCircleOutlined />,
-            content: "It looks like your account is not linked to an existing entity. Do you want to create it now?",
-            okText: "Create Entity",
-            okType: "primary",
-            cancelText: "Not now",
-            onOk() {
-              Router.push("/entities/new")
-            },
-            onCancel() {
-              // Router.reload()
-              self.setState({ entityLoading: false })
-            },
-        })
+      Modal.confirm({
+        title: "Entity not found",
+        icon: <ExclamationCircleOutlined />,
+        content: "It looks like your account is not linked to an existing entity. Do you want to create it now?",
+        okText: "Create Entity",
+        okType: "primary",
+        cancelText: "Not now",
+        onOk() {
+          Router.push("/entities/new")
+        },
+        onCancel() {
+          // Router.reload()
+          self.setState({ entityLoading: false })
+        },
+      })
     }
   }
 
