@@ -38,7 +38,7 @@ export async function initNetwork() {
 				bootnodesContentUri: BOOTNODES_URL_READ_ONLY,
 				numberOfGateways: 2,
 				race: true,
-				timeout: 3000,
+				timeout: 900,
 			}
 			gateway = await GatewayPool.discover(options)
 
@@ -52,7 +52,7 @@ export async function initNetwork() {
 				bootnodesContentUri: BOOTNODES_URL_RW,
 				numberOfGateways: 2,
 				race: false,
-				timeout: 3000,
+				timeout: 900,
 			}
 			gateway = await GatewayPool.discover(options)
 			web3Wallet.connect(gateway.getProvider())
