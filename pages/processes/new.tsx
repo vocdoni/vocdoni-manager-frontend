@@ -80,7 +80,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
         /* HTML EDITOR
         // Do the imports dynamically because `window` does not exist on SSR
-    
+
         Editor = (await import('react-draft-wysiwyg')).Editor
         const DraftJS = await import('draft-js')
         EditorState = DraftJS.EditorState
@@ -88,7 +88,7 @@ class ProcessNew extends Component<IAppContext, State> {
         convertToRaw = DraftJS.convertToRaw
         draftToHtml = (await import('draftjs-to-html')).default
         htmlToDraft = (await import('html-to-draftjs')).default
-        
+
         this.setState({ descriptionEditorState: EditorState.createEmpty() })
        */
 
@@ -145,22 +145,20 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     addQuestion() {
-        const emptyQuestion = {
+        const proc = this.state.process
+        proc.details.questions.push({
             type: "single-choice",
             question: { default: "" },
             description: { default: "" },
-            voteOptions: [{ title: { default: "" }, value: "0" }, { title: { default: "" }, value: "1" }]
-        }
-        const proc = this.state.process
-        proc.details.questions.push(emptyQuestion as any)
+            voteOptions: [{ title: { default: "" }, value: 0 }, { title: { default: "" }, value: 1 }]
+        })
         this.setState({ process: proc })
     }
 
     addOption(questionIdx) {
         let process = this.state.process
         let optionCount = process.details.questions[questionIdx].voteOptions.length
-        let newVoteOption = { title: { default: "" }, value: optionCount.toString() }
-        process.details.questions[questionIdx].voteOptions.push(newVoteOption)
+        process.details.questions[questionIdx].voteOptions.push({ title: { default: "" }, value: optionCount })
         this.setState({ process })
     }
 
@@ -420,7 +418,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                     }}
                                     showTime />
                             </div>
-                            {/* 
+                            {/*
               <div>
                 <DatePicker
                   disabledDate={(current) => this.disabledDate(current)}
