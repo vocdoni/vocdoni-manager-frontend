@@ -17,7 +17,7 @@ import { getBlockHeight, createVotingProcess } from 'dvote-js/dist/api/vote'
 const { RangePicker } = DatePicker
 
 const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180")
-const BLOCK_MARGIN = 60 // seconds
+const BLOCK_MARGIN = 5 // extra blocks
 
 /* HTML EDITOR
 let Editor: any // = await import("react-draft-wysiwyg")
@@ -69,7 +69,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
     async componentDidMount() {
         this.props.setMenuSelected("new-vote")
-        
+
         const { readOnly } = getNetworkState()
         // if readonly, show the view page
         if (readOnly) {
@@ -95,7 +95,7 @@ class ProcessNew extends Component<IAppContext, State> {
         try {
             await this.refreshBlockHeight()
             await this.refreshMetadata()
-            this.setDateRange(moment().add(1, 'days'), moment().add(3, 'days'))
+            this.setDateRange(moment().add(20, 'minutes'), moment().add(1, 'hours'))
 
             const interval = (parseInt(process.env.BLOCK_TIME || "10") || 10) * 1000
             this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
@@ -359,7 +359,7 @@ class ProcessNew extends Component<IAppContext, State> {
                             <br />
                             <Radio.Group buttonStyle="solid" value={this.state.process.type} onChange={e => this.setNewProcessField(["type"], e.target.value)}>
                                 <Radio.Button value="poll-vote">Public Poll</Radio.Button>
-                                <Radio.Button value="encrypted-poll-vote">Encrypted Poll</Radio.Button>
+                                <Radio.Button value="encrypted-poll">Encrypted Poll</Radio.Button>
                             </Radio.Group>
                             {
                                 this.state.process.type == "poll-vote" ?
