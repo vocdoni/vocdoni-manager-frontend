@@ -2,8 +2,12 @@ body {
     padding: 0;
     margin: 0;
     font-size: 14px;
-    font-family: "Open Sans", Arial, Helvetica, sans-serif;
-    background-color: var(--clear-95);
+    font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
+    background-color: var(--clear-95) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600 !important;
 }
 
 /* VARIABLES */
@@ -15,7 +19,7 @@ body {
 
     --dark: #222;
     --dark-90: #4b4040;
-    
+
     --main-color: #25658a;
 }
 

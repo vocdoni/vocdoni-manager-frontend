@@ -20,7 +20,7 @@ export class DataCache extends Dexie {
         throwIfNotBrowser();
         // Every new version must keep the schema definition of the older ones
         this.version(1).stores({ wallets: '&name, seed, publicKey' });
-        
+
         // The following lines are needed if your typescript
         // is compiled using babel instead of tsc:
         this.wallets = this.table("wallets");
@@ -29,15 +29,15 @@ export class DataCache extends Dexie {
         // this.refresh().catch(err => console.error("Unable to refresh the bootstrap", err))
     }
 
-    async getAllWallets(): Promise<IWallet[]> {
+    getAllWallets(): Promise<IWallet[]> {
         return this.wallets.toArray()
     }
 
-    async getWallet(name: string): Promise<IWallet> {
-        return this.wallets.get({ name });
+    getWallet(name: string): Promise<IWallet> {
+        return this.wallets.get({ name });
     }
 
-    async addWallet(item: IWallet): Promise<Key> {
+    addWallet(item: IWallet): Promise<Key> {
         return this.wallets.put(item);
     }
 
