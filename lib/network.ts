@@ -37,13 +37,13 @@ export async function initNetwork() {
 				networkId: ETH_NETWORK_ID,
 				bootnodesContentUri: BOOTNODES_URL_READ_ONLY,
 				numberOfGateways: 2,
-				race: true,
+				race: false,
 				timeout: 900,
 			}
 			gateway = await GatewayPool.discover(options)
 
-			entityResolver = await gateway.getEntityResolverInstance()
-			votingProcess = await gateway.getVotingProcessInstance()
+			entityResolver = gateway.getEntityResolverInstance()
+			votingProcess = gateway.getVotingProcessInstance()
 		}
 		else {
 			// USE PRIVATE GATEWAYS
@@ -57,8 +57,8 @@ export async function initNetwork() {
 			gateway = await GatewayPool.discover(options)
 			web3Wallet.connect(gateway.getProvider())
 
-			entityResolver = await gateway.getEntityResolverInstance(web3Wallet.getWallet())
-			votingProcess = await gateway.getVotingProcessInstance(web3Wallet.getWallet())
+			entityResolver = gateway.getEntityResolverInstance(web3Wallet.getWallet())
+			votingProcess = gateway.getVotingProcessInstance(web3Wallet.getWallet())
 		}
 		isConnected = true
 	}
