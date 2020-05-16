@@ -1,9 +1,9 @@
 import { createElement } from "react"
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Avatar } from 'antd'
+import { message, Spin, Avatar, Modal } from 'antd'
 import { Divider, Menu, List } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { EditOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage } from "dvote-js"
@@ -82,6 +82,21 @@ class PostView extends Component<IAppContext, State> {
 		}
 	}
 
+	confirmDeletePost(index: number) {
+		var that = this;
+    Modal.confirm({
+      title: "Confirm",
+      icon: <ExclamationCircleOutlined />,
+      content: "Are you sure you want to delete this post?",
+      okText: "Delete Post",
+      okType: "primary",
+      cancelText: "Not now",
+      onOk() {
+        that.deletePost(index)
+      },
+    })
+	}
+
 	async deletePost(index: number) {
 		let feed = JSON.parse(JSON.stringify(this.state.newsFeed))
 		feed.items.splice(index, 1)
@@ -146,7 +161,7 @@ class PostView extends Component<IAppContext, State> {
 							<Link href={`/posts/edit#/${entityId}/${post.id}`}><a>
 								<IconText icon={EditOutlined} text="Edit post" key="edit" />
 							</a></Link>,
-							<IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.deletePost(this.state.startIndex + idx)} key="remove" />,
+							<IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.confirmDeletePost(this.state.startIndex + idx)} key="remove" />,
 						]}
 						extra={<img width={272} alt={post.title} src={post.image} />}
 					>

@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col } from 'antd'
-import { LoadingOutlined, RocketOutlined } from '@ant-design/icons'
+import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, Modal } from 'antd'
+import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
@@ -134,6 +134,21 @@ class PostEdit extends Component<IAppContext, State> {
       this.setState({ dataLoading: false })
       throw err
     }
+  }
+
+  confirmSubmit(){
+    var that = this;
+    Modal.confirm({
+      title: "Confirm",
+      icon: <ExclamationCircleOutlined />,
+      content: "Are you sure you want to edit this post?",
+      okText: "Publish Post",
+      okType: "primary",
+      cancelText: "Not now",
+      onOk() {
+        that.submit()
+      },
+    })
   }
 
   async submit() {
@@ -292,7 +307,7 @@ class PostEdit extends Component<IAppContext, State> {
           <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
             {this.state.postUpdating ?
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-              <Button type="primary" size={'large'} onClick={() => this.submit()}>
+              <Button type="primary" size={'large'} onClick={() => this.confirmSubmit()}>
                 <RocketOutlined /> Publish Post</Button>
             }
           </div>

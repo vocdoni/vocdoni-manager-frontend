@@ -175,7 +175,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
     let processType: string
     switch (this.state.process.type) {
       case "poll-vote": processType = "Standard Poll"; break
-      case "encrypted-poll": processType = "Encrypted Poll"; break
+      case "encrypted-poll-vote": processType = "Encrypted Poll"; break
       case "petition-sign": processType = "Petition signing"; break
       case "snark-vote": processType = "Anonymous vote"; break
       default: processType = ""; break
