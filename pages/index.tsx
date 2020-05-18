@@ -75,7 +75,7 @@ class IndexView extends Component<IAppContext, State> {
             try {
                 entity = await API.Entity.getEntityMetadata(entityId, gateway)
                 this.setState({ entity, entityId, entityLoading: false })
-                Router.push("/entities/edit#/" + entityId);
+                Router.push("/entities#/" + entityId);
             } catch (e) {
                 Modal.confirm({
                     title: "Entity not found",

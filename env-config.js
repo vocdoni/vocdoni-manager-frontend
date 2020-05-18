@@ -19,7 +19,8 @@ module.exports = {
     BLOCK_TIME: 10, // 10 seconds
     ORACLE_CONFIRMATION_DELAY: 12 * 15,
 
-    // USER REGISTRY + ACTIONS
+    // DOMAINS AND URL's
+    APP_LINKING_DOMAIN: process.env.APP_LINKING_DOMAIN || (DEVELOPMENT ? "dev.vocdoni.link" : "vocdoni.link"),
     REGISTER_URL: process.env.REGISTER_URL || "https://registry.vocdoni.net/api/actions/register",
     ACTION_VISIBILITY_URL: process.env.ACTION_VISIBILITY_URL || "https://registry.vocdoni.net/api/actions/status",
 }
