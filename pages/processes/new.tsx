@@ -212,8 +212,8 @@ class ProcessNew extends Component<IAppContext, State> {
         if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'day')) {
             if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'hours')) {
                 return {
-                    disabledHours: () => this.range(0, this.state.currentDate.hours()),
-                    disabledMinutes: () => this.range(0, this.state.currentDate.minutes()),
+                    disabledHours: () => this.range(0, this.state.currentDate.add(15, 'minutes').hours()),
+                    disabledMinutes: () => this.range(0, this.state.currentDate.add(15, 'minutes').minutes()),
                 }
             }
             return {
@@ -398,6 +398,19 @@ class ProcessNew extends Component<IAppContext, State> {
                         </Form.Item>
                     </Form>
 
+                    {/* <h2>Questions</h2> */}
+                    {
+                        questions.map((_, idx) => this.renderQuestionForm(idx))
+                    }
+
+                    <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
+                        <Button
+                            type="default"
+                            icon={<PlusOutlined />}
+                            onClick={() => this.addQuestion()}>
+                            Add a question</Button>
+                    </div>
+
                     <br />
                     <Divider orientation="left">Time frame</Divider>
 
@@ -411,7 +424,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                     placeholder={["Vote start", "Vote end"]}
                                     disabledDate={(current) => this.disabledDate(current)}
                                     disabledTime={(current) => this.disabledTime(current)}
-                                    defaultValue={[moment().add(1, 'days'), moment().add(3, 'days')]}
+                                    defaultValue={[moment().add(15, 'minutes'), moment().add(3, 'days')]}
                                     onChange={(dates: moment.Moment[], _) => {
                                         if (!dates || !dates.length) return
                                         this.setDateRange(dates[0], dates[1])
@@ -447,19 +460,6 @@ class ProcessNew extends Component<IAppContext, State> {
                             {this.state.startBlock && this.state.numberOfBlocks ? <p>Estimated end block: {this.state.startBlock + this.state.numberOfBlocks}</p> : null}
                         </Form.Item>
                     </Form>
-
-                    {/* <h2>Questions</h2> */}
-                    {
-                        questions.map((_, idx) => this.renderQuestionForm(idx))
-                    }
-
-                    <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
-                        <Button
-                            type="default"
-                            icon={<PlusOutlined />}
-                            onClick={() => this.addQuestion()}>
-                            Add a question</Button>
-                    </div>
 
                     <Divider />
 
