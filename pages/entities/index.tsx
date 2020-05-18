@@ -99,7 +99,7 @@ class EntityView extends Component<IAppContext, State> {
                     </div>
                     <Divider orientation="left">Shareable link</Divider>
                     <ul>
-                        <li><Paragraph copyable={{ text: subscriptionLink }}>Copy the link to sharethe entity</Paragraph></li>
+                        <li><Paragraph copyable={{ text: subscriptionLink }}>Copy the link to share the entity</Paragraph></li>
                     </ul>
 
                 </Col>
