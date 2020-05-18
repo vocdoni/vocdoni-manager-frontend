@@ -82,4 +82,8 @@
         background: white;
         z-index: 100;
     }
+
+    .md-noShow {
+        display: none;
+    }
 }

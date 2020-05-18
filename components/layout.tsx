@@ -3,6 +3,7 @@ import AppContext from './app-context'
 import { useContext } from "react"
 import { Layout, Button, Row, Col } from "antd"
 import SideMenu from "./side-menu"
+import UserMenu from "./user-menu"
 import { MenuOutlined } from "@ant-design/icons"
 
 
@@ -22,14 +23,17 @@ export default function ({ children, ...props }: Props) {
         <Layout.Header className="top-bar">
             <Row>
                 { context.menuVisible && 
-                    <Col md={0}>
+                    <Col xs={2} md={0}>
                         <Button ghost={true} onClick={() => context.setMenuCollapsed(!context.menuCollapsed)}>
                             <MenuOutlined />
                         </Button>
                     </Col>
                 }
-                <Col>
+                <Col xs={12} md={14}>
                     <h1 style={{marginLeft:20}}><Link href="/"><a id="logo">{title || "Entities"}</a></Link></h1>
+                </Col>
+                <Col xs={10} style={{textAlign: "right"}}>
+                    <UserMenu />
                 </Col>
             </Row>
         </Layout.Header>
