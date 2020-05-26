@@ -5,7 +5,7 @@ import { Divider, Menu } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage, ProcessMetadata, ProcessResults } from "dvote-js"
-const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Entity } = API
+const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Entity, Census } = API
 import moment from 'moment'
 import Router from 'next/router'
 import Link from "next/link"
@@ -37,7 +37,8 @@ type State = {
   process?: ProcessMetadata,
   results: ProcessResults
   totalVotes: number,
-  canceled: boolean
+  canceled: boolean,
+  censusSize?: string
 }
 
 // Stateful component
@@ -104,11 +105,13 @@ class ProcessActiveView extends Component<IAppContext, State> {
       const voteMetadata = await getVoteMetadata(processId, gateway)
       const canceled = await isCanceled(processId, gateway)
 
-      this.setState({ entity, process: voteMetadata, canceled, dataLoading: false })
+      const censusSize = await Census.getCensusSize(voteMetadata.census.merkleRoot, gateway)
+
+      this.setState({ entity, process: voteMetadata, canceled, dataLoading: false, censusSize })
       this.props.setTitle(entity.name["default"])
 
       this.props.setEntityId(entityId)
-      this.props.setProcessId(processId)
+      this.props.setProcessId(processId)      
     }
     catch (err) {
       this.setState({ dataLoading: false })
@@ -166,7 +169,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
     // const entityId = params[0]
     const processId = params[1]
 
-    const { process, currentBlock, currentDate } = this.state
+    const { process, currentBlock, currentDate, censusSize } = this.state
 
     const startTimestamp = currentDate.valueOf() + (process.startBlock - currentBlock) * BLOCK_TIME * 1000
     const startDate = moment(startTimestamp)
@@ -216,6 +219,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
           <pre>{process.census.merkleRoot}</pre>
           <h4>Census Merkle Tree</h4>
           <pre>{process.census.merkleTree}</pre>
+          <h4>Census Size</h4>
+          <pre>{censusSize}</pre>
           <br />
 
           <Divider orientation="left">Time frame</Divider>
