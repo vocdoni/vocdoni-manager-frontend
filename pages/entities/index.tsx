@@ -41,11 +41,14 @@ type State = {
 class EntityView extends Component<IAppContext, State> {
     state: State = {}
 
-    async componentDidMount() {
+    componentDidMount() {
         // this.props.setTitle("Loading")
-        try {
-            this.props.setMenuSelected("profile")
+        this.props.setMenuSelected("profile")
+        this.fetch()
+    }
 
+    async fetch(){
+        try {
             const entityId = location.hash.substr(2)
             this.setState({ entityLoading: true, entityId })
 
@@ -64,6 +67,15 @@ class EntityView extends Component<IAppContext, State> {
             this.setState({ entityLoading: false })
             message.error("Could not read the entity metadata")
         }
+    }
+
+    shouldComponentUpdate(){
+        const entityId = location.hash.substr(2) // OR this.props.entityId?
+        if(entityId != this.state.entityId){
+            this.fetch()
+        }
+
+        return true
     }
 
     renderEntityInfo() {
@@ -119,6 +131,7 @@ class EntityView extends Component<IAppContext, State> {
     }
 
     render() {
+        console.log('ENTITY render')
         return <div id="entity-view">
             {
                 this.state.entityLoading ?

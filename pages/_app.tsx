@@ -71,11 +71,15 @@ class MainApp extends App<Props, State> {
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
 
         window.addEventListener('beforeunload', this.beforeUnload)
+
+        this.hashChange = this.hashChange.bind(this);
+        window.addEventListener('hashchange', this.hashChange)
     }
 
     componentWillUnmount() {
         clearInterval(this.refreshInterval)
         window.removeEventListener('beforeunload', this.beforeUnload)
+        window.removeEventListener('hashchange', this.hashChange)
     }
 
     beforeUnload(e: BeforeUnloadEvent) {
@@ -85,6 +89,12 @@ class MainApp extends App<Props, State> {
             // Chrome requires returnValue to be set
             e.returnValue = '';
         }
+    }
+
+    hashChange(e: HashChangeEvent) {
+        const params = location.hash.substr(2).split("/")
+        this.setEntityId(params[0])
+        // params[1] -> THIS CAN BE: processId, targetId, censusId... so, not setting it here
     }
 
     useNewWallet(newWallet: Wallet) {
