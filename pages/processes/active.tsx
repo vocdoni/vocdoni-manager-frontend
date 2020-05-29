@@ -49,6 +49,10 @@ class ProcessActiveView extends Component<IAppContext, State> {
 	}
 
 	async componentDidMount() {
+		await this.init()
+	}
+
+	async init(){
 		try {
 			this.props.setMenuSelected("processes-active")
 
@@ -93,6 +97,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
 				message.error("The list of voting processes could not be loaded")
 		}
 	}
+
+	shouldComponentUpdate(){
+    const entityId = location.hash.substr(2)
+    if(entityId != this.state.entityId){
+        this.init()
+    }
+
+    return true
+  }
 
 	async markAsEnded(processId: string) {
 		let activeProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.active))

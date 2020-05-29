@@ -53,6 +53,10 @@ class ProcessActiveView extends Component<IAppContext, State> {
   refreshInterval = null
 
   async componentDidMount() {
+    await this.init()
+  }
+
+  async init(){
     try {
       const params = location.hash.substr(2).split("/")
       if (params.length != 2) {
@@ -69,6 +73,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
     catch (err) {
     }
+  }
+
+  shouldComponentUpdate(){
+    const entityId = location.hash.substr(2)
+    if(entityId != this.state.entityId){
+        this.init()
+    }
+
+    return true
   }
 
   componentWillUnmount() {

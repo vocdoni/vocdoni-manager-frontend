@@ -33,6 +33,7 @@ type State = {
     menuDisabled?: boolean,
     entityId?: string,
     processId?: string,
+    urlHash?: string,
 }
 
 class MainApp extends App<Props, State> {
@@ -45,6 +46,7 @@ class MainApp extends App<Props, State> {
         menuDisabled: false,
         entityId: '',
         processId: '',
+        urlHash: '',
     }
 
     refreshInterval: any
@@ -92,9 +94,7 @@ class MainApp extends App<Props, State> {
     }
 
     hashChange(e: HashChangeEvent) {
-        const params = location.hash.substr(2).split("/")
-        this.setEntityId(params[0])
-        // params[1] -> THIS CAN BE: processId, targetId, censusId... so, not setting it here
+        this.setUrlHash(location.hash.substr(2))
     }
 
     useNewWallet(newWallet: Wallet) {
@@ -132,6 +132,9 @@ class MainApp extends App<Props, State> {
     }
     setProcessId(processId: string) {
         this.setState({ processId })
+    }
+    setUrlHash(urlHash: string) {
+        this.setState({ urlHash })
     }
 
     async refreshWeb3Status() {
@@ -190,10 +193,12 @@ class MainApp extends App<Props, State> {
             menuDisabled: this.state.menuDisabled,
             entityId: this.state.entityId,
             processId: this.state.processId,
+            urlHash: this.state.urlHash,
             setMenuVisible: (visible) => this.setMenuVisible(visible),
             setMenuSelected: (selected) => this.setMenuSelected(selected),
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
+            setUrlHash: (hash) => this.setUrlHash(hash),
         }
 
 

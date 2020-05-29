@@ -49,6 +49,10 @@ class ProcessEndedView extends Component<IAppContext, State> {
     }
 
     async componentDidMount() {
+        await this.init()
+    }
+
+    async init(){
         try {
             this.props.setMenuSelected("processes-ended")
             
@@ -92,6 +96,15 @@ class ProcessEndedView extends Component<IAppContext, State> {
             else
                 message.error("The list of voting processes could not be loaded")
         }
+    }
+
+    shouldComponentUpdate(){
+        const entityId = location.hash.substr(2)
+        if(entityId != this.state.entityId){
+            this.init()
+        }
+
+        return true
     }
 
     async removeFromEnded(processId: string) {

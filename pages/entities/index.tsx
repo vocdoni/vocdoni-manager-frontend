@@ -44,10 +44,10 @@ class EntityView extends Component<IAppContext, State> {
     componentDidMount() {
         // this.props.setTitle("Loading")
         this.props.setMenuSelected("profile")
-        this.fetch()
+        this.fetchMetadata()
     }
 
-    async fetch(){
+    async fetchMetadata(){
         try {
             const entityId = location.hash.substr(2)
             this.setState({ entityLoading: true, entityId })
@@ -70,9 +70,9 @@ class EntityView extends Component<IAppContext, State> {
     }
 
     shouldComponentUpdate(){
-        const entityId = location.hash.substr(2) // OR this.props.entityId?
+        const entityId = location.hash.substr(2)
         if(entityId != this.state.entityId){
-            this.fetch()
+            this.fetchMetadata()
         }
 
         return true

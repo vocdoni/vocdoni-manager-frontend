@@ -47,9 +47,12 @@ class PostView extends Component<IAppContext, State> {
 	}
 
 	async componentDidMount() {
-		try {
-			this.props.setMenuSelected("feed")
+		this.props.setMenuSelected("feed")
+		await this.fecthMetadata()
+	}
 
+	async fecthMetadata(){
+		try {
 			const entityId = location.hash.substr(2)
 			this.setState({ dataLoading: true, entityId })
 
@@ -80,6 +83,14 @@ class PostView extends Component<IAppContext, State> {
 			this.setState({ dataLoading: false })
 			message.error("Could not read the entity metadata")
 		}
+	}
+
+	shouldComponentUpdate(){
+    const entityId = location.hash.substr(2)
+    if(entityId != this.state.entityId){
+        this.fecthMetadata()
+    }
+    return true
 	}
 
 	async deletePost(index: number) {
