@@ -131,7 +131,6 @@ class EntityView extends Component<IAppContext, State> {
     }
 
     render() {
-        console.log('ENTITY render')
         return <div id="entity-view">
             {
                 this.state.entityLoading ?
