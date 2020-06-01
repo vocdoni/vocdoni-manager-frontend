@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'antd'
-import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
+import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col, Modal } from 'antd'
+import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
@@ -60,7 +60,7 @@ class EntityEdit extends Component<IAppContext, State> {
   async fetchMetadata() {
     try {
       this.props.setMenuSelected("entity-edit")
-      
+
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
@@ -118,6 +118,21 @@ class EntityEdit extends Component<IAppContext, State> {
       entity[key][subkey] = value
       this.setState({ entity })
     }
+  }
+
+  confirmUpdateMetadata() {
+    var that = this;
+    Modal.confirm({
+      title: "Confirm",
+      icon: <ExclamationCircleOutlined />,
+      content: "The changes to the entity will become public. Do you want to continue?",
+      okText: "Update Entity",
+      okType: "primary",
+      cancelText: "Not now",
+      onOk() {
+        that.updateMetadata()
+      },
+    })
   }
 
   updateMetadata() {
@@ -246,7 +261,7 @@ class EntityEdit extends Component<IAppContext, State> {
           <div style={{ textAlign: "center" }}>
             {this.state.entityUpdating ?
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-              <Button size='large' type='primary' onClick={() => this.updateMetadata()}>Update metadata</Button>
+              <Button size='large' type='primary' onClick={() => this.confirmUpdateMetadata()}>Update metadata</Button>
             }
           </div>
         </Col>

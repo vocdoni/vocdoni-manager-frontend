@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, DatePicker, Radio } from 'antd'
-import { LoadingOutlined, RocketOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons'
+import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, DatePicker, Radio, Modal } from 'antd'
+import { LoadingOutlined, RocketOutlined, PlusOutlined, MinusOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage, ProcessMetadata } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
@@ -56,7 +56,7 @@ type State = {
 // Stateful component
 class ProcessNew extends Component<IAppContext, State> {
     state: State = {
-        process: ProcessMetadataTemplate,
+        process: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
         currentBlock: null,
         startBlock: null,
         numberOfBlocks: null,
@@ -95,7 +95,7 @@ class ProcessNew extends Component<IAppContext, State> {
         try {
             await this.refreshBlockHeight()
             await this.refreshMetadata()
-            this.setDateRange(moment().add(20, 'minutes'), moment().add(1, 'hours'))
+            this.setDateRange(moment().add(15, 'minutes'), moment().add(3, 'days').add(15, 'minutes'))
 
             const interval = (parseInt(process.env.BLOCK_TIME || "10") || 10) * 1000
             this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
@@ -212,8 +212,8 @@ class ProcessNew extends Component<IAppContext, State> {
         if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'day')) {
             if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'hours')) {
                 return {
-                    disabledHours: () => this.range(0, this.state.currentDate.hours()),
-                    disabledMinutes: () => this.range(0, this.state.currentDate.minutes()),
+                    disabledHours: () => this.range(0, this.state.currentDate.add(15, 'minutes').hours()),
+                    disabledMinutes: () => this.range(0, this.state.currentDate.add(15, 'minutes').minutes()),
                 }
             }
             return {
@@ -269,6 +269,21 @@ class ProcessNew extends Component<IAppContext, State> {
         }
 
         return true
+    }
+
+    confirmSubmit() {
+        var that = this;
+        Modal.confirm({
+          title: "Confirm",
+          icon: <ExclamationCircleOutlined />,
+          content: "The process will be registered on the blockchain. Do you want to continue?",
+          okText: "Create Process",
+          okType: "primary",
+          cancelText: "Not now",
+          onOk() {
+            that.submit()
+          },
+        })
     }
 
     async submit() {
@@ -398,6 +413,19 @@ class ProcessNew extends Component<IAppContext, State> {
                         </Form.Item>
                     </Form>
 
+                    {/* <h2>Questions</h2> */}
+                    {
+                        questions.map((_, idx) => this.renderQuestionForm(idx))
+                    }
+
+                    <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
+                        <Button
+                            type="default"
+                            icon={<PlusOutlined />}
+                            onClick={() => this.addQuestion()}>
+                            Add a question</Button>
+                    </div>
+
                     <br />
                     <Divider orientation="left">Time frame</Divider>
 
@@ -411,7 +439,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                     placeholder={["Vote start", "Vote end"]}
                                     disabledDate={(current) => this.disabledDate(current)}
                                     disabledTime={(current) => this.disabledTime(current)}
-                                    defaultValue={[moment().add(1, 'days'), moment().add(3, 'days')]}
+                                    defaultValue={[moment().add(15, 'minutes'), moment().add(3, 'days').add(15, 'minutes')]}
                                     onChange={(dates: moment.Moment[], _) => {
                                         if (!dates || !dates.length) return
                                         this.setDateRange(dates[0], dates[1])
@@ -448,25 +476,12 @@ class ProcessNew extends Component<IAppContext, State> {
                         </Form.Item>
                     </Form>
 
-                    {/* <h2>Questions</h2> */}
-                    {
-                        questions.map((_, idx) => this.renderQuestionForm(idx))
-                    }
-
-                    <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
-                        <Button
-                            type="default"
-                            icon={<PlusOutlined />}
-                            onClick={() => this.addQuestion()}>
-                            Add a question</Button>
-                    </div>
-
                     <Divider />
 
                     <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
                         {this.state.processCreating ?
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                            <Button type="primary" size={'large'} onClick={() => this.submit()}>
+                            <Button type="primary" size={'large'} onClick={() => this.confirmSubmit()}>
                                 <RocketOutlined /> Create process</Button>
                         }
                     </div>

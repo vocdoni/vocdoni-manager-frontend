@@ -1,9 +1,9 @@
 import { createElement } from "react"
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Avatar } from 'antd'
+import { message, Spin, Avatar, Modal } from 'antd'
 import { Divider, Menu, List } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { EditOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage } from "dvote-js"
@@ -85,12 +85,27 @@ class PostView extends Component<IAppContext, State> {
 		}
 	}
 
-	shouldComponentUpdate(){
-    const entityId = location.hash.substr(2)
-    if(entityId != this.state.entityId){
-        this.fecthMetadata()
-    }
-    return true
+	shouldComponentUpdate() {
+        const entityId = location.hash.substr(2)
+        if (entityId != this.state.entityId) {
+            this.fecthMetadata()
+        }
+        return true
+	}
+
+	confirmDeletePost(index: number) {
+		var that = this;
+        Modal.confirm({
+            title: "Confirm",
+            icon: <ExclamationCircleOutlined />,
+            content: "The selected post will be no longer accessible and this action cannot be undone. Do you want to continue?",
+            okText: "Delete Post",
+            okType: "primary",
+            cancelText: "Not now",
+            onOk() {
+                that.deletePost(index)
+            },
+        })
 	}
 
 	async deletePost(index: number) {
@@ -157,7 +172,7 @@ class PostView extends Component<IAppContext, State> {
 							<Link href={`/posts/edit#/${entityId}/${post.id}`}><a>
 								<IconText icon={EditOutlined} text="Edit post" key="edit" />
 							</a></Link>,
-							<IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.deletePost(this.state.startIndex + idx)} key="remove" />,
+							<IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.confirmDeletePost(this.state.startIndex + idx)} key="remove" />,
 						]}
 						extra={<img width={272} alt={post.title} src={post.image} />}
 					>

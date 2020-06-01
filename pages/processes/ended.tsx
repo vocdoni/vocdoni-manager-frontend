@@ -1,9 +1,9 @@
 import { createElement } from "react"
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Avatar, Skeleton } from 'antd'
+import { message, Spin, Avatar, Skeleton, Modal } from 'antd'
 import { Divider, Menu, List } from 'antd'
-import { EditOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { EditOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage, ProcessMetadata } from "dvote-js"
@@ -55,7 +55,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
     async init(){
         try {
             this.props.setMenuSelected("processes-ended")
-            
+
             const entityId = location.hash.substr(2)
             this.setState({ dataLoading: true, entityId })
 
@@ -100,11 +100,26 @@ class ProcessEndedView extends Component<IAppContext, State> {
 
     shouldComponentUpdate(){
         const entityId = location.hash.substr(2)
-        if(entityId != this.state.entityId){
+        if (entityId != this.state.entityId) {
             this.init()
         }
 
         return true
+    }
+    
+    confirmRemoveFromEnded(processId: string) {
+        var that = this;
+        Modal.confirm({
+            title: "Confirm",
+            icon: <ExclamationCircleOutlined />,
+            content: "The process will be permanently removed and this change cannot be undone. Do you want to continue?",
+            okText: "Remove Permanently",
+            okType: "primary",
+            cancelText: "Not now",
+            onOk() {
+                that.removeFromEnded(processId)
+            },
+        })
     }
 
     async removeFromEnded(processId: string) {
@@ -170,7 +185,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
                         <List.Item
                             key={idx}
                             actions={hideEditControls ? [] : [
-                                <IconText icon={CloseCircleOutlined} text="Remove permanently" onClick={() => this.removeFromEnded((vote as any).id)} key="mark-as-ended" />,
+                                <IconText icon={CloseCircleOutlined} text="Remove permanently" onClick={() => this.confirmRemoveFromEnded((vote as any).id)} key="mark-as-ended" />,
                             ]}
                             extra={<img width={272} alt="Header" src={((vote as any).data as ProcessMetadata).details.headerImage} />}
                         >
