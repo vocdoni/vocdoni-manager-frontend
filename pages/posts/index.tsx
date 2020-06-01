@@ -87,7 +87,7 @@ class PostView extends Component<IAppContext, State> {
     Modal.confirm({
       title: "Confirm",
       icon: <ExclamationCircleOutlined />,
-      content: "Are you sure you want to delete this post?",
+      content: "The selected post will be no longer accessible and this action cannot be undone. Do you want to continue?",
       okText: "Delete Post",
       okType: "primary",
       cancelText: "Not now",

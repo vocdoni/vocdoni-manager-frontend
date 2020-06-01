@@ -51,7 +51,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
     async componentDidMount() {
         try {
             this.props.setMenuSelected("processes-ended")
-            
+
             const entityId = location.hash.substr(2)
             this.setState({ dataLoading: true, entityId })
 
@@ -99,7 +99,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
         Modal.confirm({
             title: "Confirm",
             icon: <ExclamationCircleOutlined />,
-            content: "Are you sure you want to remove permanently this process?",
+            content: "The process will be permanently removed and this change cannot be undone. Do you want to continue?",
             okText: "Remove Permanently",
             okType: "primary",
             cancelText: "Not now",

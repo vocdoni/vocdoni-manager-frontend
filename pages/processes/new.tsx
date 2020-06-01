@@ -276,7 +276,7 @@ class ProcessNew extends Component<IAppContext, State> {
         Modal.confirm({
           title: "Confirm",
           icon: <ExclamationCircleOutlined />,
-          content: "Are you sure you want to create this process?",
+          content: "The process will be registered on the blockchain. Do you want to continue?",
           okText: "Create Process",
           okType: "primary",
           cancelText: "Not now",

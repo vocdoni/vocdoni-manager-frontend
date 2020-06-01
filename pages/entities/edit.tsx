@@ -60,7 +60,7 @@ class EntityEdit extends Component<IAppContext, State> {
   async fetchMetadata() {
     try {
       this.props.setMenuSelected("entity-edit")
-      
+
       const entityId = location.hash.substr(2)
       this.setState({ entityLoading: true, entityId })
 
@@ -117,7 +117,7 @@ class EntityEdit extends Component<IAppContext, State> {
     Modal.confirm({
       title: "Confirm",
       icon: <ExclamationCircleOutlined />,
-      content: "Are you sure you want to edit this entity metadata?",
+      content: "The changes to the entity will become public. Do you want to continue?",
       okText: "Update Entity",
       okType: "primary",
       cancelText: "Not now",

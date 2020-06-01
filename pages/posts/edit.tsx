@@ -83,7 +83,7 @@ class PostEdit extends Component<IAppContext, State> {
   async refreshMetadata() {
     try {
       this.props.setMenuSelected("new-post")
-      
+
       const params = location.hash.substr(2).split("/")
       if (params.length != 2) {
         message.error("The requested data is not valid")
@@ -141,7 +141,7 @@ class PostEdit extends Component<IAppContext, State> {
     Modal.confirm({
       title: "Confirm",
       icon: <ExclamationCircleOutlined />,
-      content: "Are you sure you want to edit this post?",
+      content: "The changes to the post will become public. Do you want to continue?",
       okText: "Publish Post",
       okType: "primary",
       cancelText: "Not now",
@@ -188,9 +188,9 @@ class PostEdit extends Component<IAppContext, State> {
     newsFeed.items[idx] = post
 
     try {
-      // TODO: The following removes the last post. Tested exactly the same in 
+      // TODO: The following removes the last post. Tested exactly the same in
       // in Dvote-js and it works. How???
-      // feed = checkValidJsonFeed(feed) 
+      // feed = checkValidJsonFeed(feed)
       checkValidJsonFeed(newsFeed)
     }
     catch (err) {

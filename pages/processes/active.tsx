@@ -99,7 +99,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 		Modal.confirm({
 			title: "Confirm",
 			icon: <ExclamationCircleOutlined />,
-			content: "Are you sure you want to mark this process as ended?",
+			content: "The process will be marked as ended and the vote scrutiny will be triggered (if necessary). Do you want to continue?",
 			okText: "Mark as ended",
 			okType: "primary",
 			cancelText: "Not now",
