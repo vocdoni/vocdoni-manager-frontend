@@ -33,6 +33,7 @@ type State = {
     menuDisabled?: boolean,
     entityId?: string,
     processId?: string,
+    urlHash?: string,
 }
 
 class MainApp extends App<Props, State> {
@@ -45,6 +46,7 @@ class MainApp extends App<Props, State> {
         menuDisabled: false,
         entityId: '',
         processId: '',
+        urlHash: '',
     }
 
     refreshInterval: any
@@ -71,11 +73,15 @@ class MainApp extends App<Props, State> {
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
 
         window.addEventListener('beforeunload', this.beforeUnload)
+
+        this.hashChange = this.hashChange.bind(this);
+        window.addEventListener('hashchange', this.hashChange)
     }
 
     componentWillUnmount() {
         clearInterval(this.refreshInterval)
         window.removeEventListener('beforeunload', this.beforeUnload)
+        window.removeEventListener('hashchange', this.hashChange)
     }
 
     beforeUnload(e: BeforeUnloadEvent) {
@@ -85,6 +91,10 @@ class MainApp extends App<Props, State> {
             // Chrome requires returnValue to be set
             e.returnValue = '';
         }
+    }
+
+    hashChange(e: HashChangeEvent) {
+        this.setUrlHash(location.hash.substr(2))
     }
 
     useNewWallet(newWallet: Wallet) {
@@ -122,6 +132,9 @@ class MainApp extends App<Props, State> {
     }
     setProcessId(processId: string) {
         this.setState({ processId })
+    }
+    setUrlHash(urlHash: string) {
+        this.setState({ urlHash })
     }
 
     async refreshWeb3Status() {
@@ -180,10 +193,12 @@ class MainApp extends App<Props, State> {
             menuDisabled: this.state.menuDisabled,
             entityId: this.state.entityId,
             processId: this.state.processId,
+            urlHash: this.state.urlHash,
             setMenuVisible: (visible) => this.setMenuVisible(visible),
             setMenuSelected: (selected) => this.setMenuSelected(selected),
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
+            setUrlHash: (hash) => this.setUrlHash(hash),
         }
 
 

@@ -34,6 +34,7 @@ type State = {
   postUpdating?: boolean,
   entity?: EntityMetadata,
   entityId?: string,
+  postId?: string,
   newsFeed?: JsonFeed,
   newsPost?: JsonFeedPost,
   bootnodes?: GatewayBootNodes,
@@ -45,6 +46,10 @@ class PostEdit extends Component<IAppContext, State> {
   state: State = {}
 
   async componentDidMount() {
+    await this.init()
+  }
+
+  async init(){
     const params = location.hash.substr(2).split("/")
     if (params.length != 2) {
       message.error("The requested data is not valid")
@@ -80,6 +85,24 @@ class PostEdit extends Component<IAppContext, State> {
     }
   }
 
+  shouldComponentUpdate(){
+    const params = location.hash.substr(2).split("/")
+    if (params.length != 2) {
+      message.error("The requested data is not valid")
+      Router.replace("/")
+      return
+    }
+
+    const entityId = params[0]
+    const postId = params[1]
+    if(entityId != this.state.entityId
+      || postId != this.state.postId){
+        this.init()
+    }
+
+    return true
+  }
+
   async refreshMetadata() {
     try {
       this.props.setMenuSelected("new-post")
@@ -94,7 +117,7 @@ class PostEdit extends Component<IAppContext, State> {
       const entityId = params[0]
       const postId = params[1]
 
-      this.setState({ dataLoading: true, entityId })
+      this.setState({ dataLoading: true, entityId, postId })
 
       const gateway = await getGatewayClients()
       const entity = await Entity.getEntityMetadata(entityId, gateway)
@@ -125,7 +148,7 @@ class PostEdit extends Component<IAppContext, State> {
         this.setState({ editorState })
       }
 
-      this.setState({ newsPost, newsFeed, entity, entityId, dataLoading: false })
+      this.setState({ newsPost, newsFeed, entity, entityId, postId, dataLoading: false })
       this.props.setTitle(entity.name["default"])
 
       this.props.setEntityId(entityId)

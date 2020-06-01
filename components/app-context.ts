@@ -24,6 +24,7 @@ export interface IAppContext {
     menuDisabled: boolean,
     entityId: string,
     processId: string,
+    urlHash: string,
     setTitle: (title: string) => void
     onGatewayError: (type: "private" | "public") => void
     setMenuVisible: (menuVisible: boolean) => void
@@ -32,6 +33,7 @@ export interface IAppContext {
     setMenuDisabled: (menuDisabled: boolean) => void
     setEntityId: (entityId: string) => void
     setProcessId: (processId: string) => void
+    setUrlHash: (urlHash: string) => void
 }
 
 // Global context provided to every page

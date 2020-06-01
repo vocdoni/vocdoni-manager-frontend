@@ -47,9 +47,12 @@ class PostView extends Component<IAppContext, State> {
 	}
 
 	async componentDidMount() {
-		try {
-			this.props.setMenuSelected("feed")
+		this.props.setMenuSelected("feed")
+		await this.fecthMetadata()
+	}
 
+	async fecthMetadata(){
+		try {
 			const entityId = location.hash.substr(2)
 			this.setState({ dataLoading: true, entityId })
 
@@ -82,19 +85,27 @@ class PostView extends Component<IAppContext, State> {
 		}
 	}
 
+	shouldComponentUpdate() {
+        const entityId = location.hash.substr(2)
+        if (entityId != this.state.entityId) {
+            this.fecthMetadata()
+        }
+        return true
+	}
+
 	confirmDeletePost(index: number) {
 		var that = this;
-    Modal.confirm({
-      title: "Confirm",
-      icon: <ExclamationCircleOutlined />,
-      content: "The selected post will be no longer accessible and this action cannot be undone. Do you want to continue?",
-      okText: "Delete Post",
-      okType: "primary",
-      cancelText: "Not now",
-      onOk() {
-        that.deletePost(index)
-      },
-    })
+        Modal.confirm({
+            title: "Confirm",
+            icon: <ExclamationCircleOutlined />,
+            content: "The selected post will be no longer accessible and this action cannot be undone. Do you want to continue?",
+            okText: "Delete Post",
+            okType: "primary",
+            cancelText: "Not now",
+            onOk() {
+                that.deletePost(index)
+            },
+        })
 	}
 
 	async deletePost(index: number) {

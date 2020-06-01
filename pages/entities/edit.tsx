@@ -78,6 +78,14 @@ class EntityEdit extends Component<IAppContext, State> {
     }
   }
 
+  shouldComponentUpdate(){
+    const entityId = location.hash.substr(2)
+    if(entityId != this.state.entityId){
+        this.fetchMetadata()
+    }
+    return true
+  }
+
   // EVENTS
   onExistingLanguagesChange(languages) {
     const entity = Object.assign({}, this.state.entity, { languages })

@@ -49,6 +49,10 @@ class ProcessActiveView extends Component<IAppContext, State> {
 	}
 
 	async componentDidMount() {
+		await this.fetchData()
+	}
+
+	async fetchData(){
 		try {
 			this.props.setMenuSelected("processes-active")
 
@@ -94,6 +98,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
 		}
 	}
 
+	shouldComponentUpdate(){
+        const entityId = location.hash.substr(2)
+        if (entityId != this.state.entityId) {
+            this.fetchData()
+        }
+        
+        return true
+    }
+  
 	confirmMarkAsEnded(processId: string) {
 		var that = this;
 		Modal.confirm({
