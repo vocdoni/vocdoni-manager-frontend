@@ -95,7 +95,7 @@ class ProcessNew extends Component<IAppContext, State> {
         try {
             await this.refreshBlockHeight()
             await this.refreshMetadata()
-            this.setDateRange(moment().add(20, 'minutes'), moment().add(1, 'hours'))
+            this.setDateRange(moment().add(15, 'minutes'), moment().add(3, 'days').add(15, 'minutes'))
 
             const interval = (parseInt(process.env.BLOCK_TIME || "10") || 10) * 1000
             this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
@@ -424,7 +424,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                     placeholder={["Vote start", "Vote end"]}
                                     disabledDate={(current) => this.disabledDate(current)}
                                     disabledTime={(current) => this.disabledTime(current)}
-                                    defaultValue={[moment().add(15, 'minutes'), moment().add(3, 'days')]}
+                                    defaultValue={[moment().add(15, 'minutes'), moment().add(3, 'days').add(15, 'minutes')]}
                                     onChange={(dates: moment.Moment[], _) => {
                                         if (!dates || !dates.length) return
                                         this.setDateRange(dates[0], dates[1])
