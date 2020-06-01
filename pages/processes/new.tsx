@@ -56,7 +56,7 @@ type State = {
 // Stateful component
 class ProcessNew extends Component<IAppContext, State> {
     state: State = {
-        process: ProcessMetadataTemplate,
+        process: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
         currentBlock: null,
         startBlock: null,
         numberOfBlocks: null,
