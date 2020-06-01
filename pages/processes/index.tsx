@@ -111,7 +111,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
       this.props.setTitle(entity.name["default"])
 
       this.props.setEntityId(entityId)
-      this.props.setProcessId(processId)      
+      this.props.setProcessId(processId)
     }
     catch (err) {
       this.setState({ dataLoading: false })
@@ -219,8 +219,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
           <pre>{process.census.merkleRoot}</pre>
           <h4>Census Merkle Tree</h4>
           <pre>{process.census.merkleTree}</pre>
-          <h4>Census Size</h4>
-          <pre>{censusSize}</pre>
+          {
+            censusSize > 0 ? <>
+                <h4>Census Size</h4>
+                <pre>{censusSize}</pre>
+            </> : null
+          }
           <br />
 
           <Divider orientation="left">Time frame</Divider>
