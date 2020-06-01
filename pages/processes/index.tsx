@@ -38,7 +38,7 @@ type State = {
   results: ProcessResults
   totalVotes: number,
   canceled: boolean,
-  censusSize?: string
+  censusSize: number
 }
 
 // Stateful component
@@ -48,7 +48,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
     currentDate: moment(),
     results: null,
     totalVotes: 0,
-    canceled: false
+    canceled: false,
+    censusSize: 0
   }
 
   refreshInterval = null
@@ -105,7 +106,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
       const voteMetadata = await getVoteMetadata(processId, gateway)
       const canceled = await isCanceled(processId, gateway)
 
-      const censusSize = await Census.getCensusSize(voteMetadata.census.merkleRoot, gateway)
+      const censusSize = parseInt(await Census.getCensusSize(voteMetadata.census.merkleRoot, gateway) || "0")
 
       this.setState({ entity, process: voteMetadata, canceled, dataLoading: false, censusSize })
       this.props.setTitle(entity.name["default"])
