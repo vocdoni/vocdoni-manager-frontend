@@ -22,7 +22,7 @@
 */
 /* COMMON LAYOUT ELEMENTS */
 
-/* 
+/*
 #layout .content #page-menu {
     width: 200px;
     min-height: calc(100vh - 57px);
@@ -70,10 +70,14 @@
     box-shadow: 0 3px 6px 0 rgba(0,0,0,0.1);
     border-radius: 4px;
     padding: 24px 24px 48px;
-} 
+}
 
 #layout .ant-layout-header{
     padding:0 20px;
+}
+
+#layout .sign-in-link {
+    color: white;
 }
 
 @media (max-width: 768px) {
@@ -83,7 +87,7 @@
         z-index: 100;
     }
 
-    .md-noShow {
+    .md-hide {
         display: none;
     }
 }
