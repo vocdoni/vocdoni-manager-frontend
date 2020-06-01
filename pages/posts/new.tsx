@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col } from 'antd'
-import { LoadingOutlined, RocketOutlined } from '@ant-design/icons'
+import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, Modal } from 'antd'
+import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
@@ -46,7 +46,7 @@ class PostNew extends Component<IAppContext, State> {
 
   async componentDidMount() {
     this.props.setMenuSelected("new-post")
-    
+
     const { readOnly } = getNetworkState()
     const address = this.props.web3Wallet.getAddress()
     const entityId = getEntityId(address)
@@ -138,22 +138,27 @@ class PostNew extends Component<IAppContext, State> {
     }
   }
 
-  async submit() {
-    // TODO: Make a singnature and use it for next transactions
-    // Web3Wallet.signer.signMessage("democracy")
-    // .then(payload => {
-    //     console.log(payload)
-    //     let passphrase = prompt("Enter your passphrase to unlock your account")
-    //     // console.log(passphrase)
-    //     const digest  = utils.keccak256((Buffer.from(payload+passphrase, 'utf8').toString('hex')))
-    //     console.log(digest)
-    // })
-    // const privKey = padding/trim(digest)
-    // const data = encrypt("hello", privKey)
+  confirmSubmit() {
+    if (!this.state.newsPost.title) return message.warning("Please, enter a title for the post")
+    else if (!this.state.newsPost.image) return message.warning("Please, enter a URL for the header image")
 
+
+    var that = this;
+    Modal.confirm({
+      title: "Confirm",
+      icon: <ExclamationCircleOutlined />,
+      content: "Your post will become public. Do you want to continue?",
+      okText: "Publish Post",
+      okType: "primary",
+      cancelText: "Not now",
+      onOk() {
+        that.submit()
+      },
+    })
+  }
+
+  async submit() {
     // TODO: Store POST in Dexie
-    // el Dexie es un nice to have... con esto se puede montar una DB local, però también podríamos tirar de momento son
-    // la única pega es que si se cierra el browser, se pierde todo
 
     const newsFeed = this.state.newsFeed
 
@@ -164,9 +169,9 @@ class PostNew extends Component<IAppContext, State> {
     newsFeed.items = [post].concat(this.state.newsFeed.items)
 
     try {
-      // TODO: The following removes the last post. Tested exactly the same in 
+      // TODO: The following removes the last post. Tested exactly the same in
       // in Dvote-js and it works. How???
-      // feed = checkValidJsonFeed(feed) 
+      // feed = checkValidJsonFeed(feed)
       checkValidJsonFeed(newsFeed)
     }
     catch (err) {
@@ -241,8 +246,19 @@ class PostNew extends Component<IAppContext, State> {
 
           <Form>
             <Form.Item>
+              <label>Post title</label>
+              <Input
+                size="large"
+                placeholder="The title"
+                value={this.state.newsPost.title}
+                onChange={ev => this.setselectedPostField(['title'], ev.target.value)}
+              />
+            </Form.Item>
+
+            <Form.Item>
               <label>Header image</label>
               <Input type="text"
+                size="large"
                 value={this.state.newsPost.image}
                 // prefix={<FileImageOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder={"URL"}
@@ -252,16 +268,6 @@ class PostNew extends Component<IAppContext, State> {
               <p style={{ marginBottom: 0 }}>
                 <a href="https://unsplash.com" target="_blank"><small>Browse images on unsplash.com</small></a>
               </p>
-            </Form.Item>
-
-            <Form.Item>
-              <label>Post title</label>
-              <Input
-                size="large"
-                placeholder="The title"
-                value={this.state.newsPost.title}
-                onChange={ev => this.setselectedPostField(['title'], ev.target.value)}
-              />
             </Form.Item>
 
             <Form.Item>
@@ -283,7 +289,7 @@ class PostNew extends Component<IAppContext, State> {
           <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
             {this.state.postUpdating ?
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-              <Button type="primary" size={'large'} onClick={() => this.submit()}>
+              <Button type="primary" size={'large'} onClick={() => this.confirmSubmit()}>
                 <RocketOutlined /> Publish Post</Button>
             }
           </div>

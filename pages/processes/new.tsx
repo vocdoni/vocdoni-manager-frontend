@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, DatePicker, Radio } from 'antd'
-import { LoadingOutlined, RocketOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons'
+import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, DatePicker, Radio, Modal } from 'antd'
+import { LoadingOutlined, RocketOutlined, PlusOutlined, MinusOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage, ProcessMetadata } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
@@ -271,6 +271,21 @@ class ProcessNew extends Component<IAppContext, State> {
         return true
     }
 
+    confirmSubmit() {
+        var that = this;
+        Modal.confirm({
+          title: "Confirm",
+          icon: <ExclamationCircleOutlined />,
+          content: "The process will be registered on the blockchain. Do you want to continue?",
+          okText: "Create Process",
+          okType: "primary",
+          cancelText: "Not now",
+          onOk() {
+            that.submit()
+          },
+        })
+    }
+
     async submit() {
         const gwPool = await getGatewayClients()
 
@@ -466,7 +481,7 @@ class ProcessNew extends Component<IAppContext, State> {
                     <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
                         {this.state.processCreating ?
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                            <Button type="primary" size={'large'} onClick={() => this.submit()}>
+                            <Button type="primary" size={'large'} onClick={() => this.confirmSubmit()}>
                                 <RocketOutlined /> Create process</Button>
                         }
                     </div>

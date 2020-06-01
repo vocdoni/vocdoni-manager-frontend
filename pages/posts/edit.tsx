@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col } from 'antd'
-import { LoadingOutlined, RocketOutlined } from '@ant-design/icons'
+import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, Modal } from 'antd'
+import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
@@ -83,7 +83,7 @@ class PostEdit extends Component<IAppContext, State> {
   async refreshMetadata() {
     try {
       this.props.setMenuSelected("new-post")
-      
+
       const params = location.hash.substr(2).split("/")
       if (params.length != 2) {
         message.error("The requested data is not valid")
@@ -136,6 +136,21 @@ class PostEdit extends Component<IAppContext, State> {
     }
   }
 
+  confirmSubmit(){
+    var that = this;
+    Modal.confirm({
+      title: "Confirm",
+      icon: <ExclamationCircleOutlined />,
+      content: "The changes to the post will become public. Do you want to continue?",
+      okText: "Publish Post",
+      okType: "primary",
+      cancelText: "Not now",
+      onOk() {
+        that.submit()
+      },
+    })
+  }
+
   async submit() {
     const params = location.hash.substr(2).split("/")
     if (params.length != 2) {
@@ -173,9 +188,9 @@ class PostEdit extends Component<IAppContext, State> {
     newsFeed.items[idx] = post
 
     try {
-      // TODO: The following removes the last post. Tested exactly the same in 
+      // TODO: The following removes the last post. Tested exactly the same in
       // in Dvote-js and it works. How???
-      // feed = checkValidJsonFeed(feed) 
+      // feed = checkValidJsonFeed(feed)
       checkValidJsonFeed(newsFeed)
     }
     catch (err) {
@@ -292,7 +307,7 @@ class PostEdit extends Component<IAppContext, State> {
           <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
             {this.state.postUpdating ?
               <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-              <Button type="primary" size={'large'} onClick={() => this.submit()}>
+              <Button type="primary" size={'large'} onClick={() => this.confirmSubmit()}>
                 <RocketOutlined /> Publish Post</Button>
             }
           </div>
