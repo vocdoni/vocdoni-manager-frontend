@@ -192,7 +192,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
                             <List.Item.Meta
                                 avatar={<Avatar src={this.state.entity.media.avatar} />}
                                 title={
-                                    <Link href={`/processes/#${entityId}/${(vote as any).id}`}>
+                                    <Link href={`/processes#/${entityId}/${(vote as any).id}`}>
                                         <a>{((vote as any).data as ProcessMetadata).details.title["default"]}</a>
                                     </Link>
                                 }
