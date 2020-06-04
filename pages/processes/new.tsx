@@ -297,7 +297,6 @@ class ProcessNew extends Component<IAppContext, State> {
         newProcess.startBlock = this.state.startBlock
         newProcess.numberOfBlocks = this.state.numberOfBlocks
         newProcess.details.entityId = this.state.entityId
-        newProcess.details.encryptionPublicKey = "0x0"
 
         const hideLoading = message.loading('Action in progress..', 0)
         this.setState({ processCreating: true })
