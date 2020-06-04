@@ -71,8 +71,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const processId = params[1]
         this.setState({ entityId, processId })
 
-        this.props.setEntityId(this.state.entityId)
-        this.props.setProcessId(this.state.processId)
+        this.props.setEntityId(entityId)
+        this.props.setProcessId(processId)
 
         return this.refreshBlockHeight()
             .then(() => this.refreshMetadata())
