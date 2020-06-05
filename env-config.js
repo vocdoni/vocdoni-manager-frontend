@@ -12,8 +12,8 @@ module.exports = {
     ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || "goerli",
 
     // GATEWAYS
-    BOOTNODES_URL_READ_ONLY: process.env.BOOTNODES_URL_READ_ONLY || (DEVELOPMENT ? "https://bootnodes.github.io/gateways.dev.json" : "https://bootnodes.github.io/gateways.json"),
-    BOOTNODES_URL_RW: process.env.BOOTNODES_URL_RW || (DEVELOPMENT ? "https://bootnodes.github.io/gateways.dev.json" : "https://bootnodes.github.io/gateways.priv.json"),
+    BOOTNODES_URL_READ_ONLY: process.env.BOOTNODES_URL_READ_ONLY || (DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : "https://bootnodes.vocdoni.net/gateways.json"),
+    BOOTNODES_URL_RW: process.env.BOOTNODES_URL_RW || (DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : "https://bootnodes.vocdoni.net/gateways.priv.json"),
 
     // VOCHAIN
     BLOCK_TIME: 10, // 10 seconds
