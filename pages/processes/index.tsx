@@ -89,8 +89,9 @@ class ProcessActiveView extends Component<IAppContext, State> {
     shouldComponentUpdate(nextProps, nextState) {
         const params = location.hash.substr(2).split("/")
         if (params.length != 2) return true
-
-        if (params[0] != this.state.entityId || params[1] != this.state.processId) {
+        
+        if (this.state.entityId !== undefined && this.state.processId !== undefined && 
+            (params[0] != this.state.entityId || params[1] != this.state.processId)) {
             this.init()
         }
 
