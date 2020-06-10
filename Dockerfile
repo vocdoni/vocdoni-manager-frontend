@@ -12,4 +12,4 @@ RUN npm install && npm run export
 FROM nginx
 RUN rm -Rf /usr/share/nginx/html
 WORKDIR /usr/share/nginx/html
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/build /usr/share/nginx/html
