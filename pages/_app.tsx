@@ -7,7 +7,7 @@ import GeneralError from '../components/error'
 import { initNetwork, getNetworkState } from "../lib/network"
 import { IAppContext } from "../components/app-context"
 import Web3Wallet, { getWeb3Wallet } from "../lib/web3-wallet"
-import { message } from "antd"
+import { message, Row, Col, Card, Button } from "antd"
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
 
@@ -15,6 +15,8 @@ import 'antd/dist/antd.css';
 import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { Wallet } from 'ethers'
+import Icon from '@ant-design/icons/lib/components/AntdIcon'
+import { ReloadOutlined } from '@ant-design/icons'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -34,6 +36,7 @@ type State = {
     entityId?: string,
     processId?: string,
     urlHash?: string,
+    connectionError?: string
 }
 
 class MainApp extends App<Props, State> {
@@ -62,13 +65,7 @@ class MainApp extends App<Props, State> {
     // }
 
     async componentDidMount() {
-        await initNetwork().then(async () => {
-            message.success("Connected")
-            await this.refreshWeb3Status()
-        }).catch(err => {
-            this.refreshWeb3Status()
-            message.error("Could not connect")
-        })
+        this.connect()
 
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
 
@@ -93,6 +90,18 @@ class MainApp extends App<Props, State> {
         }
     }
 
+    async connect(){
+        await initNetwork().then(async () => {
+            message.success("Connected")
+            this.setState({ connectionError: null })
+            this.refreshWeb3Status()
+        }).catch(err => {
+            message.error("Could not connect")
+            this.setState({ connectionError: err && err.message || err })
+            this.refreshWeb3Status()
+        })
+    }
+
     hashChange(e: HashChangeEvent) {
         this.setUrlHash(location.hash.substr(2))
     }
@@ -107,6 +116,7 @@ class MainApp extends App<Props, State> {
         }).catch(err => {
             this.refreshWeb3Status()
             message.error("Could not connect")
+            this.setState({connectionError: err.message})
         })
     }
 
@@ -167,8 +177,27 @@ class MainApp extends App<Props, State> {
         // </div>
     }
 
+    renderRetry(){
+        return <div id="index">
+            <Row justify="center" align="middle">
+                <Col xs={24} sm={18} md={10}>
+                    <Card title="Connection Error" className="card">
+                        <p>Oops! There has been a problem while connecting to our services.</p>
+                        <div style={{ textAlign: "center" }}>
+                            <Button type="primary" onClick={() => this.setState({connectionError: false}, () => this.connect())}><ReloadOutlined />Retry</Button>
+                        </div>
+                    </Card>
+                </Col>
+            </Row>
+        </div>
+    }
+
     render() {
         if (!this.state.isConnected) {
+            if(this.state.connectionError){
+                return this.renderRetry()
+            }
+
             return this.renderPleaseWait()
         }
 
