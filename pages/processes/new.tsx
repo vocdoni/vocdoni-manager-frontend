@@ -95,7 +95,7 @@ class ProcessNew extends Component<IAppContext, State> {
         try {
             await this.refreshBlockHeight()
             await this.refreshMetadata()
-            this.setDateRange(moment().add(15, 'minutes'), moment().add(3, 'days').add(15, 'minutes'))
+            this.setDateRange(moment().add(4, 'minutes'), moment().add(3, 'days').add(4, 'minutes'))
 
             const interval = (parseInt(process.env.BLOCK_TIME || "10") || 10) * 1000
             this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
@@ -212,8 +212,8 @@ class ProcessNew extends Component<IAppContext, State> {
         if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'day')) {
             if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'hours')) {
                 return {
-                    disabledHours: () => this.range(0, this.state.currentDate.add(15, 'minutes').hours()),
-                    disabledMinutes: () => this.range(0, this.state.currentDate.add(15, 'minutes').minutes()),
+                    disabledHours: () => this.range(0, this.state.currentDate.add(4, 'minutes').hours()),
+                    disabledMinutes: () => this.range(0, this.state.currentDate.add(4, 'minutes').minutes()),
                 }
             }
             return {
@@ -438,7 +438,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                     placeholder={["Vote start", "Vote end"]}
                                     disabledDate={(current) => this.disabledDate(current)}
                                     disabledTime={(current) => this.disabledTime(current)}
-                                    defaultValue={[moment().add(15, 'minutes'), moment().add(3, 'days').add(15, 'minutes')]}
+                                    defaultValue={[moment().add(4, 'minutes'), moment().add(3, 'days').add(4, 'minutes')]}
                                     onChange={(dates: moment.Moment[], _) => {
                                         if (!dates || !dates.length) return
                                         this.setDateRange(dates[0], dates[1])
