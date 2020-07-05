@@ -163,8 +163,8 @@ class MemberView extends Component<IAppContext, State> {
                   </Row>
                 </Form>
               }
-              <Divider orientation="left">Matching targets</Divider>
-              {/* <Table 
+              {/* <Divider orientation="left">Matching targets</Divider>
+              <Table 
                 rowKey="id"
                 columns={columns}
                 dataSource={this.state.targets} 

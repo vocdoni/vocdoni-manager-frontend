@@ -1,13 +1,14 @@
 import { useContext, Component, ReactText } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { Row, Col, Divider, Table, Tag, Select, Space, Button, message } from 'antd'
-import { TagOutlined, DownloadOutlined } from '@ant-design/icons'
+import { TagOutlined, DownloadOutlined, ExportOutlined } from '@ant-design/icons'
 import { ITarget, ITag, IMember } from '../../lib/types'
-import { getNetworkState } from '../../lib/network'
+import { getNetworkState, getGatewayClients } from '../../lib/network'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 import moment from 'moment'
+import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
 
 const MembersPage = props => {
   const context = useContext(AppContext)
@@ -181,6 +182,68 @@ class Members extends Component<IAppContext, State> {
       })
   }
 
+  createCensus(){
+    // Defaulting targets
+    const targetId = this.state.targets[0].id
+    const targetName = this.state.targets[0].name
+
+    const request = { method: "dumpTarget", targetID: targetId }
+    const wallet = this.props.web3Wallet.getWallet()
+    this.props.registryGateway.sendMessage(request as any, wallet)
+      .then(async (result) => {
+        if(!result.ok){
+          const error = "Could not export the target"
+          message.error(error)
+          this.setState({error})
+          return false
+        }
+
+        const censusName = targetName + '_' + (Math.floor(Date.now() / 1000));
+        const gateway = await getGatewayClients()
+        const { censusId, merkleRoot} = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
+        console.log('censusId is', censusId)
+        console.log('prams', censusId, result.claims, false, gateway, wallet)
+        const { invalidClaims } = await addClaimBulk(censusId, result.claims, false, gateway, wallet)
+
+        //TODO: Show information about found claims and invalidClaims?
+        
+        const merkleTreeUri = await publishCensus(censusId, gateway, wallet)        
+
+        this.registerCensus(censusId, censusName, merkleRoot, merkleTreeUri, targetId)
+      },
+      (error) => {
+        message.error("Could not export the target")
+        this.setState({error})
+      })
+  }
+
+  async registerCensus(censusId, name, merkleRoot, merkleTreeUri, targetId){
+    let regRequest = { 
+      method: "addCensus", 
+      censusId,
+      targetId,
+      census: {name, merkleRoot, merkleTreeUri}
+    }
+
+    this.props.registryGateway.sendMessage(regRequest as any, this.props.web3Wallet.getWallet())
+      .then(async (result) => {
+        if(!result.ok){
+          const error = "Could not register the census"
+          message.error(error)
+          this.setState({error})
+          return false
+        }
+
+        message.success("Target has been exported")
+        Router.replace("/census/edit#/" + this.props.entityId)
+      },
+      (error) => {
+        message.error("Could not register the census")
+        this.setState({error})
+        console.log(error)
+      })
+  }
+
   onTargetChange(target: string) {
     const pagination = {current: 1, pageSize: 10}
     this.setState({selectedTarget: target, pagination})
@@ -241,10 +304,10 @@ class Members extends Component<IAppContext, State> {
             <Col xs={{span: 24, order: 1}} lg={{span: 6, order: 2}}>
               <Row gutter={[0,24]}>
                 <Col span={24}>
-                  {((this.state.targets && this.state.targets.length > 0) || (this.state.tags && this.state.tags.length > 0)) && 
+                  {false && ((this.state.targets && this.state.targets.length > 0) || (this.state.tags && this.state.tags.length > 0)) && 
                   <Divider orientation="left">Filters</Divider>
                   }
-                  {this.state.targets && this.state.targets.length > 0 && 
+                  {false && this.state.targets && this.state.targets.length > 0 && 
                     <Select 
                       onChange={(val) => this.onTargetChange(val)} 
                       defaultValue={"Select a target..."} 
@@ -284,6 +347,8 @@ class Members extends Component<IAppContext, State> {
                 <Col span={24}>
                   <Divider orientation="left">Tools</Divider>
                   <Button onClick={() => this.exportTokens()} type="ghost" icon={<DownloadOutlined />}>Export member tokens</Button>
+                  <br />
+                  <Button onClick={() => this.createCensus()} type="primary" icon={<ExportOutlined />}>Create Census</Button>
                 </Col>
               </Row>
             </Col>

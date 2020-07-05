@@ -130,10 +130,10 @@ class Census extends Component<IAppContext, State> {
   render() {
     const columns = [
       { title: 'Name', dataIndex: 'name', key: 'name' },
-      { title: 'Target', dataIndex: 'targetId', key: 'targetId', render: (text, record, index) => ( 
-          <Link href={"/targets/view#/" + this.props.entityId + "/" + record.targetId}><a>{record.targetId}</a></Link>
-        ) 
-      },
+      // { title: 'Target', dataIndex: 'targetId', key: 'targetId', render: (text, record, index) => ( 
+      //     <Link href={"/targets/view#/" + this.props.entityId + "/" + record.targetId}><a>{record.targetId}</a></Link>
+      //   ) 
+      // },
       { title: 'Census Id', dataIndex: 'id', key: 'id' },
       // { title: 'MerkleRoot', dataIndex: 'id', key: 'id' },
       { title: 'Creation date', dataIndex: 'created_at', key: 'created_at' },

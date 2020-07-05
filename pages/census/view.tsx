@@ -86,9 +86,9 @@ class CensusView extends Component<IAppContext, State> {
               {census && 
                 <Descriptions column={2} layout="vertical" colon={false}>
                   <Descriptions.Item label="Name">{census.name}</Descriptions.Item>
-                  <Descriptions.Item label="Target">
+                  {/* <Descriptions.Item label="Target">
                     <Link href={"/targets/view#" + this.state.entityId + "/" + this.state.censusTarget.id}><a>{this.state.censusTarget.name}</a></Link>
-                  </Descriptions.Item>
+                  </Descriptions.Item> */}
                   <Descriptions.Item label="Merkle Root">{census.merkleRoot}</Descriptions.Item>
                   <Descriptions.Item label="Merkle Tree Origin">{census.merkleTreeUri}</Descriptions.Item>
                   <Descriptions.Item label="Size">{census.size} members</Descriptions.Item>

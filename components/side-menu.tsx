@@ -69,9 +69,9 @@ const SideMenu = () => {
       <Menu.Item key="members" disabled={context.menuDisabled}>
         <Link href={"/members#/" + entityId}><a>Members</a></Link>
       </Menu.Item>
-      <Menu.Item key="targets" disabled={context.menuDisabled}>
+      {/* <Menu.Item key="targets" disabled={context.menuDisabled}>
         <Link href={"/targets#/" + entityId}><a>Targets</a></Link>
-      </Menu.Item>
+      </Menu.Item> */}
       <Menu.Item key="census" disabled={context.menuDisabled}>
         <Link href={"/census#/" + entityId}><a>Exported Census</a></Link>
       </Menu.Item>
