@@ -3,7 +3,7 @@ import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Avatar, Modal } from 'antd'
 import { Divider, Menu, List } from 'antd'
-import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { LoadingOutlined, ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons'
 import { EditOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage } from "dvote-js"
@@ -168,12 +168,13 @@ class PostView extends Component<IAppContext, State> {
 				renderItem={(post: IFeedPost, idx: number) => (
 					<List.Item
 						key={idx}
-						actions={hideEditControls ? [] : [
-							<Link href={`/posts/edit#/${entityId}/${post.id}`}><a>
-								<IconText icon={EditOutlined} text="Edit post" key="edit" />
-							</a></Link>,
-							<IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.confirmDeletePost(this.state.startIndex + idx)} key="remove" />,
-						]}
+						actions={hideEditControls ? 
+							[ <Link href={`/posts/view#/${entityId}/${post.id}`}><a><IconText icon={EyeOutlined} text="View post" key="view" /></a></Link> ] 
+							: [ <Link href={`/posts/edit#/${entityId}/${post.id}`}><a>
+										<IconText icon={EditOutlined} text="Edit post" key="edit" />
+									</a></Link>,
+									<IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.confirmDeletePost(this.state.startIndex + idx)} key="remove" />,
+							]}
 						extra={<img width={272} alt={post.title} src={post.image} />}
 					>
 						<List.Item.Meta
