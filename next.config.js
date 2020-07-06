@@ -51,5 +51,6 @@ async function generatePathMap() {
         '/posts': { page: '/posts' },
         '/posts/edit': { page: '/posts/edit' },
         '/posts/new': { page: '/posts/new' },
+        '/posts/view': { page: '/posts/view' },
     }
 }
