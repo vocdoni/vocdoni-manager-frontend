@@ -1,47 +1,64 @@
-# This file is a template, and might need editing before it works on your project.
-# Official framework image. Look for the different tagged releases at:
-# https://hub.docker.com/r/library/node/tags/
+# BASE
+# https://docs.gitlab.com/ce/ci/docker/using_docker_build.html#container-registry-examples
 
 stages:
   - build
-#   - test
-#   - preview
   - deploy
 
-# Pick zero or more services to be used on all builds.
-# Only needed when using a docker container to run your tests in.
-# Check out: http://docs.gitlab.com/ce/ci/docker/using_docker_images.html#what-is-a-service
-#
-#services:
-#  - mongo:4
+variables:
+  DOCKER_DRIVER: overlay2
+  # MANAGER_BRANCH_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}
+  MANAGER_RELEASE_IMAGE: ${CI_REGISTRY_IMAGE}:latest
 
-# This folder is cached between builds
-# http://docs.gitlab.com/ce/ci/yaml/README.html#cache
-cache:
-  paths:
-  - node_modules/
+###############################################################################
+## ENTITY MANAGER DOCKER
+###############################################################################
 
-## INTEGRATION
-
-build:
+manager-build:
   image: node:12
   stage: build
   script:
     - npm install
     - npm run export
-#   artifacts:
-#     name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-#     paths:
-#       - build/
-#   only:
-#     - master
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+      - build/
+  except:
+    - release
 
-# docker build:
-#   script: docker build -t voc/entity-manager:$CI_COMMIT_REF_SLUG .
-#   only:
-#     changes:
-#       - Dockerfile
-#       - public/**/*
+manager-docker-release:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+  script:
+    - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+    - docker push ${MANAGER_RELEASE_IMAGE}
+  only:
+    changes:
+      - components/**/*
+      - i18n/**/*
+      - lib/**/*
+      - pages/**/*
+      - public/**/*
+      - styles/**/*
+      - Dockerfile
+      - .dockerignore
+      - .gitlab-ci.yml
+      - env-config.js
+      - next.config.js
+      - package-lock.json
+      - package.json
+      - tsconfig.json
+    refs:
+      - release
+
+
+
+## DEPRECATED
 
 dev-deploy:
   image: alpine:3.7
@@ -62,6 +79,7 @@ prod-deploy:
   only:
     refs:
       - release
+
 
 ## PREVIEW
 
