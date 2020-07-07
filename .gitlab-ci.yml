@@ -7,8 +7,6 @@ stages:
 
 variables:
   DOCKER_DRIVER: overlay2
-  # MANAGER_BRANCH_IMAGE: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}
-  MANAGER_RELEASE_IMAGE: ${CI_REGISTRY_IMAGE}:latest
 
 ###############################################################################
 ## ENTITY MANAGER DOCKER
@@ -27,16 +25,21 @@ manager-build:
   except:
     - release
 
-manager-docker-release:
+manager-docker:
   stage: build
   image: docker:stable
   services:
     - docker:dind
-  before_script:
-    - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
   script:
-    - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
-    - docker push ${MANAGER_RELEASE_IMAGE}
+    # Gitlab CI
+    # - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+    # - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+    # - docker push ${MANAGER_RELEASE_IMAGE}
+    #
+    # Docker Hub
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}:latest --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+    - docker push ${CI_REGISTRY_IMAGE}:latest
   only:
     changes:
       - components/**/*
@@ -54,29 +57,39 @@ manager-docker-release:
       - package.json
       - tsconfig.json
     refs:
-      - release
-
-
-
-## DEPRECATED
-
-dev-deploy:
-  image: alpine:3.7
-  stage: deploy
-  script:
-    - apk add curl
-    - curl ${DEV_WWW_UPGRADE_WEBHOOK}
-  only:
-    refs:
       - master
 
-prod-deploy:
-  image: alpine:3.7
-  stage: deploy
+manager-docker-release:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
   script:
-    - apk add curl
-    - curl ${PROD_WWW_UPGRADE_WEBHOOK}
+    # Gitlab CI
+    # - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+    # - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+    # - docker push ${MANAGER_RELEASE_IMAGE}
+    #
+    # Docker Hub
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}:release --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+    - docker push ${CI_REGISTRY_IMAGE}:release
   only:
+    changes:
+      - components/**/*
+      - i18n/**/*
+      - lib/**/*
+      - pages/**/*
+      - public/**/*
+      - styles/**/*
+      - Dockerfile
+      - .dockerignore
+      - .gitlab-ci.yml
+      - env-config.js
+      - next.config.js
+      - package-lock.json
+      - package.json
+      - tsconfig.json
     refs:
       - release
 
