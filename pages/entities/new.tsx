@@ -111,18 +111,22 @@ class EntityNew extends Component<IAppContext, State> {
 			entity.actions[idx].visible = process.env.ACTION_VISIBILITY_URL
 		}
 
-		// Filter extraneous actions
 		entity.actions = entity.actions.filter(meta => !!meta.actionKey)
+
 
 		try {
 			const gateway = await getGatewayClients()
-			// const state = getNetworkState()
+			const state = getNetworkState()
 
 			const address = this.props.web3Wallet.getAddress()
-			await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
-			message.success("The entity has been registered")
 
+			await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 			const entityId = getEntityId(address)
+
+			await this.registrySignup(entityId)
+
+			message.success("The entity has been registered")
+		
 			Router.push("/entities/edit#/" + entityId)
 
 			this.setState({ entityUpdating: false })
@@ -130,6 +134,14 @@ class EntityNew extends Component<IAppContext, State> {
 			message.error("The entity could not be registered")
 			this.setState({ entityUpdating: false })
 		}
+	}
+
+	registrySignup(entityId: string){
+		const request = { 
+			method: "signUp",
+			entityId,
+		}
+		return this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet());
 	}
 
 	// renderSupportedLanaguages(entity) {

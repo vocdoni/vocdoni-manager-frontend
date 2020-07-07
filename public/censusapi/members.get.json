@@ -1,0 +1,27 @@
+{
+  "totalCount": 2,
+  "items": [
+    {
+      "id": 1,
+      "firstname": "Jon",
+      "lastname": "Snow",
+      "email": "jonsnow@gmail.com",
+      "age": 32,
+      "tags": {
+        "king": true,
+        "paid": true
+      }
+    },
+    {
+      "id": 2,
+      "firstname": "Daenerys",
+      "lastname": "Targeryen",
+      "email": "danny@gmail.com",
+      "age": 32,
+      "tags": {
+        "king": true,
+        "paid": false
+      }
+    }
+  ]
+}

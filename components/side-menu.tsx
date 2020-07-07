@@ -1,7 +1,7 @@
 import React from "react"
 import Link from "next/link"
 import { Menu } from "antd"
-import { HomeOutlined } from '@ant-design/icons';
+import { HomeOutlined, TeamOutlined } from '@ant-design/icons';
 import { getNetworkState } from "../lib/network"
 import { getEntityId } from "dvote-js/dist/api/entity"
 import { useContext } from "react"
@@ -65,11 +65,20 @@ const SideMenu = () => {
         </Menu.Item>
       }
     </Menu.SubMenu>
-    {/* <Menu.SubMenu title="Census" key="census">
-      <Menu.Item key="census1"><Link href={"/"}><a>Census 1</a></Link></Menu.Item>
-      <Menu.Item key="census2"><Link href={"/"}><a>Census 2</a></Link></Menu.Item>
-      <Menu.Item key="census3"><Link href={"/"}><a>Census 3</a></Link></Menu.Item>
-    </Menu.SubMenu> */}
+    <Menu.SubMenu title="Census" key="census" icon={<TeamOutlined />} disabled={context.menuDisabled}>
+      <Menu.Item key="members" disabled={context.menuDisabled}>
+        <Link href={"/members#/" + entityId}><a>Members</a></Link>
+      </Menu.Item>
+      <Menu.Item key="targets" disabled={context.menuDisabled}>
+        <Link href={"/targets#/" + entityId}><a>Targets</a></Link>
+      </Menu.Item>
+      <Menu.Item key="census" disabled={context.menuDisabled}>
+        <Link href={"/census#/" + entityId}><a>Exported Census</a></Link>
+      </Menu.Item>
+      <Menu.Item key="members-import" disabled={context.menuDisabled}>
+        <Link href={"/members/import#/" + entityId}><a>Import Members</a></Link>
+      </Menu.Item>
+    </Menu.SubMenu>
   </Menu>
 }
 
