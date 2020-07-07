@@ -49,7 +49,7 @@ manager-docker:
       - pages/**/*
       - public/**/*
       - styles/**/*
-      - Dockerfile
+      - Dockerfile-live
       - .dockerignore
       - .gitlab-ci.yml
       - env-config.js
@@ -83,7 +83,7 @@ manager-docker-release:
       - pages/**/*
       - public/**/*
       - styles/**/*
-      - Dockerfile
+      - Dockerfile-live
       - .dockerignore
       - .gitlab-ci.yml
       - env-config.js
