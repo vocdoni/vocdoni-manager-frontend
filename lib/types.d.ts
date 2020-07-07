@@ -40,3 +40,34 @@ export interface IWallet {
     seed: string,
     publicKey: string,
 }
+
+export interface IMember {
+    id: string,
+    name: string,
+    lastName: string,
+    email: string,
+    dateOfBirth: any,
+    tags: [],
+}
+
+export interface ITarget {
+    id: string,
+    name: string,
+    description: string,
+    filters: [],
+}
+
+export interface ITag {
+    name: string,
+    type: string,
+}
+
+export interface ICensus {
+    id: string,
+    name: string,
+    target: ITarget,
+    merkleRoot?: string,
+    merkleTreeUri?: string,
+    size: number,
+    created_at: string,
+}

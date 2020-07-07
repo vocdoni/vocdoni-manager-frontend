@@ -1,6 +1,7 @@
 import { createContext } from 'react'
 import { Wallet } from "ethers"
 import Web3Wallet from '../lib/web3-wallet'
+import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 
 export type ISelected = "profile"
     | "entity-edit"
@@ -10,9 +11,10 @@ export type ISelected = "profile"
     | "processes-ended"
     | "new-vote"
     | "processes-details"
-    | "census1"
-    | "census2"
-    | "census3"
+    | "members"
+    | "targets"
+    | "census"
+    | "members-import"
 
 export interface IAppContext {
     title: string,
@@ -32,7 +34,8 @@ export interface IAppContext {
     setMenuCollapsed: (menuCollapsed: boolean) => void
     setMenuDisabled: (menuDisabled: boolean) => void
     setEntityId: (entityId: string) => void
-    setProcessId: (processId: string) => void
+    setProcessId: (processId: string) => void,
+    registryGateway: DVoteGateway,
     setUrlHash: (urlHash: string) => void
 }
 

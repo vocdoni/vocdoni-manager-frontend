@@ -1,0 +1,15 @@
+{
+  "totalCount": 2,
+  "items": [
+    {
+      "id": 1,
+      "name": "king",
+      "type": "boolean"
+    },
+    {
+      "id": 2,
+      "name": "paid",
+      "type": "boolean"
+    }
+  ]
+}

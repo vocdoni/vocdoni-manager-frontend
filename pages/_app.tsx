@@ -15,13 +15,13 @@ import 'antd/dist/antd.css';
 import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import { Wallet } from 'ethers'
-import Icon from '@ant-design/icons/lib/components/AntdIcon'
+import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 import { ReloadOutlined } from '@ant-design/icons'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 type Props = {
-    // injectedArray: any[],
+    registryGateway: DVoteGateway
 }
 
 type State = {
@@ -36,7 +36,8 @@ type State = {
     entityId?: string,
     processId?: string,
     urlHash?: string,
-    connectionError?: string
+    connectionError?: string,
+    registryGateway?: DVoteGateway,
 }
 
 class MainApp extends App<Props, State> {
@@ -53,16 +54,6 @@ class MainApp extends App<Props, State> {
     }
 
     refreshInterval: any
-
-    // static async getInitialProps(appContext) {
-    //     // calls page's `getInitialProps` and fills `appProps.pageProps`
-    //     const appProps = await App.getInitialProps(appContext)
-    //
-    //     // Fetch data and provide it on the first render
-    //     const injectedArray = []
-    //
-    //     return { injectedArray, ...appProps }
-    // }
 
     async componentDidMount() {
         this.connect()
@@ -100,6 +91,13 @@ class MainApp extends App<Props, State> {
             this.setState({ connectionError: err && err.message || err })
             this.refreshWeb3Status()
         })
+
+        const registryGateway: DVoteGateway = new DVoteGateway({ 
+            uri: process.env.REGISTRY_GATEWAY_URL, 
+            supportedApis: ['census'],
+            // publicKey: process.env.REGISTRY_GATEWAY_PUB_KEY,
+        })
+        this.setState({registryGateway})
     }
 
     hashChange(e: HashChangeEvent) {
@@ -203,10 +201,8 @@ class MainApp extends App<Props, State> {
 
         // Main render
 
-        const { Component, pageProps } = this.props
-
         // Get data from getInitialProps and provide it as the global context to children
-        // const { injectedArray } = this.props
+        const { Component, pageProps } = this.props
 
         const injectedGlobalContext: IAppContext = {
             title: this.state.title,
@@ -228,6 +224,7 @@ class MainApp extends App<Props, State> {
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
             setUrlHash: (hash) => this.setUrlHash(hash),
+            registryGateway: this.state.registryGateway,
         }
 
 

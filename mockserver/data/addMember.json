@@ -1,0 +1,12 @@
+{
+  id: "XJK1234asdf...",
+  ok: true,
+  member: {
+      id: "1234...",
+      firstName:
+      lastName:
+      email:
+      phone:
+      dateOfBirth:
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "item": {
+    "id": 1,
+    "firstname": "Jon",
+    "lastname": "Snow",
+    "email": "jonsnow@gmail.com",
+    "age": 32,
+    "tags": {
+      "king": true,
+      "paid": true
+    },
+    "targets": [
+      { "id": 1, "name": "secretariat" },
+      { "id": 2, "name": "membres de ple dret" }
+    ]
+  }
+}

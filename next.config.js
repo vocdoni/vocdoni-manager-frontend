@@ -36,21 +36,27 @@ module.exports = {
 ///////////////////////////////////////////////////////////////////////////////
 
 async function generatePathMap() {
-    return {
-        '/': { page: '/' },
-        '/account/new': { page: '/account/new' },
-        '/account/import': { page: '/account/import' },
-        '/entities': { page: '/entities' },
-        '/entities/edit': { page: '/entities/edit' },
-        '/entities/new': { page: '/entities/new' },
-        '/processes': { page: '/processes' },
-        // '/processes/edit': { page: '/processes/edit' },
-        '/processes/new': { page: '/processes/new' },
-        '/processes/active': { page: '/processes/active' },
-        '/processes/ended': { page: '/processes/ended' },
-        '/posts': { page: '/posts' },
-        '/posts/edit': { page: '/posts/edit' },
-        '/posts/new': { page: '/posts/new' },
-        '/posts/view': { page: '/posts/view' },
-    }
+  return {
+    '/': { page: '/' },
+    '/account/new': { page: '/account/new' },
+    '/account/import': { page: '/account/import' },
+    '/entities': { page: '/entities' },
+    '/entities/edit': { page: '/entities/edit' },
+    '/entities/new': { page: '/entities/new' },
+    '/processes': { page: '/processes' },
+    // '/processes/edit': { page: '/processes/edit' },
+    '/processes/new': { page: '/processes/new' },
+    '/processes/active': { page: '/processes/active' },
+    '/processes/ended': { page: '/processes/ended' },
+    '/posts': { page: '/posts' },
+    '/posts/edit': { page: '/posts/edit' },
+    '/posts/new': { page: '/posts/new' },
+    '/posts/view': { page: '/posts/view' },
+    '/members': { page: '/members' },
+    '/members/view': { page: '/members/view' },
+    '/targets': { page: '/targets' },
+    '/targets/view': { page: '/targets/view' },
+    '/census': { page: '/census' },
+    '/census/view': { page: '/census/view' }
+  }
 }
