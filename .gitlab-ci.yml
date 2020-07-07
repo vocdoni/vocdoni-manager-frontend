@@ -18,11 +18,12 @@ manager-build:
   script:
     - npm install
     - npm run export
-  artifacts:
-    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
-    paths:
-      - build/
+  #artifacts:
+  #  name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+  #  paths:
+  #    - build/
   except:
+    - master
     - release
 
 manager-docker:
@@ -38,7 +39,7 @@ manager-docker:
     #
     # Docker Hub
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}:latest --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}:latest --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID"--build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY"--build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW"--build-arg "APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN"--build-arg "REGISTER_URL=$REGISTER_URL"--build-arg "ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL"--build-arg "REGISTRY_GATEWAY_URL=$REGISTRY_GATEWAY_URL"--build-arg "REGISTRY_GATEWAY_PUB_KEY=$REGISTRY_GATEWAY_PUB_KEY" -f Dockerfile-live .
     - docker push ${CI_REGISTRY_IMAGE}:latest
   only:
     changes:
@@ -72,7 +73,7 @@ manager-docker-release:
     #
     # Docker Hub
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-    - docker build --pull -t ${CI_REGISTRY_IMAGE}:release --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+    - docker build --pull -t ${CI_REGISTRY_IMAGE}:release --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID"--build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY"--build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW"--build-arg "APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN"--build-arg "REGISTER_URL=$REGISTER_URL"--build-arg "ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL"--build-arg "REGISTRY_GATEWAY_URL=$REGISTRY_GATEWAY_URL"--build-arg "REGISTRY_GATEWAY_PUB_KEY=$REGISTRY_GATEWAY_PUB_KEY" -f Dockerfile-live .
     - docker push ${CI_REGISTRY_IMAGE}:release
   only:
     changes:

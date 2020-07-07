@@ -92,8 +92,8 @@ class MainApp extends App<Props, State> {
             this.refreshWeb3Status()
         })
 
-        const registryGateway: DVoteGateway = new DVoteGateway({ 
-            uri: process.env.REGISTRY_GATEWAY_URL, 
+        const registryGateway: DVoteGateway = new DVoteGateway({
+            uri: process.env.REGISTRY_GATEWAY_URL,
             supportedApis: ['census'],
             // publicKey: process.env.REGISTRY_GATEWAY_PUB_KEY,
         })
@@ -232,7 +232,7 @@ class MainApp extends App<Props, State> {
         const Layout = (Component as any).Layout || MainLayout
         return <AppContext.Provider value={injectedGlobalContext}>
             <Head>
-                <title>Vocdoni Entities</title>
+                <title>Vocdoni</title>
             </Head>
             <Layout>
                 <Component {...pageProps} />
