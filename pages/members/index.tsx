@@ -59,7 +59,7 @@ class Members extends Component<IAppContext, State> {
     this.fetchCount()
     this.fetch()
     this.fetchTargets()
-    this.fetchTags()
+    // this.fetchTags()
   }
 
   handleTableChange(pagination: any, filters: any, sorter: any = { field: undefined, order: undefined }) {
@@ -193,6 +193,12 @@ class Members extends Component<IAppContext, State> {
       .then(async (result) => {
         if(!result.ok){
           const error = "Could not export the target"
+          message.error(error)
+          this.setState({error})
+          return false
+        }
+        if(!result.claims ){
+          const error = "No claims found to export"
           message.error(error)
           this.setState({error})
           return false
