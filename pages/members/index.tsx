@@ -147,6 +147,7 @@ class Members extends Component<IAppContext, State> {
           return false
         }
 
+        message.success("Member has been deleted")
         const data = this.state.data.filter(item => item.id !== record.id)
         this.setState({ data })
 
@@ -192,7 +193,7 @@ class Members extends Component<IAppContext, State> {
     this.props.registryGateway.sendMessage(request as any, wallet)
       .then(async (result) => {
         if(!result.ok){
-          const error = "Could not export the target"
+          const error = "Could not export the census"
           message.error(error)
           this.setState({error})
           return false
@@ -206,11 +207,13 @@ class Members extends Component<IAppContext, State> {
 
         const censusName = targetName + '_' + (Math.floor(Date.now() / 1000));
         const gateway = await getGatewayClients()
-        const { censusId, merkleRoot} = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
+        const { censusId } = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
         console.log('censusId is', censusId)
         console.log('prams', censusId, result.claims, false, gateway, wallet)
-        const { invalidClaims } = await addClaimBulk(censusId, result.claims, false, gateway, wallet)
-
+        const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, result.claims, false, gateway, wallet)
+        if (invalidClaims.length > 0) {
+          message.warn(`Found ${invalidClaims.length} invalid claims`)
+        }
         //TODO: Show information about found claims and invalidClaims?
         
         const merkleTreeUri = await publishCensus(censusId, gateway, wallet)        
@@ -218,7 +221,7 @@ class Members extends Component<IAppContext, State> {
         this.registerCensus(censusId, censusName, merkleRoot, merkleTreeUri, targetId)
       },
       (error) => {
-        message.error("Could not export the target")
+        message.error("Could not export the census")
         this.setState({error})
       })
   }
@@ -240,8 +243,8 @@ class Members extends Component<IAppContext, State> {
           return false
         }
 
-        message.success("Target has been exported")
-        Router.replace("/census/edit#/" + this.props.entityId)
+        message.success("Census has been exported")
+        Router.replace("/census/view#/" + this.props.entityId+"/"+censusId.split('/')[1])
       },
       (error) => {
         message.error("Could not register the census")

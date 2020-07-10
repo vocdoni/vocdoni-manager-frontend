@@ -70,7 +70,7 @@ class CensusView extends Component<IAppContext, State> {
         Router.replace("/census#/" + this.state.entityId)
       },
       (error) => {
-        message.error("Could not delete the member")
+        message.error("Could not delete the census")
         this.setState({error})
       })
   }
