@@ -89,8 +89,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
     shouldComponentUpdate(nextProps, nextState) {
         const params = location.hash.substr(2).split("/")
         if (params.length != 2) return true
-        
-        if (this.state.entityId !== undefined && this.state.processId !== undefined && 
+
+        if (this.state.entityId !== undefined && this.state.processId !== undefined &&
             (params[0] != this.state.entityId || params[1] != this.state.processId)) {
             this.init()
         }
@@ -278,7 +278,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                                     <ul style={{ paddingLeft: 10, listStyle: "none" }}>
                                         {
                                             entry.voteResults.map((result, i) => <li key={i}>
-                                                <Badge count={result.votes || "–"} style={{ backgroundColor: "#848484" }} /> &nbsp;{result.title.default}
+                                                <Badge overflowCount={9999999999} count={result.votes || "–"} style={{ backgroundColor: "#848484" }} /> &nbsp;{result.title.default}
                                             </li>)
                                         }
                                     </ul>
