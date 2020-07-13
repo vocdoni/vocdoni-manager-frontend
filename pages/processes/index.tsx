@@ -10,7 +10,7 @@ import moment from 'moment'
 import Router from 'next/router'
 import Link from "next/link"
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
-import { getVoteMetadata, isCanceled } from "dvote-js/dist/api/vote"
+import { getVoteMetadata, isCanceled, estimateDateAtBlock } from "dvote-js/dist/api/vote"
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -35,6 +35,8 @@ type State = {
     entityId?: string,
     processId?: string,
     process?: ProcessMetadata,
+    estimatedStartDate?: Date,
+    estimatedEndDate?: Date,
     results: ProcessResults
     totalVotes: number,
     canceled: boolean,
@@ -125,12 +127,14 @@ class ProcessActiveView extends Component<IAppContext, State> {
             const entity = await Entity.getEntityMetadata(this.state.entityId, gateway)
             if (!entity) throw new Error()
 
-            const voteMetadata = await getVoteMetadata(this.state.processId, gateway)
+            const metadata = await getVoteMetadata(this.state.processId, gateway)
             const canceled = await isCanceled(this.state.processId, gateway)
+            const estimatedStartDate = await estimateDateAtBlock(metadata.startBlock, gateway)
+            const estimatedEndDate = await estimateDateAtBlock(metadata.startBlock + metadata.numberOfBlocks, gateway)
 
-            const censusSize = parseInt(await Census.getCensusSize(voteMetadata.census.merkleRoot, gateway) || "0")
+            const censusSize = parseInt(await Census.getCensusSize(metadata.census.merkleRoot, gateway) || "0")
 
-            this.setState({ entity, process: voteMetadata, canceled, dataLoading: false, censusSize })
+            this.setState({ entity, process: metadata, canceled, dataLoading: false, censusSize, estimatedStartDate, estimatedEndDate })
             this.props.setTitle(entity.name["default"])
         }
         catch (err) {
@@ -191,9 +195,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
         const { process, currentBlock, currentDate, censusSize } = this.state
 
-        const startTimestamp = currentDate.valueOf() + (process.startBlock - currentBlock) * BLOCK_TIME * 1000
-        const startDate = moment(startTimestamp)
-        const endDate = moment(startTimestamp + process.numberOfBlocks * BLOCK_TIME * 1000)
+        const startDate = moment(this.state.estimatedStartDate)
+        const endDate = moment(this.state.estimatedEndDate)
 
         let processType: string
         switch (this.state.process.type) {

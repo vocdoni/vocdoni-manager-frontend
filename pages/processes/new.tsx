@@ -13,7 +13,8 @@ import Router from 'next/router'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 // import { checkValidProcessMetadata } from 'dvote-js/dist/models/voting-process'
 import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
-import { getBlockHeight, createVotingProcess } from 'dvote-js/dist/api/vote'
+import { createVotingProcess, estimateBlockAtDateTime } from 'dvote-js/dist/api/vote'
+import { GatewayPool } from 'dvote-js/dist/net/gateway-pool'
 const { RangePicker } = DatePicker
 
 const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180")
@@ -45,9 +46,7 @@ type State = {
     process?: ProcessMetadata,
     bootnodes?: GatewayBootNodes,
     descriptionEditorState?: any,
-    currentBlock: number
     startBlock: number
-    currentDate: moment.Moment
     startDate: moment.Moment
     numberOfBlocks: number,
     endDate: moment.Moment
@@ -57,10 +56,8 @@ type State = {
 class ProcessNew extends Component<IAppContext, State> {
     state: State = {
         process: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
-        currentBlock: null,
         startBlock: null,
         numberOfBlocks: null,
-        currentDate: moment(),
         startDate: null,
         endDate: null
     }
@@ -76,7 +73,7 @@ class ProcessNew extends Component<IAppContext, State> {
             return Router.replace("/")
         }
 
-        this.props.setTitle("New vote")
+        this.props.setTitle("New process")
 
         /* HTML EDITOR
         // Do the imports dynamically because `window` does not exist on SSR
@@ -93,26 +90,14 @@ class ProcessNew extends Component<IAppContext, State> {
        */
 
         try {
-            await this.refreshBlockHeight()
             await this.refreshMetadata()
-            this.setDateRange(moment().add(4, 'minutes'), moment().add(3, 'days').add(4, 'minutes'))
 
-            const interval = (parseInt(process.env.BLOCK_TIME || "10") || 10) * 1000
-            this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
+            const defaultRange = [moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]
+            this.updateDateRange(defaultRange[0], defaultRange[1])
         }
         catch (err) {
             message.error("Could not check the entity metadata")
         }
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.refreshInterval)
-    }
-
-    async refreshBlockHeight() {
-        const gateway = await getGatewayClients()
-        const currentBlock = await getBlockHeight(gateway)
-        this.setState({ currentBlock, currentDate: moment() })
     }
 
     async refreshMetadata() {
@@ -188,110 +173,96 @@ class ProcessNew extends Component<IAppContext, State> {
         this.setState({ process })
     }
 
-    onOpen(status) {
-        if (status) {
-            this.setState({ currentDate: moment() })
-        }
+    isDisabledDate(queryDate: moment.Moment) {
+        const threshold = moment().add(8, 'minutes')
+
+        return !queryDate || queryDate.isBefore(threshold, 'day')
     }
 
-    disabledDate(current: moment.Moment) {
-        return current && current.isBefore(this.state.currentDate, 'day')
-    }
+    getDisabledTimes(queryDate: moment.Moment) {
+        const threshold = moment().add(8, 'minutes')
 
-    range(start, end) {
-        const result = [];
-        for (let i = start; i < end; i++) {
-            result.push(i);
-        }
-        return result;
-    }
-
-    disabledTime(current: moment.Moment) {
-        if (!current)
-            return
-        if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'day')) {
-            if (current && moment(current).isSame(this.state.currentDate.valueOf(), 'hours')) {
-                return {
-                    disabledHours: () => this.range(0, this.state.currentDate.add(4, 'minutes').hours()),
-                    disabledMinutes: () => this.range(0, this.state.currentDate.add(4, 'minutes').minutes()),
-                }
-            }
+        if (!queryDate) return
+        else if (!moment(queryDate).isSame(threshold, 'day')) return
+        else if (moment(queryDate).isAfter(threshold, "hours")) return
+        else if (moment(queryDate).isBefore(threshold, "hours")) {
             return {
-                disabledHours: () => this.range(0, this.state.currentDate.hours()),
+                disabledHours: () => range(0, threshold.hours()),
+                disabledMinutes: () => range(0, 60)
             }
         }
+        // Same hour
+        return {
+            disabledHours: () => range(0, threshold.hours()),
+            disabledMinutes: () => range(0, threshold.minutes()),
+        }
     }
 
-    setDateRange(startDate: moment.Moment, endDate: moment.Moment) {
-        // TODO ? If we don't need to show calculated blocks this could be moved in the checkFields function
-        let startBlock = (startDate.valueOf() - this.state.currentDate.valueOf()) / 1000 / parseInt(process.env.BLOCK_TIME) + this.state.currentBlock
-        startBlock = Math.trunc(startBlock)
+    updateDateRange(startDate: moment.Moment, endDate: moment.Moment) {
+        let gwPool: GatewayPool
+        var startBlock: number, endBlock: number
 
-        let numberOfBlocks = (endDate.valueOf() - startDate.valueOf()) / 1000 / parseInt(process.env.BLOCK_TIME)
-        numberOfBlocks = Math.trunc(numberOfBlocks)
+        return getGatewayClients().then(pool => {
+            gwPool = pool
 
-        this.setState({ startDate, startBlock, endDate, numberOfBlocks })
+            return estimateBlockAtDateTime(startDate.toDate(), gwPool)
+        }).then(block => {
+            startBlock = block
+
+            return estimateBlockAtDateTime(endDate.toDate(), gwPool)
+        }).then(block => {
+            endBlock = block
+            const numberOfBlocks = endBlock - startBlock
+
+            this.setState({ startDate, startBlock, endDate, numberOfBlocks })
+        })
     }
 
-    async checkFields(): Promise<boolean> {
-        const gateway = await getGatewayClients()
-
+    async validateFields(): Promise<boolean> {
         if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
-            message.error("Poll dates where not defined correctly")
+            message.error("The dates are not valid")
             return false
         }
-        // if (this.state.numberOfBlocks < 1000) {
-        //     message.error(`The duration is too short`)
-        //     return false
-        // }
+
+        const threshold = moment().add(8, 'minutes')
+
         if (this.state.numberOfBlocks <= 0) {
-            message.error("The vote start date needs to be higher than the end one")
+            message.error("The start date needs to be before the end one")
             return false
         }
-        if (this.state.startDate.isSameOrBefore(this.state.currentDate, 'minute')) {
-            message.error("The vote start date needs to be higher than the current one")
+        if (this.state.startDate.isSameOrBefore(threshold, 'minute')) {
+            message.error("The start date needs to be at least a few minutes in the future")
             return false
         }
         if (this.state.endDate.isSameOrBefore(this.state.startDate, 'minute')) {
-            message.error("The vote start date needs to be higher than the end one!")
-            return false
-        }
-
-        const currentBlock = await getBlockHeight(gateway)
-        const blocksOracleDelay = ORACLE_CONFIRMATION_DELAY / parseInt(process.env.BLOCK_TIME)
-        if (this.state.startBlock <= currentBlock + BLOCK_MARGIN + blocksOracleDelay) {
-            const blocksSincePageLoaded = currentBlock - this.state.currentBlock
-            let delaySeconds = (blocksSincePageLoaded + blocksOracleDelay + BLOCK_MARGIN) * parseInt(process.env.BLOCK_TIME)
-            let delayMinutes = Math.ceil(delaySeconds / 60)
-            message.error(`The Start time of the process needs to be ${delayMinutes} minutes after the current time or more`)
-            this.setState({ currentBlock })
+            message.error("The end date needs to be after the start date")
             return false
         }
 
         return true
     }
 
-    confirmSubmit() {
-        var that = this;
+    async confirmSubmit() {
+        if (!(await this.validateFields())) {
+            return // message.warn("The metadata fields are not valid")
+        }
+
+        var that = this
         Modal.confirm({
-          title: "Confirm",
-          icon: <ExclamationCircleOutlined />,
-          content: "The process will be registered on the blockchain. Do you want to continue?",
-          okText: "Create Process",
-          okType: "primary",
-          cancelText: "Not now",
-          onOk() {
-            that.submit()
-          },
+            title: "Confirm",
+            icon: <ExclamationCircleOutlined />,
+            content: "The process will be registered on the blockchain. Do you want to continue?",
+            okText: "Create Process",
+            okType: "primary",
+            cancelText: "Not now",
+            onOk() {
+                that.submit()
+            },
         })
     }
 
     async submit() {
         const gwPool = await getGatewayClients()
-
-        if (!(await this.checkFields())) {
-            return message.warn("The metadata fields are not valid")
-        }
 
         let newProcess = this.state.process
         newProcess.startBlock = this.state.startBlock
@@ -312,7 +283,7 @@ class ProcessNew extends Component<IAppContext, State> {
                 hideLoading()
                 this.setState({ processCreating: false })
 
-                console.error("The voting process could not be created", err);
+                console.error("The voting process could not be created", err)
                 message.error("The voting process could not be created")
             })
     }
@@ -428,50 +399,48 @@ class ProcessNew extends Component<IAppContext, State> {
                     <br />
                     <Divider orientation="left">Time frame</Divider>
 
+                    <p>Select the date range to allow incoming votes</p>
                     <Form>
                         <Form.Item>
-                            <label>Starting and ending dates</label>
                             <div>
                                 <RangePicker
                                     // open
                                     format='YYYY/MM/DD HH:mm'
                                     placeholder={["Vote start", "Vote end"]}
-                                    disabledDate={(current) => this.disabledDate(current)}
-                                    disabledTime={(current) => this.disabledTime(current)}
-                                    defaultValue={[moment().add(4, 'minutes'), moment().add(3, 'days').add(4, 'minutes')]}
+                                    disabledDate={(current) => this.isDisabledDate(current)}
+                                    disabledTime={(current) => this.getDisabledTimes(current)}
+                                    defaultValue={[moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]}
                                     onChange={(dates: moment.Moment[], _) => {
                                         if (!dates || !dates.length) return
-                                        this.setDateRange(dates[0], dates[1])
+                                        this.updateDateRange(dates[0], dates[1])
                                     }}
                                     showTime />
                             </div>
-                            {/*
-              <div>
-                <DatePicker
-                  disabledDate={(current) => this.disabledDate(current)}
-                  disabledTime={(current) => this.disabledTime(current)}
-                  showTime={{ format: 'HH:mm' }}
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder="Start"
-                  onOk={(dates) => this.setStartDate(dates)}
-                  onChange={(dates, _) => this.setStartDate(dates)}
-                  onOpenChange={(status) => this.onOpen(status)}
-                />
-                &nbsp;&nbsp;
-                <DatePicker
-                  disabledDate={(current) => this.disabledDate(current)}
-                  disabledTime={(current) => this.disabledTime(current)}
-                  showTime={{ format: 'HH:mm' }}
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder="End"
-                  onOk={(dates) => this.setEndDate(dates)}
-                  onChange={(dates, _) => this.setEndDate(dates)}
-                  onOpenChange={(status) => this.onOpen(status)}
-                />
-              </div> */}
-                            <p>Current Block: {this.state.currentBlock}</p>
-                            {this.state.startBlock ? <p>Estimated start block: {this.state.startBlock}</p> : null}
-                            {this.state.startBlock && this.state.numberOfBlocks ? <p>Estimated end block: {this.state.startBlock + this.state.numberOfBlocks}</p> : null}
+                            {/*<div>
+                                    <DatePicker
+                                    disabledDate={(current) => this.disabledDate(current)}
+                                    disabledTime={(current) => this.disabledTime(current)}
+                                    showTime={{ format: 'HH:mm' }}
+                                    format="YYYY-MM-DD HH:mm"
+                                    placeholder="Start"
+                                    onOk={(dates) => this.setStartDate(dates)}
+                                    onChange={(dates, _) => this.setStartDate(dates)}
+                                    onOpenChange={(status) => this.onOpen(status)}
+                                    />
+                                    &nbsp;&nbsp;
+                                    <DatePicker
+                                    disabledDate={(current) => this.disabledDate(current)}
+                                    disabledTime={(current) => this.disabledTime(current)}
+                                    showTime={{ format: 'HH:mm' }}
+                                    format="YYYY-MM-DD HH:mm"
+                                    placeholder="End"
+                                    onOk={(dates) => this.setEndDate(dates)}
+                                    onChange={(dates, _) => this.setEndDate(dates)}
+                                    onOpenChange={(status) => this.onOpen(status)}
+                                    />
+                                </div> */}
+                            {/* {this.state.startBlock ? <p>Estimated start block: {this.state.startBlock}</p> : null} */}
+                            {/* {this.state.startBlock && this.state.numberOfBlocks ? <p>Estimated end block: {this.state.startBlock + this.state.numberOfBlocks}</p> : null} */}
                         </Form.Item>
                     </Form>
 
@@ -596,6 +565,14 @@ class ProcessNew extends Component<IAppContext, State> {
             }
         </div >
     }
+}
+
+function range(start: number, end: number) {
+    const result: number[] = []
+    for (let i = start; i < end; i++) {
+        result.push(i)
+    }
+    return result
 }
 
 
