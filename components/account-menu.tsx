@@ -25,6 +25,10 @@ const UserMenu = () => {
         }
     }
 
+    if (!context.isWriteReady) {
+        return null
+    }
+
     return <>
         {!hasWallet &&
             <Link href={'/'}><a className="sign-in-link">Sign in</a></Link>
