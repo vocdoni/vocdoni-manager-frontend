@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../components/app-context'
-import Link from "next/link"
-import { API, EntityMetadata } from "dvote-js"
+import Link from 'next/link'
+import { API, EntityMetadata } from 'dvote-js'
 import { getGatewayClients, getNetworkState } from '../lib/network'
 import { message, Button, Spin, Divider, Input, Select, Col, Row, Card, Modal } from 'antd'
 import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'

@@ -1,22 +1,26 @@
 import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
+import { message, Row, Col, Card, Button } from "antd"
+import { Wallet } from 'ethers'
+import { DVoteGateway } from 'dvote-js/dist/net/gateway'
+import { ReloadOutlined } from '@ant-design/icons'
+
 import AppContext, { ISelected } from '../components/app-context'
 import MainLayout from "../components/layout"
 import GeneralError from '../components/error'
 import { initNetwork, getNetworkState } from "../lib/network"
 import { IAppContext } from "../components/app-context"
 import Web3Wallet, { getWeb3Wallet } from "../lib/web3-wallet"
-import { message, Row, Col, Card, Button } from "antd"
+import { isWriteReady } from '../lib/util'
+
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
 
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.css'
 import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import { Wallet } from 'ethers'
-import { DVoteGateway } from 'dvote-js/dist/net/gateway'
-import { ReloadOutlined } from '@ant-design/icons'
+import IndexPage from '.'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -56,13 +60,19 @@ class MainApp extends App<Props, State> {
     refreshInterval: any
 
     async componentDidMount() {
+        const {Component} = this.props
+
+        if (Component.name === IndexPage.name && !isWriteReady()) {
+            window.location.href = 'https://vocdoni.io'
+        }
+
         this.connect()
 
         this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
 
         window.addEventListener('beforeunload', this.beforeUnload)
 
-        this.hashChange = this.hashChange.bind(this);
+        this.hashChange = this.hashChange.bind(this)
         window.addEventListener('hashchange', this.hashChange)
     }
 
@@ -75,9 +85,9 @@ class MainApp extends App<Props, State> {
     beforeUnload(e: BeforeUnloadEvent) {
         if (!getNetworkState().readOnly) {
             // Cancel the event
-            e.preventDefault(); // If you prevent default behavior in Mozilla Firefox prompt will always be shown
+            e.preventDefault() // If you prevent default behavior in Mozilla Firefox prompt will always be shown
             // Chrome requires returnValue to be set
-            e.returnValue = '';
+            e.returnValue = ''
         }
     }
 
@@ -146,7 +156,7 @@ class MainApp extends App<Props, State> {
     }
 
     async refreshWeb3Status() {
-        const { isConnected } = getNetworkState();
+        const { isConnected } = getNetworkState()
         this.setState({ isConnected })
     }
 
@@ -159,7 +169,7 @@ class MainApp extends App<Props, State> {
             }).catch(err => {
                 this.refreshWeb3Status()
                 message.error("Could not connect")
-            });
+            })
     }
 
     componentDidCatch(error: Error, _errorInfo: any/*ErrorInfo*/) {
@@ -205,6 +215,7 @@ class MainApp extends App<Props, State> {
         const { Component, pageProps } = this.props
 
         const injectedGlobalContext: IAppContext = {
+            isWriteReady: isWriteReady(),
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
             web3Wallet: getWeb3Wallet(),
@@ -226,7 +237,6 @@ class MainApp extends App<Props, State> {
             setUrlHash: (hash) => this.setUrlHash(hash),
             registryGateway: this.state.registryGateway,
         }
-
 
         // Does the current component want its own layout?
         const Layout = (Component as any).Layout || MainLayout

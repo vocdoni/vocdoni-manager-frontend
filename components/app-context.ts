@@ -17,6 +17,7 @@ export type ISelected = "profile"
     | "members-import"
 
 export interface IAppContext {
+    isWriteReady: boolean,
     title: string,
     web3Wallet: Web3Wallet,
     onNewWallet: (wallet: Wallet) => any,

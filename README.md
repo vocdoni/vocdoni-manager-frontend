@@ -39,6 +39,7 @@ At build time, the following env vars are read:
     - The bootnode URL used for regular user requests
 - `BOOTNODES_URL_RW`
     - The bootnode URL used for entity related requests
+    - App is set in **read only mode** when this field's empty
 - `APP_LINKING_DOMAIN`
     - The domain used for universal links triggering the app (if available)
     - Set to `vocdoni.link` by default
