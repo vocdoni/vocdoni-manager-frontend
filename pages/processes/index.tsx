@@ -17,7 +17,7 @@ import { getVoteMetadata, isCanceled, estimateDateAtBlock } from "dvote-js/dist/
 // import { } from '../lib/types'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10") || 10
+const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10", 10) || 10
 
 // MAIN COMPONENT
 const ProcessActiveViewPage = props => {
@@ -63,7 +63,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     init() {
         const params = location.hash.substr(2).split("/")
-        if (params.length != 2) {
+        if (params.length !== 2) {
             message.error("The requested data is not valid")
             Router.replace("/")
             return
@@ -90,10 +90,10 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     shouldComponentUpdate(nextProps, nextState) {
         const params = location.hash.substr(2).split("/")
-        if (params.length != 2) return true
+        if (params.length !== 2) return true
 
         if (this.state.entityId !== undefined && this.state.processId !== undefined &&
-            (params[0] != this.state.entityId || params[1] != this.state.processId)) {
+            (params[0] !== this.state.entityId || params[1] !== this.state.processId)) {
             this.init()
         }
 
@@ -115,7 +115,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
             this.props.setMenuSelected("processes-details")
 
             const params = location.hash.substr(2).split("/")
-            if (params.length != 2) {
+            if (params.length !== 2) {
                 message.error("The requested data is not valid")
                 Router.replace("/")
                 return
@@ -132,15 +132,15 @@ class ProcessActiveView extends Component<IAppContext, State> {
             const estimatedStartDate = await estimateDateAtBlock(metadata.startBlock, gateway)
             const estimatedEndDate = await estimateDateAtBlock(metadata.startBlock + metadata.numberOfBlocks, gateway)
 
-            const censusSize = parseInt(await Census.getCensusSize(metadata.census.merkleRoot, gateway) || "0")
+            const censusSize = parseInt(await Census.getCensusSize(metadata.census.merkleRoot, gateway) || "0", 10)
 
             this.setState({ entity, process: metadata, canceled, dataLoading: false, censusSize, estimatedStartDate, estimatedEndDate })
-            this.props.setTitle(entity.name["default"])
+            this.props.setTitle(entity.name.default)
         }
         catch (err) {
             this.setState({ dataLoading: false })
 
-            if (err && err.message == "Request timed out")
+            if (err && err.message === "Request timed out")
                 message.error("The list of voting processes took too long to load")
             else
                 message.error("The vote could not be loaded")
@@ -169,12 +169,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
             if (err) {
                 console.error(err)
-                if (err.message == "The results are not available") return
-                else if (err.message == "Request timed out")
+                if (err.message === "The results are not available") return
+                else if (err.message === "Request timed out")
                     return message.error("The list of votes took too long to load")
-                else if (err.message == "failed")
+                else if (err.message === "failed")
                     return message.error("One of the processes could not be loaded")
-                else if (err.message == "Could not fetch the process results")
+                else if (err.message === "Could not fetch the process results")
                     return message.error("Could not fetch the process results")
             }
 
@@ -184,7 +184,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     renderProcessesInfo() {
         const params = location.hash.substr(2).split("/")
-        if (params.length != 2) {
+        if (params.length !== 2) {
             message.error("The requested data is not valid")
             Router.replace("/")
             return

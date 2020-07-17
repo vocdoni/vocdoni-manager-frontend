@@ -28,7 +28,7 @@ type State = {
     entity?: EntityMetadata,
     entityId?: string,
 
-    storedWallets?: Array<IWallet>,
+    storedWallets?: IWallet[],
 
     selectedWallet?: string,
     passphrase?: string,
@@ -53,7 +53,7 @@ class IndexView extends Component<IAppContext, State> {
         }
         catch (err) {
             this.setState({ entityLoading: false })
-            if (err && err.message == "The given entity has no metadata defined yet") {
+            if (err && err.message === "The given entity has no metadata defined yet") {
                 return // nothing to show
             }
             // console.log(err)
@@ -116,8 +116,8 @@ class IndexView extends Component<IAppContext, State> {
 
     renderEntityInfo() {
         return <>
-            <h4>{this.state.entity.name["default"]}</h4>
-            <p>{this.state.entity.description["default"]}</p>
+            <h4>{this.state.entity.name.default}</h4>
+            <p>{this.state.entity.description.default}</p>
             <p><Link href={`/entities/edit#/${this.state.entityId}`}><a><Button>Manage my entity</Button></a></Link></p>
         </>
     }

@@ -2,8 +2,9 @@
 # https://docs.gitlab.com/ce/ci/docker/using_docker_build.html#container-registry-examples
 
 stages:
-  - build
-  - deploy
+- test
+- build
+- deploy
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -12,87 +13,103 @@ variables:
 ## ENTITY MANAGER DOCKER
 ###############################################################################
 
+test:
+  image: node:12
+  stage: test
+  cache:
+    paths:
+    - node_modules
+    policy: push
+  before_script:
+  - npm i
+  script:
+  - npm run-script lint
+
 manager-build:
   image: node:12
   stage: build
   script:
-    - npm install
-    - npm run export
+  - npm install
+  - npm run export
   #artifacts:
   #  name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
   #  paths:
   #    - build/
   except:
-    - master
-    - release
+  - master
+  - release
+  cache:
+    paths:
+    - node_modules
+    policy: pull
 
 manager-docker:
   stage: build
   image: docker:stable
   services:
-    - docker:dind
+  - docker:dind
   script:
-    # Gitlab CI
-    # - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
-    # - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
-    # - docker push ${MANAGER_RELEASE_IMAGE}
-    #
-    # Docker Hub
-    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-    - docker build -t ${CI_REGISTRY_IMAGE}:latest --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN" --build-arg "REGISTER_URL=$REGISTER_URL" --build-arg "ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL" --build-arg "REGISTRY_GATEWAY_URL=$REGISTRY_GATEWAY_URL" --build-arg "REGISTRY_GATEWAY_PUB_KEY=$REGISTRY_GATEWAY_PUB_KEY" .
-    - docker push ${CI_REGISTRY_IMAGE}:latest
+  # Gitlab CI
+  # - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+  # - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+  # - docker push ${MANAGER_RELEASE_IMAGE}
+  #
+  # Docker Hub
+  - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+  - docker build -t ${CI_REGISTRY_IMAGE}:latest --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN" --build-arg "REGISTER_URL=$REGISTER_URL" --build-arg "ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL" --build-arg "REGISTRY_GATEWAY_URL=$REGISTRY_GATEWAY_URL" --build-arg "REGISTRY_GATEWAY_PUB_KEY=$REGISTRY_GATEWAY_PUB_KEY" .
+  - docker push ${CI_REGISTRY_IMAGE}:latest
   only:
     changes:
-      - components/**/*
-      - i18n/**/*
-      - lib/**/*
-      - pages/**/*
-      - public/**/*
-      - styles/**/*
-      - Dockerfile-live
-      - .dockerignore
-      - .gitlab-ci.yml
-      - env-config.js
-      - next.config.js
-      - package-lock.json
-      - package.json
-      - tsconfig.json
+    - components/**/*
+    - i18n/**/*
+    - lib/**/*
+    - pages/**/*
+    - public/**/*
+    - styles/**/*
+    - Dockerfile-live
+    - .dockerignore
+    - .gitlab-ci.yml
+    - env-config.js
+    - next.config.js
+    - package-lock.json
+    - package.json
+    - tsconfig.json
     refs:
-      - master
+    - master
 
 manager-docker-release:
   stage: build
   image: docker:stable
   services:
-    - docker:dind
+  - docker:dind
   script:
-    # Gitlab CI
-    # - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
-    # - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
-    # - docker push ${MANAGER_RELEASE_IMAGE}
-    #
-    # Docker Hub
-    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-    - docker build -t ${CI_REGISTRY_IMAGE}:release --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN" --build-arg "REGISTER_URL=$REGISTER_URL" --build-arg "ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL" --build-arg "REGISTRY_GATEWAY_URL=$REGISTRY_GATEWAY_URL" --build-arg "REGISTRY_GATEWAY_PUB_KEY=$REGISTRY_GATEWAY_PUB_KEY" .
-    - docker push ${CI_REGISTRY_IMAGE}:release
+  # Gitlab CI
+  # - docker login -u gitlab-ci-token -p ${CI_BUILD_TOKEN} ${CI_REGISTRY}
+  # - docker build --pull -t ${MANAGER_RELEASE_IMAGE} --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" -f Dockerfile .
+  # - docker push ${MANAGER_RELEASE_IMAGE}
+  #
+  # Docker Hub
+  - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+  - docker build -t ${CI_REGISTRY_IMAGE}:release --build-arg "ETH_NETWORK_ID=$ETH_NETWORK_ID" --build-arg "BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY" --build-arg "BOOTNODES_URL_RW=$BOOTNODES_URL_RW" --build-arg "APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN" --build-arg "REGISTER_URL=$REGISTER_URL" --build-arg "ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL" --build-arg "REGISTRY_GATEWAY_URL=$REGISTRY_GATEWAY_URL" --build-arg "REGISTRY_GATEWAY_PUB_KEY=$REGISTRY_GATEWAY_PUB_KEY" .
+  - docker push ${CI_REGISTRY_IMAGE}:release
   only:
     changes:
-      - components/**/*
-      - i18n/**/*
-      - lib/**/*
-      - pages/**/*
-      - public/**/*
-      - styles/**/*
-      - Dockerfile-live
-      - .dockerignore
-      - .gitlab-ci.yml
-      - env-config.js
-      - next.config.js
-      - package-lock.json
-      - package.json
-      - tsconfig.json
+    - components/**/*
+    - i18n/**/*
+    - lib/**/*
+    - pages/**/*
+    - public/**/*
+    - styles/**/*
+    - Dockerfile-live
+    - .dockerignore
+    - .gitlab-ci.yml
+    - env-config.js
+    - next.config.js
+    - package-lock.json
+    - package.json
+    - tsconfig.json
     refs:
-      - release
+    - release
 
 
 ## PREVIEW

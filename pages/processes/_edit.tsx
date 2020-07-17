@@ -8,35 +8,35 @@ import AppContext, { IAppContext } from '../../components/app-context'
 
 // MAIN COMPONENT
 const ProcessEditPage = props => {
-  // Get the global context and pass it to our stateful component
-  const context = useContext(AppContext)
+    // Get the global context and pass it to our stateful component
+    const context = useContext(AppContext)
 
-  return <ProcessEdit {...context} />
+    return <ProcessEdit {...context} />
 }
 
 type State = {
-  id?: string
-  // TODO:
+    id?: string
+    // TODO:
 }
 
 // Stateful component
 class ProcessEdit extends Component<IAppContext, State> {
-  state: State = {}
+    state: State = {}
 
-  componentDidMount() {
-    this.setState({ id: location.hash.substr(2) })
+    componentDidMount() {
+        this.setState({ id: location.hash.substr(2) })
 
-    // TODO: FETCH METADATA
+        // TODO: FETCH METADATA
 
-    this.props.setTitle(`Process ${location.hash.substr(2)}`)
-  }
+        this.props.setTitle(`Process ${location.hash.substr(2)}`)
+    }
 
-  render() {
-    return <div id="process-edit">
-      <p>Process Edit</p>
-      <pre>I am {this.state.id}</pre>
-    </div>
-  }
+    render() {
+        return <div id="process-edit">
+            <p>Process Edit</p>
+            <pre>I am {this.state.id}</pre>
+        </div>
+    }
 }
 
 

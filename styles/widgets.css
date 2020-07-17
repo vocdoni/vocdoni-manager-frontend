@@ -8,3 +8,47 @@
 .card:hover {
   box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
 }
+
+.disabled-layer > .disabled-notice {
+    display: none;
+}
+
+.disabled-layer.disabled {
+    position: relative;
+    pointer-events: none;
+}
+
+.disabled-layer.disabled::after,
+.disabled-layer.disabled > .disabled-notice {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.disabled-layer.disabled > .disabled-notice {
+    z-index: 2;
+    text-align: center;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.disabled-layer.disabled::after {
+    content: "";
+    background-color: rgba(255, 255, 255, .8);
+}
+
+.scroll-x {
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media screen and (min-width: 800px) {
+    .scroll-x {
+        overflow-x: initial;
+        -webkit-overflow-scrolling: auto;
+    }
+}

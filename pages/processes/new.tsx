@@ -17,7 +17,7 @@ import { createVotingProcess, estimateBlockAtDateTime } from 'dvote-js/dist/api/
 import { GatewayPool } from 'dvote-js/dist/net/gateway-pool'
 const { RangePicker } = DatePicker
 
-const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180")
+const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180", 10)
 const BLOCK_MARGIN = 5 // extra blocks
 
 /* HTML EDITOR
@@ -120,7 +120,7 @@ class ProcessNew extends Component<IAppContext, State> {
             */
 
             this.setState({ entity, entityId, dataLoading: false })
-            this.props.setTitle(entity.name["default"])
+            this.props.setTitle(entity.name.default)
             this.props.setEntityId(entityId)
         }
         catch (err) {
@@ -141,20 +141,20 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     addOption(questionIdx) {
-        let process = this.state.process
-        let optionCount = process.details.questions[questionIdx].voteOptions.length
+        const process = this.state.process
+        const optionCount = process.details.questions[questionIdx].voteOptions.length
         process.details.questions[questionIdx].voteOptions.push({ title: { default: "" }, value: optionCount })
         this.setState({ process })
     }
 
     removeQuestion(questionIdx) {
-        let process = this.state.process;
+        const process = this.state.process;
         process.details.questions.splice(questionIdx, 1)
         this.setState({ process })
     }
 
     removeOption(questionIdx, optionIdx) {
-        let process = this.state.process;
+        const process = this.state.process;
         process.details.questions[questionIdx].voteOptions.splice(optionIdx, 1)
         this.setState({ process })
     }
@@ -168,7 +168,7 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     setNewProcessField(path, value) {
-        let process = this.state.process
+        const process = this.state.process
         this.setNestedKey(process, path, value)
         this.setState({ process })
     }
@@ -200,7 +200,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
     updateDateRange(startDate: moment.Moment, endDate: moment.Moment) {
         let gwPool: GatewayPool
-        var startBlock: number, endBlock: number
+        let startBlock: number, endBlock: number
 
         return getGatewayClients().then(pool => {
             gwPool = pool
@@ -247,7 +247,7 @@ class ProcessNew extends Component<IAppContext, State> {
             return // message.warn("The metadata fields are not valid")
         }
 
-        var that = this
+        const that = this
         Modal.confirm({
             title: "Confirm",
             icon: <ExclamationCircleOutlined />,
@@ -264,7 +264,7 @@ class ProcessNew extends Component<IAppContext, State> {
     async submit() {
         const gwPool = await getGatewayClients()
 
-        let newProcess = this.state.process
+        const newProcess = this.state.process
         newProcess.startBlock = this.state.startBlock
         newProcess.numberOfBlocks = this.state.numberOfBlocks
         newProcess.details.entityId = this.state.entityId
@@ -300,7 +300,7 @@ class ProcessNew extends Component<IAppContext, State> {
     // }
 
     renderProcessNew() {
-        let questions = this.state.process.details.questions
+        const questions = this.state.process.details.questions
 
         return <div className="body-card">
             <Row justify="start">
@@ -322,7 +322,7 @@ class ProcessNew extends Component<IAppContext, State> {
                             <Input.TextArea
                                 placeholder="Description"
                                 autoSize={{ minRows: 4, maxRows: 8 }}
-                                value={this.state.process.details.description['default']}
+                                value={this.state.process.details.description.default}
                                 onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
                             />
                         </Form.Item>
@@ -334,7 +334,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                 onChange={ev => this.setNewProcessField(["details", "headerImage"], ev.target.value)}
                             />
                             <small style={{ lineHeight: "35px" }}>
-                                <a href="https://unsplash.com/" target="_blank">Browse images in Unsplash.com</a>
+                                <a href="https://unsplash.com/" target="_blank" rel="noreferrer">Browse images in Unsplash.com</a>
                             </small>
                         </Form.Item>
                         <Form.Item>
@@ -345,7 +345,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                 <Radio.Button value="encrypted-poll">Encrypted Poll</Radio.Button>
                             </Radio.Group>
                             {
-                                this.state.process.type == "poll-vote" ?
+                                this.state.process.type === "poll-vote" ?
                                     <p><small>On a standard poll, all votes become public as soon as they are registered. <br />Participants are not anonymous.</small></p> :
                                     <p><small>On an encrypted poll, votes remain encrypted until the process has ended. <br />Participants are not anonymous.</small></p>
                             }
@@ -365,7 +365,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                 onChange={ev => this.setNewProcessField(['census', 'merkleRoot'], ev.target.value)}
                             />
                             <small style={{ lineHeight: "35px" }}>
-                                <a href="https://census-manager.vocdoni.net/" target="_blank">You can find the value on the Census Manager</a>
+                                <a href="https://census-manager.vocdoni.net/" target="_blank" rel="noreferrer">You can find the value on the Census Manager</a>
                             </small>
                         </Form.Item>
                         <Form.Item>
@@ -378,7 +378,7 @@ class ProcessNew extends Component<IAppContext, State> {
                             />
 
                             <small style={{ lineHeight: "35px" }}>
-                                <a href="https://census-manager.vocdoni.net/" target="_blank">You can find the value on the Census Manager</a>
+                                <a href="https://census-manager.vocdoni.net/" target="_blank" rel="noreferrer">You can find the value on the Census Manager</a>
                             </small>
                         </Form.Item>
                     </Form>
@@ -466,7 +466,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
     renderQuestionForm(questionIdx) {
 
-        let question = this.state.process.details.questions
+        const question = this.state.process.details.questions
 
         return <div key={'question' + questionIdx} style={{ paddingTop: 24 }}>
             <Divider orientation="left">Question {questionIdx + 1}</Divider>

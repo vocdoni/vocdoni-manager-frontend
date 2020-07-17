@@ -81,7 +81,7 @@ class MainApp extends App<Props, State> {
         }
     }
 
-    async connect(){
+    async connect() {
         await initNetwork().then(async () => {
             message.success("Connected")
             this.setState({ connectionError: null })
@@ -175,7 +175,7 @@ class MainApp extends App<Props, State> {
         // </div>
     }
 
-    renderRetry(){
+    renderRetry() {
         return <div id="index">
             <Row justify="center" align="middle">
                 <Col xs={24} sm={18} md={10}>
@@ -192,7 +192,7 @@ class MainApp extends App<Props, State> {
 
     render() {
         if (!this.state.isConnected) {
-            if(this.state.connectionError){
+            if (this.state.connectionError) {
                 return this.renderRetry()
             }
 

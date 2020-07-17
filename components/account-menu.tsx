@@ -7,7 +7,7 @@ import { UserOutlined } from "@ant-design/icons"
 const UserMenu = () => {
     const context = useContext(AppContext)
     const hasWallet = context.web3Wallet.hasWallet()
-    let address: string = ''
+    let address = ''
 
     if (hasWallet) {
         address = context.web3Wallet.getAddress()
@@ -33,7 +33,7 @@ const UserMenu = () => {
         {hasWallet &&
             <>
                 {!enoughEther &&
-                    <a href={`https://goerli-faucet.slock.it/?address=${address}`} target="_blank">
+                    <a href={`https://goerli-faucet.slock.it/?address=${address}`} target="_blank" rel="noreferrer">
                         <Button danger type="link">Get some Ether</Button>
                     </a>
                 }

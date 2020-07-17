@@ -70,28 +70,28 @@ class ProcessActiveView extends Component<IAppContext, State> {
                 return getVoteMetadata(id, gateway).then(voteMetadata => {
                     const updatedProcesses: ({ id: string, data: ProcessMetadata } | string)[] = [].concat(this.state.processes)
                     for (let i = 0; i < this.state.processes.length; i++) {
-                        if (typeof updatedProcesses[i] == "string" && updatedProcesses[i] == id) {
+                        if (typeof updatedProcesses[i] === "string" && updatedProcesses[i] === id) {
                             updatedProcesses[i] = { id, data: voteMetadata }
                             this.setState({ processes: updatedProcesses })
                             break
                         }
                     }
                 }).catch(err => {
-                    if (err && err.message == "Request timed out") throw err
+                    if (err && err.message === "Request timed out") throw err
                     throw new Error("failed")
                 })
             }))
 
             this.setState({ entity, entityId, dataLoading: false })
-            this.props.setTitle(entity.name["default"])
+            this.props.setTitle(entity.name.default)
             this.props.setEntityId(entityId)
         }
         catch (err) {
             this.setState({ dataLoading: false })
 
-            if (err && err.message == "Request timed out")
+            if (err && err.message === "Request timed out")
                 message.error("The list of voting processes took too long to load")
-            else if (err && err.message == "failed")
+            else if (err && err.message === "failed")
                 message.error("One of the processes could not be loaded")
             else
                 message.error("The list of voting processes could not be loaded")
@@ -100,7 +100,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     shouldComponentUpdate() {
         const entityId = location.hash.substr(2)
-        if (entityId != this.state.entityId) {
+        if (entityId !== this.state.entityId) {
             this.fetchData()
         }
 
@@ -108,7 +108,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 
     confirmMarkAsEnded(processId: string) {
-        var that = this;
+        const that = this;
         Modal.confirm({
             title: "Confirm",
             icon: <ExclamationCircleOutlined />,
@@ -134,11 +134,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
             // Relist
             let activeProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.active))
-            let endedProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.ended))
-            activeProcesses = activeProcesses.filter(id => id != processId)
+            const endedProcesses = JSON.parse(JSON.stringify(this.state.entity.votingProcesses.ended))
+            activeProcesses = activeProcesses.filter(id => id !== processId)
             endedProcesses.unshift(processId)
 
-            let entityMetadata = this.state.entity
+            const entityMetadata = this.state.entity
             entityMetadata.votingProcesses.active = activeProcesses
             entityMetadata.votingProcesses.ended = endedProcesses
 
@@ -165,7 +165,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
             const ownEntityId = getEntityId(address)
-            hideEditControls = this.state.entityId != ownEntityId
+            hideEditControls = this.state.entityId !== ownEntityId
         }
 
         return <div className="body-card">
@@ -183,7 +183,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                 }}
                 dataSource={(this.state.processes || []) as any}
                 renderItem={(vote: ({ id: string, data: ProcessMetadata } | string), idx: number) => (
-                    <Skeleton avatar title={false} loading={typeof vote != "object"} active>
+                    <Skeleton avatar title={false} loading={typeof vote !== "object"} active>
                         <List.Item
                             key={idx}
                             actions={hideEditControls ? [] : [
@@ -195,10 +195,10 @@ class ProcessActiveView extends Component<IAppContext, State> {
                                 avatar={<Avatar src={this.state.entity.media.avatar} />}
                                 title={
                                     <Link href={`/processes#/${entityId}/${(vote as any).id}`}>
-                                        <a>{((vote as any).data as ProcessMetadata).details.title["default"]}</a>
+                                        <a>{((vote as any).data as ProcessMetadata).details.title.default}</a>
                                     </Link>
                                 }
-                                description={((vote as any).data as ProcessMetadata).details.description["default"]}
+                                description={((vote as any).data as ProcessMetadata).details.description.default}
                             />
                         </List.Item>
                     </Skeleton>
