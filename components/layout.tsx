@@ -1,7 +1,7 @@
 import Link from "next/link"
 import AppContext from './app-context'
 import { useContext } from "react"
-import { Layout, Button, Row, Col } from "antd"
+import { Layout as ALayout, Button, Row, Col } from "antd"
 import SideMenu from "./side-menu"
 import AccountMenu from "./account-menu"
 import { MenuOutlined } from "@ant-design/icons"
@@ -12,15 +12,15 @@ type Props = {
     title?: string
 }
 
-export default function ({ children, ...props }: Props) {
+export default function Layout({ children, ...props }: Props) {
     let title = props && props.title
     const context = useContext(AppContext)
     if (!title) {
         if (context) title = context.title
     }
 
-    return <Layout id="layout">
-        <Layout.Header className="top-bar">
+    return <ALayout id="layout">
+        <ALayout.Header className="top-bar">
             <Row>
                 { context.menuVisible &&
                     <Col xs={2} md={0}>
@@ -36,9 +36,9 @@ export default function ({ children, ...props }: Props) {
                     <AccountMenu />
                 </Col>
             </Row>
-        </Layout.Header>
-        <Layout>
-            {context.menuVisible && <Layout.Sider style={{height:"100vh"}}
+        </ALayout.Header>
+        <ALayout>
+            {context.menuVisible && <ALayout.Sider style={{height:"100vh"}}
                 width={200}
                 collapsible
                 breakpoint="md"
@@ -48,10 +48,10 @@ export default function ({ children, ...props }: Props) {
                 onCollapse={() => context.setMenuCollapsed(!context.menuCollapsed)}
             >
                 <SideMenu />
-            </Layout.Sider>}
-            <Layout.Content className="content">
+            </ALayout.Sider>}
+            <ALayout.Content className="content">
                 {children}
-            </Layout.Content>
-        </Layout>
-    </Layout>
+            </ALayout.Content>
+        </ALayout>
+    </ALayout>
 }

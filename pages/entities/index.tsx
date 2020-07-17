@@ -47,7 +47,7 @@ class EntityView extends Component<IAppContext, State> {
         this.fetchMetadata()
     }
 
-    async fetchMetadata(){
+    async fetchMetadata() {
         try {
             const entityId = location.hash.substr(2)
             this.setState({ entityLoading: true, entityId })
@@ -60,7 +60,7 @@ class EntityView extends Component<IAppContext, State> {
             if (!bn) throw new Error()
 
             this.setState({ entity, entityId, entityLoading: false, bootnodesReadOnly: bn })
-            this.props.setTitle(entity.name["default"])
+            this.props.setTitle(entity.name.default)
             this.props.setEntityId(entityId)
         }
         catch (err) {
@@ -69,9 +69,9 @@ class EntityView extends Component<IAppContext, State> {
         }
     }
 
-    shouldComponentUpdate(){
+    shouldComponentUpdate() {
         const entityId = location.hash.substr(2)
-        if(entityId != this.state.entityId){
+        if (entityId !== this.state.entityId) {
             this.fetchMetadata()
         }
 
@@ -85,7 +85,7 @@ class EntityView extends Component<IAppContext, State> {
         // 	subscriptionLink += this.state.bootnodesReadOnly[ETH_NETWORK_ID].web3.map(n => `entryPoints[]=${n.uri}`).join("&")
         // }
 
-        const name = this.state.entity.name["default"] || this.state.entity.name[this.state.entity.languages[0]]
+        const name = this.state.entity.name.default || this.state.entity.name[this.state.entity.languages[0]]
         const activeProcs = this.state.entity.votingProcesses.active && this.state.entity.votingProcesses.active.length || 0
         const endedProcs = this.state.entity.votingProcesses.ended && this.state.entity.votingProcesses.ended.length || 0
 
@@ -94,8 +94,8 @@ class EntityView extends Component<IAppContext, State> {
                 <Col xs={24} sm={15}>
                     <Divider orientation="left">Details</Divider>
                     <img src={this.state.entity.media.avatar} className="avatar" />
-                    <h3>{this.state.entity.name["default"]}</h3>
-                    <p>{this.state.entity.description["default"]}</p>
+                    <h3>{this.state.entity.name.default}</h3>
+                    <p>{this.state.entity.description.default}</p>
                     <br />
                     <Divider orientation="left">Participation</Divider>
                     <p>{`${name} has ${activeProcs} active processes`}</p>

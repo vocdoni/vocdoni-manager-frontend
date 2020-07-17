@@ -1,3 +1,4 @@
-import NotFound from "../components/not-found"
+import NotFoundComponent from "../components/not-found"
 
-export default () => <NotFound />
+const NotFound = () => <NotFoundComponent />
+export default NotFound

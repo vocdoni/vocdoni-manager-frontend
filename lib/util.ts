@@ -3,5 +3,5 @@ export function isServer() {
 }
 
 export function throwIfNotBrowser() {
-    if (typeof window == "undefined") throw new Error("The storage component should only be used on the web browser side")
+    if (typeof window === "undefined") throw new Error("The storage component should only be used on the web browser side")
 }
