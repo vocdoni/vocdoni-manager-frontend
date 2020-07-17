@@ -1,5 +1,5 @@
-# Static web site compilation
-FROM node:12 AS builder
+# Static web site compiler
+FROM node:12
 
 ARG ETH_NETWORK_ID=goerli
 ENV ETH_NETWORK_ID=${ETH_NETWORK_ID}
@@ -20,10 +20,7 @@ ENV REGISTRY_GATEWAY_PUB_KEY=${REGISTRY_GATEWAY_PUB_KEY}
 
 ADD . /app
 WORKDIR /app
-RUN npm install && npm run export
+RUN npm install && npm run build
 
-# Static NGINX web server
-FROM nginx
-RUN rm -Rf /usr/share/nginx/html
-WORKDIR /usr/share/nginx/html
-COPY --from=builder /app/build /usr/share/nginx/html
+# Static web site is available on /app/build
+CMD npm run export

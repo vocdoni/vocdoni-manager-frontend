@@ -46,3 +46,20 @@ At build time, the following env vars are read:
     - The endpoint where new organizations will point app users to register to
 - `ACTION_VISIBILITY_URL`
     - The endpoint where new organizations will tell app users to check their registration status
+
+## Dockerfile
+
+A Dockerfile is provided for convenience. The image it creates is not meant to serve the frontend, but to **export** it.
+
+Exportation allows to pass environment variables, which would not be available if the site was already exported.
+
+```sh
+# Pull the image
+docker volume create manager-frontend
+# Create a volume to hold the frontend files
+docker pull vocdoni/manager-frontend:release
+# Compile the frontend with your own settings
+docker run --rm -it -e "REGISTER_URL=https://localhost:12345/registry" -v manager-frontend:/app/build vocdoni/manager-frontend:release
+# Serve it
+docker run --rm -it -v manager-frontend:/usr/share/nginx/html:ro -p 8000:80 nginx
+```
