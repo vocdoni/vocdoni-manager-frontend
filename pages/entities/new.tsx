@@ -43,7 +43,7 @@ type State = {
 // Stateful component
 class EntityNew extends Component<IAppContext, State> {
     state: State = {
-        entity: EntityMetadataTemplate
+        entity: JSON.parse(JSON.stringify(EntityMetadataTemplate)) // clone
     }
 
     async componentDidMount() {
