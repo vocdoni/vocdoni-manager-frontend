@@ -22,10 +22,10 @@ import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import IndexPage from '.'
 
-const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
+// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 type Props = {
-    registryGateway: DVoteGateway
+    managerBackendGateway: DVoteGateway
 }
 
 type State = {
@@ -41,7 +41,7 @@ type State = {
     processId?: string,
     urlHash?: string,
     connectionError?: string,
-    registryGateway?: DVoteGateway,
+    managerBackendGateway?: DVoteGateway,
 }
 
 class MainApp extends App<Props, State> {
@@ -60,7 +60,7 @@ class MainApp extends App<Props, State> {
     refreshInterval: any
 
     async componentDidMount() {
-        const {Component} = this.props
+        const { Component } = this.props
 
         if (Component.name === IndexPage.name && !isWriteReady()) {
             window.location.href = 'https://vocdoni.io'
@@ -102,12 +102,12 @@ class MainApp extends App<Props, State> {
             this.refreshWeb3Status()
         })
 
-        const registryGateway: DVoteGateway = new DVoteGateway({
-            uri: process.env.REGISTRY_GATEWAY_URL,
+        const managerBackendGateway: DVoteGateway = new DVoteGateway({
+            uri: process.env.MANAGER_BACKEND_URI,
             supportedApis: ['census'],
-            // publicKey: process.env.REGISTRY_GATEWAY_PUB_KEY,
+            publicKey: process.env.MANAGER_BACKEND_PUB_KEY,
         })
-        this.setState({registryGateway})
+        this.setState({ managerBackendGateway })
     }
 
     hashChange(e: HashChangeEvent) {
@@ -124,7 +124,7 @@ class MainApp extends App<Props, State> {
         }).catch(err => {
             this.refreshWeb3Status()
             message.error("Could not connect")
-            this.setState({connectionError: err.message})
+            this.setState({ connectionError: err.message })
         })
     }
 
@@ -192,7 +192,7 @@ class MainApp extends App<Props, State> {
                     <Card title="Connection Error" className="card">
                         <p>Oops! There has been a problem while connecting to our services.</p>
                         <div style={{ textAlign: "center" }}>
-                            <Button type="primary" onClick={() => this.setState({connectionError: false}, () => this.connect())}><ReloadOutlined />Retry</Button>
+                            <Button type="primary" onClick={() => this.setState({ connectionError: false }, () => this.connect())}><ReloadOutlined />Retry</Button>
                         </div>
                     </Card>
                 </Col>
@@ -235,7 +235,7 @@ class MainApp extends App<Props, State> {
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
             setUrlHash: (hash) => this.setUrlHash(hash),
-            registryGateway: this.state.registryGateway,
+            managerBackendGateway: this.state.managerBackendGateway,
         }
 
         // Does the current component want its own layout?

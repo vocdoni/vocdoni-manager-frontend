@@ -36,7 +36,7 @@ export interface IAppContext {
     setMenuDisabled: (menuDisabled: boolean) => void
     setEntityId: (entityId: string) => void
     setProcessId: (processId: string) => void,
-    registryGateway: DVoteGateway,
+    managerBackendGateway: DVoteGateway,
     setUrlHash: (urlHash: string) => void
 }
 

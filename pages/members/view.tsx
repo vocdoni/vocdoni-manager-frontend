@@ -53,7 +53,7 @@ class MemberView extends Component<IAppContext, State> {
           method: 'getMember',
           memberId,
       }
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({ member: result.member, targets: result.targets })
           },
@@ -76,7 +76,7 @@ class MemberView extends Component<IAppContext, State> {
           member
       }
 
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not save the member"
@@ -95,7 +95,7 @@ class MemberView extends Component<IAppContext, State> {
 
   onRemoveMember() {
       const request = { method: "deleteMember", memberId: this.state.memberId }
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not delete the member"

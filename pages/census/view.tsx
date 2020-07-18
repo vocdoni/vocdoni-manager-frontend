@@ -45,7 +45,7 @@ class CensusView extends Component<IAppContext, State> {
           method: 'getCensus',
           censusId: id,
       }
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({ census: result.census, censusTarget: result.target })
           },
@@ -57,7 +57,7 @@ class CensusView extends Component<IAppContext, State> {
 
   deleteCensus() {
       const request = { method: "deleteCensus", id: this.state.censusId }
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not delete the census"

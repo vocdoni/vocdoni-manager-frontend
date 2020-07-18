@@ -71,7 +71,7 @@ class TargetView extends Component<IAppContext, State> {
           filter: params.filter
       }
 
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({
                   loading: false,
@@ -114,7 +114,7 @@ class TargetView extends Component<IAppContext, State> {
           }
       }
 
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not save the target"
@@ -133,7 +133,7 @@ class TargetView extends Component<IAppContext, State> {
   exportTarget() {
       const request = { method: "dumpTarget", targetID: this.state.targetId }
       const wallet = this.props.web3Wallet.getWallet()
-      this.props.registryGateway.sendMessage(request as any, wallet)
+      this.props.managerBackendGateway.sendMessage(request as any, wallet)
           .then(async (result) => {
               if (!result.ok) {
                   const error = "Could not export the target"
@@ -169,7 +169,7 @@ class TargetView extends Component<IAppContext, State> {
           census: {name, merkleRoot, merkleTreeUri}
       }
 
-      this.props.registryGateway.sendMessage(regRequest as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(regRequest as any, this.props.web3Wallet.getWallet())
           .then(async (result) => {
               if (!result.ok) {
                   const error = "Could not register the census"
@@ -190,7 +190,7 @@ class TargetView extends Component<IAppContext, State> {
 
   deleteTarget() {
       const request = { method: "deleteTarget", targetID: this.state.targetId }
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not delete the target"

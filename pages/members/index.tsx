@@ -76,7 +76,7 @@ class Members extends Component<IAppContext, State> {
   }
 
   fetchCount() {
-      this.props.registryGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({total: result.count})
           },
@@ -87,7 +87,7 @@ class Members extends Component<IAppContext, State> {
   }
 
   fetchTargets() {
-      this.props.registryGateway.sendMessage({ method: "listTargets" } as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage({ method: "listTargets" } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({targets: result.targets})
           },
@@ -98,7 +98,7 @@ class Members extends Component<IAppContext, State> {
   }
 
   fetchTags() {
-      this.props.registryGateway.sendMessage({ method: "listTags" } as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage({ method: "listTags" } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({tags: result.tags})
           },
@@ -117,7 +117,7 @@ class Members extends Component<IAppContext, State> {
           filter: params.filter
       }
 
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({
                   loading: false,
@@ -138,7 +138,7 @@ class Members extends Component<IAppContext, State> {
   }
 
   deleteMember(record: any) {
-      this.props.registryGateway.sendMessage({ method: "deleteMember", memberId: record.id } as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage({ method: "deleteMember", memberId: record.id } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not delete the member"
@@ -160,7 +160,7 @@ class Members extends Component<IAppContext, State> {
   }
 
   exportTokens() {
-      this.props.registryGateway.sendMessage({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not export the tokens"
@@ -190,7 +190,7 @@ class Members extends Component<IAppContext, State> {
 
       const request = { method: "dumpTarget", targetID: targetId }
       const wallet = this.props.web3Wallet.getWallet()
-      this.props.registryGateway.sendMessage(request as any, wallet)
+      this.props.managerBackendGateway.sendMessage(request as any, wallet)
           .then(async (result) => {
               if (!result.ok) {
                   const error = "Could not export the census"
@@ -235,7 +235,7 @@ class Members extends Component<IAppContext, State> {
           census: {name, merkleRoot, merkleTreeUri}
       }
 
-      this.props.registryGateway.sendMessage(regRequest as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(regRequest as any, this.props.web3Wallet.getWallet())
           .then(async (result) => {
               if (!result.ok) {
                   const error = "Could not register the census"

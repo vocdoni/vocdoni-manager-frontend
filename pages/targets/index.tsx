@@ -59,7 +59,7 @@ class Targets extends Component<IAppContext, State> {
           filter: params.filter
       }
 
-      this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({
                   loading: false,
@@ -76,7 +76,7 @@ class Targets extends Component<IAppContext, State> {
   }
 
   fetchCount() {
-      this.props.registryGateway.sendMessage({ method: "countTargets" } as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage({ method: "countTargets" } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               this.setState({total: result.count})
           },
@@ -100,7 +100,7 @@ class Targets extends Component<IAppContext, State> {
   }
 
   deleteTarget(record: any) {
-      this.props.registryGateway.sendMessage({ method: "deleteTarget", id: record.id } as any, this.props.web3Wallet.getWallet())
+      this.props.managerBackendGateway.sendMessage({ method: "deleteTarget", id: record.id } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
                   const error = "Could not delete the target"

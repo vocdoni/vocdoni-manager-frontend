@@ -141,7 +141,7 @@ class EntityNew extends Component<IAppContext, State> {
             method: "signUp",
             entityId,
         }
-        return this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet());
+        return this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet());
     }
 
     // renderSupportedLanaguages(entity) {

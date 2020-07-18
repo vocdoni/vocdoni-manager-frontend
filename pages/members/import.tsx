@@ -205,7 +205,7 @@ class MemberImport extends Component<IAppContext, State> {
             method: "importMembers",
         }
 
-        this.props.registryGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not import the members"
