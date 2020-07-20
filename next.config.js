@@ -66,7 +66,7 @@ async function generatePathMap() {
     }
 
     if (env.BOOTNODES_URL_RW && env.BOOTNODES_URL_RW.length > 0) {
-        return {...routes.public, ...routes.private}
+        return { ...routes.public, ...routes.private }
     }
 
     return routes.public

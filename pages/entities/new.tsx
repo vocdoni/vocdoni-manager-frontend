@@ -116,7 +116,7 @@ class EntityNew extends Component<IAppContext, State> {
 
         try {
             const gateway = await getGatewayClients()
-            const state = getNetworkState()
+            // const state = getNetworkState()
 
             const address = this.props.web3Wallet.getAddress()
             const balance = await this.props.web3Wallet.getProvider().getBalance(address)
@@ -125,7 +125,7 @@ class EntityNew extends Component<IAppContext, State> {
                 return Modal.warning({
                     title: "Not enough balance",
                     icon: <ExclamationCircleOutlined />,
-                    content: `For this transaction to be made you need token balance. Contact with us giving us your address: ${address}`,
+                    content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
                     onOk: () => {
                         this.setState({ entityUpdating: false })
                     },

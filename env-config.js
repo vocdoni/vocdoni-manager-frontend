@@ -9,7 +9,7 @@ module.exports = {
     DEVELOPMENT,
 
     // BLOCKCHAIN
-    ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || "goerli",
+    ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || "xdai",
 
     // GATEWAYS
     BOOTNODES_URL_READ_ONLY: process.env.BOOTNODES_URL_READ_ONLY || (DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : "https://bootnodes.vocdoni.net/gateways.json"),

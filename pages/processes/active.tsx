@@ -22,7 +22,6 @@ import { getVoteMetadata, cancelProcess, isCanceled } from "dvote-js/dist/api/vo
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
-const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 const PAGE_SIZE = 6
 
 // MAIN COMPONENT
