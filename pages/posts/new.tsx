@@ -197,6 +197,20 @@ class PostNew extends Component<IAppContext, State> {
           entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
           const address = this.props.web3Wallet.getAddress()
+          const balance = await this.props.web3Wallet.getProvider().getBalance(address)
+
+          if (balance.lte(0)) {
+              return Modal.warning({
+                  title: "Not enough balance",
+                  icon: <ExclamationCircleOutlined />,
+                  content: `For this transaction to be made you need token balance. Contact with us giving us your address: ${address}`,
+                  onOk: () => {
+                      this.setState({ postUpdating: false })
+                      hideLoading()
+                  }
+              })
+          }
+
           await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
           hideLoading()
           this.setState({ postUpdating: false })

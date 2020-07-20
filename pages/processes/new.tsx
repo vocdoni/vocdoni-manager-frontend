@@ -272,6 +272,21 @@ class ProcessNew extends Component<IAppContext, State> {
         const hideLoading = message.loading('Action in progress..', 0)
         this.setState({ processCreating: true })
 
+        const address = this.props.web3Wallet.getAddress()
+        const balance = await this.props.web3Wallet.getProvider().getBalance(address)
+
+        if (balance.lte(0)) {
+            return Modal.warning({
+                title: "Not enough balance",
+                icon: <ExclamationCircleOutlined />,
+                content: `For this transaction to be made you need token balance. Contact with us giving us your address: ${address}`,
+                onOk: () => {
+                    this.setState({ processCreating: false })
+                    hideLoading()
+                }
+            })
+        }
+
         return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), gwPool)
             .then(processId => {
                 message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")

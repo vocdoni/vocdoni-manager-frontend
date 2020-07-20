@@ -135,8 +135,22 @@ class EntityEdit extends Component<IAppContext, State> {
       })
   }
 
-  updateMetadata() {
+  async updateMetadata() {
       this.setState({ entityUpdating: true })
+
+      const address = this.props.web3Wallet.getAddress()
+      const balance = await this.props.web3Wallet.getProvider().getBalance(address)
+
+      if (balance.lte(0)) {
+          return Modal.warning({
+              title: "Not enough balance",
+              icon: <ExclamationCircleOutlined />,
+              content: `For this transaction to be made you need token balance. Contact with us giving us your address: ${address}`,
+              onOk: () => {
+                  this.setState({ entityUpdating: false })
+              },
+          })
+      }
 
       const entity = Object.assign({}, this.state.entity)
 

@@ -1,7 +1,7 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col } from 'antd'
-import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined } from '@ant-design/icons'
+import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col, Modal } from 'antd'
+import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes, EtherUtils } from "dvote-js"
 
@@ -119,6 +119,18 @@ class EntityNew extends Component<IAppContext, State> {
             const state = getNetworkState()
 
             const address = this.props.web3Wallet.getAddress()
+            const balance = await this.props.web3Wallet.getProvider().getBalance(address)
+
+            if (balance.lte(0)) {
+                return Modal.warning({
+                    title: "Not enough balance",
+                    icon: <ExclamationCircleOutlined />,
+                    content: `For this transaction to be made you need token balance. Contact with us giving us your address: ${address}`,
+                    onOk: () => {
+                        this.setState({ entityUpdating: false })
+                    },
+                })
+            }
 
             await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             const entityId = getEntityId(address)
