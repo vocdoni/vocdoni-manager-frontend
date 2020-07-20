@@ -92,7 +92,6 @@ export default class Web3Wallet {
         return balance.toString()
     }
 
-
     public async waitForGas(): Promise<boolean> {
         if (!this.hasWallet) throw new Error('Wallet not available')
 

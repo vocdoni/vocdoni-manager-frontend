@@ -36,12 +36,8 @@ const UserMenu = () => {
 
         {hasWallet &&
             <>
-                {!enoughEther &&
-                    <a href={`https://goerli-faucet.slock.it/?address=${address}`} target="_blank" rel="noreferrer">
-                        <Button danger type="link">Get some Ether</Button>
-                    </a>
-                }
-                <UserOutlined style={{ marginLeft: "10px" }} /> <span className="md-hide">Ready</span>
+                <UserOutlined style={{ marginLeft: "10px" }} />
+                <span className="md-hide">Ready</span>
             </>
         }
     </>
