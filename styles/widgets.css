@@ -9,6 +9,15 @@
   box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
 }
 
+.canvas-wrapper canvas {
+    height: auto !important;
+    max-width: 100%;
+}
+
+.ant-typography.ant-typography-ellipsis-single-line {
+    display: block;
+}
+
 .disabled-layer > .disabled-notice {
     display: none;
 }

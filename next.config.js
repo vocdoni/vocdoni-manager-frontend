@@ -46,6 +46,7 @@ async function generatePathMap() {
             '/posts/view': { page: '/posts/view' },
         },
         private: {
+            '/account/edit': { page: '/account/edit' },
             '/account/new': { page: '/account/new' },
             '/account/import': { page: '/account/import' },
             '/entities/edit': { page: '/entities/edit' },

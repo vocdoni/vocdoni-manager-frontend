@@ -103,7 +103,7 @@ class EntityView extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={24} sm={8}>
                     <Divider orientation="left">Visit from a smartphone</Divider>
-                    <div style={{ textAlign: "center" }}>
+                    <div style={{ textAlign: "center" }} className="canvas-wrapper">
                         <Paragraph><small>Scan the QR code from a mobile device</small></Paragraph>
                         <a href={subscriptionLink} style={{ cursor: "default" }}>
                             <QRCode value={subscriptionLink} size={256} />
