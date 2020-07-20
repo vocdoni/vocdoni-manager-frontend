@@ -1,7 +1,7 @@
 import React from "react"
 import Link from "next/link"
 import { Menu } from "antd"
-import { HomeOutlined, TeamOutlined } from '@ant-design/icons'
+import { HomeOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons'
 import { getNetworkState } from "../lib/network"
 import { getEntityId } from "dvote-js/dist/api/entity"
 import { useContext } from "react"
@@ -28,13 +28,6 @@ const SideMenu = () => {
                     <a>Profile</a>
                 </Link>
             </Menu.Item>
-            {!hideEditControls &&
-        <Menu.Item key="entity-edit" disabled={context.menuDisabled}>
-            <Link href={"/entities/edit#/" + entityId}>
-                <a>Edit profile</a>
-            </Link>
-        </Menu.Item>
-            }
             <Menu.Item key="feed" disabled={context.menuDisabled}>
                 <Link href={"/posts#/" + entityId}>
                     <a>News feed</a>
@@ -79,6 +72,21 @@ const SideMenu = () => {
                 </Menu.Item>
                 <Menu.Item key="members-import" disabled={context.menuDisabled}>
                     <Link href={"/members/import#/" + entityId}><a>Import Members</a></Link>
+                </Menu.Item>
+            </Menu.SubMenu>
+        }
+        {
+            !hideEditControls &&
+            <Menu.SubMenu title="Settings" key="settings" icon={<SettingOutlined />} disabled={context.menuDisabled}>
+                <Menu.Item key="entity-edit" disabled={context.menuDisabled}>
+                    <Link href={"/entities/edit#/" + entityId}>
+                        <a>Edit profile</a>
+                    </Link>
+                </Menu.Item>
+                <Menu.Item key="account-edit" disabled={context.menuDisabled}>
+                    <Link href={"/account/edit#/" + entityId}>
+                        <a>Account</a>
+                    </Link>
                 </Menu.Item>
             </Menu.SubMenu>
         }

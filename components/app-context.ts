@@ -15,6 +15,7 @@ export type ISelected = "profile"
     | "targets"
     | "census"
     | "members-import"
+    | "account-edit"
 
 export interface IAppContext {
     isWriteReady: boolean,

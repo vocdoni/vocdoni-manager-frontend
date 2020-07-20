@@ -1,4 +1,4 @@
-import { Wallet } from "ethers"
+import { Wallet, utils } from "ethers"
 import { Provider } from "ethers/providers"
 import { EtherUtils } from "dvote-js"
 import { DataCache } from "./storage"
@@ -54,6 +54,10 @@ export default class Web3Wallet {
         return this.db.addWallet({ name, seed, publicKey: wallet["signingKey"].publicKey });
     }
 
+    public getPublicKey(): string {
+        return this.wallet["signingKey"].publicKey
+    }
+
     // Gets all the stored wallet accounts from IndexedDB
     public getStored(): Promise<IWallet[]>  {
         return this.db.getAllWallets();
@@ -90,6 +94,12 @@ export default class Web3Wallet {
     public async getBalance(): Promise<string> {
         const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
         return balance.toString()
+    }
+
+    public async getEthBalance(): Promise<string> {
+        const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
+
+        return utils.formatEther(balance)
     }
 
     public async waitForGas(): Promise<boolean> {
