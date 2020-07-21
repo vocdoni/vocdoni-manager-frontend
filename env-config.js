@@ -7,6 +7,7 @@ const DEVELOPMENT = process.env.NODE_ENV !== "production"
 module.exports = {
     LANG: lang,
     DEVELOPMENT,
+    FALLBACK_REDIRECT_URL: "https://vocdoni.io/",
 
     // BLOCKCHAIN
     ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || "goerli",

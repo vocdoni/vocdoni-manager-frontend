@@ -1,0 +1,10 @@
+/* VIEW */
+#validation-view .body-card .ant-col img.avatar {
+    max-width: 95%;
+    float: right;
+}
+
+#validation-view #qr-code {
+    margin-top: 50px;
+    text-align: center;
+}
