@@ -203,9 +203,7 @@ class Members extends Component<IAppContext, State> {
                 const gateway = await getGatewayClients()
                 // tslint:disable-next-line
                 const { censusId } = await addCensus(censusName, [wallet["signingKey"].publicKey], gateway, wallet)
-                //   console.log('censusId is', censusId)
-                //   console.log('prams', censusId, result.claims, false, gateway, wallet)
-                const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, result.claims, false, gateway, wallet)
+                const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, result.claims, true, gateway, wallet)
                 if (invalidClaims.length > 0) {
                     message.warn(`Found ${invalidClaims.length} invalid claims`)
                 }
