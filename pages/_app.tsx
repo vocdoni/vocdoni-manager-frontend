@@ -59,11 +59,11 @@ class MainApp extends App<Props, State> {
 
     refreshInterval: any
 
-    async componentDidMount() {
+    componentDidMount(): void {
         const { Component } = this.props
 
         if (Component.name === IndexPage.name && !isWriteReady()) {
-            window.location.href = 'https://vocdoni.io'
+            window.location.href = process.env.FALLBACK_REDIRECT_URL
         }
 
         this.connect()
@@ -76,13 +76,13 @@ class MainApp extends App<Props, State> {
         window.addEventListener('hashchange', this.hashChange)
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(): void {
         clearInterval(this.refreshInterval)
         window.removeEventListener('beforeunload', this.beforeUnload)
         window.removeEventListener('hashchange', this.hashChange)
     }
 
-    beforeUnload(e: BeforeUnloadEvent) {
+    beforeUnload(e: BeforeUnloadEvent): void {
         if (!getNetworkState().readOnly) {
             // Cancel the event
             e.preventDefault() // If you prevent default behavior in Mozilla Firefox prompt will always be shown
@@ -91,7 +91,7 @@ class MainApp extends App<Props, State> {
         }
     }
 
-    async connect() {
+    async connect(): Promise<void> {
         await initNetwork().then(async () => {
             message.success("Connected")
             this.setState({ connectionError: null })

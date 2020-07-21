@@ -44,6 +44,7 @@ async function generatePathMap() {
             '/processes/ended': { page: '/processes/ended' },
             '/posts': { page: '/posts' },
             '/posts/view': { page: '/posts/view' },
+            '/validation': { page: '/validation' },
         },
         private: {
             '/account/edit': { page: '/account/edit' },
@@ -56,6 +57,7 @@ async function generatePathMap() {
             // '/processes/edit': { page: '/processes/edit' },
             '/posts/edit': { page: '/posts/edit' },
             '/posts/new': { page: '/posts/new' },
+            '/validation': { page: '/validation' },
             '/members': { page: '/members' },
             '/members/view': { page: '/members/view' },
             '/targets': { page: '/targets' },
