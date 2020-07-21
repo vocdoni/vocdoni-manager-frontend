@@ -14,7 +14,7 @@ module.exports = {
 
     // GATEWAYS
     BOOTNODES_URL_READ_ONLY: process.env.BOOTNODES_URL_READ_ONLY || (DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : "https://bootnodes.vocdoni.net/gateways.json"),
-    BOOTNODES_URL_RW: process.env.BOOTNODES_URL_RW || (DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : "https://bootnodes.vocdoni.net/gateways.priv.json"),
+    BOOTNODES_URL_RW: process.env.BOOTNODES_URL_RW || (DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : ""),
 
     // VOCHAIN
     BLOCK_TIME: 10, // 10 seconds
