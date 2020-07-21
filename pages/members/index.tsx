@@ -79,8 +79,7 @@ class Members extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({ total: result.count })
-            },
-            (error) => {
+            }, (error) => {
                 message.error("Could not fetch the members count")
                 this.setState({ error })
             })
@@ -90,8 +89,7 @@ class Members extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendMessage({ method: "listTargets" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({ targets: result.targets })
-            },
-            (error) => {
+            }, (error) => {
                 message.error("Could not fetch the targets data")
                 this.setState({ error })
             })
@@ -101,8 +99,7 @@ class Members extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendMessage({ method: "listTags" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({ tags: result.tags })
-            },
-            (error) => {
+            }, (error) => {
                 message.error("Could not fetch the tags data")
                 this.setState({ error })
             })
@@ -126,8 +123,7 @@ class Members extends Component<IAppContext, State> {
                         ...params.pagination,
                     },
                 })
-            },
-            (error) => {
+            }, (error) => {
                 message.error("Could not fetch the members data")
                 this.setState({
                     loading: false,
@@ -152,33 +148,31 @@ class Members extends Component<IAppContext, State> {
                 this.setState({ data })
 
                 this.fetchCount()
-            },
-            (error) => {
+            }, (error) => {
                 message.error("Could not delete the member")
                 this.setState({ error })
             })
     }
 
     exportTokens() {
-        this.props.managerBackendGateway.sendMessage({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendMessage({ method: "generateTokens", amount: 100 } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
-                    const error = "Could not export the tokens"
+                    const error = "Could not retrieve the tokens"
                     message.error(error)
                     this.setState({ error })
                     return false
                 }
 
-                const data = JSON.stringify(result.membersTokens)
+                const data = (result.tokens || []).join("\n")
                 const element = document.createElement("a")
                 const file = new Blob([data], { type: 'text/plain;charset=utf-8' })
                 element.href = URL.createObjectURL(file)
-                element.download = "exportTokens.txt"
+                element.download = "new-member-tokens.txt"
                 document.body.appendChild(element)
                 element.click()
-            },
-            (error) => {
-                message.error("Could not export the tokens")
+            }, (error) => {
+                message.error("Could not retrieve the tokens")
                 this.setState({ error })
             })
     }
@@ -220,8 +214,7 @@ class Members extends Component<IAppContext, State> {
                 const merkleTreeUri = await publishCensus(censusId, gateway, wallet)
 
                 this.registerCensus(censusId, censusName, merkleRoot, merkleTreeUri, targetId)
-            },
-            (error) => {
+            }, (error) => {
                 message.error("Could not export the census")
                 this.setState({ error })
             })
@@ -246,8 +239,7 @@ class Members extends Component<IAppContext, State> {
 
                 message.success("Census has been exported")
                 Router.replace("/census/view#/" + this.props.entityId + "/" + censusId.split('/')[1])
-            },
-            (error) => {
+            }, (error) => {
                 message.error("Could not register the census")
                 this.setState({ error })
                 console.log(error)
@@ -356,7 +348,7 @@ class Members extends Component<IAppContext, State> {
                             }
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
-                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Export member tokens</Button>
+                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Create member tokens</Button>
                                 <br /> <br />
                                 <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Census</Button>
                             </Col>
