@@ -356,7 +356,7 @@ class ProcessNew extends Component<IAppContext, State> {
                             <label>Process type</label>
                             <br />
                             <Radio.Group buttonStyle="solid" value={this.state.process.type} onChange={e => this.setNewProcessField(["type"], e.target.value)}>
-                                <Radio.Button value="poll-vote">Public Poll</Radio.Button>
+                                <Radio.Button value="poll-vote">Public Vote</Radio.Button>
                                 <Radio.Button value="encrypted-poll">Encrypted Poll</Radio.Button>
                             </Radio.Group>
                             {
