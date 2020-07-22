@@ -145,7 +145,7 @@ class TargetView extends Component<IAppContext, State> {
                 // tslint:disable-next-line
                 const { censusId, merkleRoot } = await addCensus(censusName, [wallet["signingKey"].publicKey], gateway, wallet)
                 //   console.log('censusId is', censusId)
-                const { invalidClaims } = await addClaimBulk(censusId, result.claims, false, gateway, wallet)
+                const { invalidClaims } = await addClaimBulk(censusId, result.claims, true, gateway, wallet)
 
                 // TODO: Show information about found claims and invalidClaims?
 
@@ -178,11 +178,11 @@ class TargetView extends Component<IAppContext, State> {
                 message.success("Target has been exported")
                 Router.replace("/census/edit#/" + this.props.entityId)
             },
-            (error) => {
-                message.error("Could not register the census")
-                this.setState({ error })
-                console.log(error)
-            })
+                (error) => {
+                    message.error("Could not register the census")
+                    this.setState({ error })
+                    console.log(error)
+                })
     }
 
     deleteTarget() {
@@ -199,10 +199,10 @@ class TargetView extends Component<IAppContext, State> {
                 message.success("Target has been deleted")
                 Router.replace("/targets#/" + this.state.entityId)
             },
-            (error) => {
-                message.error("Could not delete the target")
-                this.setState({ error })
-            })
+                (error) => {
+                    message.error("Could not delete the target")
+                    this.setState({ error })
+                })
     }
 
     render() {
