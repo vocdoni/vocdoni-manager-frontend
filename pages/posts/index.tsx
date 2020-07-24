@@ -1,21 +1,24 @@
-import { createElement, useContext, Component } from 'react'
-import { message, Spin, Avatar, Modal } from 'antd'
-import { Divider, Menu, List } from 'antd'
-import { LoadingOutlined, ExclamationCircleOutlined, EyeOutlined } from '@ant-design/icons'
-import { EditOutlined, CloseCircleOutlined } from '@ant-design/icons'
+import { useContext, Component, createElement } from 'react'
+import { message, Spin, Avatar, Modal, Divider, Menu, List } from 'antd'
+import {
+    LoadingOutlined,
+    ExclamationCircleOutlined,
+    EyeOutlined,
+    EditOutlined,
+    CloseCircleOutlined,
+} from '@ant-design/icons'
 import { API, EntityMetadata, MultiLanguage } from 'dvote-js'
-// import Router from 'next/router'
 import Link from 'next/link'
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
 import { fetchFileString } from 'dvote-js/dist/api/file'
 import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { Wallet, Signer } from 'ethers'
 
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { INewsFeed, IFeedPost } from '../../lib/types'
 import AppContext, { IAppContext } from '../../components/app-context'
-// import MainLayout from '../../components/layout'
-// import { main } from '../i18n'
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { IFeedPost, INewsFeed } from '../../lib/types'
+// import MainLayout from "../../components/layout"
+// import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
@@ -184,8 +187,6 @@ class PostView extends Component<IAppContext, State> {
                             // }
                             description={post.date_published ? (new Date(post.date_published).toDateString()) + '\t' + (new Date(post.date_published).toLocaleTimeString()): ""}
                         />
-                        {/*{post.content_text && post.content_text.trim() ? post.content_text : <div dangerouslySetInnerHTML={{ __html: post.content_html }} />}*/}
-
                     </List.Item>
                 )}
             />

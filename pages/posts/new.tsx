@@ -12,6 +12,7 @@ import { fetchFileString } from 'dvote-js/dist/api/file'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
+import { sanitizeHtml } from '../../lib/util'
 // import { main } from '../i18n'
 
 const { Entity } = API
@@ -258,7 +259,7 @@ class PostNew extends Component<IAppContext, State> {
     editorContentChanged(state) {
         this.setState({ editorState: state })
 
-        const newHtml = draftToHtml(convertToRaw(state.getCurrentContent()))
+        const newHtml = sanitizeHtml(draftToHtml(convertToRaw(state.getCurrentContent())))
         const element = document.createElement("div")
         element.innerHTML = newHtml
         const newText = element.innerText

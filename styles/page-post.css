@@ -29,6 +29,10 @@
 
 }
 
+#page-body img {
+    max-width: 100%;
+}
+
 #post-edit .wrapper-box {
     border: 1px solid #F1F1F1;
 }

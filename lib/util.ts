@@ -1,3 +1,6 @@
+import sanitize from 'sanitize-html'
+import { MultiLanguage } from 'dvote-js'
+
 export function isServer(): boolean {
     return typeof window === 'undefined'
 }
@@ -32,3 +35,6 @@ export const downloadFileWithContents = (contents: string, settings?: FileDownlo
     element.click()
     element.remove()
 }
+
+export const sanitizeHtml = (html: MultiLanguage<string> | string) =>
+    sanitize(html, {allowedTags: sanitize.defaults.allowedTags.concat(['img'])})

@@ -11,6 +11,7 @@ import { fetchFileString } from 'dvote-js/dist/api/file'
 // import { by639_1 } from 'iso-language-codes'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { sanitizeHtml } from '../../lib/util'
 import AppContext, { IAppContext } from '../../components/app-context'
 
 const { Entity } = API
@@ -273,7 +274,7 @@ class PostEdit extends Component<IAppContext, State> {
     editorContentChanged(state) {
         this.setState({ editorState: state })
 
-        const newHtml = draftToHtml(convertToRaw(state.getCurrentContent()))
+        const newHtml = sanitizeHtml(draftToHtml(convertToRaw(state.getCurrentContent())))
         const element = document.createElement("div")
         element.innerHTML = newHtml
         const newText = element.innerText
@@ -335,6 +336,12 @@ class PostEdit extends Component<IAppContext, State> {
                                 <RocketOutlined /> Publish Post</Button>
                         }
                     </div>
+                </Col>
+                <Col xs={0} md={10} className="right-col">
+                    <Divider orientation="left">Header</Divider>
+                    {this.state.newsPost.image ?
+                        <img className="preview" src={this.state.newsPost.image} /> : null
+                    }
                 </Col>
             </Row>
         </div>
