@@ -103,7 +103,7 @@ export default class Web3Wallet {
     public async waitForGas(): Promise<boolean> {
         if (!this.hasWallet) throw new Error('Wallet not available')
 
-        console.log('Trying to get some gas to: ', await this.wallet.getAddress())
+        console.log('Waiting to get some gas to: ', await this.wallet.getAddress())
 
         //
         // TODO: Sends some ETH to the active wallet
