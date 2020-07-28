@@ -129,6 +129,7 @@ class Members extends Component<IAppContext, State> {
           },
           (error) => {
               message.error("Could not fetch the members data")
+              console.error(error)
               this.setState({
                   loading: false,
                   error
@@ -272,19 +273,22 @@ class Members extends Component<IAppContext, State> {
 
   render() {
       const columns = [
+          { title: 'id', dataIndex: 'id', sorter: false },
+          { title: 'Verified', dataIndex: 'verified', sorter: true },
           { title: 'First Name', dataIndex: 'firstName', sorter: true },
           { title: 'Last Name', dataIndex: 'lastName', sorter: true  },
           { title: 'Email', dataIndex: 'email', sorter: true  },
-          { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
-              <>{moment().diff(dateOfBirth, 'years', false) }</>
-          )},
-          { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
-              <>
-                  { tags && tags.map((item) => {
-                      return <Tag color={"green"} key={item}>{item}</Tag>
-                  })}
-              </>
-          )},
+          /*  { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
+                <>{moment().diff(dateOfBirth, 'years', false) }</>
+            )},
+            { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
+                <>
+                    { tags && tags.map((item) => {
+                        return <Tag color={"green"} key={item}>{item}</Tag>
+                    })}
+                </>
+            )},
+          */
           { title: 'Actions', key: 'action', render: (text, record, index) => (
               <Space size="middle">
                   <Link href={"/members/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>

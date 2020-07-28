@@ -216,6 +216,7 @@ class MemberImport extends Component<IAppContext, State> {
                 message.success("Members have been imported")
             },
             (error) => {
+                console.log(error)
                 message.error("Could not import the members")
                 this.setState({error})
             })
