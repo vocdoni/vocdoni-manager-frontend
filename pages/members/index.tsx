@@ -1,14 +1,29 @@
 import { useContext, Component, ReactText } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Table, Tag, Select, Space, Button, message } from 'antd'
-import { TagOutlined, DownloadOutlined, ExportOutlined } from '@ant-design/icons'
-import { ITarget, ITag, IMember } from '../../lib/types'
-import { getNetworkState, getGatewayClients } from '../../lib/network'
+import {
+    Row,
+    Col,
+    Divider,
+    Table,
+    Tag,
+    Select,
+    Space,
+    Button,
+    message,
+    Modal,
+    Form,
+    Input,
+} from 'antd'
+import { TagOutlined, DownloadOutlined, ExportOutlined, LinkOutlined } from '@ant-design/icons'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 // import moment from 'moment'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
+
+import { ITarget, ITag, IMember } from '../../lib/types'
+import { getNetworkState, getGatewayClients } from '../../lib/network'
+import InviteTokens from '../../components/invite-tokens'
 
 const MembersPage = props => {
     const context = useContext(AppContext)
@@ -27,6 +42,7 @@ type State = {
     total: number,
     loading: boolean,
     error?: any,
+    inviteTokensModalVisibility: boolean,
 
     censusGateway: DVoteGateway,
 }
@@ -47,6 +63,7 @@ class Members extends Component<IAppContext, State> {
         total: 0,
         loading: false,
         censusGateway: null,
+        inviteTokensModalVisibility: false,
     }
 
     async componentDidMount() {
@@ -368,7 +385,8 @@ class Members extends Component<IAppContext, State> {
                             }
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
-                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Create member tokens</Button>
+                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Export member tokens</Button>
+                                <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate invite tokens</Button>
                                 <br /> <br />
                                 <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Census</Button>
                             </Col>
@@ -376,6 +394,11 @@ class Members extends Component<IAppContext, State> {
                     </Col>
                 </Row>
             </div>
+            <InviteTokens
+                {...this.props}
+                visible={this.state.inviteTokensModalVisibility}
+                onCancel={() => this.setState({inviteTokensModalVisibility: false})}
+            />
         </div>
     }
 }
