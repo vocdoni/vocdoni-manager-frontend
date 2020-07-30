@@ -1,10 +1,8 @@
-import { Wallet, utils } from "ethers"
-import { Provider } from "ethers/providers"
+import { Wallet, utils, providers } from "ethers"
 import { EtherUtils } from "dvote-js"
 import { DataCache } from "./storage"
 import { Key } from "react"
 import { IWallet } from "./types"
-import { BigNumber } from "ethers/utils"
 
 let web3Wallet: Web3Wallet
 
@@ -15,7 +13,7 @@ export function getWeb3Wallet() {
 
 export default class Web3Wallet {
     private wallet: Wallet
-    private provider: Provider
+    private provider: providers.Provider
     private walletAddress: string
     private db: DataCache;
 
@@ -31,15 +29,15 @@ export default class Web3Wallet {
         this.wallet = newWallet
     }
 
-    public setProvider(provider: Provider): void {
+    public setProvider(provider: providers.Provider): void {
         this.provider = provider
     }
 
-    public getProvider(): Provider {
+    public getProvider(): providers.Provider {
         return this.provider
     }
 
-    public connect(newProvider: Provider) {
+    public connect(newProvider: providers.Provider) {
         this.setProvider(newProvider)
         if (this.hasWallet()) {
             this.wallet = this.wallet.connect(newProvider)
@@ -92,12 +90,12 @@ export default class Web3Wallet {
     }
 
     public async getBalance(): Promise<string> {
-        const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
+        const balance: utils.BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
         return balance.toString()
     }
 
     public async getEthBalance(): Promise<string> {
-        const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
+        const balance: utils.BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
 
         return utils.formatEther(balance)
     }
@@ -105,7 +103,7 @@ export default class Web3Wallet {
     public async waitForGas(): Promise<boolean> {
         if (!this.hasWallet) throw new Error('Wallet not available')
 
-        console.log('Trying to get some gas to: ', await this.wallet.getAddress())
+        console.log('Waiting to get some gas to: ', await this.wallet.getAddress())
 
         //
         // TODO: Sends some ETH to the active wallet

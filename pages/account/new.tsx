@@ -154,8 +154,8 @@ class AccountNew extends Component<IAppContext, State> {
 
                       {this.state.accountWaitingForGas &&
               <>
-                  <h3>Get some coins</h3>
-                  <p>Please, fill your address with some gas using the <a href={`https://goerli-faucet.slock.it/?address=${this.state.address}`} target="_blank" rel="noreferrer">Görli Faucet</a></p>
+                  <h3>Get some xDAI</h3>
+                  <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <br /><code>{this.state.address}</code></span>
                   <br />
                   <Spin indicator={<LoadingOutlined style={{ fontSize: 22 }} />} />
               </>

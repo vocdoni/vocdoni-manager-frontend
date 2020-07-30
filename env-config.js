@@ -10,7 +10,7 @@ module.exports = {
     FALLBACK_REDIRECT_URL: "https://vocdoni.io/",
 
     // BLOCKCHAIN
-    ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || "goerli",
+    ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || "xdai",
 
     // GATEWAYS
     BOOTNODES_URL_READ_ONLY: DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : (process.env.BOOTNODES_URL_READ_ONLY || "https://bootnodes.vocdoni.net/gateways.json"),

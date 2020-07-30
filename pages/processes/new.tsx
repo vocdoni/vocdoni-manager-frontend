@@ -279,7 +279,7 @@ class ProcessNew extends Component<IAppContext, State> {
             return Modal.warning({
                 title: "Not enough balance",
                 icon: <ExclamationCircleOutlined />,
-                content: `For this transaction to be made you need token balance. Contact with us giving us your address: ${address}`,
+                content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
                 onOk: () => {
                     this.setState({ processCreating: false })
                     hideLoading()

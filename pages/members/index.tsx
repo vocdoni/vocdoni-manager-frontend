@@ -7,7 +7,7 @@ import { getNetworkState, getGatewayClients } from '../../lib/network'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
-import moment from 'moment'
+// import moment from 'moment'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
 
 const MembersPage = props => {
@@ -155,10 +155,10 @@ class Members extends Component<IAppContext, State> {
     }
 
     exportTokens() {
-        this.props.managerBackendGateway.sendMessage({ method: "generateTokens", amount: 100 } as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendMessage({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
-                    const error = "Could not retrieve the tokens"
+                    const error = "Could not export the tokens"
                     message.error(error)
                     this.setState({ error })
                     return false
@@ -172,10 +172,33 @@ class Members extends Component<IAppContext, State> {
                 document.body.appendChild(element)
                 element.click()
             }, (error) => {
-                message.error("Could not retrieve the tokens")
+                message.error("Could not export the tokens")
                 this.setState({ error })
             })
     }
+
+    // exportTokens() {
+    //     this.props.managerBackendGateway.sendMessage({ method: "generateTokens", amount: 100 } as any, this.props.web3Wallet.getWallet())
+    //         .then((result) => {
+    //             if (!result.ok) {
+    //                 const error = "Could not retrieve the tokens"
+    //                 message.error(error)
+    //                 this.setState({ error })
+    //                 return false
+    //             }
+
+    //             const data = JSON.stringify(result.membersTokens)
+    //             const element = document.createElement("a")
+    //             const file = new Blob([data], { type: 'text/plain;charset=utf-8' })
+    //             element.href = URL.createObjectURL(file)
+    //             element.download = "new-member-tokens.txt"
+    //             document.body.appendChild(element)
+    //             element.click()
+    //         }, (error) => {
+    //             message.error("Could not retrieve the tokens")
+    //             this.setState({ error })
+    //         })
+    // }
 
     createCensus() {
         // Defaulting targets
@@ -262,23 +285,22 @@ class Members extends Component<IAppContext, State> {
 
     render() {
         const columns = [
+            { title: 'id', dataIndex: 'id', sorter: false },
+            { title: 'Verified', dataIndex: 'verified', sorter: true },
             { title: 'First Name', dataIndex: 'firstName', sorter: true },
             { title: 'Last Name', dataIndex: 'lastName', sorter: true },
             { title: 'Email', dataIndex: 'email', sorter: true },
-            {
-                title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
-                    <>{moment().diff(dateOfBirth, 'years', false)}</>
-                )
-            },
-            {
-                title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
-                    <>
-                        {tags && tags.map((item) => {
-                            return <Tag color={"green"} key={item}>{item}</Tag>
-                        })}
-                    </>
-                )
-            },
+            /*    { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
+                        <>{moment().diff(dateOfBirth, 'years', false) }</>
+                )},
+                { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
+                        <>
+                                { tags && tags.map((item) => {
+                                        return <Tag color={"green"} key={item}>{item}</Tag>
+                                })}
+                        </>
+                )},
+            */
             {
                 title: 'Actions', key: 'action', render: (text, record, index) => (
                     <Space size="middle">

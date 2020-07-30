@@ -16,7 +16,7 @@ import { getVoteMetadata, isCanceled, estimateDateAtBlock } from "dvote-js/dist/
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
-const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
+// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10", 10) || 10
 
 // MAIN COMPONENT
