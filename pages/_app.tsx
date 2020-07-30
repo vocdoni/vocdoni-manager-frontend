@@ -63,7 +63,7 @@ class MainApp extends App<Props, State> {
         const { Component } = this.props
 
         if (Component.name === IndexPage.name && !isWriteReady()) {
-            window.location.href = process.env.FALLBACK_REDIRECT_URL
+            if (!process.env.BOOTNODES_URL_RW) window.location.href = process.env.FALLBACK_REDIRECT_URL
         }
 
         this.connect()
