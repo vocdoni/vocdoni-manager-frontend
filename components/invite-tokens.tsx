@@ -5,12 +5,26 @@ export default class InviteTokens extends Component {
     handleOk = ({amount}) => {
         const tokensReq = {
             method: 'generateTokens',
-            amount,
+            amount: parseInt(amount, 10),
         }
 
         this.props.managerBackendGateway
             .sendMessage(tokensReq as any, this.props.web3Wallet.getWallet())
-            .then(console.log, console.error)
+            .then(this.downloadTokens, this.props.onError)
+    }
+
+    downloadTokens = (result) => {
+        if (!result.ok) {
+            return this.props.onError("Could not generate the tokens")
+        }
+
+        const data = (result.tokens || []).join(";\n")
+        const element = document.createElement("a")
+        const file = new Blob([data], { type: 'text/plain;charset=utf-8' })
+        element.href = URL.createObjectURL(file)
+        element.download = "new-member-tokens.csv"
+        document.body.appendChild(element)
+        element.click()
     }
 
     render() {

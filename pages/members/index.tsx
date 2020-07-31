@@ -194,29 +194,6 @@ class Members extends Component<IAppContext, State> {
             })
     }
 
-    // exportTokens() {
-    //     this.props.managerBackendGateway.sendMessage({ method: "generateTokens", amount: 100 } as any, this.props.web3Wallet.getWallet())
-    //         .then((result) => {
-    //             if (!result.ok) {
-    //                 const error = "Could not retrieve the tokens"
-    //                 message.error(error)
-    //                 this.setState({ error })
-    //                 return false
-    //             }
-
-    //             const data = JSON.stringify(result.membersTokens)
-    //             const element = document.createElement("a")
-    //             const file = new Blob([data], { type: 'text/plain;charset=utf-8' })
-    //             element.href = URL.createObjectURL(file)
-    //             element.download = "new-member-tokens.txt"
-    //             document.body.appendChild(element)
-    //             element.click()
-    //         }, (error) => {
-    //             message.error("Could not retrieve the tokens")
-    //             this.setState({ error })
-    //         })
-    // }
-
     createCensus() {
         // Defaulting targets
         const targetId = this.state.targets[0].id
@@ -398,6 +375,10 @@ class Members extends Component<IAppContext, State> {
                 {...this.props}
                 visible={this.state.inviteTokensModalVisibility}
                 onCancel={() => this.setState({inviteTokensModalVisibility: false})}
+                onError={(error) => {
+                    message.error("Could not generate invite tokens")
+                    this.setState({ error })
+                }}
             />
         </div>
     }
