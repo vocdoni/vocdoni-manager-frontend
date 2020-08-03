@@ -1,13 +1,12 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, DatePicker, Radio, Modal } from 'antd'
+import { message, Spin, Button, Input, Form, Divider, Row, Col, DatePicker, Radio, Modal, Select } from 'antd'
 import { LoadingOutlined, RocketOutlined, PlusOutlined, MinusOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes, MultiLanguage, ProcessMetadata } from "dvote-js"
+import { API, EntityMetadata, GatewayBootNodes, ProcessMetadata } from "dvote-js"
 // import { by639_1 } from 'iso-language-codes'
 import moment from 'moment'
 const { Entity } = API
-import Link from "next/link"
 import Router from 'next/router'
 // import { Wallet, Signer } from 'ethers'
 import { getEntityId } from 'dvote-js/dist/api/entity'
@@ -15,10 +14,12 @@ import { getEntityId } from 'dvote-js/dist/api/entity'
 import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
 import { createVotingProcess, estimateBlockAtDateTime } from 'dvote-js/dist/api/vote'
 import { GatewayPool } from 'dvote-js/dist/net/gateway-pool'
+import { ICensus } from '../../lib/types'
 const { RangePicker } = DatePicker
+const { Option } = Select
 
-const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180", 10)
-const BLOCK_MARGIN = 5 // extra blocks
+// const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180", 10)
+// const BLOCK_MARGIN = 5 // extra blocks
 
 /* HTML EDITOR
 let Editor: any // = await import("react-draft-wysiwyg")
@@ -44,6 +45,7 @@ type State = {
     entity?: EntityMetadata,
     entityId?: string,
     process?: ProcessMetadata,
+    censuses:  ICensus[],
     bootnodes?: GatewayBootNodes,
     descriptionEditorState?: any,
     startBlock: number
@@ -59,7 +61,8 @@ class ProcessNew extends Component<IAppContext, State> {
         startBlock: null,
         numberOfBlocks: null,
         startDate: null,
-        endDate: null
+        endDate: null,
+        censuses: [],
     }
 
     refreshInterval = null
@@ -94,6 +97,8 @@ class ProcessNew extends Component<IAppContext, State> {
 
             const defaultRange = [moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]
             this.updateDateRange(defaultRange[0], defaultRange[1])
+
+            await this.fetchCensuses()            
         }
         catch (err) {
             message.error("Could not check the entity metadata")
@@ -127,6 +132,22 @@ class ProcessNew extends Component<IAppContext, State> {
             this.setState({ dataLoading: false })
             throw err
         }
+    }
+
+    async fetchCensuses() {
+        const request = {
+            method: "listCensus",
+        }
+  
+        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+            .then((result) => {
+                this.setState({
+                    censuses: result.censuses,
+                })
+            },
+            (error) => {
+                return new Error(error)
+            })
     }
 
     addQuestion() {
@@ -316,7 +337,7 @@ class ProcessNew extends Component<IAppContext, State> {
 
     renderProcessNew() {
         const questions = this.state.process.details.questions
-
+        const censuses = this.state.censuses
         return <div className="body-card">
             <Row justify="start">
                 <Col xs={24} sm={20} md={14}>
@@ -372,29 +393,22 @@ class ProcessNew extends Component<IAppContext, State> {
 
                     <Form>
                         <Form.Item>
-                            <label>Census Merkle Root</label>
-                            <Input
+                            <Select
+                                showSearch
                                 size="large"
-                                placeholder="0x123456789..."
-                                value={this.state.process.census.merkleRoot}
-                                onChange={ev => this.setNewProcessField(['census', 'merkleRoot'], ev.target.value)}
-                            />
-                            <small style={{ lineHeight: "35px" }}>
-                                <a href="https://census-manager.vocdoni.net/" target="_blank" rel="noreferrer">You can find the value on the Census Manager</a>
-                            </small>
-                        </Form.Item>
-                        <Form.Item>
-                            <label>Census Merkle Tree origin</label>
-                            <Input
-                                size="large"
-                                placeholder="ipfs://123456...!12345678"
-                                value={this.state.process.census.merkleTree}
-                                onChange={ev => this.setNewProcessField(['census', 'merkleTree'], ev.target.value)}
-                            />
-
-                            <small style={{ lineHeight: "35px" }}>
-                                <a href="https://census-manager.vocdoni.net/" target="_blank" rel="noreferrer">You can find the value on the Census Manager</a>
-                            </small>
+                                placeholder="Select a Census"
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                    censuses.find(x => x.id == option.key).name.includes(input)
+                                }
+                                onChange={ev => {
+                                    this.setNewProcessField(['census', 'merkleRoot'], censuses.find(x => x.id == ev).merkleRoot)
+                                    this.setNewProcessField(['census', 'merkleTree'], censuses.find(x => x.id == ev).merkleTreeUri)
+                                }}>
+                                { censuses.map(d => (
+                                    <Option key={d.id} data={d} value={d.name}>{d.name}</Option>
+                                ))}
+                            </Select>
                         </Form.Item>
                     </Form>
 
