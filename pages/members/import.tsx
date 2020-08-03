@@ -214,6 +214,7 @@ class MemberImport extends Component<IAppContext, State> {
                     return false
                 }
                 message.success("Members have been imported")
+                Router.replace("/members#/" + this.state.entityId)
             },
             (error) => {
                 console.log(error)
