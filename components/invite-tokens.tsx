@@ -1,7 +1,19 @@
 import React, { Component } from 'react'
 import { Modal, Button, Form, Input } from 'antd'
+import { DVoteGateway } from 'dvote-js/dist/net/gateway'
+import Web3Wallet from '../lib/web3-wallet'
 
-export default class InviteTokens extends Component {
+const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation/"
+
+type Props = {
+    entityId: string,
+    managerBackendGateway: DVoteGateway,
+    web3Wallet: Web3Wallet,
+    visible: boolean,
+    onCancel: ()=>  void,
+    onError: (any) => any,
+}
+export default class InviteTokens extends Component<Props> {
     handleOk = ({amount}) => {
         const tokensReq = {
             method: 'generateTokens',
@@ -17,8 +29,11 @@ export default class InviteTokens extends Component {
         if (!result.ok) {
             return this.props.onError("Could not generate the tokens")
         }
-
-        const data = (result.tokens || []).join("\n")
+        let data =result.tokens
+        if (data.length > 0) {
+            data = data.map( token => token+","+validationUrlPrefix+this.props.entityId+'/'+token)
+        }
+        data = (data || []).join("\n")
         const element = document.createElement("a")
         const file = new Blob([data], { type: 'text/csv;charset=utf-8' })
         element.href = URL.createObjectURL(file)
@@ -31,7 +46,7 @@ export default class InviteTokens extends Component {
         const { visible } = this.props
         return (
             <Modal
-                title='Generate Invite Tokens'
+                title='Generate New User Tokens'
                 visible={visible}
                 confirmLoading={false}
                 closable={false}

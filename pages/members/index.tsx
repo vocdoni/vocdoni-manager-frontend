@@ -361,9 +361,8 @@ class Members extends Component<IAppContext, State> {
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
                                 <Paragraph>explainer...</Paragraph>
-                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Export member tokens</Button>
-                                <br /> <br />
                                 <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate invite tokens</Button>
+                                <br /> <br />
                                 <Paragraph>explainer...</Paragraph>
                                 <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation links</Button>
                                 <br /> <br />
