@@ -133,6 +133,9 @@ class Members extends Component<IAppContext, State> {
 
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
+                result.members.map(member => {
+                    member.validated= (new Date(member.verified).getFullYear() == new Date('0001').getFullYear()) ? "Yes" : "No"
+                }) 
                 this.setState({
                     loading: false,
                     data: result.members,
@@ -280,7 +283,7 @@ class Members extends Component<IAppContext, State> {
     render() {
         const columns = [
             { title: 'id', dataIndex: 'id', sorter: false },
-            { title: 'Verified', dataIndex: 'verified', sorter: true },
+            { title: 'Validated', dataIndex: 'validated'},
             { title: 'First Name', dataIndex: 'firstName', sorter: true },
             { title: 'Last Name', dataIndex: 'lastName', sorter: true },
             { title: 'Email', dataIndex: 'email', sorter: true },
