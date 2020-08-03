@@ -15,6 +15,7 @@ import InviteTokens from '../../components/invite-tokens'
 
 
 const defaultPageSize = 50
+const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation/"
 
 
 const MembersPage = props => {
@@ -169,18 +170,24 @@ class Members extends Component<IAppContext, State> {
     exportTokens() {
         this.props.managerBackendGateway.sendMessage({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
-                if (!result.ok) {
-                    const error = "Could not export the tokens"
+                if (!result.ok || !result.membersTokens) {
+                    const error = "Could not generate the validation links"
                     message.error(error)
                     this.setState({ error })
                     return false
                 }
-
-                const data = (result.tokens || []).join("\n")
+                let data  = result.membersTokens
+                if (data.length > 0) {
+                    data = data
+                        .filter( x => x.emails.length>0 && x.tokens.length >0 )
+                        .map( entry => entry.emails + ',' + entry.tokens +',' +  validationUrlPrefix+this.props.entityId+'/'+entry.tokens)
+                }
+                console.log(data)
+                data = (data || []).join("\n")
                 const element = document.createElement("a")
-                const file = new Blob([data], { type: 'text/plain;charset=utf-8' })
+                const file = new Blob([data], { type: 'text/csv;charset=utf-8' })
                 element.href = URL.createObjectURL(file)
-                element.download = "new-member-tokens.txt"
+                element.download = "invitation-links.csv"
                 document.body.appendChild(element)
                 element.click()
             }, (error) => {
@@ -361,10 +368,10 @@ class Members extends Component<IAppContext, State> {
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
                                 <Paragraph>explainer...</Paragraph>
-                                <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate invite tokens</Button>
+                                <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate Invite Tokens</Button>
                                 <br /> <br />
                                 <Paragraph>explainer...</Paragraph>
-                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation links</Button>
+                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation Links</Button>
                                 <br /> <br />
                                 <Paragraph>explainer...</Paragraph>
                                 <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
