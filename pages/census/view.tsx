@@ -89,11 +89,12 @@ class CensusView extends Component<IAppContext, State> {
                     {/* <Descriptions.Item label="Target">
                     <Link href={"/targets/view#" + this.state.entityId + "/" + this.state.censusTarget.id}><a>{this.state.censusTarget.name}</a></Link>
                   </Descriptions.Item> */}
-                    <Descriptions.Item label="Merkle Root">{census.merkleRoot}</Descriptions.Item>
-                    <Descriptions.Item label="Merkle Tree Origin">{census.merkleTreeUri}</Descriptions.Item>
-                    <Descriptions.Item label="Size">{census.size} members</Descriptions.Item>
-                    <Descriptions.Item label="Exported">{census.created_at}</Descriptions.Item>
                     <Descriptions.Item label="Census ID">{census.id}</Descriptions.Item>
+                    <Descriptions.Item label="Size">{census.size} members</Descriptions.Item>
+                    <Descriptions.Item label="Merkle Root">{census.merkleRoot}</Descriptions.Item>
+                    <Descriptions.Item label="Created At">{census.createdAt}</Descriptions.Item>
+                    <Descriptions.Item label="Merkle Tree Origin">{census.merkleTreeUri}</Descriptions.Item>
+                    
                 </Descriptions>
                       }
                   </Col>

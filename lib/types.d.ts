@@ -70,5 +70,5 @@ export interface ICensus {
     merkleRoot?: string,
     merkleTreeUri?: string,
     size: number,
-    created_at: string,
+    createdAt: string,
 }
