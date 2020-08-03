@@ -1,29 +1,21 @@
 import { useContext, Component, ReactText } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import {
-    Row,
-    Col,
-    Divider,
-    Table,
-    Tag,
-    Select,
-    Space,
-    Button,
-    message,
-    Modal,
-    Form,
-    Input,
-} from 'antd'
-import { TagOutlined, DownloadOutlined, ExportOutlined, LinkOutlined } from '@ant-design/icons'
+import { Row, Col, Divider, Table, Select, Button, message, Typography } from 'antd'
+import { TagOutlined, DownloadOutlined, ExportOutlined } from '@ant-design/icons'
+import { ITarget, ITag, IMember } from '../../lib/types'
+import { getNetworkState, getGatewayClients } from '../../lib/network'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 // import moment from 'moment'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
+const { Paragraph } = Typography;
 
-import { ITarget, ITag, IMember } from '../../lib/types'
-import { getNetworkState, getGatewayClients } from '../../lib/network'
 import InviteTokens from '../../components/invite-tokens'
+
+
+const defaultPageSize = 50
+
 
 const MembersPage = props => {
     const context = useContext(AppContext)
@@ -38,7 +30,7 @@ type State = {
     selectedRows?: any[],
     selectedRowsKeys?: ReactText[],
     data: IMember[],
-    pagination: { current: number, pageSize: number },
+    pagination: { current: number, defaultPageSize?: number, pageSize?: number },
     total: number,
     loading: boolean,
     error?: any,
@@ -58,7 +50,7 @@ class Members extends Component<IAppContext, State> {
         data: [],
         pagination: {
             current: 1,
-            pageSize: 10,
+            defaultPageSize: defaultPageSize,
         },
         total: 0,
         loading: false,
@@ -265,13 +257,13 @@ class Members extends Component<IAppContext, State> {
     }
 
     onTargetChange(target: string) {
-        const pagination = { current: 1, pageSize: 10 }
+        const pagination = { current: 1 }
         this.setState({ selectedTarget: target, pagination })
         this.handleTableChange(pagination, { target, tag: this.state.selectedTag })
     }
 
     onTagChange(tag: string) {
-        const pagination = { current: 1, pageSize: 10 }
+        const pagination = { current: 1}
         this.setState({ selectedTag: tag, pagination })
         this.handleTableChange(pagination, { tag, target: this.state.selectedTarget })
     }
@@ -280,14 +272,19 @@ class Members extends Component<IAppContext, State> {
         this.setState({ selectedRowsKeys: keys, selectedRows: rows })
     }
 
+    generateLink(text, record, index) {
+        return <Link href={"/members/view#/" + this.props.entityId + "/" + record.id}><a>{text}</a></Link>
+    }
+
     render() {
         const columns = [
-            { title: 'id', dataIndex: 'id', sorter: false },
-            { title: 'Validated', dataIndex: 'validated'},
-            { title: 'First Name', dataIndex: 'firstName', sorter: true },
-            { title: 'Last Name', dataIndex: 'lastName', sorter: true },
-            { title: 'Email', dataIndex: 'email', sorter: true },
-            /*    { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
+            { title: 'First Name', dataIndex: 'firstName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Last Name', dataIndex: 'lastName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Email', dataIndex: 'email', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Validated', dataIndex: 'validated', render: (text, record, index) => this.generateLink(text, record, index) },
+            /*    
+                { title: 'id', dataIndex: 'id', sorter: false, render: (text, record, index) => this.generateLink(text, record, index) },
+                { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
                         <>{moment().diff(dateOfBirth, 'years', false) }</>
                 )},
                 { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
@@ -297,7 +294,7 @@ class Members extends Component<IAppContext, State> {
                                 })}
                         </>
                 )},
-            */
+            
             {
                 title: 'Actions', key: 'action', render: (text, record, index) => (
                     <Space size="middle">
@@ -305,6 +302,7 @@ class Members extends Component<IAppContext, State> {
                         <a onClick={() => this.deleteMember(record)}>Delete</a>
                     </Space>)
             },
+            */
         ]
 
         return <div id="page-body">
@@ -312,6 +310,7 @@ class Members extends Component<IAppContext, State> {
                 <Row gutter={40} justify="start">
                     <Col xs={{ span: 24, order: 2 }} lg={{ span: 18, order: 1 }}>
                         <Divider orientation="left">Member list</Divider>
+                        <Paragraph>explainer...</Paragraph>
                         <Table
                             rowKey="id"
                             columns={columns}
@@ -319,10 +318,6 @@ class Members extends Component<IAppContext, State> {
                             pagination={{ ...this.state.pagination, ...{ total: this.state.total } }}
                             loading={this.state.loading}
                             onChange={(pagination, filters, sorter) => this.handleTableChange(pagination, filters, sorter)}
-                            rowSelection={{
-                                type: 'checkbox',
-                                onChange: (keys, rows) => this.onRowSelection(keys, rows)
-                            }}
                             className='scroll-x'
                         />
                     </Col>
@@ -365,10 +360,15 @@ class Members extends Component<IAppContext, State> {
                             }
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
+                                <Paragraph>explainer...</Paragraph>
                                 <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Export member tokens</Button>
-                                <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate invite tokens</Button>
                                 <br /> <br />
-                                <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Census</Button>
+                                <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate invite tokens</Button>
+                                <Paragraph>explainer...</Paragraph>
+                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation links</Button>
+                                <br /> <br />
+                                <Paragraph>explainer...</Paragraph>
+                                <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
                             </Col>
                         </Row>
                     </Col>

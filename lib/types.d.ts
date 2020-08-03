@@ -47,6 +47,7 @@ export interface IMember {
     lastName: string,
     email: string,
     dateOfBirth: any,
+    verified: any,
     tags: [],
 }
 
