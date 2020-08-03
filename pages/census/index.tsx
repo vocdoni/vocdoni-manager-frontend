@@ -128,22 +128,26 @@ class Census extends Component<IAppContext, State> {
       this.setState({selectedRowsKeys: keys, selectedRows: rows})
   }
 
+  generateLink(text, record, index) {
+      return <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>{text}</a></Link>
+  }
+
   render() {
       const columns = [
-          { title: 'Name', dataIndex: 'name', key: 'name' },
+          { title: 'Name', dataIndex: 'name', key: 'name', render: (text, record, index) => this.generateLink(text, record, index)  },
           // { title: 'Target', dataIndex: 'targetId', key: 'targetId', render: (text, record, index) => (
           //     <Link href={"/targets/view#/" + this.props.entityId + "/" + record.targetId}><a>{record.targetId}</a></Link>
           //   )
           // },
-          { title: 'Census Id', dataIndex: 'id', key: 'id' },
+          //{ title: 'Census Id', dataIndex: 'id', key: 'id' },
           // { title: 'MerkleRoot', dataIndex: 'id', key: 'id' },
-          { title: 'Creation date', dataIndex: 'created_at', key: 'created_at' },
-          { title: 'Actions', key: 'action', render: (text, record, index) => (
-              <Space size="middle">
-                  <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>
-                  <a onClick={() => this.deleteCensus(record)}>Delete</a>
-              </Space>)
-          },
+          { title: 'Creation date', dataIndex: 'createdAt', key: 'createdAt',  render: (text, record, index) => this.generateLink(text, record, index)  },
+          //{ title: 'Actions', key: 'action', render: (text, record, index) => (
+          //    <Space size="middle">
+          //        <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>
+          //        <a onClick={() => this.deleteCensus(record)}>Delete</a>
+          //    </Space>)
+          //},
       ]
 
       return <div id="page-body">
@@ -158,10 +162,6 @@ class Census extends Component<IAppContext, State> {
                           pagination={{...this.state.pagination, ...{total: this.state.total}}}
                           loading={this.state.loading}
                           onChange={(pagination, filters, sorter) => this.handleTableChange(pagination, filters, sorter)}
-                          rowSelection={{
-                              type: 'checkbox',
-                              onChange: (keys, rows) => this.onRowSelection(keys, rows)
-                          }}
                           className='scroll-x'
                       />
                   </Col>
@@ -169,8 +169,10 @@ class Census extends Component<IAppContext, State> {
                   <Col xs={{span: 24, order: 1}} lg={{span: 6, order: 2}}>
                       <Row gutter={[0,24]}>
                           <Col span={24}>
+                              {/*
                               <Divider orientation="left">Actions</Divider>
                               <Button type="link" onClick={() => this.removeSelected()} icon={<DeleteRowOutlined />}>Remove selected</Button>
+                              */}
                           </Col>
                       </Row>
                   </Col>
