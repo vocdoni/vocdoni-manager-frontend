@@ -1,7 +1,7 @@
 import { useContext, Component, ReactText } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { Row, Col, Divider, Table, Select, Button, message, Typography } from 'antd'
-import { TagOutlined, DownloadOutlined, ExportOutlined } from '@ant-design/icons'
+import { TagOutlined, DownloadOutlined, ExportOutlined, InstagramFilled } from '@ant-design/icons'
 import { ITarget, ITag, IMember } from '../../lib/types'
 import { getNetworkState, getGatewayClients } from '../../lib/network'
 import Router from 'next/router'
@@ -66,10 +66,13 @@ class Members extends Component<IAppContext, State> {
 
         this.props.setMenuSelected("members")
 
-        this.fetchCount()
-        this.fetch()
-        this.fetchTargets()
-        // this.fetchTags()
+        const count  = await this.fetchCount()
+        if (count) {
+            this.fetch()
+            this.fetchTargets()
+            // this.fetchTags()
+        }
+       
     }
 
     handleTableChange(pagination: any, filters: any, sorter: any = { field: undefined, order: undefined }) {
@@ -85,13 +88,17 @@ class Members extends Component<IAppContext, State> {
         })
     }
 
-    fetchCount() {
-        this.props.managerBackendGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
+    fetchCount(): Promise<number>{
+        return this.props.managerBackendGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
-                this.setState({ total: result.count })
+                const count = result.count || 0
+                this.setState({ total: count})
+                return Promise.resolve(count)
             }, (error) => {
                 message.error("Could not fetch the members count")
+                console.log(error)
                 this.setState({ error })
+                return Promise.resolve(0)
             })
     }
 
