@@ -1,6 +1,6 @@
 import { useContext, Component, ReactText } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Table, Select, Button, message, Typography } from 'antd'
+import { Row, Col, Divider, Table, Select, Button, message, Typography, Modal, Form, Input } from 'antd'
 import { TagOutlined, DownloadOutlined, ExportOutlined, InstagramFilled } from '@ant-design/icons'
 import { ITarget, ITag, IMember } from '../../lib/types'
 import { getNetworkState, getGatewayClients } from '../../lib/network'
@@ -36,6 +36,7 @@ type State = {
     loading: boolean,
     error?: any,
     inviteTokensModalVisibility: boolean,
+    censusNameModalvisible: boolean,
 
     censusGateway: DVoteGateway,
 }
@@ -57,6 +58,7 @@ class Members extends Component<IAppContext, State> {
         loading: false,
         censusGateway: null,
         inviteTokensModalVisibility: false,
+        censusNameModalvisible: false,
     }
 
     async componentDidMount() {
@@ -203,7 +205,15 @@ class Members extends Component<IAppContext, State> {
             })
     }
 
-    createCensus() {
+    showCensusNameModal() {
+        this.setState({
+            censusNameModalvisible: true,
+        });
+
+    }
+
+
+    createCensus(input) {
         // Defaulting targets
         const targetId = this.state.targets[0].id
         const targetName = this.state.targets[0].name
@@ -225,7 +235,8 @@ class Members extends Component<IAppContext, State> {
                     return false
                 }
 
-                const censusName = targetName + '_' + (Math.floor(Date.now() / 1000));
+                //const censusName = targetName + '_' + (Math.floor(Date.now() / 1000));
+                const censusName = input.name || targetName + '_' + (Math.floor(Date.now() / 1000))
                 const gateway = await getGatewayClients()
                 // tslint:disable-next-line
                 const { censusId } = await addCensus(censusName, [wallet["signingKey"].publicKey], gateway, wallet)
@@ -291,6 +302,7 @@ class Members extends Component<IAppContext, State> {
     }
 
     render() {
+        const censusNameModalvisible = this.state.censusNameModalvisible
         const columns = [
             { title: 'First Name', dataIndex: 'firstName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
             { title: 'Last Name', dataIndex: 'lastName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
@@ -374,14 +386,40 @@ class Members extends Component<IAppContext, State> {
                             }
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
+                                {/*
                                 <Paragraph>explainer...</Paragraph>
                                 <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate Invite Tokens</Button>
                                 <br /> <br />
+                                */}
                                 <Paragraph>explainer...</Paragraph>
                                 <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation Links</Button>
                                 <br /> <br />
                                 <Paragraph>explainer...</Paragraph>
+                                {/*
                                 <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
+                                */}
+                                <Button onClick={() => this.showCensusNameModal()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
+                                <Modal
+                                    title="Enter Census Name"
+                                    visible={censusNameModalvisible}
+                                    confirmLoading={false}
+                                    //closable={false}
+                                    footer={false}
+                                >
+                                    <Form onFinish={this.createCensus.bind(this)}>
+                                        <Form.Item label='census name' name='name'>
+                                            <Input type='text' max='800' step='1' min='1' />
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <Button key='back' onClick={() => this.setState({censusNameModalvisible: false})}>
+                                                Cancel
+                                            </Button>
+                                            <Button type='primary' htmlType='submit'>
+                                                Create
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+                                </Modal>
                             </Col>
                         </Row>
                     </Col>

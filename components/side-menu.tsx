@@ -43,7 +43,7 @@ const SideMenu = () => {
         </Menu.Item>
             }
         </Menu.SubMenu>
-        <Menu.SubMenu title="Voting processes" key="voting" icon={<BarsOutlined />} disabled={context.menuDisabled}>
+        <Menu.SubMenu title="Voting Processes" key="voting" icon={<BarsOutlined />} disabled={context.menuDisabled}>
             <Menu.Item key="processes-active" disabled={context.menuDisabled}>
                 <Link href={"/processes/active#/" + entityId}>
                     <a>Active</a>
@@ -75,7 +75,7 @@ const SideMenu = () => {
             <Link href={"/targets#/" + entityId}><a>Targets</a></Link>
         </Menu.Item> */}
                 <Menu.Item key="census" disabled={context.menuDisabled}>
-                    <Link href={"/census#/" + entityId}><a>Census</a></Link>
+                    <Link href={"/census#/" + entityId}><a>Censuses</a></Link>
                 </Menu.Item>
             </Menu.SubMenu>
         }
