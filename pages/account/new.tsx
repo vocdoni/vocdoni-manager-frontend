@@ -92,10 +92,10 @@ class AccountNew extends Component<IAppContext, State> {
                   </Form.Item>
 
                   <Form.Item
-                      label="Passphrase"
+                      label="Password"
                       name="passphrase"
                       rules={[
-                          { required: true, message: 'Please input a Passphrase' },
+                          { required: true, message: 'Please input a Password' },
                           { pattern: RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"), message: 'Minimum eight characters, one upper case, one lower case and one number' }
                       ]}
                       validateTrigger="onBlur">
@@ -103,20 +103,20 @@ class AccountNew extends Component<IAppContext, State> {
                   </Form.Item>
 
                   <Form.Item
-                      label="Confirm Passphrase"
+                      label="Confirm Password"
                       name="passphraseConfirm"
                       dependencies={['passphrase']}
                       rules={[
                           {
                               required: true,
-                              message: 'Please confirm your Passphrase',
+                              message: 'Please confirm your Password',
                           },
                           ({ getFieldValue }) => ({
                               validator(rule, value) {
                                   if (!value || getFieldValue('passphrase') === value) {
                                       return Promise.resolve()
                                   }
-                                  return Promise.reject('The two passphrases that you entered do not match!')
+                                  return Promise.reject('The two passwords that you entered do not match!')
                               },
                           }),
                       ]}

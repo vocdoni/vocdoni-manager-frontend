@@ -73,7 +73,7 @@ export default class Web3Wallet {
         if (wallet["signingKey"].publicKey === storedWallet.publicKey) {
             this.wallet = wallet
         } else {
-            throw new Error('Wrong passphrase for wallet!')
+            throw new Error('Wrong password for wallet!')
         }
 
         return true

@@ -81,7 +81,7 @@ class AccountImport extends Component<IAppContext> {
                                 <Input.Password />
                             </Form.Item>
 
-                            <Form.Item label="Passphrase" name="passphrase" rules={[{ required: true, message: 'Please input a Passphrase!' }]}>
+                            <Form.Item label="Password" name="passphrase" rules={[{ required: true, message: 'Please input a Password!' }]}>
                                 <Input.Password />
                             </Form.Item>
 
