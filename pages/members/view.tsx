@@ -7,6 +7,7 @@ import { UserDeleteOutlined, SaveOutlined, ExclamationCircleOutlined } from '@an
 import { ITarget, IMember } from '../../lib/types'
 import { FormInstance } from 'antd/lib/form'
 import moment from 'moment'
+import Paragraph from 'antd/lib/typography/Paragraph'
 
 const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation/"
 
@@ -121,7 +122,7 @@ class MemberView extends Component<IAppContext, State> {
           result =  (
               <Descriptions column={1} layout="vertical" colon={false}>
                   <Descriptions.Item label="Token">{id}</Descriptions.Item>
-                  <Descriptions.Item label="Validation Link">{link}</Descriptions.Item> 
+                  <Descriptions.Item label=""><Paragraph copyable={{ text: link  }}>Copy Validation Link</Paragraph></Descriptions.Item> 
               </Descriptions>
           )
       } else {
