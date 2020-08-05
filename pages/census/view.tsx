@@ -103,7 +103,7 @@ class CensusView extends Component<IAppContext, State> {
                       <Row gutter={[0,24]}>
                           <Col span={24}>
                               <Divider orientation="left">Actions</Divider>
-                              <Button type="link" onClick={() => this.deleteCensus()} icon={<DeleteOutlined />}>Remove the census snapshot</Button>
+                              <Button type="link" onClick={() => this.deleteCensus()} icon={<DeleteOutlined />}>Delete Census</Button>
                           </Col>
                       </Row>
                   </Col>
