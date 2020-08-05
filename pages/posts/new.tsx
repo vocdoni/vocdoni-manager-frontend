@@ -290,6 +290,15 @@ class PostNew extends Component<IAppContext, State> {
                               Editor ? <Editor
                                   editorState={this.state.editorState}
                                   toolbarClassName="toolbar-box"
+                                  toolbar={{
+                                      inline: { inDropdown: true },
+                                      blockType: { inDropdown: true },
+                                      fontFamily: { inDropdown: true },
+                                      list: { inDropdown: true },
+                                      link: { inDropdown: true },
+                                      image: { inDropdown: true },
+                                      history: { inDropdown: true },
+                                  }}
                                   wrapperClassName="wrapper-box"
                                   editorClassName="editor-box"
                                   onEditorStateChange={state => this.editorContentChanged(state)}
