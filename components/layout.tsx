@@ -39,7 +39,7 @@ export default function Layout({ children, ...props }: Props) {
         </ALayout.Header>
         <ALayout>
             {context.menuVisible && <ALayout.Sider style={{height:"100vh"}}
-                width={200}
+                width={220}
                 collapsible
                 breakpoint="md"
                 collapsedWidth={0}
