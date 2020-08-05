@@ -25,7 +25,7 @@ const SideMenu = () => {
         <Menu.SubMenu title="Entity" key="entity" icon={<HomeOutlined />} disabled={context.menuDisabled}>
             <Menu.Item key="profile" disabled={context.menuDisabled}>
                 <Link href={"/entities#/" + entityId}>
-                    <a>Profile</a>
+                    <a>Summary</a>
                 </Link>
             </Menu.Item>
         </Menu.SubMenu>

@@ -275,7 +275,7 @@ class EntityEdit extends Component<IAppContext, State> {
                   <div style={{ textAlign: "center" }}>
                       {this.state.entityUpdating ?
                           <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                          <Button size='large' type='primary' onClick={() => this.confirmUpdateMetadata()}>Update metadata</Button>
+                          <Button size='large' type='primary' onClick={() => this.confirmUpdateMetadata()}>Update Profile</Button>
                       }
                   </div>
               </Col>
