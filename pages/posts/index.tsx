@@ -186,7 +186,7 @@ class PostView extends Component<IAppContext, State> {
                             // }
                             description={post.date_published ? new Date(post.date_published).toDateString() : ""}
                         />
-                        {post.content_text && post.content_text.trim() ? post.content_text : <div dangerouslySetInnerHTML={{ __html: post.content_html }} />}
+                        {/*{post.content_text && post.content_text.trim() ? post.content_text : <div dangerouslySetInnerHTML={{ __html: post.content_html }} />}*/}
 
                     </List.Item>
                 )}
