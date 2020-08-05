@@ -1,6 +1,6 @@
 import React, { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Button, Form, Input, message, DatePicker, Modal, Descriptions} from 'antd'
+import { Row, Col, Divider, Button, Form, Input, message, DatePicker, Modal, Descriptions, Popconfirm} from 'antd'
 import { getNetworkState } from '../../lib/network'
 import Router from 'next/router'
 import { UserDeleteOutlined, SaveOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
@@ -93,25 +93,6 @@ class MemberView extends Component<IAppContext, State> {
               console.log(error)
               this.setState({error})
           })
-  }
-
-  onRemoveMember() {
-      Modal.confirm({
-          title: "Deleting user",
-          icon: <ExclamationCircleOutlined />,
-          content: "Are you sure you want to delete this user?",
-          okText: "Delete",
-          okType: "primary",
-          cancelText: "Cancel",
-          onOk: () => {
-              this.removeMember()
-          },
-          onCancel() {
-              // Router.reload()
-              //   self.setState({ entityLoading: false })
-          },
-      })
-      
   }
 
   removeMember() {
@@ -226,7 +207,18 @@ class MemberView extends Component<IAppContext, State> {
                           <Col span={24}>
                               <Divider orientation="left">Actions</Divider>
                               <Button type="link" onClick={() => this.onSaveMemberChanges()} icon={<SaveOutlined />}>Save changes</Button>
-                              <Button type="link" onClick={() => this.onRemoveMember()} icon={<UserDeleteOutlined />}>Remove the member</Button>
+                              <Popconfirm
+                                  title="Are you sure you want to delete this user?"
+                                  //icon: <ExclamationCircleOutlined />,
+                                  //content: "Are you sure you want to delete this user?",
+                                  okText="Delete"
+                                  okType="primary"
+                                  cancelText="Cancel"
+                                  onConfirm={ () => this.removeMember()}
+                                  //onCancel={}
+                              >
+                                  <Button type="link" icon={<UserDeleteOutlined />}>Delete member</Button>
+                              </Popconfirm>
                           </Col>
                       </Row>
                   </Col>
