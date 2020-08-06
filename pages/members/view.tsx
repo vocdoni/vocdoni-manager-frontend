@@ -73,9 +73,10 @@ class MemberView extends Component<IAppContext, State> {
   onFinish(values) {
       values.dateOfBirth = moment(values.dateOfBirth).format()
       const member = values
+      member.id = this.state.memberId
       const request = {
           method: 'updateMember',
-          memberId: this.state.memberId,
+          //   memberId: this.state.memberId,
           member
       }
 
@@ -214,7 +215,15 @@ class MemberView extends Component<IAppContext, State> {
                       <Row gutter={[0,24]}>
                           <Col span={24}>
                               <Divider orientation="left">Actions</Divider>
-                              <Button type="link" onClick={() => this.onSaveMemberChanges()} icon={<SaveOutlined />}>Save changes</Button>
+                              <Popconfirm
+                                  title="Are you sure you want to update the member details?"
+                                  okText="Update"
+                                  okType="primary"
+                                  cancelText="Cancel"
+                                  onConfirm={ () => this.onSaveMemberChanges()}
+                              >
+                                  <Button type="link" icon={<SaveOutlined />}>Save changes</Button>
+                              </Popconfirm>
                               <Popconfirm
                                   title="Are you sure you want to delete this member?"
                                   okText="Delete"
