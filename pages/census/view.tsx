@@ -1,6 +1,6 @@
 import React, { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Button, message, Descriptions } from 'antd'
+import { Row, Col, Divider, Button, message, Descriptions, Popconfirm } from 'antd'
 import { getNetworkState } from '../../lib/network'
 import Router from 'next/router'
 import { DeleteOutlined } from '@ant-design/icons'
@@ -56,7 +56,7 @@ class CensusView extends Component<IAppContext, State> {
   }
 
   deleteCensus() {
-      const request = { method: "deleteCensus", id: this.state.censusId }
+      const request = { method: "deleteCensus", censusId: this.state.censusId }
       this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
               if (!result.ok) {
@@ -103,7 +103,15 @@ class CensusView extends Component<IAppContext, State> {
                       <Row gutter={[0,24]}>
                           <Col span={24}>
                               <Divider orientation="left">Actions</Divider>
-                              <Button type="link" onClick={() => this.deleteCensus()} icon={<DeleteOutlined />}>Delete Census</Button>
+                              <Popconfirm
+                                  title="Are you sure you want to delete this census?"
+                                  okText="Delete"
+                                  okType="primary"
+                                  cancelText="Cancel"
+                                  onConfirm={ () => this.deleteCensus()}
+                              >
+                                  <Button type="link" icon={<DeleteOutlined />}>Delete Census</Button>
+                              </Popconfirm>
                           </Col>
                       </Row>
                   </Col>

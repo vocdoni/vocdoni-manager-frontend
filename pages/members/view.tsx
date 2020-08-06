@@ -209,16 +209,13 @@ class MemberView extends Component<IAppContext, State> {
                               <Divider orientation="left">Actions</Divider>
                               <Button type="link" onClick={() => this.onSaveMemberChanges()} icon={<SaveOutlined />}>Save changes</Button>
                               <Popconfirm
-                                  title="Are you sure you want to delete this user?"
-                                  //icon: <ExclamationCircleOutlined />,
-                                  //content: "Are you sure you want to delete this user?",
+                                  title="Are you sure you want to delete this member?"
                                   okText="Delete"
                                   okType="primary"
                                   cancelText="Cancel"
                                   onConfirm={ () => this.removeMember()}
-                                  //onCancel={}
                               >
-                                  <Button type="link" icon={<UserDeleteOutlined />}>Delete member</Button>
+                                  <Button type="link" icon={<UserDeleteOutlined />}>Delete Member</Button>
                               </Popconfirm>
                           </Col>
                       </Row>
