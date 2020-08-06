@@ -136,7 +136,7 @@ class Members extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 result.members.map(member => {
-                    member.validated= (new Date(member.verified).getFullYear() == new Date('0001').getFullYear()) ? "No" : "Yes"
+                    member.validated= ('publicKey' in member && member.publicKey != null) ? "Yes" : "No"
                 }) 
                 this.setState({
                     loading: false,

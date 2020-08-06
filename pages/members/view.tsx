@@ -116,9 +116,8 @@ class MemberView extends Component<IAppContext, State> {
           })
   }
 
-  renderTokenInfo (validated: boolean, id: string, link: string) : JSX.Element {
+  renderTokenInfo (validated: boolean, id: string, link: string, member: IMember) : JSX.Element {
       let result
-      console.log(validated)
       if (!validated) {
           result =  (
               <Descriptions column={1} layout="vertical" colon={false}>
@@ -130,6 +129,9 @@ class MemberView extends Component<IAppContext, State> {
           result = (
               <Descriptions column={1} layout="vertical" colon={false}>
                   <Descriptions.Item label="Token">{id}</Descriptions.Item>
+                  { member &&
+                  <Descriptions.Item label="Validated On">{member.verified}</Descriptions.Item>
+                  }
               </Descriptions>
           )
       }
@@ -158,7 +160,7 @@ class MemberView extends Component<IAppContext, State> {
           console.log(new Date(initialValues.verified).getFullYear())
           console.log(new Date('0001').getFullYear())
       }
-      const validated = (initialValues && new Date(initialValues.verified).getFullYear() == new Date('0001').getFullYear()) ? false : true 
+      const validated = (initialValues && 'publicKey' in initialValues && initialValues['publicKey'] != null) ? true : false 
       const link = (initialValues) ? validationUrlPrefix+'/'+entityId+'/'+initialValues.id : ''
       if (initialValues) {
           initialValues.dateOfBirth = moment(initialValues.dateOfBirth)
@@ -169,7 +171,7 @@ class MemberView extends Component<IAppContext, State> {
               <Row gutter={40} justify="start">
                   <Col xs={{span: 24, order: 2}} lg={{span: 18, order: 1}}>
                       <Divider orientation="left">Member ID</Divider> 
-                      {this.renderTokenInfo(validated, entityId, link)}
+                      {this.renderTokenInfo(validated, entityId, link, initialValues)}
                       <Divider orientation="left">Member details</Divider>
                       {this.state.member &&
                 <Form
