@@ -188,10 +188,9 @@ class ProcessActiveView extends Component<IAppContext, State> {
                             actions={hideEditControls ? [] : [
                                 <IconText icon={CloseCircleOutlined} text="Mark as ended" onClick={() => this.confirmMarkAsEnded((vote as any).id)} key="mark-as-ended" />,
                             ]}
-                            extra={<img width={272} alt="Header not found" src={((vote as any).data as ProcessMetadata).details.headerImage} />}
                         >
                             <List.Item.Meta
-                                avatar={<Avatar src={this.state.entity.media.avatar} />}
+                                avatar={<Avatar src={((vote as any).data as ProcessMetadata).details.headerImage} shape="square" />}
                                 title={
                                     <Link href={`/processes#/${entityId}/${(vote as any).id}`}>
                                         <a>{((vote as any).data as ProcessMetadata).details.title.default}</a>

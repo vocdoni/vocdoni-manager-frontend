@@ -145,9 +145,9 @@ class ProcessNew extends Component<IAppContext, State> {
                     censuses: result.censuses,
                 })
             },
-                (error) => {
-                    return new Error(error)
-                })
+            (error) => {
+                return new Error(error)
+            })
     }
 
     addQuestion() {
@@ -370,20 +370,20 @@ class ProcessNew extends Component<IAppContext, State> {
                                 onChange={ev => this.setNewProcessField(["details", "headerImage"], ev.target.value)}
                             />
                             <small style={{ lineHeight: "35px" }}>
-                                <a href="https://unsplash.com/" target="_blank" rel="noreferrer">Browse images in Unsplash.com</a>
+                                <a href="https://unsplash.com/" target="_blank" rel="noreferrer">If you don't have images, try to find one at unsplash.com</a>
                             </small>
                         </Form.Item>
                         <Form.Item>
-                            <label>Process type</label>
+                            <label>Vote Count Type</label>
                             <br />
                             <Radio.Group buttonStyle="solid" value={this.state.process.type} onChange={e => this.setNewProcessField(["type"], e.target.value)}>
-                                <Radio.Button value="poll-vote">Public Vote</Radio.Button>
-                                <Radio.Button value="encrypted-poll">Encrypted Poll</Radio.Button>
+                                <Radio.Button value="poll-vote">Real Time</Radio.Button>
+                                <Radio.Button value="encrypted-poll">Secret Until the End</Radio.Button>
                             </Radio.Group>
                             {
-                                this.state.process.type === "poll-vote" ?
-                                    <p><small>On a standard poll, all votes become public as soon as they are registered. <br />Participants are not anonymous.</small></p> :
-                                    <p><small>On an encrypted poll, votes remain encrypted until the process has ended. <br />Participants are not anonymous.</small></p>
+                                // this.state.process.type === "poll-vote" ?
+                                //     <p><small>On a standard poll, all votes become public as soon as they are registered. <br />Participants are not anonymous.</small></p> :
+                                //     <p><small>On an encrypted poll, votes remain encrypted until the process has ended. <br />Participants are not anonymous.</small></p>
                             }
                         </Form.Item>
                     </Form>
@@ -413,6 +413,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                 ))}
                             </Select>
                         </Form.Item>
+                        <p>The selected census will define who has voting rights in this specific voting process.</p>
                     </Form>
 
                     {/* <h2>Questions</h2> */}
@@ -474,6 +475,7 @@ class ProcessNew extends Component<IAppContext, State> {
                             {/* {this.state.startBlock ? <p>Estimated start block: {this.state.startBlock}</p> : null} */}
                             {/* {this.state.startBlock && this.state.numberOfBlocks ? <p>Estimated end block: {this.state.startBlock + this.state.numberOfBlocks}</p> : null} */}
                         </Form.Item>
+                        <p>In this version, the time displayed for the start and end of voting processes is only indicative and may vary as it is based on blockchain blocks. We're working to achieve more reliable times.</p>
                     </Form>
 
                     <Divider />

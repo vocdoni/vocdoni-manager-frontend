@@ -221,13 +221,14 @@ class EntityEdit extends Component<IAppContext, State> {
       return <div className="body-card">
           <Row justify="start">
               <Col xs={24} sm={20} md={14}>
-                  <Divider orientation="left">Profile</Divider>
+                  <Divider orientation="left">Entity Profile</Divider>
                   {/*<h2>Name</h2> */}
                   {
                       // (entity.languages).map(lang => <>
                       ['default'].map(lang => <div key={lang}>
                           {/* <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label> */}
-                          <label>Entity name</label>
+                          <p>This is the public information that will appear in your entity's profile, within Vocdoni's mobile application.</p>
+                          <label>Name</label>
                           <Input type="text"
                               value={entity.name[lang]}
                               prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}

@@ -92,8 +92,8 @@ class EntityView extends Component<IAppContext, State> {
         return <div className="body-card">
             <Row justify="space-between">
                 <Col xs={24} sm={15}>
-                    <Divider orientation="center">Details</Divider>
-                    <img src={this.state.entity.media.avatar} className="avatar" />
+                    <Divider orientation="left">Details</Divider>
+                    {/*<img src={this.state.entity.media.avatar} className="avatar" />*/}
                     <h3>{this.state.entity.name.default}</h3>
                     <p>{this.state.entity.description.default}</p>
                     <br />
@@ -101,17 +101,16 @@ class EntityView extends Component<IAppContext, State> {
                     <p>{`${name} has ${activeProcs} active processes`}</p>
                     <p>{`${name} has ${endedProcs} processes that already ended`}</p>
                 </Col>
-                <Col xs={24} sm={8}> 
-                    <Divider orientation="left">Visit from a smartphone</Divider>*/}
-                    <div style={{ textAlign: "center" }} className="canvas-wrapper">
-                        <Paragraph><small>Scan the QR code from a mobile device</small></Paragraph>
+                    <Col xs={24} sm={8}> */}
+                    <Divider orientation="left">Share Your Entity</Divider>
+                    <div style={{ textAlign: "left" }} className="canvas-wrapper">
+                        <Paragraph>You can share this QR code and link to invite people to follow your entity. <br />  Keep in mind that doesn't serve to register users in your entity.</Paragraph>
                         <a href={subscriptionLink} style={{ cursor: "default" }}>
                             <QRCode value={subscriptionLink} size={256} />
                         </a>
                     </div>
-                    <Divider orientation="center">Shareable link</Divider>
-                    <List style={{ textAlign: "center" }}> 
-                    
+                    {/* <Divider orientation="center">Shareable link</Divider> */}
+                    <List > 
                         <List.Item ><Paragraph copyable={{ text: subscriptionLink  }}>Copy the link to share the entity</Paragraph></List.Item>
                     </List>
                     

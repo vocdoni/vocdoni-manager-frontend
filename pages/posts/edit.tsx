@@ -297,7 +297,7 @@ class PostEdit extends Component<IAppContext, State> {
                           />
 
                           <p style={{ marginBottom: 0 }}>
-                              <a href="https://unsplash.com" target="_blank" rel="noreferrer">Browse images in Unsplash.com</a>
+                              <a href="https://unsplash.com" target="_blank" rel="noreferrer">If you don't have images, try to find one at unsplash.com</a>
                           </p>
                       </Form.Item>
 
