@@ -136,7 +136,7 @@ class Members extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 result.members.map(member => {
-                    member.validated= (new Date(member.verified).getFullYear() == new Date('0001').getFullYear()) ? "Yes" : "No"
+                    member.validated= (new Date(member.verified).getFullYear() == new Date('0001').getFullYear()) ? "No" : "Yes"
                 }) 
                 this.setState({
                     loading: false,
@@ -407,7 +407,7 @@ class Members extends Component<IAppContext, State> {
                                     footer={false}
                                 >
                                     <Form onFinish={this.createCensus.bind(this)}>
-                                        <Form.Item label='census name' name='name'>
+                                        <Form.Item name='name'>
                                             <Input type='text' max='800' step='1' min='1' />
                                         </Form.Item>
                                         <Form.Item>

@@ -118,6 +118,7 @@ class MemberView extends Component<IAppContext, State> {
 
   renderTokenInfo (validated: boolean, id: string, link: string) : JSX.Element {
       let result
+      console.log(validated)
       if (!validated) {
           result =  (
               <Descriptions column={1} layout="vertical" colon={false}>
@@ -153,7 +154,11 @@ class MemberView extends Component<IAppContext, State> {
 
       const initialValues = this.state.member
       const entityId = this.props.entityId
-      const validated = (initialValues && new Date(initialValues.verified).getFullYear() == new Date('0001').getFullYear()) ? true : false 
+      if (initialValues) {
+          console.log(new Date(initialValues.verified).getFullYear())
+          console.log(new Date('0001').getFullYear())
+      }
+      const validated = (initialValues && new Date(initialValues.verified).getFullYear() == new Date('0001').getFullYear()) ? false : true 
       const link = (initialValues) ? validationUrlPrefix+'/'+entityId+'/'+initialValues.id : ''
       if (initialValues) {
           initialValues.dateOfBirth = moment(initialValues.dateOfBirth)
