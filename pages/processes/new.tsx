@@ -45,7 +45,7 @@ type State = {
     entity?: EntityMetadata,
     entityId?: string,
     process?: ProcessMetadata,
-    censuses:  ICensus[],
+    censuses: ICensus[],
     bootnodes?: GatewayBootNodes,
     descriptionEditorState?: any,
     startBlock: number
@@ -98,7 +98,7 @@ class ProcessNew extends Component<IAppContext, State> {
             const defaultRange = [moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]
             this.updateDateRange(defaultRange[0], defaultRange[1])
 
-            await this.fetchCensuses()            
+            await this.fetchCensuses()
         }
         catch (err) {
             message.error("Could not check the entity metadata")
@@ -138,16 +138,16 @@ class ProcessNew extends Component<IAppContext, State> {
         const request = {
             method: "listCensus",
         }
-  
+
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({
                     censuses: result.censuses,
                 })
             },
-            (error) => {
-                return new Error(error)
-            })
+                (error) => {
+                    return new Error(error)
+                })
     }
 
     addQuestion() {
@@ -401,11 +401,14 @@ class ProcessNew extends Component<IAppContext, State> {
                                 filterOption={(input, option) =>
                                     censuses.find(x => x.id == option.key).name.includes(input)
                                 }
-                                onChange={ev => {
-                                    this.setNewProcessField(['census', 'merkleRoot'], censuses.find(x => x.id == ev).merkleRoot)
-                                    this.setNewProcessField(['census', 'merkleTree'], censuses.find(x => x.id == ev).merkleTreeUri)
+                                onChange={name => {
+                                    const targetCensus = censuses.find(x => x.name == name)
+                                    if (!targetCensus) return
+
+                                    this.setNewProcessField(['census', 'merkleRoot'], targetCensus.merkleRoot)
+                                    this.setNewProcessField(['census', 'merkleTree'], targetCensus.merkleTreeUri)
                                 }}>
-                                { censuses.map(d => (
+                                {censuses.map(d => (
                                     <Option key={d.id} data={d} value={d.name}>{d.name}</Option>
                                 ))}
                             </Select>
