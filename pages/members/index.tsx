@@ -336,7 +336,9 @@ class Members extends Component<IAppContext, State> {
                 <Row gutter={40} justify="start">
                     <Col xs={{ span: 24, order: 2 }} lg={{ span: 18, order: 1 }}>
                         <Divider orientation="left">Member list</Divider>
-                        <Paragraph>explainer...</Paragraph>
+                        <Paragraph>This is the list of members of your entity. 
+                            From here you can generate validation links so that they can register and give them the right to vote. <br />
+                            You will be able to create censuses for voting processes with those members who are registered.</Paragraph>
                         <Table
                             rowKey="id"
                             columns={columns}
@@ -391,10 +393,11 @@ class Members extends Component<IAppContext, State> {
                                 <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate Invite Tokens</Button>
                                 <br /> <br />
                                 */}
-                                <Paragraph>explainer...</Paragraph>
+                                <Paragraph>Validation links are used to register members in your organization. 
+                                    Download the list of links and send each member their link so they can register.</Paragraph>
                                 <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation Links</Button>
                                 <br /> <br />
-                                <Paragraph>explainer...</Paragraph>
+                                <Paragraph>You can create censuses to give voting rights to users who have been previously validated.</Paragraph>
                                 {/*
                                 <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
                                 */}
