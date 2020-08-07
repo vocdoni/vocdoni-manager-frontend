@@ -30,7 +30,7 @@ export default function Layout({ children, ...props }: Props) {
                     </Col>
                 }
                 <Col xs={12} md={14}>
-                    <h1 style={{marginLeft:20}}><Link href="/"><a id="logo">{title || "Entities"}</a></Link></h1>
+                    <h1 style={{marginLeft:20}}><Link href="/"><a id="logo">{title || " "}</a></Link></h1>
                 </Col>
                 <Col xs={10} style={{textAlign: "right"}}>
                     <AccountMenu />
@@ -39,7 +39,7 @@ export default function Layout({ children, ...props }: Props) {
         </ALayout.Header>
         <ALayout>
             {context.menuVisible && <ALayout.Sider style={{height:"100vh"}}
-                width={200}
+                width={220}
                 collapsible
                 breakpoint="md"
                 collapsedWidth={0}

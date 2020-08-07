@@ -132,10 +132,11 @@ class EntityNew extends Component<IAppContext, State> {
                 })
             }
 
-            await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             const entityId = getEntityId(address)
 
             await this.registrySignup(entityId)
+
+            await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
             message.success("The entity has been registered")
 

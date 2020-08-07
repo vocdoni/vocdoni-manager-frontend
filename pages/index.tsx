@@ -39,7 +39,7 @@ class IndexView extends Component<IAppContext, State> {
     state: State = {}
 
     async componentDidMount() {
-        this.props.setTitle("Vocdoni")
+        // this.props.setTitle("Vocdoni")
         this.props.setMenuVisible(false)
 
         try {
@@ -127,34 +127,34 @@ class IndexView extends Component<IAppContext, State> {
         return <>
             {showStored &&
                 <>
-                    <p>Select your entity and enter your passphrase to continue</p>
+                    <p>From this page you can create and manage your entity, publish news, manage censuses and create voting processes.</p>
                     <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom: 10 }}>
                         {this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>)}
                     </Select>
 
                     <Input.Group compact>
-                        <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={() => this.unlockWallet()} type="password" placeholder="Passphrase" style={{ width: "75%" }} />
-                        <Button type='primary' onClick={() => this.unlockWallet()} style={{ width: "25%" }}>Sign in</Button>
+                        <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={() => this.unlockWallet()} type="password" placeholder="Password" style={{ width: "75%" }} />
+                        <Button type='primary' onClick={() => this.unlockWallet() } style={{ width: "25%" }}>Sign in</Button>
                     </Input.Group>
 
                     <Divider>or</Divider>
 
                     <div style={{ textAlign: "center" }}>
-                        <Link href="/account/import"><Button>Import another account</Button></Link>
+                        <Link href="/account/import"><Button>Import an Entity</Button></Link>
                     </div>
                     <Divider>or</Divider>
                 </>
             }
 
             <div style={{ textAlign: "center" }}>
-                <Link href="/account/new"><Button type="primary">Create a new account</Button></Link>
+                <Link href="/account/new"><Button type="primary">Create an Entity</Button></Link>
             </div>
 
             {!showStored &&
                 <>
                     <Divider>or</Divider>
                     <div style={{ textAlign: "center" }}>
-                        <Link href="/account/import"><Button>Import an account</Button></Link>
+                        <Link href="/account/import"><Button>Import an Entity</Button></Link>
                     </div>
                 </>
             }
@@ -169,7 +169,7 @@ class IndexView extends Component<IAppContext, State> {
         return <div id="index">
             <Row justify="center" align="middle">
                 <Col xs={24} sm={18} md={10}>
-                    <Card title="Welcome to Vocdoni" className="card">
+                    <Card title="Vocdoni Manager" className="card">
                         {
                             this.state.entityLoading ? this.renderLoading() :
                                 (this.state.entity ? this.renderEntityInfo() : this.renderGetStarted())

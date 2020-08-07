@@ -8,13 +8,13 @@ import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, MultiLanguage, ProcessMetadata } from "dvote-js"
 const { Entity } = API
-import Router from 'next/router'
+// import Router from 'next/router'
 import Link from "next/link"
-import { INewsFeed } from '../../lib/types'
+// import { INewsFeed } from '../../lib/types'
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
-import { fetchFileString } from 'dvote-js/dist/api/file'
-import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
-import { IFeedPost } from "../../lib/types"
+// import { fetchFileString } from 'dvote-js/dist/api/file'
+// import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
+// import { IFeedPost } from "../../lib/types"
 import { Wallet, Signer } from "ethers"
 import { getVoteMetadata, cancelProcess, isCanceled } from "dvote-js/dist/api/vote"
 // import MainLayout from "../../components/layout"
@@ -169,7 +169,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
         return <div className="body-card">
             <Divider orientation="left">Active votes</Divider>
-
+            <p>The list is organized from newest to oldest voting processes.</p>
             <List
                 itemLayout="vertical"
                 size="large"
@@ -188,10 +188,9 @@ class ProcessActiveView extends Component<IAppContext, State> {
                             actions={hideEditControls ? [] : [
                                 <IconText icon={CloseCircleOutlined} text="Mark as ended" onClick={() => this.confirmMarkAsEnded((vote as any).id)} key="mark-as-ended" />,
                             ]}
-                            extra={<img width={272} alt="Header not found" src={((vote as any).data as ProcessMetadata).details.headerImage} />}
                         >
                             <List.Item.Meta
-                                avatar={<Avatar src={this.state.entity.media.avatar} />}
+                                avatar={<Avatar src={((vote as any).data as ProcessMetadata).details.headerImage} shape="square" />}
                                 title={
                                     <Link href={`/processes#/${entityId}/${(vote as any).id}`}>
                                         <a>{((vote as any).data as ProcessMetadata).details.title.default}</a>

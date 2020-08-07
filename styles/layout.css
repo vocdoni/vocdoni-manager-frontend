@@ -4,7 +4,8 @@
 
 #layout .top-bar {
     color: var(--clear);
-    background-color:var(--main-color);
+    /* background-color:var(--main-color); */
+    background-color: #444444;
 }
 #layout .top-bar .title {
     margin: 0;

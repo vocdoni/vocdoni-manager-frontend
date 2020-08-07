@@ -1,12 +1,15 @@
 import React, { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Table, Button, Space, Form, Input, message, DatePicker, Tag } from 'antd'
+import { Row, Col, Divider, Button, Form, Input, message, DatePicker, Modal, Descriptions, Popconfirm} from 'antd'
 import { getNetworkState } from '../../lib/network'
 import Router from 'next/router'
-import { UserDeleteOutlined, SaveOutlined } from '@ant-design/icons'
+import { UserDeleteOutlined, SaveOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { ITarget, IMember } from '../../lib/types'
 import { FormInstance } from 'antd/lib/form'
 import moment from 'moment'
+import Paragraph from 'antd/lib/typography/Paragraph'
+
+const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation/"
 
 const MemberViewPage = props => {
     const context = useContext(AppContext)
@@ -70,9 +73,10 @@ class MemberView extends Component<IAppContext, State> {
   onFinish(values) {
       values.dateOfBirth = moment(values.dateOfBirth).format()
       const member = values
+      member.id = this.state.memberId
       const request = {
           method: 'updateMember',
-          memberId: this.state.memberId,
+          //   memberId: this.state.memberId,
           member
       }
 
@@ -93,7 +97,7 @@ class MemberView extends Component<IAppContext, State> {
           })
   }
 
-  onRemoveMember() {
+  removeMember() {
       const request = { method: "deleteMember", memberId: this.state.memberId }
       this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
           .then((result) => {
@@ -113,8 +117,32 @@ class MemberView extends Component<IAppContext, State> {
           })
   }
 
+  renderTokenInfo (validated: boolean, id: string, link: string, member: IMember) : JSX.Element {
+      let result
+      if (!validated) {
+          result =  (
+              <Descriptions column={1} layout="vertical" colon={false}>
+                  <Descriptions.Item label="Token">{id}</Descriptions.Item>
+                  <Descriptions.Item label=""><Paragraph copyable={{ text: link  }}>Copy Validation Link</Paragraph></Descriptions.Item> 
+              </Descriptions>
+          )
+      } else {
+          result = (
+              <Descriptions column={1} layout="vertical" colon={false}>
+                  <Descriptions.Item label="Token">{id}</Descriptions.Item>
+                  { member &&
+                  <Descriptions.Item label="Validated On">{member.verified}</Descriptions.Item>
+                  }
+              </Descriptions>
+          )
+      }
+      return result
+  }
+
   render() {
       const columns = [
+          {title: 'Validated', dataIndex: 'verified'},
+          {/* 
           { title: 'Name', dataIndex: 'name' },
           { title: 'Filters', dataIndex: 'filters', key: 'filters', render: (filters: any) => (
               <>
@@ -124,9 +152,17 @@ class MemberView extends Component<IAppContext, State> {
               </>
           )},
           { title: 'Actions', key: 'action', render: (text, record, index) => ( <Space size="middle"></Space>)},
+          */}
       ]
 
       const initialValues = this.state.member
+      const entityId = this.props.entityId
+      if (initialValues) {
+          console.log(new Date(initialValues.verified).getFullYear())
+          console.log(new Date('0001').getFullYear())
+      }
+      const validated = (initialValues && 'publicKey' in initialValues && initialValues['publicKey'] != null) ? true : false 
+      const link = (initialValues) ? validationUrlPrefix+'/'+entityId+'/'+initialValues.id : ''
       if (initialValues) {
           initialValues.dateOfBirth = moment(initialValues.dateOfBirth)
       }
@@ -135,6 +171,8 @@ class MemberView extends Component<IAppContext, State> {
           <div className="body-card">
               <Row gutter={40} justify="start">
                   <Col xs={{span: 24, order: 2}} lg={{span: 18, order: 1}}>
+                      <Divider orientation="left">Member ID</Divider> 
+                      {this.renderTokenInfo(validated, entityId, link, initialValues)}
                       <Divider orientation="left">Member details</Divider>
                       {this.state.member &&
                 <Form
@@ -177,8 +215,24 @@ class MemberView extends Component<IAppContext, State> {
                       <Row gutter={[0,24]}>
                           <Col span={24}>
                               <Divider orientation="left">Actions</Divider>
-                              <Button type="link" onClick={() => this.onSaveMemberChanges()} icon={<SaveOutlined />}>Save changes</Button>
-                              <Button type="link" onClick={() => this.onRemoveMember()} icon={<UserDeleteOutlined />}>Remove the member</Button>
+                              <Popconfirm
+                                  title="Are you sure you want to update the member details?"
+                                  okText="Update"
+                                  okType="primary"
+                                  cancelText="Cancel"
+                                  onConfirm={ () => this.onSaveMemberChanges()}
+                              >
+                                  <Button type="link" icon={<SaveOutlined />}>Save changes</Button>
+                              </Popconfirm>
+                              <Popconfirm
+                                  title="Are you sure you want to delete this member?"
+                                  okText="Delete"
+                                  okType="primary"
+                                  cancelText="Cancel"
+                                  onConfirm={ () => this.removeMember()}
+                              >
+                                  <Button type="link" icon={<UserDeleteOutlined />}>Delete Member</Button>
+                              </Popconfirm>
                           </Col>
                       </Row>
                   </Col>

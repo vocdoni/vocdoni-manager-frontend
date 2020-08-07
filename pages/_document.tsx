@@ -12,7 +12,7 @@ class MyDocument extends Document {
                 <Head>
                     <meta charSet='utf-8' />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                    <link rel="icon" type="image/png" href="/media/icon.png" />
+                    <link rel="icon" type="image/png" href="/media/favicon.ico" />
                 </Head>
                 <body>
                     <Main />

@@ -280,7 +280,7 @@ class PostNew extends Component<IAppContext, State> {
                           />
 
                           <p style={{ marginBottom: 0 }}>
-                              <a href="https://unsplash.com" target="_blank" rel="noreferrer"><small>Browse images on unsplash.com</small></a>
+                              <a href="https://unsplash.com" target="_blank" rel="noreferrer"><small>If you don't have images, try to find one at unsplash.com</small></a>
                           </p>
                       </Form.Item>
 
@@ -290,6 +290,15 @@ class PostNew extends Component<IAppContext, State> {
                               Editor ? <Editor
                                   editorState={this.state.editorState}
                                   toolbarClassName="toolbar-box"
+                                  toolbar={{
+                                      inline: { inDropdown: true },
+                                      blockType: { inDropdown: true },
+                                      fontFamily: { inDropdown: true },
+                                      list: { inDropdown: true },
+                                      link: { inDropdown: true },
+                                      image: { inDropdown: true },
+                                      history: { inDropdown: true },
+                                  }}
                                   wrapperClassName="wrapper-box"
                                   editorClassName="editor-box"
                                   onEditorStateChange={state => this.editorContentChanged(state)}

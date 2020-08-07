@@ -20,7 +20,8 @@ h1, h2, h3, h4, h5, h6 {
     --dark: #222;
     --dark-90: #4b4040;
 
-    --main-color: #25658a;
+    /* --main-color: #25658a; */
+    --main-color: #444444;
 }
 
 /* FONTS */

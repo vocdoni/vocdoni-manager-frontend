@@ -175,18 +175,17 @@ class PostView extends Component<IAppContext, State> {
                             </a></Link>,
                             <IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.confirmDeletePost(this.state.startIndex + idx)} key="remove" />,
                             ]}
-                        extra={<img width={272} alt={post.title} src={post.image} />}
                     >
                         <List.Item.Meta
-                            avatar={<Avatar src={this.state.entity.media.avatar} />}
+                            avatar={<Avatar src={post.image}  shape="square"/>}
                             title={post.title}
                             // description={
                             //   post.summary ? <span>{post.summary}<br/>{post.date_published ? new Date(post.date_published).toDateString() : ""}</span> :
                             //     <span>{post.date_published ? new Date(post.date_published).toDateString() : ""}</span>
                             // }
-                            description={post.date_published ? new Date(post.date_published).toDateString() : ""}
+                            description={post.date_published ? (new Date(post.date_published).toDateString()) + '\t' + (new Date(post.date_published).toLocaleTimeString()): ""}
                         />
-                        {post.content_text && post.content_text.trim() ? post.content_text : <div dangerouslySetInnerHTML={{ __html: post.content_html }} />}
+                        {/*{post.content_text && post.content_text.trim() ? post.content_text : <div dangerouslySetInnerHTML={{ __html: post.content_html }} />}*/}
 
                     </List.Item>
                 )}

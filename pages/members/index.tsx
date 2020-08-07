@@ -1,7 +1,7 @@
 import { useContext, Component, ReactText } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Table, Tag, Select, Space, Button, message } from 'antd'
-import { TagOutlined, DownloadOutlined, ExportOutlined } from '@ant-design/icons'
+import { Row, Col, Divider, Table, Select, Button, message, Typography, Modal, Form, Input } from 'antd'
+import { TagOutlined, DownloadOutlined, ExportOutlined, InstagramFilled } from '@ant-design/icons'
 import { ITarget, ITag, IMember } from '../../lib/types'
 import { getNetworkState, getGatewayClients } from '../../lib/network'
 import Router from 'next/router'
@@ -9,6 +9,14 @@ import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 // import moment from 'moment'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
+const { Paragraph } = Typography;
+
+import InviteTokens from '../../components/invite-tokens'
+
+
+const defaultPageSize = 50
+const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation/"
+
 
 const MembersPage = props => {
     const context = useContext(AppContext)
@@ -23,10 +31,12 @@ type State = {
     selectedRows?: any[],
     selectedRowsKeys?: ReactText[],
     data: IMember[],
-    pagination: { current: number, pageSize: number },
+    pagination: { current: number, defaultPageSize?: number, pageSize?: number },
     total: number,
     loading: boolean,
     error?: any,
+    inviteTokensModalVisibility: boolean,
+    censusNameModalvisible: boolean,
 
     censusGateway: DVoteGateway,
 }
@@ -42,11 +52,13 @@ class Members extends Component<IAppContext, State> {
         data: [],
         pagination: {
             current: 1,
-            pageSize: 10,
+            defaultPageSize: defaultPageSize,
         },
         total: 0,
         loading: false,
         censusGateway: null,
+        inviteTokensModalVisibility: false,
+        censusNameModalvisible: false,
     }
 
     async componentDidMount() {
@@ -56,10 +68,13 @@ class Members extends Component<IAppContext, State> {
 
         this.props.setMenuSelected("members")
 
-        this.fetchCount()
-        this.fetch()
-        this.fetchTargets()
-        // this.fetchTags()
+        const count  = await this.fetchCount()
+        if (count) {
+            this.fetch()
+            this.fetchTargets()
+            // this.fetchTags()
+        }
+       
     }
 
     handleTableChange(pagination: any, filters: any, sorter: any = { field: undefined, order: undefined }) {
@@ -75,13 +90,17 @@ class Members extends Component<IAppContext, State> {
         })
     }
 
-    fetchCount() {
-        this.props.managerBackendGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
+    fetchCount(): Promise<number>{
+        return this.props.managerBackendGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
-                this.setState({ total: result.count })
+                const count = result.count || 0
+                this.setState({ total: count})
+                return Promise.resolve(count)
             }, (error) => {
                 message.error("Could not fetch the members count")
+                console.log(error)
                 this.setState({ error })
+                return Promise.resolve(0)
             })
     }
 
@@ -116,6 +135,9 @@ class Members extends Component<IAppContext, State> {
 
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
+                result.members.map(member => {
+                    member.validated= ('publicKey' in member && member.publicKey != null) ? "Yes" : "No"
+                }) 
                 this.setState({
                     loading: false,
                     data: result.members,
@@ -157,18 +179,23 @@ class Members extends Component<IAppContext, State> {
     exportTokens() {
         this.props.managerBackendGateway.sendMessage({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
-                if (!result.ok) {
-                    const error = "Could not export the tokens"
+                if (!result.ok || !result.membersTokens) {
+                    const error = "Could not generate the validation links"
                     message.error(error)
                     this.setState({ error })
                     return false
                 }
-
-                const data = (result.tokens || []).join("\n")
+                let data  = result.membersTokens
+                if (data.length > 0) {
+                    data = data
+                        .filter( x => x.emails.length>0 && x.tokens.length >0 )
+                        .map( entry => entry.emails + ',' + entry.tokens +',' +  validationUrlPrefix+this.props.entityId+'/'+entry.tokens)
+                }
+                data = (data || []).join("\n")
                 const element = document.createElement("a")
-                const file = new Blob([data], { type: 'text/plain;charset=utf-8' })
+                const file = new Blob([data], { type: 'text/csv;charset=utf-8' })
                 element.href = URL.createObjectURL(file)
-                element.download = "new-member-tokens.txt"
+                element.download = "invitation-links.csv"
                 document.body.appendChild(element)
                 element.click()
             }, (error) => {
@@ -177,30 +204,15 @@ class Members extends Component<IAppContext, State> {
             })
     }
 
-    // exportTokens() {
-    //     this.props.managerBackendGateway.sendMessage({ method: "generateTokens", amount: 100 } as any, this.props.web3Wallet.getWallet())
-    //         .then((result) => {
-    //             if (!result.ok) {
-    //                 const error = "Could not retrieve the tokens"
-    //                 message.error(error)
-    //                 this.setState({ error })
-    //                 return false
-    //             }
+    showCensusNameModal() {
+        this.setState({
+            censusNameModalvisible: true,
+        });
 
-    //             const data = JSON.stringify(result.membersTokens)
-    //             const element = document.createElement("a")
-    //             const file = new Blob([data], { type: 'text/plain;charset=utf-8' })
-    //             element.href = URL.createObjectURL(file)
-    //             element.download = "new-member-tokens.txt"
-    //             document.body.appendChild(element)
-    //             element.click()
-    //         }, (error) => {
-    //             message.error("Could not retrieve the tokens")
-    //             this.setState({ error })
-    //         })
-    // }
+    }
 
-    createCensus() {
+
+    createCensus(input) {
         // Defaulting targets
         const targetId = this.state.targets[0].id
         const targetName = this.state.targets[0].name
@@ -222,7 +234,8 @@ class Members extends Component<IAppContext, State> {
                     return false
                 }
 
-                const censusName = targetName + '_' + (Math.floor(Date.now() / 1000));
+                //const censusName = targetName + '_' + (Math.floor(Date.now() / 1000));
+                const censusName = input.name || targetName + '_' + (Math.floor(Date.now() / 1000))
                 const gateway = await getGatewayClients()
                 // tslint:disable-next-line
                 const { censusId } = await addCensus(censusName, [wallet["signingKey"].publicKey], gateway, wallet)
@@ -268,13 +281,13 @@ class Members extends Component<IAppContext, State> {
     }
 
     onTargetChange(target: string) {
-        const pagination = { current: 1, pageSize: 10 }
+        const pagination = { current: 1 }
         this.setState({ selectedTarget: target, pagination })
         this.handleTableChange(pagination, { target, tag: this.state.selectedTag })
     }
 
     onTagChange(tag: string) {
-        const pagination = { current: 1, pageSize: 10 }
+        const pagination = { current: 1}
         this.setState({ selectedTag: tag, pagination })
         this.handleTableChange(pagination, { tag, target: this.state.selectedTarget })
     }
@@ -283,14 +296,20 @@ class Members extends Component<IAppContext, State> {
         this.setState({ selectedRowsKeys: keys, selectedRows: rows })
     }
 
+    generateLink(text, record, index) {
+        return <Link href={"/members/view#/" + this.props.entityId + "/" + record.id}><a>{text}</a></Link>
+    }
+
     render() {
+        const censusNameModalvisible = this.state.censusNameModalvisible
         const columns = [
-            { title: 'id', dataIndex: 'id', sorter: false },
-            { title: 'Verified', dataIndex: 'verified', sorter: true },
-            { title: 'First Name', dataIndex: 'firstName', sorter: true },
-            { title: 'Last Name', dataIndex: 'lastName', sorter: true },
-            { title: 'Email', dataIndex: 'email', sorter: true },
-            /*    { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
+            { title: 'First Name', dataIndex: 'firstName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Last Name', dataIndex: 'lastName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Email', dataIndex: 'email', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Validated', dataIndex: 'validated', render: (text, record, index) => this.generateLink(text, record, index) },
+            /*    
+                { title: 'id', dataIndex: 'id', sorter: false, render: (text, record, index) => this.generateLink(text, record, index) },
+                { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
                         <>{moment().diff(dateOfBirth, 'years', false) }</>
                 )},
                 { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
@@ -300,7 +319,7 @@ class Members extends Component<IAppContext, State> {
                                 })}
                         </>
                 )},
-            */
+            
             {
                 title: 'Actions', key: 'action', render: (text, record, index) => (
                     <Space size="middle">
@@ -308,6 +327,7 @@ class Members extends Component<IAppContext, State> {
                         <a onClick={() => this.deleteMember(record)}>Delete</a>
                     </Space>)
             },
+            */
         ]
 
         return <div id="page-body">
@@ -315,6 +335,9 @@ class Members extends Component<IAppContext, State> {
                 <Row gutter={40} justify="start">
                     <Col xs={{ span: 24, order: 2 }} lg={{ span: 18, order: 1 }}>
                         <Divider orientation="left">Member list</Divider>
+                        <Paragraph>This is the list of members of your entity. 
+                            From here you can generate validation links so that they can register and give them the right to vote. <br />
+                            You will be able to create censuses for voting processes with those members who are registered.</Paragraph>
                         <Table
                             rowKey="id"
                             columns={columns}
@@ -322,10 +345,6 @@ class Members extends Component<IAppContext, State> {
                             pagination={{ ...this.state.pagination, ...{ total: this.state.total } }}
                             loading={this.state.loading}
                             onChange={(pagination, filters, sorter) => this.handleTableChange(pagination, filters, sorter)}
-                            rowSelection={{
-                                type: 'checkbox',
-                                onChange: (keys, rows) => this.onRowSelection(keys, rows)
-                            }}
                             className='scroll-x'
                         />
                     </Col>
@@ -368,14 +387,55 @@ class Members extends Component<IAppContext, State> {
                             }
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
-                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Create member tokens</Button>
+                                {/*
+                                <Paragraph>explainer...</Paragraph>
+                                <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate Invite Tokens</Button>
                                 <br /> <br />
-                                <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Census</Button>
+                                */}
+                                <Paragraph>Validation links are used to register members in your organization. 
+                                    Download the list of links and send each member their link so they can register.</Paragraph>
+                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation Links</Button>
+                                <br /> <br />
+                                <Paragraph>You can create censuses to give voting rights to users who have been previously validated.</Paragraph>
+                                {/*
+                                <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
+                                */}
+                                <Button onClick={() => this.showCensusNameModal()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
+                                <Modal
+                                    title="Enter Census Name"
+                                    visible={censusNameModalvisible}
+                                    confirmLoading={false}
+                                    //closable={false}
+                                    footer={false}
+                                >
+                                    <Form onFinish={this.createCensus.bind(this)}>
+                                        <Form.Item name='name'>
+                                            <Input type='text' max='800' step='1' min='1' />
+                                        </Form.Item>
+                                        <Form.Item>
+                                            <Button key='back' onClick={() => this.setState({censusNameModalvisible: false})}>
+                                                Cancel
+                                            </Button>
+                                            <Button type='primary' htmlType='submit'>
+                                                Create
+                                            </Button>
+                                        </Form.Item>
+                                    </Form>
+                                </Modal>
                             </Col>
                         </Row>
                     </Col>
                 </Row>
             </div>
+            <InviteTokens
+                {...this.props}
+                visible={this.state.inviteTokensModalVisibility}
+                onCancel={() => this.setState({inviteTokensModalVisibility: false})}
+                onError={(error) => {
+                    message.error("Could not generate invite tokens")
+                    this.setState({ error })
+                }}
+            />
         </div>
     }
 }

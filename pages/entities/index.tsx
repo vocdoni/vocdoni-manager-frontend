@@ -1,6 +1,6 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin } from 'antd'
+import { message, Spin, List } from 'antd'
 import { Divider, Typography, Row, Col } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
@@ -86,33 +86,34 @@ class EntityView extends Component<IAppContext, State> {
         // }
 
         const name = this.state.entity.name.default || this.state.entity.name[this.state.entity.languages[0]]
-        const activeProcs = this.state.entity.votingProcesses.active && this.state.entity.votingProcesses.active.length || 0
-        const endedProcs = this.state.entity.votingProcesses.ended && this.state.entity.votingProcesses.ended.length || 0
+        // const activeProcs = this.state.entity.votingProcesses.active && this.state.entity.votingProcesses.active.length || 0
+        // const endedProcs = this.state.entity.votingProcesses.ended && this.state.entity.votingProcesses.ended.length || 0
 
         return <div className="body-card">
             <Row justify="space-between">
                 <Col xs={24} sm={15}>
                     <Divider orientation="left">Details</Divider>
-                    <img src={this.state.entity.media.avatar} className="avatar" />
+                    {/*<img src={this.state.entity.media.avatar} className="avatar" />*/}
                     <h3>{this.state.entity.name.default}</h3>
                     <p>{this.state.entity.description.default}</p>
                     <br />
-                    <Divider orientation="left">Participation</Divider>
+                    {/* <Divider orientation="left">Participation</Divider>
                     <p>{`${name} has ${activeProcs} active processes`}</p>
                     <p>{`${name} has ${endedProcs} processes that already ended`}</p>
                 </Col>
-                <Col xs={24} sm={8}>
-                    <Divider orientation="left">Visit from a smartphone</Divider>
-                    <div style={{ textAlign: "center" }} className="canvas-wrapper">
-                        <Paragraph><small>Scan the QR code from a mobile device</small></Paragraph>
+                    <Col xs={24} sm={8}> */}
+                    <Divider orientation="left">Share Your Entity</Divider>
+                    <div style={{ textAlign: "left" }} className="canvas-wrapper">
+                        <Paragraph>You can share this QR code and link to invite people to follow your entity. <br />  Keep in mind that doesn't serve to register users in your entity.</Paragraph>
                         <a href={subscriptionLink} style={{ cursor: "default" }}>
                             <QRCode value={subscriptionLink} size={256} />
                         </a>
                     </div>
-                    <Divider orientation="left">Shareable link</Divider>
-                    <ul>
-                        <li><Paragraph copyable={{ text: subscriptionLink }}>Copy the link to share the entity</Paragraph></li>
-                    </ul>
+                    {/* <Divider orientation="center">Shareable link</Divider> */}
+                    <List > 
+                        <List.Item ><Paragraph copyable={{ text: subscriptionLink  }}>Copy the link to share the entity</Paragraph></List.Item>
+                    </List>
+                    
 
                 </Col>
             </Row>
