@@ -279,7 +279,7 @@ class MemberImport extends Component<IAppContext, State> {
 
         return <div id="page-body">
             <div className="body-card">
-                 <Row gutter={24} justify="start">
+                <Row gutter={24} justify="start">
                     <Col {...layout}>
                         <Row>
                             <Col {...columnLayout}>
