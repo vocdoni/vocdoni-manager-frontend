@@ -94,7 +94,6 @@ class TargetView extends Component<IAppContext, State> {
     }
 
     onFinish(values) {
-        console.log('SUBMITTING: ', values)
 
         let request: {
             method: string,

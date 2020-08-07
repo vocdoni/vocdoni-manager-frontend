@@ -9,7 +9,7 @@ import { FormInstance } from 'antd/lib/form'
 import moment from 'moment'
 import Paragraph from 'antd/lib/typography/Paragraph'
 
-const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation/"
+const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
 const MemberViewPage = props => {
     const context = useContext(AppContext)
@@ -157,10 +157,6 @@ class MemberView extends Component<IAppContext, State> {
 
       const initialValues = this.state.member
       const entityId = this.props.entityId
-      if (initialValues) {
-          console.log(new Date(initialValues.verified).getFullYear())
-          console.log(new Date('0001').getFullYear())
-      }
       const validated = (initialValues && 'publicKey' in initialValues && initialValues['publicKey'] != null) ? true : false 
       const link = (initialValues) ? validationUrlPrefix+'/'+entityId+'/'+initialValues.id : ''
       if (initialValues) {

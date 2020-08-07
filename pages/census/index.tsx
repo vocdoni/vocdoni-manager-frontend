@@ -37,7 +37,6 @@ class Census extends Component<IAppContext, State> {
 
   async componentDidMount() {
       if (getNetworkState().readOnly) {
-          console.log('entra, puto, o què?')
           return Router.replace("/entities" + location.hash)
       }
 

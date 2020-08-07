@@ -15,7 +15,7 @@ import InviteTokens from '../../components/invite-tokens'
 
 
 const defaultPageSize = 50
-const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation/"
+const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
 
 const MembersPage = props => {
@@ -189,7 +189,7 @@ class Members extends Component<IAppContext, State> {
                 if (data.length > 0) {
                     data = data
                         .filter( x => x.emails.length>0 && x.tokens.length >0 )
-                        .map( entry => entry.emails + ',' + entry.tokens +',' +  validationUrlPrefix+this.props.entityId+'/'+entry.tokens)
+                        .map( entry => entry.emails + ',' + entry.tokens +',' +  validationUrlPrefix+'/'+this.props.entityId+'/'+entry.tokens)
                 }
                 data = (data || []).join("\n")
                 const element = document.createElement("a")
@@ -405,7 +405,7 @@ class Members extends Component<IAppContext, State> {
                                     title="Enter Census Name"
                                     visible={censusNameModalvisible}
                                     confirmLoading={false}
-                                    //closable={false}
+                                    closable={false}
                                     footer={false}
                                 >
                                     <Form onFinish={this.createCensus.bind(this)}>

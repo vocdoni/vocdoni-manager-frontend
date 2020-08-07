@@ -57,7 +57,6 @@ class AccountNew extends Component<IAppContext, State> {
           message.success({ content: 'Done creating account!', key })
           this.setState({ creatingAccount: false })
       } catch (e) {
-          console.log(e.message)
           message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key })
           this.setState({ creatingAccount: false })
           return false
