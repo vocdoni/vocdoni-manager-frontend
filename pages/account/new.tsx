@@ -1,10 +1,10 @@
 import { useContext, Component } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Form, Input, Button, message, Row, Col, Spin, Card, Divider } from 'antd'
+import { Form, Input, Button, message, Row, Col, Spin, Card, Divider, Checkbox } from 'antd'
 import Router from 'next/router'
 // import Link from 'next/link'
 import { EtherUtils } from 'dvote-js'
-import { LoadingOutlined } from '@ant-design/icons'
+import { LoadingOutlined, AlignLeftOutlined } from '@ant-design/icons'
 
 
 // MAIN COMPONENT
@@ -23,13 +23,18 @@ type State = {
   passphrase?: string,
   seed?: string,
   address?: string,
+  acceptedPolicy: boolean,
+  acceptedTerms: boolean,
 }
 
 class AccountNew extends Component<IAppContext, State> {
-  state: State = {}
+  state: State = {
+      acceptedPolicy: false,
+      acceptedTerms: false,
+  }
 
   async componentDidMount() {
-      this.props.setTitle("New account")
+      this.props.setTitle(this.state.name || "New Entity")
       this.props.setMenuVisible(false);
   }
 
@@ -64,12 +69,20 @@ class AccountNew extends Component<IAppContext, State> {
       try {
           await this.props.web3Wallet.waitForGas()
       } catch (e) {
-          message.error({ content: 'Timeout waiting for user to get gas. Please, try it again' })
+          //message.error({ content: 'Timeout waiting for user to get gas. Please, try it again' })
           this.setState({ creatingAccount: false })
           return false
       }
       this.setState({ accountWaitingForGas: false })
       Router.push("/entities/new")
+  }
+
+  acceptPolicy(e) {
+      this.setState({acceptedPolicy: e.target.checked})
+  }
+
+  acceptTerms(e) {
+      this.setState({acceptedTerms: e.target.checked})
   }
 
   render() {
@@ -81,13 +94,17 @@ class AccountNew extends Component<IAppContext, State> {
           wrapperCol: { offset: 8, span: 10 },
       }
 
+      const acceptedPolicy = this.state.acceptedPolicy
+      const acceptedTerms = this.state.acceptedTerms
+
       return <div id="index">
           <Row justify="center" align="middle">
-              <Col xs={24} sm={18} md={10}>
-                  <Card title="Create an account" className="card">
+              <Col xs={24} sm={18} md={10} >
+                  <Card title="Create your Entity" className="card" >
                       {!this.state.address && !this.state.accountConfirmedBackup && !this.state.accountWaitingForGas &&
-              <Form {...layout} onFinish={this.onFinish}>
-                  <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
+              <Form {...layout} onFinish={this.onFinish} labelAlign="left">
+                  <p> Welcome! In the next steps you're about to create an entity in Vocdoni.<br /> It's important to keep the password and all the information of the next page in a safe place, it is the only way to access your entity. <br /> <br />Keep in mind that everything is encrypted on your browser. If your device breaks, is lost, stolen, or has data corruption, there is no way for Vocdoni to recover your entity.</p>
+                  <Form.Item label="Entity Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
                       <Input />
                   </Form.Item>
 
@@ -124,11 +141,24 @@ class AccountNew extends Component<IAppContext, State> {
                   >
                       <Input.Password />
                   </Form.Item>
-
+                  {/* <Form.Item> */}
+                  <Checkbox
+                      checked = {acceptedPolicy}
+                      onChange = {(e)=>{this.acceptPolicy(e)}}
+                  >I accept the <a href="https://vocdoni.io/privacy-policy/">Privacy Policy</a></Checkbox>
+                  <br />
+                  {/* </Form.Item> */}
+                  
+                  {/* <Form.Item> */}
+                  <Checkbox
+                      checked = {acceptedTerms}
+                      onChange = {(e)=>{this.acceptTerms(e)}}
+                  >I accept the <a href="https://vocdoni.io/terms-of-service/">Terms of Service</a> </Checkbox>
+                  {/* </Form.Item> */}
                   <Form.Item {...tailLayout}>
                       {this.state.creatingAccount ?
                           <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                          <Button type="primary" htmlType="submit">Create</Button>
+                          <Button type="primary" htmlType="submit" disabled={(!acceptedPolicy) || (!acceptedTerms)}>Create</Button>
                       }
                   </Form.Item>
               </Form>
@@ -136,28 +166,30 @@ class AccountNew extends Component<IAppContext, State> {
 
                       {this.state.address && !this.state.accountConfirmedBackup &&
               <>
-                  <p>Please, make a copy of the following details beore you continue</p>
+                  <p>Please, make a copy of the following details before you continue</p>
 
-                  <h4>Name:</h4>
+                  <h4>Entity Name:</h4>
                   <pre>{this.state.name}</pre>
-                  <h4>Account seed:</h4>
+                  <h4>Account Backup Code:</h4>
                   <pre>{this.state.seed}</pre>
                   {/* <h4>Address:</h4> */}
                   {/* <pre>{this.state.address}</pre> */}
 
                   <Divider />
                   <div style={{ textAlign: "center" }}>
-                      <Button type="primary" onClick={this.onConfirmBackup}>I have copied my account details</Button>
+                      <Button type="primary" onClick={this.onConfirmBackup}>I have copied my Entity details</Button>
                   </div>
               </>
                       }
 
                       {this.state.accountWaitingForGas &&
               <>
-                  <h3>Get some xDAI</h3>
-                  <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <br /><code>{this.state.address}</code></span>
+                  {/* <h3>Activate your account</h3> */}
+                  <span>
+                      {/* To continue with the transaction you need to get some xDAI tokens. <br /> */}
+                      To activate your account we need you to send us the name of your Entity and this identifier: <code>{this.state.address}</code> to <a href="mailto:info@vocdoni.io">info@vocdoni.io</a><br /></span>
                   <br />
-                  <Spin indicator={<LoadingOutlined style={{ fontSize: 22 }} />} />
+                  {/* <Spin indicator={<LoadingOutlined style={{ fontSize: 22 }} />} /> */}
               </>
                       }
 
