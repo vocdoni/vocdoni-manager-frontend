@@ -47,7 +47,7 @@ type State = {
 class MainApp extends App<Props, State> {
     state: State = {
         isConnected: false,
-        title: "Entities",
+        title: " ",
         menuVisible: true,
         menuSelected: "profile",
         menuCollapsed: false,
@@ -242,7 +242,7 @@ class MainApp extends App<Props, State> {
         const Layout = (Component as any).Layout || MainLayout
         return <AppContext.Provider value={injectedGlobalContext}>
             <Head>
-                <title>Vocdoni</title>
+                <title> </title>
             </Head>
             <Layout>
                 <Component {...pageProps} />

@@ -17,7 +17,7 @@ const AccountImportPage = props => {
 
 class AccountImport extends Component<IAppContext> {
     async componentDidMount() {
-        this.props.setTitle("Vocdoni")
+        // this.props.setTitle("Vocdoni")
         this.props.setMenuVisible(false)
     }
 

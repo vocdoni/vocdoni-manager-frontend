@@ -279,15 +279,17 @@ class MemberImport extends Component<IAppContext, State> {
 
         return <div id="page-body">
             <div className="body-card">
-                <Row gutter={24} justify="start">
+                 <Row gutter={24} justify="start">
                     <Col {...layout}>
                         <Row>
                             <Col {...columnLayout}>
                                 <section>
                                     <Divider orientation="left">Upload data</Divider>
                                     <p>In this section you can add new members to your organization's database. Once you upload the CSV file with the attributes of each user, an individual validation link will be generated which you will have to send to each user so that they can register in the entity. </p>
-                                    <p>You can add new members by creating a new CSV or updating the existing one (The system will skip the existing members and only add the new ones).</p>
-                                    <Button onClick={() => this.downloadTemplateCsv()} block type="ghost" icon={<DownloadOutlined />}>Download CSV Template</Button>
+                                    {/* <p>You can add new members by creating a new CSV or updating the existing one (The system will skip the existing members and only add the new ones).</p> */}
+                                    <p>Use the following CSV template to upload a list with new members <br/> (Existing members will be duplicated)</p>
+                                    <Button  onClick={() => this.downloadTemplateCsv()} type="ghost" icon={<DownloadOutlined />}>Download CSV Template</Button>
+                                    <br /><br />
                                     <Dragger
                                         beforeUpload={(file) => this.beforeUpload(file)}
                                         accept={'.csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
@@ -306,7 +308,7 @@ class MemberImport extends Component<IAppContext, State> {
                         </Row>
 
                         <DisabledLayer disabled={!(this.state.rawImport && this.state.rawImport.length)} text="Select a file to upload first">
-                            <Row>
+                            {/*   <Row>
                                 <Col {...columnLayout}>
                                     <Divider orientation="left">Column selection</Divider>
                                     <p>Select the column number that corresponds to the following fields</p>
@@ -344,16 +346,16 @@ class MemberImport extends Component<IAppContext, State> {
 
                                     <Checkbox defaultChecked onChange={e => this.onChangeSkipFirstRow(e.target.checked)}>Skip the first row</Checkbox>
                                 </Col>
-                            </Row>
-
+                         </Row> */}
+                            
                             <Row>
                                 <Col {...columnLayout}>
                                     <Divider orientation="left">Confirm import</Divider>
-                                    <p>When you are ready to import the above contents, click on the button to continue.</p>
+                                    <p>If the content in the preview is correct, click on the button to continue.</p>
                                     <Button type="primary" size="large" onClick={e => this.handleUpload()}>Import data</Button>
                                 </Col>
                             </Row>
-                        </DisabledLayer>
+                        </DisabledLayer>*
                     </Col>
                     <Col {...layout}>
                         <Divider orientation="left">Data preview</Divider>

@@ -39,7 +39,7 @@ class IndexView extends Component<IAppContext, State> {
     state: State = {}
 
     async componentDidMount() {
-        this.props.setTitle("Vocdoni")
+        // this.props.setTitle("Vocdoni")
         this.props.setMenuVisible(false)
 
         try {
