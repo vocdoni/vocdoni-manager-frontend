@@ -191,7 +191,6 @@ class Members extends Component<IAppContext, State> {
                         .filter( x => x.emails.length>0 && x.tokens.length >0 )
                         .map( entry => entry.emails + ',' + entry.tokens +',' +  validationUrlPrefix+this.props.entityId+'/'+entry.tokens)
                 }
-                console.log(data)
                 data = (data || []).join("\n")
                 const element = document.createElement("a")
                 const file = new Blob([data], { type: 'text/csv;charset=utf-8' })

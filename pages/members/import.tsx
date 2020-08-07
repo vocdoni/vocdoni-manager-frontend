@@ -1,7 +1,7 @@
 import React, { useContext, Component } from 'react'
 import { Row, Col, Divider, Table, Button, Form, Checkbox, InputNumber, message } from 'antd'
 import Router from 'next/router'
-import { InboxOutlined } from '@ant-design/icons'
+import { InboxOutlined, DownloadOutlined } from '@ant-design/icons'
 import Dragger from 'antd/lib/upload/Dragger'
 import { RcFile } from 'antd/lib/upload'
 import XLSX from 'xlsx';
@@ -232,6 +232,16 @@ class MemberImport extends Component<IAppContext, State> {
         })
     }
 
+    downloadTemplateCsv() {
+        const element = document.createElement("a")
+        const data = "Name,Last Name,Email\nTestName,TestLastName,email@test.com"
+        const file = new Blob([data], { type: 'text/csv;charset=utf-8' })
+        element.href = URL.createObjectURL(file)
+        element.download = "template.csv"
+        document.body.appendChild(element)
+        element.click()
+    }
+
     render() {
         const columns = [
             { title: 'Name', dataIndex: 'firstName', key: 'firstName' },
@@ -275,6 +285,9 @@ class MemberImport extends Component<IAppContext, State> {
                             <Col {...columnLayout}>
                                 <section>
                                     <Divider orientation="left">Upload data</Divider>
+                                    <p>In this section you can add new members to your organization's database. Once you upload the CSV file with the attributes of each user, an individual validation link will be generated which you will have to send to each user so that they can register in the entity. </p>
+                                    <p>You can add new members by creating a new CSV or updating the existing one (The system will skip the existing members and only add the new ones).</p>
+                                    <Button onClick={() => this.downloadTemplateCsv()} block type="ghost" icon={<DownloadOutlined />}>Download CSV Template</Button>
                                     <Dragger
                                         beforeUpload={(file) => this.beforeUpload(file)}
                                         accept={'.csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}

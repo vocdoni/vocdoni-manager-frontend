@@ -141,7 +141,7 @@ class Census extends Component<IAppContext, State> {
           // },
           //{ title: 'Census Id', dataIndex: 'id', key: 'id' },
           // { title: 'MerkleRoot', dataIndex: 'id', key: 'id' },
-          { title: 'Creation date', dataIndex: 'createdAt', key: 'createdAt',  render: (text, record, index) => this.generateLink(text, record, index)  },
+          { title: 'Creation date', dataIndex: 'createdAt', key: 'createdAt', sorter: true,  render: (text, record, index) => this.generateLink(text, record, index)  },
           //{ title: 'Actions', key: 'action', render: (text, record, index) => (
           //    <Space size="middle">
           //        <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>
