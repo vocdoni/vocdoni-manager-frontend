@@ -18,7 +18,7 @@ export type ISelected = "profile"
     | "account-edit"
 
 export interface IAppContext {
-    isWriteReady: boolean,
+    isWriteEnabled: boolean,
     title: string,
     web3Wallet: Web3Wallet,
     onNewWallet: (wallet: Wallet) => any,

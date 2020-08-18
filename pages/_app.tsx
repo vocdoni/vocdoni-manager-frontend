@@ -12,7 +12,7 @@ import GeneralError from '../components/error'
 import { initNetwork, getNetworkState } from "../lib/network"
 import { IAppContext } from "../components/app-context"
 import Web3Wallet, { getWeb3Wallet } from "../lib/web3-wallet"
-import { isWriteReady } from '../lib/util'
+import { isWriteEnabled } from '../lib/util'
 
 // import { } from "../lib/types"
 // import { isServer } from '../lib/util'
@@ -20,7 +20,7 @@ import { isWriteReady } from '../lib/util'
 import 'antd/dist/antd.css'
 import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
-import IndexPage from '.'
+// import IndexPage from '.'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
@@ -60,9 +60,7 @@ class MainApp extends App<Props, State> {
     refreshInterval: any
 
     componentDidMount(): void {
-        const { Component } = this.props
-
-        if (Component.name === IndexPage.name && !isWriteReady()) {
+        if (window.location.pathname == "/" && !isWriteEnabled()) {
             if (!process.env.BOOTNODES_URL_RW) window.location.href = process.env.FALLBACK_REDIRECT_URL
         }
 
@@ -215,7 +213,7 @@ class MainApp extends App<Props, State> {
         const { Component, pageProps } = this.props
 
         const injectedGlobalContext: IAppContext = {
-            isWriteReady: isWriteReady(),
+            isWriteEnabled: isWriteEnabled(),
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
             web3Wallet: getWeb3Wallet(),
