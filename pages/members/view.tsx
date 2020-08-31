@@ -88,7 +88,7 @@ class MemberView extends Component<IAppContext, State> {
                   this.setState({error})
                   return false
               }
-              message.success("Member has been saved")
+              message.success("Member details have been saved")
           },
           (error) => {
               message.error("Could not save the member")
