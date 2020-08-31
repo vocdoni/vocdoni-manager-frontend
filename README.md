@@ -34,7 +34,7 @@ At build time, the following env vars are read:
 - `NODE_ENV`
     - When set to `production`, disabled the development mode
 - `ETH_NETWORK_ID`
-    - By default set to `goerli`
+    - By default set to `xdai`
 - `BOOTNODES_URL_READ_ONLY`
     - The bootnode URL used for regular user requests
 - `BOOTNODES_URL_RW`
