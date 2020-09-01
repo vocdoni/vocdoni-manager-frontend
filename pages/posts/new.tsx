@@ -138,6 +138,19 @@ class PostNew extends Component<IAppContext, State> {
         }
     }
 
+    onErrorImage() {
+        this.setState({
+            newsPost: {
+                ...this.state.newsPost,
+                image: "",
+            }
+        })
+        return Modal.error({
+            title: "Invalid image",
+            content: "The provided image could not be loaded.",
+        })
+    }
+
     confirmSubmit() {
         if (!this.state.newsPost.title) return message.warning("Please, enter a title for the post")
         else if (!this.state.newsPost.image) return message.warning("Please, enter a URL for the header image")
@@ -320,7 +333,11 @@ class PostNew extends Component<IAppContext, State> {
                 <Col xs={0} md={10} className="right-col">
                     <Divider orientation="left">Header</Divider>
                     {this.state.newsPost.image ?
-                        <img className="preview" src={this.state.newsPost.image} /> : null
+                        <img
+                            className="preview"
+                            src={this.state.newsPost.image}
+                            onError={this.onErrorImage.bind(this)}
+                        /> : null
                     }
                 </Col>
             </Row>
