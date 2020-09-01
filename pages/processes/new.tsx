@@ -141,6 +141,9 @@ class ProcessNew extends Component<IAppContext, State> {
 
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
+                if (!result.censuses) {
+                    return // avoid setting censuses as undefined
+                }
                 this.setState({
                     censuses: result.censuses,
                 })
@@ -338,6 +341,7 @@ class ProcessNew extends Component<IAppContext, State> {
     renderProcessNew() {
         const questions = this.state.process.details.questions
         const censuses = this.state.censuses
+
         return <div className="body-card">
             <Row justify="start">
                 <Col xs={24} sm={20} md={14}>
