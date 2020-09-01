@@ -113,7 +113,7 @@ class PostNew extends Component<IAppContext, State> {
                 content_text: "",
                 content_html: "<p>Your text goes here</p>",
                 url: location.protocol + "//" + location.host + "/posts#/" + entityId + "/" + id,
-                image: "",
+                image: "https://source.unsplash.com/random/800x600",
                 tags: [],
                 date_published: "",
                 date_modified: "",
