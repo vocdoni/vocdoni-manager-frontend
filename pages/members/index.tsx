@@ -72,9 +72,7 @@ class Members extends Component<IAppContext, State> {
         if (count) {
             this.fetch()
             this.fetchTargets()
-            // this.fetchTags()
         }
-       
     }
 
     handleTableChange(pagination: any, filters: any, sorter: any = { field: undefined, order: undefined }) {
@@ -95,6 +93,11 @@ class Members extends Component<IAppContext, State> {
             .then((result) => {
                 const count = result.count || 0
                 this.setState({ total: count})
+                if (!count) {
+                    Modal.warning({
+                        title: "No members were found",
+                    })
+                }
                 return Promise.resolve(count)
             }, (error) => {
                 message.error("Could not fetch the members count")
@@ -137,7 +140,7 @@ class Members extends Component<IAppContext, State> {
             .then((result) => {
                 result.members.map(member => {
                     member.validated= ('publicKey' in member && member.publicKey != null) ? "Yes" : "No"
-                }) 
+                })
                 this.setState({
                     loading: false,
                     data: result.members,
@@ -307,7 +310,7 @@ class Members extends Component<IAppContext, State> {
             { title: 'Last Name', dataIndex: 'lastName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
             { title: 'Email', dataIndex: 'email', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
             { title: 'Validated', dataIndex: 'validated', render: (text, record, index) => this.generateLink(text, record, index) },
-            /*    
+            /*
                 { title: 'id', dataIndex: 'id', sorter: false, render: (text, record, index) => this.generateLink(text, record, index) },
                 { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
                         <>{moment().diff(dateOfBirth, 'years', false) }</>
@@ -319,7 +322,7 @@ class Members extends Component<IAppContext, State> {
                                 })}
                         </>
                 )},
-            
+
             {
                 title: 'Actions', key: 'action', render: (text, record, index) => (
                     <Space size="middle">
@@ -335,7 +338,7 @@ class Members extends Component<IAppContext, State> {
                 <Row gutter={40} justify="start">
                     <Col xs={{ span: 24, order: 2 }} lg={{ span: 18, order: 1 }}>
                         <Divider orientation="left">Member list</Divider>
-                        <Paragraph>This is the list of members of your entity. 
+                        <Paragraph>This is the list of members of your entity.
                             From here you can generate validation links so that they can register and give them the right to vote. <br />
                             You will be able to create censuses for voting processes with those members who are registered.</Paragraph>
                         <Table
@@ -392,7 +395,7 @@ class Members extends Component<IAppContext, State> {
                                 <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate Invite Tokens</Button>
                                 <br /> <br />
                                 */}
-                                <Paragraph>Validation links are used to register members in your organization. 
+                                <Paragraph>Validation links are used to register members in your organization.
                                     Download the list of links and send each member their link so they can register.</Paragraph>
                                 <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation Links</Button>
                                 <br /> <br />

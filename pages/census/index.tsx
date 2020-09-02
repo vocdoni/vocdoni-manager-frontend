@@ -1,6 +1,6 @@
 import { useContext, Component, ReactText } from 'react'
 import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Table, Tag, Select, Space, Button, message } from 'antd'
+import { Row, Col, Divider, Table, Tag, Select, Space, Button, message, Modal } from 'antd'
 import { DeleteRowOutlined } from '@ant-design/icons'
 import { ICensus } from '../../lib/types'
 import { getNetworkState } from '../../lib/network'
@@ -48,6 +48,11 @@ class Census extends Component<IAppContext, State> {
   fetchCount() {
       this.props.managerBackendGateway.sendMessage({ method: "countCensus" } as any, this.props.web3Wallet.getWallet())
           .then((result) => {
+              if (!result.count) {
+                Modal.warning({
+                    title: "No censuses were found",
+                })
+              }
               this.setState({total: result.count})
           },
           (error) => {
