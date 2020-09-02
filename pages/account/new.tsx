@@ -25,6 +25,7 @@ type State = {
   address?: string,
   acceptedPolicy: boolean,
   acceptedTerms: boolean,
+  backupDownloaded: boolean,
 }
 
 class AccountNew extends Component<IAppContext, State> {
