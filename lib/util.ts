@@ -17,10 +17,10 @@ export const downloadFileWithContents = (contents: string, settings : FileDownlo
     if (!settings) {
         settings = {}
     }
-    if (!settings || (settings && !settings.filename)) {
+    if (!settings.filename) {
         settings.filename = 'download.json'
     }
-    if (!settings || (settings && !settings.mime)) {
+    if (!settings.mime) {
         settings.mime = 'application/json'
     }
 
