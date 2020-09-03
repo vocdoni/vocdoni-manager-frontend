@@ -12,7 +12,7 @@ type FileDownloadSettings = {
     mime?: string
     filename?: string
 }
-export const downloadFileWithContents = (contents: string, settings : FileDownloadSettings) => {
+export const downloadFileWithContents = (contents: string, settings?: FileDownloadSettings) => {
     const data = Array.isArray(contents) ? contents.join("\n") : contents
     if (!settings) {
         settings = {}
