@@ -1,10 +1,13 @@
 import { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { Form, Input, Button, message, Row, Col, Spin, Card, Divider, Checkbox } from 'antd'
 import Router from 'next/router'
 // import Link from 'next/link'
 import { EtherUtils } from 'dvote-js'
 import { LoadingOutlined, AlignLeftOutlined } from '@ant-design/icons'
+import beautify from 'json-beautify'
+
+import AppContext, { IAppContext } from '../../components/app-context'
+import { downloadFileWithContents } from '../../lib/util'
 
 
 // MAIN COMPONENT
@@ -32,6 +35,7 @@ class AccountNew extends Component<IAppContext, State> {
     state: State = {
         acceptedPolicy: false,
         acceptedTerms: false,
+        backupDownloaded: false,
     }
 
     async componentDidMount() {
@@ -62,6 +66,16 @@ class AccountNew extends Component<IAppContext, State> {
             this.setState({ creatingAccount: false })
             return false
         }
+    }
+
+    downloadBackupFile() {
+        const contents = {
+            seed: this.state.seed,
+            public: this.state.address,
+        }
+
+        downloadFileWithContents(beautify(contents, null, 2, 100))
+        this.setState({backupDownloaded: true})
     }
 
     onConfirmBackup = async () => {
@@ -176,7 +190,21 @@ class AccountNew extends Component<IAppContext, State> {
 
                     <Divider />
                     <div style={{ textAlign: "center" }}>
-                        <Button type="primary" onClick={this.onConfirmBackup}>I have copied my Entity details</Button>
+                        <Button
+                            type="primary"
+                            onClick={this.downloadBackupFile.bind(this)}
+                        >
+                            Download backup file
+                        </Button>
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                        <Button
+                            type="primary"
+                            onClick={this.onConfirmBackup}
+                            disabled={!this.state.backupDownloaded}
+                        >
+                            I have copied my Entity details
+                        </Button>
                     </div>
                 </>
                         }
