@@ -1,20 +1,20 @@
 import { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Divider, Typography, Row, Col } from 'antd'
-// import MainLayout from "../../components/layout"
 import { LoadingOutlined } from '@ant-design/icons'
-import { getGatewayClients } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
-const { Entity } = API
-import QRCode from "qrcode.react"
+import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
+import QRCode from 'qrcode.react'
 // import Router from 'next/router'
-// import Link from "next/link"
+// import Link from 'next/link'
 
-// import MainLayout from "../../components/layout"
-// import { main } from "../i18n"
+// import MainLayout from '../../components/layout'
+import { getGatewayClients } from '../../lib/network'
+import AppContext, { IAppContext } from '../../components/app-context'
+// import MainLayout from '../../components/layout'
+// import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
+const { Entity } = API
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 const APP_LINKING_DOMAIN = process.env.APP_LINKING_DOMAIN
 

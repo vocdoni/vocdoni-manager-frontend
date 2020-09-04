@@ -1,16 +1,18 @@
 import { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, List } from 'antd'
 import { Divider, Typography, Row, Col } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
-import { fetchFromBootNode } from "dvote-js/dist/net/gateway-bootnodes"
-const { Entity } = API
-import QRCode from "qrcode.react"
+import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
+import { fetchFromBootNode } from 'dvote-js/dist/net/gateway-bootnodes'
+import QRCode from 'qrcode.react'
 // import Router from 'next/router'
-// import Link from "next/link"
+// import Link from 'next/link'
 // import { getEntityId } from 'dvote-js/dist/api/entity'
+
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import AppContext, { IAppContext } from '../../components/app-context'
+
+const { Entity } = API
 const { Paragraph } = Typography
 
 // import MainLayout from "../../components/layout"
@@ -110,10 +112,10 @@ class EntityView extends Component<IAppContext, State> {
                         </a>
                     </div>
                     {/* <Divider orientation="center">Shareable link</Divider> */}
-                    <List > 
+                    <List >
                         <List.Item ><Paragraph copyable={{ text: subscriptionLink  }}>Copy the link to share the entity</Paragraph></List.Item>
                     </List>
-                    
+
 
                 </Col>
             </Row>

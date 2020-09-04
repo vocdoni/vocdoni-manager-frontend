@@ -1,6 +1,7 @@
-import NotFound from "../components/not-found"
-import GeneralError from "../components/error"
 import NextError from 'next/error'
+
+import NotFound from '../components/not-found'
+import GeneralError from '../components/error'
 
 function ErrorPage({ statusCode }) {
     if (statusCode >= 400 && statusCode < 500) return <NotFound />

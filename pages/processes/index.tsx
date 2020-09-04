@@ -1,22 +1,22 @@
 import { useContext, Component, ReactNode } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
-import { message, Spin, Col, Row, Badge } from 'antd'
-import { Divider, Menu } from 'antd'
+import { Divider, Menu, message, Spin, Col, Row, Badge } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, MultiLanguage, ProcessMetadata, ProcessResults } from "dvote-js"
-const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Entity, Census } = API
+import { API, EntityMetadata, MultiLanguage, ProcessMetadata, ProcessResults } from 'dvote-js'
 import moment from 'moment'
 import Router from 'next/router'
-import Link from "next/link"
+import Link from 'next/link'
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
-import { getVoteMetadata, isCanceled, estimateDateAtBlock } from "dvote-js/dist/api/vote"
-// import MainLayout from "../../components/layout"
-// import { main } from "../i18n"
+import { getVoteMetadata, isCanceled, estimateDateAtBlock } from 'dvote-js/dist/api/vote'
+
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import AppContext, { IAppContext } from '../../components/app-context'
+// import MainLayout from '../../components/layout'
+// import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
+const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Entity, Census } = API
 const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10", 10) || 10
 
 // MAIN COMPONENT

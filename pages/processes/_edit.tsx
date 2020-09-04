@@ -1,8 +1,9 @@
 import { useContext, Component } from 'react'
+// import Link from 'next/link'
+
 import AppContext, { IAppContext } from '../../components/app-context'
-// import Link from "next/link"
-// import MainLayout from "../../components/layout"
-// import { main } from "../i18n"
+// import MainLayout from '../../components/layout'
+// import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 

@@ -1,11 +1,12 @@
 import { useContext, Component, ReactText } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Table, Tag, Select, Space, Button, message, Modal } from 'antd'
-import { DeleteRowOutlined } from '@ant-design/icons'
-import { ICensus } from '../../lib/types'
-import { getNetworkState } from '../../lib/network'
 import Router from 'next/router'
 import Link from 'next/link'
+import { Row, Col, Divider, Table, Tag, Select, Space, Button, message, Modal } from 'antd'
+import { DeleteRowOutlined } from '@ant-design/icons'
+
+import { ICensus } from '../../lib/types'
+import { getNetworkState } from '../../lib/network'
+import AppContext, { IAppContext } from '../../components/app-context'
 
 const CensusPage = props => {
     const context = useContext(AppContext)

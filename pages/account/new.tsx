@@ -19,16 +19,16 @@ const AccountNewPage = props => {
 }
 
 type State = {
-  creatingAccount?: boolean,
-  accountConfirmedBackup?: boolean,
-  accountWaitingForGas?: boolean,
-  name?: string,
-  passphrase?: string,
-  seed?: string,
-  address?: string,
-  acceptedPolicy: boolean,
-  acceptedTerms: boolean,
-  backupDownloaded: boolean,
+    creatingAccount?: boolean,
+    accountConfirmedBackup?: boolean,
+    accountWaitingForGas?: boolean,
+    name?: string,
+    passphrase?: string,
+    seed?: string,
+    address?: string,
+    acceptedPolicy: boolean,
+    acceptedTerms: boolean,
+    backupDownloaded: boolean,
 }
 
 class AccountNew extends Component<IAppContext, State> {

@@ -1,23 +1,29 @@
 import { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col, Modal } from 'antd'
-import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes, EtherUtils } from "dvote-js"
-
-const { Entity } = API
-// import { by639_1 } from 'iso-language-codes'
-import Link from "next/link"
+import {
+    InfoCircleOutlined,
+    BookOutlined,
+    FileImageOutlined,
+    LoadingOutlined,
+    ExclamationCircleOutlined,
+} from '@ant-design/icons'
+import { API, EntityMetadata, GatewayBootNodes, EtherUtils } from 'dvote-js'
+import Link from 'next/link'
 import Router from 'next/router'
-import Web3Wallet from '../../lib/web3-wallet'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { EntityMetadataTemplate } from 'dvote-js/dist/models/entity'
-// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-// import { main } from "../i18n"
+// import { by639_1 } from 'iso-language-codes'
+
+import AppContext, { IAppContext } from '../../components/app-context'
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import Web3Wallet from '../../lib/web3-wallet'
+// import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
+const { Entity } = API
+// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 // const { Option } = Select
 
 // const languageCodes = Object.keys(by639_1).sort().reduce((prev, cur) => {

@@ -1,12 +1,12 @@
 .card {
-  background-color: white;
-  box-shadow: 0 3px 6px 0 rgba(0,0,0,0.1);
-  transition: 0.3s;
-  border-radius: 4px;
+    background-color: white;
+    box-shadow: 0 3px 6px 0 rgba(0,0,0,0.1);
+    transition: 0.3s;
+    border-radius: 4px;
 }
 
 .card:hover {
-  box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
+    box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
 }
 
 .canvas-wrapper canvas {

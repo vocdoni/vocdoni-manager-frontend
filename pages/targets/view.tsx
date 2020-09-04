@@ -1,13 +1,14 @@
 import React, { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { Row, Col, Divider, Table, Button, Form, Input, message, Select } from 'antd'
-import { getNetworkState, getGatewayClients } from '../../lib/network'
 import Router from 'next/router'
 import { SaveOutlined, ExportOutlined, DeleteOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons'
-import { IMember, ITarget } from '../../lib/types'
 import { FormInstance } from 'antd/lib/form'
 import TextArea from 'antd/lib/input/TextArea'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
+
+import AppContext, { IAppContext } from '../../components/app-context'
+import { IMember, ITarget } from '../../lib/types'
+import { getNetworkState, getGatewayClients } from '../../lib/network'
 
 const TargetViewPage = props => {
     const context: IAppContext = useContext(AppContext)

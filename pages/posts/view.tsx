@@ -1,25 +1,26 @@
 import { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, Modal, Tag } from 'antd'
 import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from "dvote-js"
-// import { by639_1 } from 'iso-language-codes'
-const { Entity } = API
-import Link from "next/link"
+import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from 'dvote-js'
+import Link from 'next/link'
 import Router from 'next/router'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
 import { fetchFileString } from 'dvote-js/dist/api/file'
+// import { by639_1 } from 'iso-language-codes'
 
-// let Editor: any // = await import("react-draft-wysiwyg")
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import AppContext, { IAppContext } from '../../components/app-context'
+
+// let Editor: any // = await import('react-draft-wysiwyg')
 // let EditorState, ContentState, convertToRaw
 // let draftToHtml: any // = await import('draftjs-to-html')
 // let htmlToDraft: any // = await import('html-to-draftjs')
+const { Entity } = API
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-// import { main } from "../i18n"
+// import { main } from '../i18n'
 
 // MAIN COMPONENT
 const PostViewPage = props => {

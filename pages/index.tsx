@@ -1,13 +1,14 @@
 import { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../components/app-context'
 import Link from 'next/link'
 import { API, EntityMetadata } from 'dvote-js'
-import { getGatewayClients, getNetworkState } from '../lib/network'
 import { message, Button, Spin, Divider, Input, Select, Col, Row, Card, Modal } from 'antd'
 import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getEntityId } from 'dvote-js/dist/api/entity'
-import { IWallet } from '../lib/types'
 import Router from 'next/router'
+
+import { getGatewayClients, getNetworkState } from '../lib/network'
+import { IWallet } from '../lib/types'
+import AppContext, { IAppContext } from '../components/app-context'
 
 const { Entity } = API
 // import MainLayout from "../components/layout"

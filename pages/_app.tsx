@@ -1,25 +1,25 @@
 import React from 'react'
 import Head from 'next/head'
 import App from 'next/app'
-import { message, Row, Col, Card, Button } from "antd"
+import { message, Row, Col, Card, Button } from 'antd'
 import { Wallet } from 'ethers'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 import { ReloadOutlined } from '@ant-design/icons'
 
 import AppContext, { ISelected } from '../components/app-context'
-import MainLayout from "../components/layout"
+import MainLayout from '../components/layout'
 import GeneralError from '../components/error'
-import { initNetwork, getNetworkState } from "../lib/network"
-import { IAppContext } from "../components/app-context"
-import Web3Wallet, { getWeb3Wallet } from "../lib/web3-wallet"
+import { initNetwork, getNetworkState } from '../lib/network'
+import { IAppContext } from '../components/app-context'
+import Web3Wallet, { getWeb3Wallet } from '../lib/web3-wallet'
 import { isWriteEnabled } from '../lib/util'
 
-// import { } from "../lib/types"
+// import { } from '../lib/types'
 // import { isServer } from '../lib/util'
 
 import 'antd/dist/antd.css'
-import "../styles/index.css"
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import '../styles/index.css'
 // import IndexPage from '.'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID

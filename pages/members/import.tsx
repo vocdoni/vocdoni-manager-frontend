@@ -4,7 +4,7 @@ import Router from 'next/router'
 import { InboxOutlined, DownloadOutlined } from '@ant-design/icons'
 import Dragger from 'antd/lib/upload/Dragger'
 import { RcFile } from 'antd/lib/upload'
-import XLSX from 'xlsx';
+import XLSX from 'xlsx'
 import { Buffer } from 'buffer'
 import CsvParse from 'csv-parse/lib/sync'
 
@@ -347,7 +347,7 @@ class MemberImport extends Component<IAppContext, State> {
                                     <Checkbox defaultChecked onChange={e => this.onChangeSkipFirstRow(e.target.checked)}>Skip the first row</Checkbox>
                                 </Col>
                          </Row> */}
-                            
+
                             <Row>
                                 <Col {...columnLayout}>
                                     <Divider orientation="left">Confirm import</Divider>

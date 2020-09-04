@@ -1,19 +1,29 @@
 import { useContext, Component, ReactText } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Table, Select, Button, message, Typography, Modal, Form, Input } from 'antd'
+import { Row,
+    Col,
+    Divider,
+    Table,
+    Select,
+    Button,
+    message,
+    Typography,
+    Modal,
+    Form,
+    Input,
+} from 'antd'
 import { TagOutlined, DownloadOutlined, ExportOutlined, InstagramFilled } from '@ant-design/icons'
-import { ITarget, ITag, IMember } from '../../lib/types'
-import { getNetworkState, getGatewayClients } from '../../lib/network'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 // import moment from 'moment'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
-const { Paragraph } = Typography;
 
+import { getNetworkState, getGatewayClients } from '../../lib/network'
+import { ITarget, ITag, IMember } from '../../lib/types'
+import AppContext, { IAppContext } from '../../components/app-context'
 import InviteTokens from '../../components/invite-tokens'
 
-
+const { Paragraph } = Typography;
 const defaultPageSize = 50
 const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 

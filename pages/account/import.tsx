@@ -1,11 +1,12 @@
 import { useContext, Component } from 'react'
 import Router from 'next/router'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { Form, Input, Button, message, Modal, Row, Col, Card } from 'antd'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { API, EntityMetadata, GatewayBootNodes } from "dvote-js"
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
+
+import { getGatewayClients, getNetworkState } from '../../lib/network'
+import AppContext, { IAppContext } from '../../components/app-context'
 
 
 const AccountImportPage = props => {
