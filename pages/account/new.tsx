@@ -71,7 +71,7 @@ class AccountNew extends Component<IAppContext, State> {
     downloadBackupFile() {
         const contents = {
             seed: this.state.seed,
-            public: this.state.address,
+            public: this.props.web3Wallet.getPublicKey(),
         }
 
         downloadFileWithContents(beautify(contents, null, 2, 100))
