@@ -33,7 +33,7 @@
     "dexie": "^2.0.4",
     "draft-js": "^0.11.5",
     "draftjs-to-html": "^0.9.1",
-    "dvote-js": "^0.16.2",
+    "dvote-js": "^0.16.3",
     "ethers": "^4.0.47",
     "html-to-draftjs": "^1.5.0",
     "iso-language-codes": "^1.0.6",
