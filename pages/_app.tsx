@@ -240,6 +240,7 @@ class MainApp extends App<Props, State> {
         const Layout = (Component as any).Layout || MainLayout
         return <AppContext.Provider value={injectedGlobalContext}>
             <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title> </title>
             </Head>
             <Layout>
