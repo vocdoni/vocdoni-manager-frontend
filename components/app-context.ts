@@ -38,7 +38,7 @@ export interface IAppContext {
     setEntityId: (entityId: string) => void
     setProcessId: (processId: string) => void,
     managerBackendGateway: DVoteGateway,
-    setUrlHash: (urlHash: string) => void
+    setUrlHash: (urlHash: string) => void,
 }
 
 // Global context provided to every page
