@@ -57,16 +57,12 @@ class MainApp extends App<Props, State> {
         urlHash: '',
     }
 
-    refreshInterval: any
-
     componentDidMount(): void {
         if (window.location.pathname == "/" && !isWriteEnabled()) {
             if (!process.env.BOOTNODES_URL_RW) window.location.href = process.env.FALLBACK_REDIRECT_URL
         }
 
         this.connect()
-
-        this.refreshInterval = setInterval(() => this.refreshWeb3Status(), 3500)
 
         window.addEventListener('beforeunload', this.beforeUnload)
 
@@ -75,7 +71,6 @@ class MainApp extends App<Props, State> {
     }
 
     componentWillUnmount(): void {
-        clearInterval(this.refreshInterval)
         window.removeEventListener('beforeunload', this.beforeUnload)
         window.removeEventListener('hashchange', this.hashChange)
     }
