@@ -104,9 +104,7 @@ class Members extends Component<IAppContext, State> {
                 const count = result.count || 0
                 this.setState({ total: count})
                 if (!count) {
-                    Modal.warning({
-                        title: "No members were found",
-                    })
+                    message.warning("No members were found")
                 }
                 return Promise.resolve(count)
             }, (error) => {

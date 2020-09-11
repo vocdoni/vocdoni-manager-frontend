@@ -50,9 +50,7 @@ class Census extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendMessage({ method: "countCensus" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.count) {
-                    Modal.warning({
-                        title: "No censuses were found",
-                    })
+                    message.warning("No censuses were found")
                 }
                 this.setState({total: result.count})
             },
