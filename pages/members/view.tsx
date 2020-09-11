@@ -1,13 +1,15 @@
 import React, { useContext, Component } from 'react'
-import AppContext, { IAppContext } from '../../components/app-context'
-import { Row, Col, Divider, Button, Form, Input, message, DatePicker, Modal, Descriptions, Popconfirm} from 'antd'
-import { getNetworkState } from '../../lib/network'
-import Router from 'next/router'
-import { UserDeleteOutlined, SaveOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { ITarget, IMember } from '../../lib/types'
-import { FormInstance } from 'antd/lib/form'
 import moment from 'moment'
+import Router from 'next/router'
+import { Row, Col, Divider, Button, Form, Input, message, DatePicker, Modal, Descriptions, Popconfirm} from 'antd'
+import { UserDeleteOutlined, SaveOutlined, ExclamationCircleOutlined, MailOutlined } from '@ant-design/icons'
 import Paragraph from 'antd/lib/typography/Paragraph'
+import { FormInstance } from 'antd/lib/form'
+
+import AppContext, { IAppContext } from '../../components/app-context'
+import InviteMember from '../../components/invite-member'
+import { getNetworkState } from '../../lib/network'
+import { ITarget, IMember } from '../../lib/types'
 
 const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
@@ -123,7 +125,14 @@ class MemberView extends Component<IAppContext, State> {
             result =  (
                 <Descriptions column={1} layout="vertical" colon={false}>
                     <Descriptions.Item label="Token">{id}</Descriptions.Item>
-                    <Descriptions.Item label=""><Paragraph copyable={{ text: link  }}>Copy Validation Link</Paragraph></Descriptions.Item>
+                    <Descriptions.Item label="">
+                        <Paragraph copyable={{ text: link  }}>Copy Validation Link</Paragraph>
+                        <Paragraph>
+                            <InviteMember {...this.props} member={member}>
+                                Send validation e-mail <MailOutlined />
+                            </InviteMember>
+                        </Paragraph>
+                    </Descriptions.Item>
                 </Descriptions>
             )
         } else {

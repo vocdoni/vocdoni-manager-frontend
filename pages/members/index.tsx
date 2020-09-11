@@ -11,7 +11,7 @@ import { Row,
     Form,
     Input,
 } from 'antd'
-import { TagOutlined, DownloadOutlined, ExportOutlined, InstagramFilled } from '@ant-design/icons'
+import { TagOutlined, DownloadOutlined, ExportOutlined, InstagramFilled, MailOutlined } from '@ant-design/icons'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
@@ -22,6 +22,7 @@ import { getNetworkState, getGatewayClients } from '../../lib/network'
 import { ITarget, ITag, IMember } from '../../lib/types'
 import AppContext, { IAppContext } from '../../components/app-context'
 import InviteTokens from '../../components/invite-tokens'
+import InviteMember from '../../components/invite-member'
 
 const { Paragraph } = Typography;
 const defaultPageSize = 50
@@ -147,7 +148,15 @@ class Members extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 result.members.map(member => {
-                    member.validated= ('publicKey' in member && member.publicKey != null) ? "Yes" : "No"
+                    if ('publicKey' in member && member.publicKey != null) {
+                        member.validated = <span>Yes</span>
+                        return
+                    }
+                    member.validated = <span>
+                        No <InviteMember member={member} {...this.props}>
+                            <MailOutlined />
+                        </InviteMember>
+                    </span>
                 })
                 this.setState({
                     loading: false,
@@ -317,7 +326,7 @@ class Members extends Component<IAppContext, State> {
             { title: 'First Name', dataIndex: 'firstName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
             { title: 'Last Name', dataIndex: 'lastName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
             { title: 'Email', dataIndex: 'email', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
-            { title: 'Validated', dataIndex: 'validated', render: (text, record, index) => this.generateLink(text, record, index) },
+            { title: 'Validated', dataIndex: 'validated' },
             /*
                 { title: 'id', dataIndex: 'id', sorter: false, render: (text, record, index) => this.generateLink(text, record, index) },
                 { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
