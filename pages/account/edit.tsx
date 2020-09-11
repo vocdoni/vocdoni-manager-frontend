@@ -25,7 +25,6 @@ class AccountEdit extends Component<IAppContext, State> {
     componentDidMount() {
         this.setState({ id: location.hash.substr(2) })
 
-        this.props.setTitle(`Process ${location.hash.substr(2)}`)
         this.props.setMenuSelected("account-edit")
 
         this.props.web3Wallet.getEthBalance().then((val) => this.setState({balance: val}))
