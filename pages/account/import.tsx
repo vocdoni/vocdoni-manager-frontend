@@ -78,7 +78,7 @@ class AccountImport extends Component<IAppContext> {
 
     async onFinish(values) {
         try {
-            const vals = {...values, ...this.state}
+            const vals = {...this.state, ...values}
 
             await this.props.web3Wallet.store(vals.name, vals.seed, vals.passphrase)
             await this.props.web3Wallet.load(vals.name, vals.passphrase)
