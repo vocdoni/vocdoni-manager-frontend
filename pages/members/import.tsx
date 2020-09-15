@@ -10,8 +10,9 @@ import CsvParse from 'csv-parse/lib/sync'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getNetworkState } from '../../lib/network'
-import { XLSX_MIME_TYPE } from '../../lib/constants'
+import { allowedImportTypes, CSV_MIME_TYPE } from '../../lib/constants'
 import DisabledLayer from '../../components/disabled-layer'
+import { getProperFileMimeType } from '../../lib/util'
 
 const MemberImportPage = props => {
     const context = useContext(AppContext)
@@ -29,7 +30,6 @@ type State = {
     firstNameColNumber: number,
     lastNameColNumber: number,
     emailColNumber: number,
-    csvDelimiter: string
     fromLine: number,
     uploading: boolean,
     loading: boolean,
@@ -39,7 +39,6 @@ type State = {
 class MemberImport extends Component<IAppContext, State> {
     state: State = {
         uploading: false,
-        csvDelimiter: ',',
         fromLine: 2,
         importedColumnsAmount: 999,
         firstNameColNumber: 1,
@@ -83,7 +82,7 @@ class MemberImport extends Component<IAppContext, State> {
         reader.onload = e => {
             this.setState({
                 rawImport: Buffer.from(e.target.result),
-                fileType: file.type,
+                fileType: getProperFileMimeType(file),
                 file,
             }, this.processImport)
         }
@@ -97,10 +96,10 @@ class MemberImport extends Component<IAppContext, State> {
         const raw = (file) ? file :this.state.rawImport
         let data: any[] = []
 
-        if (this.state.fileType === "text/csv") {
+        if (this.state.fileType === CSV_MIME_TYPE) {
             const records = CsvParse(raw, {
                 skip_empty_lines: true,
-                delimiter: this.state.csvDelimiter,
+                delimiter: [',', ';'],
                 from_line: this.state.fromLine,
                 trim: true,
             })
@@ -116,7 +115,7 @@ class MemberImport extends Component<IAppContext, State> {
                     email: row[this.state.emailColNumber - 1],
                 })
             }
-        } else if (this.state.fileType === XLSX_MIME_TYPE) {
+        } else {
             data = this.parseMembersFromExcel(
                 raw,
                 this.state.firstNameColNumber - 1,
@@ -124,6 +123,17 @@ class MemberImport extends Component<IAppContext, State> {
                 this.state.emailColNumber - 1,
                 this.state.fromLine - 1
             )
+
+        }
+
+        if (!data.length) {
+            this.setState({
+                rawImport: null,
+                fileType: null,
+                file: null,
+            })
+
+            return message.error("Unknown file format uploaded")
         }
 
         this.setState({ data })
@@ -292,7 +302,7 @@ class MemberImport extends Component<IAppContext, State> {
                                     <br /><br />
                                     <Dragger
                                         beforeUpload={(file) => this.beforeUpload(file)}
-                                        accept={'.csv, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}
+                                        accept={allowedImportTypes.join(',')}
                                         onRemove={(file) => this.onRemoveUpload(file)}
                                         multiple={false}
                                         fileList={files}
@@ -301,7 +311,7 @@ class MemberImport extends Component<IAppContext, State> {
                                             <InboxOutlined />
                                         </p>
                                         <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                                        <p className="ant-upload-hint">Supported file formats are XLSX and CSV</p>
+                                        <p className="ant-upload-hint">You can upload most spreadsheet formats (csv, xls, xlsx, ods...)</p>
                                     </Dragger>
                                 </section>
                             </Col>

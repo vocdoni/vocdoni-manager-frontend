@@ -23,7 +23,7 @@ test:
   before_script:
     - npm i
   script:
-    - npm run-script lint
+  - npm test
 
 manager-build:
   image: node:12
