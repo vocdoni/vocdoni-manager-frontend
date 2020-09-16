@@ -302,7 +302,6 @@ class MemberImport extends Component<IAppContext, State> {
                                     <br /><br />
                                     <Dragger
                                         beforeUpload={(file) => this.beforeUpload(file)}
-                                        accept={allowedImportTypes.join(',')}
                                         onRemove={(file) => this.onRemoveUpload(file)}
                                         multiple={false}
                                         fileList={files}
