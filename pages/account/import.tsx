@@ -21,38 +21,27 @@ const AccountImportPage = props => {
 
 type ImportFormProps = {
     values: {
-        public: string,
         seed: string,
     },
 }
 
 const ImportFormFields = (props: ImportFormProps) => {
     const {values} = props
-    const hasBackup: {public: boolean, seed: boolean} = {
-        public: !!(values.public && values.public.length),
+    const hasBackup: {seed: boolean} = {
         seed: !!(values.seed && values.seed.length),
     }
 
     return <>
-        <If condition={hasBackup.public}>
-            Public key loaded <span className='text-truncate'>{values.public}</span>
-        </If>
-        <If condition={!hasBackup.public && !hasBackup.seed}>
+        <If condition={!hasBackup.seed}>
             <p>Or manually set your details below:</p>
         </If>
-        <If condition={hasBackup.public && hasBackup.seed}>
+        <If condition={hasBackup.seed}>
             <p>Now finish the process by setting an entity name and the expected password for the key pair.</p>
         </If>
 
         <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
             <Input />
         </Form.Item>
-
-        <If condition={!hasBackup.public}>
-            <Form.Item label="Public key" name="public" rules={[{ required: true, message: 'Please input the public key!' }]}>
-                <Input />
-            </Form.Item>
-        </If>
 
         <If condition={!hasBackup.seed}>
             <Form.Item label="Account seed" name="seed" rules={[{ required: true, message: 'Please input the seed!' }]}>
@@ -68,7 +57,6 @@ const ImportFormFields = (props: ImportFormProps) => {
 
 class AccountImport extends Component<IAppContext> {
     state = {
-        public: '',
         seed: '',
     }
     async componentDidMount() {
@@ -142,7 +130,7 @@ class AccountImport extends Component<IAppContext> {
                 <Col xs={24} sm={18} md={10}>
                     <Card title="Import and unlock an account" className="card">
                         <Form {...layout} onFinish={values => this.onFinish(values)}>
-                            <If condition={!this.state.public.length || !this.state.seed.length}>
+                            <If condition={!this.state.seed.length}>
                                 <Dragger
                                     beforeUpload={this.beforeUpload.bind(this)}
                                     accept={"application/json"}
