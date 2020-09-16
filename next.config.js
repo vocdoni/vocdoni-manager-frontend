@@ -60,6 +60,7 @@ async function generatePathMap() {
             '/validation': { page: '/validation' },
             '/members': { page: '/members' },
             '/members/view': { page: '/members/view' },
+            '/members/import': { page: '/members/import' },
             '/targets': { page: '/targets' },
             '/targets/view': { page: '/targets/view' },
             '/census': { page: '/census' },
