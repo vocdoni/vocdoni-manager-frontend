@@ -292,7 +292,7 @@ class ProcessNew extends Component<IAppContext, State> {
         const gwPool = await getGatewayClients()
 
         const newProcess = this.state.process
-        newProcess.details.description = sanitizeHtml(newProcess.details.description)
+        newProcess.details.description.default = sanitizeHtml(newProcess.details.description.default)
         newProcess.startBlock = this.state.startBlock
         newProcess.numberOfBlocks = this.state.numberOfBlocks
         newProcess.details.entityId = this.state.entityId
