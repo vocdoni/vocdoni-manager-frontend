@@ -140,7 +140,7 @@ class EntityNew extends Component<IAppContext, State> {
 
             const entityId = getEntityId(address)
 
-            await this.registrySignup(entityId)
+            await this.registrySignup(entityId, entity.name[entity.languages[0]])
 
             await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
@@ -155,10 +155,11 @@ class EntityNew extends Component<IAppContext, State> {
         }
     }
 
-    registrySignup(entityId: string) {
+    registrySignup(entityId: string, entityName: string) {
         const request = {
             method: "signUp",
             entityId,
+            entityName
         }
         return this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet());
     }
