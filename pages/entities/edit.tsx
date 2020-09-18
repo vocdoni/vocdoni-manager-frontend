@@ -37,12 +37,15 @@ type State = {
     entityUpdating?: boolean,
     entity?: EntityMetadata,
     entityId?: string,
-    bootnodes?: GatewayBootNodes
+    bootnodes?: GatewayBootNodes,
+    email?: string,
 }
 
 // Stateful component
 class EntityEdit extends Component<IAppContext, State> {
-    state: State = {}
+    state: State = {
+        email: ""
+    }
 
     async componentDidMount() {
         if (getNetworkState().readOnly) {
@@ -102,6 +105,9 @@ class EntityEdit extends Component<IAppContext, State> {
         const newName = Object.assign({}, this.state.entity.name, { [lang]: name })
         const entity = Object.assign({}, this.state.entity, { name: newName })
         this.setState({ entity })
+    }
+    onEmailChange(email: string) {
+        this.setState({ email })
     }
     onDescriptionChange(description: string, lang: string) {
         const newDescription = Object.assign({}, this.state.entity.description, { [lang]: description })
@@ -174,6 +180,8 @@ class EntityEdit extends Component<IAppContext, State> {
         // Filter extraneous actions
         entity.actions = entity.actions.filter(meta => !!meta.actionKey)
 
+        await this.entityBackendUpdate(entity.name[entity.languages[0]], this.state.email)
+
         return getGatewayClients().then(gateway => {
             const state = getNetworkState()
             return updateEntity(this.props.web3Wallet.getAddress(), entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
@@ -186,6 +194,17 @@ class EntityEdit extends Component<IAppContext, State> {
             message.error("The entity could not be updated")
             this.setState({ entityUpdating: false })
         })
+    }
+
+    entityBackendUpdate(entityName: string, entityEmail:string) {
+        const request = {
+            method: "updateEntity",
+            entity: {
+                name : entityName,
+                email: entityEmail,
+            }
+        }
+        return this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet());
     }
 
     // renderSupportedLanaguages(entity) {
@@ -217,7 +236,7 @@ class EntityEdit extends Component<IAppContext, State> {
     // }
 
     renderEntityEdit() {
-        const { entity: entity } = this.state
+        const { entity: entity, email:email } = this.state
 
         return <div className="body-card">
             <Row justify="start">
@@ -237,6 +256,19 @@ class EntityEdit extends Component<IAppContext, State> {
                                 onChange={val => this.onNameChange(val.target.value, lang)} />
                             <br /><br />
                         </div>)
+                    }
+                    {
+                        // (entity.languages).map(lang => <>
+                        <div>
+                            {/* <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label> */}
+                            <label>Entity email</label>
+                            <Input type="text"
+                                value={email}
+                                prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                placeholder={"Entity email"}
+                                onChange={val => this.onEmailChange(val.target.value)} />
+                            <br /><br />
+                        </div>
                     }
                     {/* <h2>Description</h2> */}
                     {
