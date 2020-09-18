@@ -44,12 +44,14 @@ type State = {
     entityUpdating?: boolean,
     entity?: EntityMetadata,
     bootnodes?: GatewayBootNodes,
+    email? : string,
 }
 
 // Stateful component
 class EntityNew extends Component<IAppContext, State> {
     state: State = {
-        entity: JSON.parse(JSON.stringify(EntityMetadataTemplate)) // clone
+        entity: JSON.parse(JSON.stringify(EntityMetadataTemplate)), // clone
+        email: ""
     }
 
     async componentDidMount() {
@@ -77,6 +79,9 @@ class EntityNew extends Component<IAppContext, State> {
         const newName = Object.assign({}, this.state.entity.name, { [lang]: name })
         const entity = Object.assign({}, this.state.entity, { name: newName })
         this.setState({ entity })
+    }
+    onEmailChange(email: string) {
+        this.setState({ email })
     }
     onDescriptionChange(description: string, lang: string) {
         const newDescription = Object.assign({}, this.state.entity.description, { [lang]: description })
@@ -140,7 +145,7 @@ class EntityNew extends Component<IAppContext, State> {
 
             const entityId = getEntityId(address)
 
-            await this.registrySignup(entityId, entity.name[entity.languages[0]])
+            await this.registrySignup(entity.name[entity.languages[0]], this.state.email)
 
             await updateEntity(address, entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
@@ -155,11 +160,13 @@ class EntityNew extends Component<IAppContext, State> {
         }
     }
 
-    registrySignup(entityId: string, entityName: string) {
+    registrySignup(entityName: string, entityEmail:string) {
         const request = {
             method: "signUp",
-            entityId,
-            entityName
+            entity: {
+                name : entityName,
+                email: entityEmail,
+            }
         }
         return this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet());
     }
@@ -193,7 +200,7 @@ class EntityNew extends Component<IAppContext, State> {
     // }
 
     renderEntityNew() {
-        const { entity: entity } = this.state
+        const { entity: entity, email:email } = this.state
 
         return <div className="body-card">
             <Row justify="start">
@@ -212,6 +219,19 @@ class EntityNew extends Component<IAppContext, State> {
                                 onChange={val => this.onNameChange(val.target.value, lang)} />
                             <br /><br />
                         </div>)
+                    }
+                    {
+                        // (entity.languages).map(lang => <>
+                        <div>
+                            {/* <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label> */}
+                            <label>Entity email</label>
+                            <Input type="text"
+                                value={email}
+                                prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                                placeholder={"Entity email"}
+                                onChange={val => this.onEmailChange(val.target.value)} />
+                            <br /><br />
+                        </div>
                     }
                     {/* <h2>Description</h2> */}
                     {
