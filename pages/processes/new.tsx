@@ -15,7 +15,6 @@ import { GatewayPool } from 'dvote-js/dist/net/gateway-pool'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { ICensus } from '../../lib/types'
-import { sanitizeHtml } from '../../lib/util'
 
 const { Entity } = API
 const { RangePicker } = DatePicker
@@ -292,7 +291,6 @@ class ProcessNew extends Component<IAppContext, State> {
         const gwPool = await getGatewayClients()
 
         const newProcess = this.state.process
-        newProcess.details.description.default = sanitizeHtml(newProcess.details.description.default)
         newProcess.startBlock = this.state.startBlock
         newProcess.numberOfBlocks = this.state.numberOfBlocks
         newProcess.details.entityId = this.state.entityId
