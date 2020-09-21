@@ -111,6 +111,7 @@ manager-docker-release:
     refs:
       - release
       - /^release-.*$/
+      - stage
 ## PREVIEW
 
 # pages:
