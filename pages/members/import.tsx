@@ -4,15 +4,12 @@ import Router from 'next/router'
 import { InboxOutlined, DownloadOutlined } from '@ant-design/icons'
 import Dragger from 'antd/lib/upload/Dragger'
 import { RcFile } from 'antd/lib/upload'
-import XLSX from 'xlsx'
-import { Buffer } from 'buffer'
-import CsvParse from 'csv-parse/lib/sync'
 
-import AppContext, { IAppContext } from '../../components/app-context'
 import { getNetworkState } from '../../lib/network'
+import { getSpreadsheetReaderForFile } from '../../lib/import-utils'
 import { allowedImportTypes, CSV_MIME_TYPE } from '../../lib/constants'
+import AppContext, { IAppContext } from '../../components/app-context'
 import DisabledLayer from '../../components/disabled-layer'
-import { getProperFileMimeType } from '../../lib/util'
 
 const MemberImportPage = props => {
     const context = useContext(AppContext)
@@ -20,12 +17,16 @@ const MemberImportPage = props => {
     return <MemberImport {...context} />
 }
 
+type TableData = {
+    firstName: string,
+    lastName: string,
+    email: string,
+}
+
 type State = {
     entityId?: string,
-    data: {firstName: string, lastName: string, email: string}[],
+    data: TableData[],
     file?: RcFile,
-    fileType?: string,
-    rawImport?: any,
     importedColumnsAmount: number,
     firstNameColNumber: number,
     lastNameColNumber: number,
@@ -78,58 +79,25 @@ class MemberImport extends Component<IAppContext, State> {
     }
 
     beforeUpload(file: RcFile) {
-        const reader = new FileReader()
-        reader.onload = e => {
-            this.setState({
-                rawImport: Buffer.from(e.target.result),
-                fileType: getProperFileMimeType(file),
-                file,
-            }, this.processImport)
-        }
-
-        reader.readAsArrayBuffer(file)
+        this.setState({file}, this.processImport)
 
         return false
     }
 
-    processImport(file?) {
-        const raw = (file) ? file :this.state.rawImport
+    async processImport(file?) {
+        const raw = (file) ? file :this.state.file
         let data: any[] = []
 
-        if (this.state.fileType === CSV_MIME_TYPE) {
-            const records = CsvParse(raw, {
-                skip_empty_lines: true,
-                delimiter: [',', ';'],
-                from_line: this.state.fromLine,
-                trim: true,
-            })
+        data = await this.parseMembersFromExcel(
+            raw,
+            this.state.firstNameColNumber - 1,
+            this.state.lastNameColNumber - 1,
+            this.state.emailColNumber - 1,
+            this.state.fromLine - 1
+        )
 
-            if (records.length > 0) {
-                this.setState({ importedColumnsAmount: records[0].length })
-            }
-
-            for (const row of records) {
-                data.push({
-                    firstName: row[this.state.firstNameColNumber - 1],
-                    lastName: row[this.state.lastNameColNumber - 1],
-                    email: row[this.state.emailColNumber - 1],
-                })
-            }
-        } else {
-            data = this.parseMembersFromExcel(
-                raw,
-                this.state.firstNameColNumber - 1,
-                this.state.lastNameColNumber - 1,
-                this.state.emailColNumber - 1,
-                this.state.fromLine - 1
-            )
-
-        }
-
-        if (!data.length) {
+        if (!data || !data.length) {
             this.setState({
-                rawImport: null,
-                fileType: null,
                 file: null,
             })
 
@@ -139,9 +107,10 @@ class MemberImport extends Component<IAppContext, State> {
         this.setState({ data })
     }
 
-    parseMembersFromExcel(fileData: Buffer, nameColumnIndex: number, lastNameColumnIndex: number, emailColumnIndex: number, fromLine: number) {
+    async parseMembersFromExcel(file: RcFile, nameColumnIndex: number, lastNameColumnIndex: number, emailColumnIndex: number, fromLine: number) {
         try {
-            const workbook = XLSX.read(fileData, { type: "buffer" })
+            const workbook = await getSpreadsheetReaderForFile(file)
+
             const firstSheetName = workbook.SheetNames[0]
             if (!firstSheetName) throw new Error("The document does not contain a worksheet")
             const worksheet = workbook.Sheets[firstSheetName]
@@ -155,7 +124,7 @@ class MemberImport extends Component<IAppContext, State> {
             const startRow = parseInt(rangeMatches[2], 10) + fromLine
             const endRow = parseInt(rangeMatches[4], 10)
 
-            const result: { firstName: string, lastName: string, email: string }[] = []
+            const result: TableData[] = []
             for (let i = startRow; i <= endRow; i++) {
                 if (!worksheet[`${nameCol}${i}`] || !worksheet[`${emailCol}${i}`]) {
                     console.warn("Warning: Found empty values in row #" + i)
@@ -227,16 +196,14 @@ class MemberImport extends Component<IAppContext, State> {
                 Router.replace("/members#/" + this.state.entityId)
             },
             (error) => {
-                console.log(error)
                 message.error("Could not import the members")
+                console.log(error)
                 this.setState({error})
             })
     }
 
     onRemoveUpload(file) {
         this.setState({
-            rawImport: null,
-            fileType: null,
             data: [],
             file: null,
         })
@@ -316,7 +283,7 @@ class MemberImport extends Component<IAppContext, State> {
                             </Col>
                         </Row>
 
-                        <DisabledLayer disabled={!(this.state.rawImport && this.state.rawImport.length)} text="Select a file to upload first">
+                        <DisabledLayer disabled={!(this.state.data && this.state.data.length)} text="Select a file to upload first">
                             {/*   <Row>
                                 <Col {...columnLayout}>
                                     <Divider orientation="left">Column selection</Divider>
@@ -369,7 +336,9 @@ class MemberImport extends Component<IAppContext, State> {
                     <Col {...layout}>
                         <Divider orientation="left">Data preview</Divider>
                         <Table
-                            rowKey="email"
+                            rowKey={(member: TableData) => {
+                                return `${member.email}-${member.lastName}`
+                            }}
                             columns={columns}
                             dataSource={this.state.data}
                             loading={this.state.loading}

@@ -1,4 +1,4 @@
-import { getProperFileMimeType } from './util'
+import { getProperFileMimeType } from './import-utils'
 import { RcFile } from 'antd/lib/upload'
 import { XLSX_MIME_TYPE, XLS_MIME_TYPE } from './constants'
 

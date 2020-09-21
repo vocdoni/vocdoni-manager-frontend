@@ -1,7 +1,6 @@
 import sanitize from 'sanitize-html'
+import chardet from 'charset-detector'
 import { MultiLanguage } from 'dvote-js'
-import { RcFile } from 'antd/lib/upload'
-import { XLSX_MIME_TYPE, XLS_MIME_TYPE } from './constants'
 
 export function isServer(): boolean {
     return typeof window === 'undefined'
@@ -40,22 +39,3 @@ export const downloadFileWithContents = (contents: string, settings?: FileDownlo
 
 export const sanitizeHtml = (html: MultiLanguage<string> | string) =>
     sanitize(html, {allowedTags: sanitize.defaults.allowedTags.concat(['img'])})
-
-export const getProperFileMimeType = (file: RcFile) : string | null => {
-    if (file.type && file.type.length > 0) {
-        return file.type
-    }
-
-    const extension = file.name.substr(file.name.lastIndexOf('.') + 1)
-
-    switch (extension) {
-        case 'csv':
-            return 'text/csv'
-        case 'xls':
-            return XLS_MIME_TYPE
-        case 'xlsx':
-            return XLSX_MIME_TYPE
-        default:
-            return null
-    }
-}
