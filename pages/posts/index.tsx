@@ -73,7 +73,7 @@ class PostView extends Component<IAppContext, State> {
             }
             catch (err) {
                 message.warn("The current News Feed does not seem to have a correct format")
-                console.log(err);
+                console.log(err)
                 throw new Error()
             }
 
@@ -96,7 +96,7 @@ class PostView extends Component<IAppContext, State> {
     }
 
     confirmDeletePost(index: number) {
-        const that = this;
+        const that = this
         Modal.confirm({
             title: "Confirm",
             icon: <ExclamationCircleOutlined />,
@@ -124,7 +124,7 @@ class PostView extends Component<IAppContext, State> {
             const feedContent = Buffer.from(JSON.stringify(feed))
             const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
-            // message.success("The news feed was pinned on IPFS successfully");
+            // message.success("The news feed was pinned on IPFS successfully")
 
             const entityMetadata = this.state.entity
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
@@ -170,21 +170,32 @@ class PostView extends Component<IAppContext, State> {
                 renderItem={(post: IFeedPost, idx: number) => (
                     <List.Item
                         key={idx}
-                        actions={hideEditControls ?
-                            [ <Link href={`/posts/view#/${entityId}/${post.id}`} key="link-view"><a><IconText icon={EyeOutlined} text="View post" key="view" /></a></Link> ]
-                            : [ <Link href={`/posts/edit#/${entityId}/${post.id}`} key="link-edit"><a>
-                                <IconText icon={EditOutlined} text="Edit post" key="edit" />
-                            </a></Link>,
-                            <IconText icon={CloseCircleOutlined} text="Remove" onClick={() => this.confirmDeletePost(this.state.startIndex + idx)} key="remove" />,
-                            ]}
+                        actions={PostListActions({
+                            hideEditControls,
+                            entityId,
+                            post,
+                            idx,
+                        })}
                     >
                         <List.Item.Meta
-                            avatar={<Avatar src={post.image}  shape="square"/>}
-                            title={post.title}
-                            // description={
-                            //   post.summary ? <span>{post.summary}<br/>{post.date_published ? new Date(post.date_published).toDateString() : ""}</span> :
-                            //     <span>{post.date_published ? new Date(post.date_published).toDateString() : ""}</span>
-                            // }
+                            avatar={
+                                <PostLink {...{
+                                    hideEditControls,
+                                    entityId,
+                                    post,
+                                }}>
+                                    <Avatar src={post.image}  shape="square"/>
+                                </PostLink>
+                            }
+                            title={
+                                <PostLink {...{
+                                    hideEditControls,
+                                    entityId,
+                                    post,
+                                }}>
+                                    {post.title}
+                                </PostLink>
+                            }
                             description={post.date_published ? (new Date(post.date_published).toDateString()) + '\t' + (new Date(post.date_published).toLocaleTimeString()): ""}
                         />
                     </List.Item>
@@ -224,17 +235,48 @@ class PostView extends Component<IAppContext, State> {
     }
 }
 
-
-// // Using a custom layout
-// PostViewPage.Layout = props => <MainLayout>
-//   {props.children}
-// </MainLayout>
-
 const IconText = ({ icon, text, onClick }: { icon: any, text: string, onClick?: () => void }) => (
     <span className="icon-text" onClick={() => onClick && onClick()}>
         {createElement(icon, { style: { marginRight: 8 } })}
         {text}
     </span>
-);
+)
+
+const PostLink = ({hideEditControls, post, entityId, children} : any) => {
+    let link = `/posts/edit#/${entityId}/${post.id}`
+    if (hideEditControls) {
+        link = `/posts/view#/${entityId}/${post.id}`
+    }
+
+    return <Link href={link}>{children}</Link>
+}
+
+const PostListActions = (props: any) => {
+    const {hideEditControls, entityId, post, idx} = props
+
+    const actions = []
+    if (!hideEditControls) {
+        actions.push(
+            <PostLink {...{
+                hideEditControls,
+                entityId,
+                post,
+            }}>
+                <a><IconText icon={EditOutlined} text='Edit post' key='edit' /></a>
+            </PostLink>
+        )
+        actions.push(
+            <IconText
+                icon={CloseCircleOutlined}
+                text="Remove"
+                onClick={() =>
+                    this.confirmDeletePost(this.state.startIndex + idx)
+                } key="remove"
+            />
+        )
+    }
+
+    return actions
+}
 
 export default PostViewPage
