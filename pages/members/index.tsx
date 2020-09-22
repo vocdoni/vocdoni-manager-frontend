@@ -10,8 +10,19 @@ import { Row,
     Modal,
     Form,
     Input,
+    Space,
+    Popconfirm,
+    Dropdown,
+    Menu,
 } from 'antd'
-import { TagOutlined, DownloadOutlined, ExportOutlined, InstagramFilled, MailOutlined } from '@ant-design/icons'
+import {
+    TagOutlined,
+    DownloadOutlined,
+    ExportOutlined,
+    InstagramFilled,
+    MailOutlined,
+    DashOutlined,
+} from '@ant-design/icons'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
@@ -48,8 +59,8 @@ type State = {
     error?: any,
     inviteTokensModalVisibility: boolean,
     censusNameModalvisible: boolean,
-
     censusGateway: DVoteGateway,
+    actionsMenuOpen: any
 }
 
 class Members extends Component<IAppContext, State> {
@@ -70,6 +81,7 @@ class Members extends Component<IAppContext, State> {
         censusGateway: null,
         inviteTokensModalVisibility: false,
         censusNameModalvisible: false,
+        actionsMenuOpen: {},
     }
 
     async componentDidMount() {
@@ -147,17 +159,6 @@ class Members extends Component<IAppContext, State> {
 
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
-                result.members.map(member => {
-                    if ('publicKey' in member && member.publicKey != null) {
-                        member.validated = <span>Yes</span>
-                        return
-                    }
-                    member.validated = <span>
-                        No <InviteMember member={member} {...this.props}>
-                            <MailOutlined />
-                        </InviteMember>
-                    </span>
-                })
                 this.setState({
                     loading: false,
                     data: result.members,
@@ -176,24 +177,29 @@ class Members extends Component<IAppContext, State> {
     }
 
     deleteMember(record: any) {
-        this.props.managerBackendGateway.sendMessage({ method: "deleteMember", memberId: record.id } as any, this.props.web3Wallet.getWallet())
-            .then((result) => {
-                if (!result.ok) {
-                    const error = "Could not delete the member"
-                    message.error(error)
-                    this.setState({ error })
-                    return false
-                }
-
-                message.success("Member has been deleted")
-                const data = this.state.data.filter(item => item.id !== record.id)
-                this.setState({ data })
-
-                this.fetchCount()
-            }, (error) => {
-                message.error("Could not delete the member")
+        this.props.managerBackendGateway.sendMessage(
+            {
+                method: 'deleteMember',
+                memberId: record.id,
+            } as any,
+            this.props.web3Wallet.getWallet()
+        ).then((result) => {
+            if (!result.ok) {
+                const error = 'Could not delete the member'
+                message.error(error)
                 this.setState({ error })
-            })
+                return false
+            }
+
+            message.success('Member has been deleted')
+            const data = this.state.data.filter(item => item.id !== record.id)
+            this.setState({ data })
+
+            this.fetchCount()
+        }, (error) => {
+            message.error('Could not delete the member')
+            this.setState({ error })
+        })
     }
 
     exportTokens() {
@@ -230,7 +236,6 @@ class Members extends Component<IAppContext, State> {
         });
 
     }
-
 
     createCensus(input) {
         // Defaulting targets
@@ -316,19 +321,53 @@ class Members extends Component<IAppContext, State> {
         this.setState({ selectedRowsKeys: keys, selectedRows: rows })
     }
 
-    generateLink(text, record, index) {
-        return <Link href={"/members/view#/" + this.props.entityId + "/" + record.id}><a>{text}</a></Link>
-    }
-
     render() {
+        const actionsMenu = (record) => {
+            const items = [
+                <Menu.Item key='edit'>
+                    <Link href={`/members/view#/${this.props.entityId}/${record.id}`}>
+                        <a>Edit</a>
+                    </Link>
+                </Menu.Item>,
+                <Menu.Item danger key='remove'>
+                    <Popconfirm
+                        title={`Are you sure you want to delete ${record.firstName} ${record.lastName}?`}
+                        okText='Delete'
+                        okType='primary'
+                        cancelText='Cancel'
+                        onConfirm={this.deleteMember.bind(this, record)}
+                    >
+                        <a>Delete</a>
+                    </Popconfirm>
+                </Menu.Item>
+            ]
+
+            if (!record.publicKey?.length) {
+                items.unshift(
+                    <Menu.Item key='invite'>
+                        <InviteMember member={record} {...this.props}>
+                            Send validation email
+                        </InviteMember>
+                    </Menu.Item>
+                )
+            }
+
+            return <Menu>{items}</Menu>
+        }
+
         const censusNameModalvisible = this.state.censusNameModalvisible
         const columns = [
-            { title: 'First Name', dataIndex: 'firstName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
-            { title: 'Last Name', dataIndex: 'lastName', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
-            { title: 'Email', dataIndex: 'email', sorter: true, render: (text, record, index) => this.generateLink(text, record, index)  },
-            { title: 'Validated', dataIndex: 'validated' },
+            { title: 'First Name', dataIndex: 'firstName', sorter: true },
+            { title: 'Last Name', dataIndex: 'lastName', sorter: true },
+            { title: 'Email', dataIndex: 'email', sorter: true },
+            { title: 'Validated', dataIndex: 'validated', render: (text, record) => {
+                if (record?.publicKey?.length) {
+                    return <span>Yes</span>
+                }
+                return <span>No</span>
+            }},
             /*
-                { title: 'id', dataIndex: 'id', sorter: false, render: (text, record, index) => this.generateLink(text, record, index) },
+                { title: 'id', dataIndex: 'id', sorter: false },
                 { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
                         <>{moment().diff(dateOfBirth, 'years', false) }</>
                 )},
@@ -339,15 +378,27 @@ class Members extends Component<IAppContext, State> {
                                 })}
                         </>
                 )},
-
+            */
             {
                 title: 'Actions', key: 'action', render: (text, record, index) => (
-                    <Space size="middle">
-                        <Link href={"/members/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>
-                        <a onClick={() => this.deleteMember(record)}>Delete</a>
-                    </Space>)
+                    <Dropdown
+                        overlay={actionsMenu(record)}
+                        visible={this.state.actionsMenuOpen[record.id]}
+                        onVisibleChange={(flag) => {
+                            this.setState({
+                                actionsMenuOpen: {
+                                    ...this.state.actionsMenuOpen,
+                                    [record.id]: flag,
+                                }
+                            })
+                        }}
+                    >
+                        <a className='ant-dropdown-link' onClick={(e) => e.preventDefault()}>
+                            <DashOutlined />
+                        </a>
+                    </Dropdown>
+                )
             },
-            */
         ]
 
         return <div id="page-body">

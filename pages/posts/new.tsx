@@ -324,7 +324,7 @@ class PostNew extends Component<IAppContext, State> {
 
                     <Divider />
 
-                    <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
+                    <div className='form-bottom'>
                         {this.state.postUpdating ?
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
                             <Button type="primary" size={'large'} onClick={() => this.confirmSubmit()}>

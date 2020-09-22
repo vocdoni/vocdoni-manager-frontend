@@ -10,6 +10,7 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import InviteMember from '../../components/invite-member'
 import { getNetworkState } from '../../lib/network'
 import { ITarget, IMember } from '../../lib/types'
+import { MOMENT_DATE_FORMAT_SQL } from '../../lib/constants'
 
 const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
@@ -22,6 +23,7 @@ type State = {
     entityId?: string,
     memberId?: string,
     member?: IMember,
+    changed: boolean
     targets?: ITarget[],
     pagination: {current: number, pageSize: number},
     loading: boolean,
@@ -35,6 +37,7 @@ class MemberView extends Component<IAppContext, State> {
             pageSize: 10,
         },
         loading: false,
+        changed: false,
     }
 
     formRef = React.createRef<FormInstance>()
@@ -59,8 +62,11 @@ class MemberView extends Component<IAppContext, State> {
             memberId,
         }
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
-            .then((result) => {
-                this.setState({ member: result.member, targets: result.targets })
+            .then(({member, targets}) => {
+                this.setState({
+                    member,
+                    targets,
+                })
             },
             (error) => {
                 message.error("Could not fetch the member data")
@@ -119,36 +125,27 @@ class MemberView extends Component<IAppContext, State> {
             })
     }
 
-    renderTokenInfo (validated: boolean, id: string, link: string, member: IMember) : JSX.Element {
-        let result
-        if (!validated) {
-            result =  (
-                <Descriptions column={1} layout="vertical" colon={false}>
-                    <Descriptions.Item label="Token">{id}</Descriptions.Item>
-                    <Descriptions.Item label="">
-                        <Paragraph copyable={{ text: link  }}>Copy Validation Link</Paragraph>
-                        <Paragraph>
-                            <InviteMember {...this.props} member={member}>
-                                Send validation e-mail <MailOutlined />
-                            </InviteMember>
-                        </Paragraph>
-                    </Descriptions.Item>
-                </Descriptions>
-            )
-        } else {
-            result = (
-                <Descriptions column={1} layout="vertical" colon={false}>
-                    <Descriptions.Item label="Token">{id}</Descriptions.Item>
-                    { member &&
-                    <Descriptions.Item label="Validated On">{member.verified}</Descriptions.Item>
-                    }
-                </Descriptions>
+    renderTokenInfo (validated: boolean, id: string, member: IMember) : JSX.Element {
+        const result = [
+            <Descriptions.Item key='token' label='Token'>{id}</Descriptions.Item>
+        ]
+        if (validated && member) {
+            result.push(
+                <Descriptions.Item key='verified' label='Validated On'>
+                    {member.verified}
+                </Descriptions.Item>
             )
         }
-        return result
+        return (
+            <Descriptions column={1} layout='vertical' colon={false}>
+                {result}
+            </Descriptions>
+        )
     }
 
     render() {
+        const { member, memberId } = this.state
+
         const columns = [
             {title: 'Validated', dataIndex: 'verified'},
             {/*
@@ -164,12 +161,26 @@ class MemberView extends Component<IAppContext, State> {
             */}
         ]
 
-        const initialValues = this.state.member
         const entityId = this.props.entityId
-        const validated = (initialValues && 'publicKey' in initialValues && initialValues['publicKey'] != null) ? true : false
-        const link = (initialValues) ? validationUrlPrefix+'/'+entityId+'/'+initialValues.id : ''
-        if (initialValues) {
-            initialValues.dateOfBirth = moment(initialValues.dateOfBirth)
+        const validated = (member && 'publicKey' in member && member['publicKey'] != null) ? true : false
+        const link = (member) ? validationUrlPrefix+'/'+entityId+'/'+member.id : ''
+        if (member) {
+            member.dateOfBirth = moment(member.dateOfBirth)
+        }
+        let inviteActions
+        if (!validated) {
+            inviteActions = (
+                <div>
+                    <Paragraph>
+                        <InviteMember {...this.props} member={this.state.member}>
+                            Send validation e-mail <MailOutlined />
+                        </InviteMember>
+                    </Paragraph>
+                    <Paragraph copyable={{ text: link  }}>
+                        Copy Validation Link
+                    </Paragraph>
+                </div>
+            )
         }
 
         return <div id="page-body">
@@ -177,17 +188,33 @@ class MemberView extends Component<IAppContext, State> {
                 <Row gutter={40} justify="start">
                     <Col xs={{span: 24, order: 2}} lg={{span: 18, order: 1}}>
                         <Divider orientation="left">Member ID</Divider>
-                        {this.renderTokenInfo(validated, entityId, link, initialValues)}
+                        {this.renderTokenInfo(validated, memberId, member)}
                         <Divider orientation="left">Member details</Divider>
                         {this.state.member &&
                     <Form
                         layout="vertical"
                         onFinish={(values) => this.onFinish(values)}
                         ref={this.formRef}
-                        initialValues={initialValues}
+                        initialValues={member}
+                        onFieldsChange={(e, values) => {
+                            let changed = false
+                            values.forEach((value: any) => {
+                                const key = value.name.shift()
+                                const val = value.value
+                                if (key === 'dateOfBirth' && !changed) {
+                                    changed = val.utc().format(MOMENT_DATE_FORMAT_SQL) !== member.dateOfBirth.utc().format(MOMENT_DATE_FORMAT_SQL)
+                                    return
+                                }
+                                if (!changed && val !== member[key]) {
+                                    changed = true
+                                    return
+                                }
+                            })
+                            this.setState({changed})
+                        }}
                     >
                         <Row gutter={24}>
-                            <Col span={12}>
+                            <Col xs={24} sm={12}>
                                 <Form.Item label="Name" name="firstName" rules={[{ required: true, message: 'Please input a First Name!' }]}>
                                     <Input />
                                 </Form.Item>
@@ -195,13 +222,26 @@ class MemberView extends Component<IAppContext, State> {
                                     <Input />
                                 </Form.Item>
                             </Col>
-                            <Col span={12}>
+                            <Col xs={24} sm={12}>
                                 <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Please input a valid Email' }]}>
                                     <Input />
                                 </Form.Item>
                                 <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: 'Please input a Date Of Birth' }]}>
                                     <DatePicker format={'DD-MM-YYYY'} />
                                 </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={24}>
+                            <Col span={24} className='form-bottom'>
+                                <Button
+                                    size='large'
+                                    type='primary'
+                                    icon={<SaveOutlined />}
+                                    onClick={this.onSaveMemberChanges.bind(this)}
+                                    disabled={!this.state.changed}
+                                >
+                                    Save changes
+                                </Button>
                             </Col>
                         </Row>
                     </Form>
@@ -216,28 +256,22 @@ class MemberView extends Component<IAppContext, State> {
                 /> */}
                     </Col>
 
-                    <Col xs={{span: 24, order: 1}} lg={{span: 6, order: 2}}>
+                    <Col xs={{span: 24, order: 1}} lg={{span: 6, order: 2}} className='detail-actions'>
                         <Row gutter={[0,24]}>
                             <Col span={24}>
                                 <Divider orientation="left">Actions</Divider>
                                 <Popconfirm
-                                    title="Are you sure you want to update the member details?"
-                                    okText="Update"
-                                    okType="primary"
-                                    cancelText="Cancel"
-                                    onConfirm={ () => this.onSaveMemberChanges()}
+                                    title='Are you sure you want to delete this member?'
+                                    okText='Delete'
+                                    okType='primary'
+                                    cancelText='Cancel'
+                                    onConfirm={this.removeMember.bind(this)}
                                 >
-                                    <Button type="link" icon={<SaveOutlined />}>Save changes</Button>
+                                    <Button type='link' icon={<UserDeleteOutlined />}>
+                                        Delete Member
+                                    </Button>
                                 </Popconfirm>
-                                <Popconfirm
-                                    title="Are you sure you want to delete this member?"
-                                    okText="Delete"
-                                    okType="primary"
-                                    cancelText="Cancel"
-                                    onConfirm={ () => this.removeMember()}
-                                >
-                                    <Button type="link" icon={<UserDeleteOutlined />}>Delete Member</Button>
-                                </Popconfirm>
+                                {inviteActions}
                             </Col>
                         </Row>
                     </Col>

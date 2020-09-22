@@ -87,3 +87,7 @@ pre {
 .ant-descriptions-item-content{
     word-break: break-all;
 }
+
+.ant-typography span.key + button {
+    margin-left: 15px;
+}

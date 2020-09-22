@@ -15,3 +15,6 @@ export const allowedImportTypes = [
     ...excelMimeTypes,
     CSV_MIME_TYPE,
 ]
+
+
+export const MOMENT_DATE_FORMAT_SQL = 'YYYY-MM-DD'

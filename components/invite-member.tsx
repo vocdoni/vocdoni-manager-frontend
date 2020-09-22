@@ -62,12 +62,8 @@ export default class InviteMember extends Component<Props> {
         const {children, member} = this.props
 
         return (
-            <Button
-                type='link'
-                title='Sent validation link'
-                onClick={() => {
-                    this.showConfirm(member)
-                }}
+            <a
+                onClick={this.showConfirm.bind(this, member)}
             >
                 {children}
                 <If condition={this.state.loading}>
@@ -78,7 +74,7 @@ export default class InviteMember extends Component<Props> {
                         }} spin />
                     } />
                 </If>
-            </Button>
+            </a>
         )
     }
 }

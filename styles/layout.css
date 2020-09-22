@@ -81,6 +81,10 @@
     color: white;
 }
 
+#layout > header .anticon img {
+    width: 125px;
+}
+
 @media (max-width: 768px) {
     aside.ant-layout-sider {
         position: absolute;

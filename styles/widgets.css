@@ -55,6 +55,31 @@
     -webkit-overflow-scrolling: touch;
 }
 
+form .ant-picker {
+    width: 100%;
+}
+
+.form-bottom {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+}
+
+.form-bottom button {
+    margin-bottom: 10px;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.detail-actions .ant-typography {
+    padding-left: 15px;
+    margin-bottom: 5px;
+}
+
 @media screen and (min-width: 800px) {
     .scroll-x {
         overflow-x: initial;

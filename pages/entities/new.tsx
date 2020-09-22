@@ -212,10 +212,12 @@ class EntityNew extends Component<IAppContext, State> {
                         ['default'].map(lang => <div key={lang}>
                             {/* <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label> */}
                             <label>Entity name</label>
-                            <Input type="text"
+                            <Input
+                                required
+                                type='text'
                                 value={entity.name[lang]}
                                 prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder={"Entity name"}
+                                placeholder='Entity name'
                                 onChange={val => this.onNameChange(val.target.value, lang)} />
                             <br /><br />
                         </div>)
@@ -225,10 +227,12 @@ class EntityNew extends Component<IAppContext, State> {
                         <div>
                             {/* <label>Entity name ({by639_1[lang] ? by639_1[lang].name : lang})</label> */}
                             <label>Entity email</label>
-                            <Input type="text"
+                            <Input
+                                required
+                                type='text'
                                 value={email}
                                 prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder={"Entity email"}
+                                placeholder='Entity email'
                                 onChange={val => this.onEmailChange(val.target.value)} />
                             <br /><br />
                         </div>
@@ -272,7 +276,14 @@ class EntityNew extends Component<IAppContext, State> {
                     <div style={{ textAlign: "center" }}>
                         {this.state.entityUpdating ?
                             <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                            <Button size='large' type='primary' onClick={() => this.submitEntity()}>Create</Button>
+                            <Button
+                                size='large'
+                                type='primary'
+                                onClick={() => this.submitEntity()}
+                                disabled={!this.state.email.length && !this.state.entity.name.length}
+                            >
+                                Create
+                            </Button>
                         }
                     </div>
                 </Col>

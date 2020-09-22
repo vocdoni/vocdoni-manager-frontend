@@ -7,10 +7,10 @@ import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons'
 
+import { FileReaderPromise } from '../../lib/file-utils'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 import If from '../../components/if'
-
 
 const AccountImportPage = props => {
     // Get the global context and pass it to our stateful component
@@ -105,13 +105,10 @@ class AccountImport extends Component<IAppContext> {
     }
 
     beforeUpload(file: RcFile) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            const contents = JSON.parse(Buffer.from(e.target.result).toString())
+        FileReaderPromise(file).then((result) => {
+            const contents = JSON.parse(result.toString())
             this.setState(contents)
-        }
-
-        reader.readAsArrayBuffer(file)
+        })
 
         return false
     }
@@ -134,7 +131,6 @@ class AccountImport extends Component<IAppContext> {
                                 <Dragger
                                     beforeUpload={this.beforeUpload.bind(this)}
                                     accept={"application/json"}
-                                    onRemove={console.log}
                                     multiple={false}
                                 >
                                     <p className="ant-upload-drag-icon">

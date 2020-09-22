@@ -5,6 +5,7 @@ import Router from 'next/router'
 import { EtherUtils } from 'dvote-js'
 import { LoadingOutlined, AlignLeftOutlined } from '@ant-design/icons'
 import beautify from 'json-beautify'
+import moment from 'moment'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import { downloadFileWithContents } from '../../lib/util'
@@ -74,7 +75,11 @@ class AccountNew extends Component<IAppContext, State> {
             public: this.props.web3Wallet.getPublicKey(),
         }
 
-        downloadFileWithContents(beautify(contents, null, 2, 100))
+        const date = moment(new Date()).format('yyyy-MM-DD')
+
+        downloadFileWithContents(beautify(contents, null, 2, 100), {
+            filename: `vocdoni-backup-${date}.json`,
+        })
         this.setState({backupDownloaded: true})
     }
 
@@ -189,15 +194,13 @@ class AccountNew extends Component<IAppContext, State> {
                     {/* <pre>{this.state.address}</pre> */}
 
                     <Divider />
-                    <div style={{ textAlign: "center" }}>
+                    <div className='form-bottom flex-column'>
                         <Button
                             type="primary"
                             onClick={this.downloadBackupFile.bind(this)}
                         >
                             Download backup file
                         </Button>
-                    </div>
-                    <div style={{ textAlign: "center" }}>
                         <Button
                             type="primary"
                             onClick={this.onConfirmBackup}

@@ -1,7 +1,10 @@
 import { useContext, Component } from 'react'
-import { Row, Col, Divider, Typography } from 'antd'
+import { Row, Col, Divider, Typography, Button, Modal, Input, message } from 'antd'
+import Title from 'antd/lib/typography/Title'
+import { EtherUtils } from 'dvote-js'
 
 import AppContext, { IAppContext } from '../../components/app-context'
+import ButtonShowPrivateKey from '../../components/button-show-private-key'
 
 // MAIN COMPONENT
 const AccountEditPage = props => {
@@ -25,31 +28,41 @@ class AccountEdit extends Component<IAppContext, State> {
     componentDidMount() {
         this.setState({ id: location.hash.substr(2) })
 
-        this.props.setMenuSelected("account-edit")
+        this.props.setMenuSelected('account-edit')
 
         this.props.web3Wallet.getEthBalance().then((val) => this.setState({balance: val}))
     }
 
     render() {
-        return <div id="page-body">
-            <div className="body-card">
-                <Row>
-                    <Col span={24}>
-                        <section>
-                            <Divider orientation="left">Wallet</Divider>
-                            <h3>Address</h3>
-                            { this.props.web3Wallet.getAddress() }
-                            <h3>Public key</h3>
-                            <Typography.Text ellipsis={true}>
-                                { this.props.web3Wallet.getPublicKey() }
-                            </Typography.Text>
-                            <h3>Balance</h3>
-                            { this.state.balance }
-                        </section>
-                    </Col>
-                </Row>
+        return (
+            <div id='page-body'>
+                <div className='body-card'>
+                    <Row>
+                        <Col span={24}>
+                            <section>
+                                <Divider orientation='left'>Wallet</Divider>
+                                <Title level={4}>Address</Title>
+                                <Typography.Text ellipsis={true}>
+                                    { this.props.web3Wallet.getAddress() }
+                                </Typography.Text>
+                                <Title level={4}>Public key</Title>
+                                <Typography.Text ellipsis={true}>
+                                    { this.props.web3Wallet.getPublicKey() }
+                                </Typography.Text>
+                                <Title level={4}>Private key</Title>
+                                <Typography.Text>
+                                    <ButtonShowPrivateKey {...this.props} />
+                                </Typography.Text>
+                                <Title level={4}>Balance</Title>
+                                <Typography.Text>
+                                    { this.state.balance }
+                                </Typography.Text>
+                            </section>
+                        </Col>
+                    </Row>
+                </div>
             </div>
-        </div>
+        )
     }
 }
 
