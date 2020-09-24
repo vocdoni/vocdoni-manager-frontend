@@ -9,6 +9,7 @@ const { Pool: { GatewayPool }, Contracts: { getEntityResolverInstance, getVoting
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
 const BOOTNODES_URL_READ_ONLY = process.env.BOOTNODES_URL_READ_ONLY
 const BOOTNODES_URL_RW = process.env.BOOTNODES_URL_RW
+const TEST_CONTRACTS = process.env.TEST_CONTRACTS
 
 let entityResolver: IEntityResolverContract = null
 let votingProcess: IVotingProcessContract = null
@@ -40,6 +41,7 @@ export async function initNetwork() {
                 numberOfGateways: 2,
                 race: false,
                 timeout: 900,
+                testing : (TEST_CONTRACTS) ? true : false 
             }
             gateway = await GatewayPool.discover(options)
 
@@ -54,6 +56,7 @@ export async function initNetwork() {
                 numberOfGateways: 2,
                 race: false,
                 timeout: 900,
+                testing : (TEST_CONTRACTS) ? true : false 
             }
             gateway = await GatewayPool.discover(options)
             web3Wallet.connect(gateway.getProvider())

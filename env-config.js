@@ -11,6 +11,8 @@ module.exports = {
 
     // BLOCKCHAIN
     ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || "xdai",
+    // USE TEST/STAGE CONTRACTS
+    TEST_CONTRACTS: process.env.TEST_CONTRACTS || "",
 
     // GATEWAYS
     BOOTNODES_URL_READ_ONLY: DEVELOPMENT ? "https://bootnodes.vocdoni.net/gateways.dev.json" : (process.env.BOOTNODES_URL_READ_ONLY || "https://bootnodes.vocdoni.net/gateways.json"),
