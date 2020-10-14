@@ -24,3 +24,13 @@ RUN npm install && npm run build
 
 # Static web site is available on /app/build
 CMD npm run export
+
+FROM node:12 as nginx-runtime
+
+RUN apt update && apt install nginx -y && apt clean
+
+COPY --from=0 /app /app
+
+WORKDIR /app
+
+ENTRYPOINT [ "/app/entrypoint.sh" ]
