@@ -40,6 +40,7 @@ async function generatePathMap() {
         public: {
             '/': { page: '/' },
             '/entities': { page: '/entities' },
+            '/processes': { page: '/processes' },
             '/processes/active': { page: '/processes/active' },
             '/processes/ended': { page: '/processes/ended' },
             '/posts': { page: '/posts' },
@@ -52,7 +53,6 @@ async function generatePathMap() {
             '/account/import': { page: '/account/import' },
             '/entities/edit': { page: '/entities/edit' },
             '/entities/new': { page: '/entities/new' },
-            '/processes': { page: '/processes' },
             '/processes/new': { page: '/processes/new' },
             // '/processes/edit': { page: '/processes/edit' },
             '/posts/edit': { page: '/posts/edit' },
