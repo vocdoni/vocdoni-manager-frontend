@@ -536,6 +536,9 @@ class Members extends Component<IAppContext, State> {
                                     onActionCall={() => {
                                         this.setState({loading: true})
                                     }}
+                                    onActionComplete={() => {
+                                        this.setState({loading: false})
+                                    }}
                                     {...this.props}
                                 />
                             </Col>
