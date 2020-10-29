@@ -86,6 +86,10 @@ class BulkActionsOverlay extends Component<BulkActionsOverlayProps, BulkActionsS
                                 message.error('There was an error sending those validation links')
                                 console.error(res)
                             }).catch((error) => {
+                                if (this.props.onActionComplete) {
+                                    this.props.onActionComplete()
+                                }
+
                                 message.error('There was an error sending those validation links')
                                 console.error(error)
                             })
