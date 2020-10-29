@@ -24,7 +24,8 @@ export default class ButtonShowPrivateKey extends Component<IAppContext, PrivKey
             ),
             onOk: async (close) => {
                 const wallets = await this.props.web3Wallet.getStored()
-                const current = wallets.filter(({name}) => name === this.props.title).pop()
+                const pubKey : string = await this.props.web3Wallet.getWallet()['signingKey'].publicKey
+                const current = wallets.filter(({publicKey}) => publicKey === pubKey).pop()
                 let wallet: any = null
                 try {
                     wallet = EtherUtils.Signers.walletFromSeededPassphrase(this.state.password, current.seed)
