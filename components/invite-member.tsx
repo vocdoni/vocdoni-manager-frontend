@@ -28,8 +28,8 @@ export default class InviteMember extends Component<Props> {
     showConfirm(member) {
         const { email, id } = member
         const req = {
-            method: 'sendValidationLink',
-            memberId: id,
+            method: 'sendValidationLinks',
+            memberId: [id],
         }
         const wallet = this.props.web3Wallet.getWallet()
         this.setState({loading: true})

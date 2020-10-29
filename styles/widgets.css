@@ -18,8 +18,13 @@
     display: block;
 }
 
+.ant-select-selection-item-content .anticon.anticon-delete,
 .disabled-layer > .disabled-notice {
     display: none;
+}
+
+.ant-select-item-option-content .anticon.anticon-delete {
+    padding-right: 5px;
 }
 
 .disabled-layer.disabled {
@@ -51,7 +56,7 @@
 }
 
 .scroll-x {
-    overflow-x: scroll;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -78,11 +83,4 @@ form .ant-picker {
 .detail-actions .ant-typography {
     padding-left: 15px;
     margin-bottom: 5px;
-}
-
-@media screen and (min-width: 800px) {
-    .scroll-x {
-        overflow-x: initial;
-        -webkit-overflow-scrolling: auto;
-    }
 }

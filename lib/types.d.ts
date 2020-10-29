@@ -48,7 +48,7 @@ export interface IMember {
     email: string,
     dateOfBirth: any,
     verified: any,
-    tags: [],
+    tags: number[],
 }
 
 export interface ITarget {

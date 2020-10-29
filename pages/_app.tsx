@@ -29,19 +29,19 @@ type Props = {
 }
 
 type State = {
-    isConnected: boolean,
+    isConnected: boolean
 
     // STATE SHARED WITH CHILDREN
-    title: string,
-    menuVisible: boolean,
-    menuSelected?: ISelected,
-    menuCollapsed?: boolean,
-    menuDisabled?: boolean,
-    entityId?: string,
-    processId?: string,
-    urlHash?: string,
-    connectionError?: string,
-    managerBackendGateway?: DVoteGateway,
+    title: string
+    menuVisible: boolean
+    menuSelected?: ISelected
+    menuCollapsed?: boolean
+    menuDisabled?: boolean
+    entityId?: string
+    processId?: string
+    urlHash?: string
+    connectionError?: string
+    managerBackendGateway?: DVoteGateway
 }
 
 class MainApp extends App<Props, State> {

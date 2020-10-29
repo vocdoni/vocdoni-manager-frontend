@@ -1,27 +1,26 @@
 import { useContext, Component, ReactText } from 'react'
-import { Row,
+import {
+    Button,
     Col,
     Divider,
-    Table,
-    Select,
-    Button,
-    message,
-    Typography,
-    Modal,
+    Dropdown,
     Form,
     Input,
-    Space,
-    Popconfirm,
-    Dropdown,
     Menu,
+    message,
+    Modal,
+    Popconfirm,
+    Row,
+    Select,
+    Table,
+    Tag,
+    Typography,
 } from 'antd'
 import {
-    TagOutlined,
+    DashOutlined,
     DownloadOutlined,
     ExportOutlined,
-    InstagramFilled,
-    MailOutlined,
-    DashOutlined,
+    TagOutlined,
 } from '@ant-design/icons'
 import Router from 'next/router'
 import Link from 'next/link'
@@ -30,10 +29,12 @@ import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
 
 import { getNetworkState, getGatewayClients } from '../../lib/network'
-import { ITarget, ITag, IMember } from '../../lib/types'
+import { ITarget, IMember } from '../../lib/types'
 import AppContext, { IAppContext } from '../../components/app-context'
 import InviteTokens from '../../components/invite-tokens'
 import InviteMember from '../../components/invite-member'
+import BulkActions from '../../components/bulk-actions'
+import TagsManagement from '../../components/tags-management'
 
 const { Paragraph } = Typography;
 const defaultPageSize = 50
@@ -47,9 +48,8 @@ const MembersPage = props => {
 
 type State = {
     targets?: ITarget[],
-    tags?: ITag[],
+    tags: any[],
     selectedTarget?: string,
-    selectedTag?: string,
     selectedRows?: any[],
     selectedRowsKeys?: ReactText[],
     data: IMember[],
@@ -61,6 +61,7 @@ type State = {
     censusNameModalvisible: boolean,
     censusGateway: DVoteGateway,
     actionsMenuOpen: any
+    visibleBulkActions: boolean
 }
 
 class Members extends Component<IAppContext, State> {
@@ -68,7 +69,6 @@ class Members extends Component<IAppContext, State> {
         targets: [],
         tags: [],
         selectedTarget: '',
-        selectedTag: '',
         selectedRows: [],
         selectedRowsKeys: [],
         data: [],
@@ -82,6 +82,7 @@ class Members extends Component<IAppContext, State> {
         inviteTokensModalVisibility: false,
         censusNameModalvisible: false,
         actionsMenuOpen: {},
+        visibleBulkActions: false,
     }
 
     async componentDidMount() {
@@ -95,6 +96,7 @@ class Members extends Component<IAppContext, State> {
         if (count) {
             this.fetch()
             this.fetchTargets()
+            this.fetchTags()
         }
     }
 
@@ -157,7 +159,7 @@ class Members extends Component<IAppContext, State> {
             filter: params.filter
         }
 
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        return this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({
                     loading: false,
@@ -176,11 +178,11 @@ class Members extends Component<IAppContext, State> {
             )
     }
 
-    deleteMember(record: any) {
+    deleteMember(id: string) {
         this.props.managerBackendGateway.sendMessage(
             {
-                method: 'deleteMember',
-                memberId: record.id,
+                method: 'deleteMembers',
+                memberIDs: [id],
             } as any,
             this.props.web3Wallet.getWallet()
         ).then((result) => {
@@ -192,7 +194,8 @@ class Members extends Component<IAppContext, State> {
             }
 
             message.success('Member has been deleted')
-            const data = this.state.data.filter(item => item.id !== record.id)
+
+            const data = this.state.data.filter(item => item.id !== id)
             this.setState({ data })
 
             this.fetchCount()
@@ -233,8 +236,7 @@ class Members extends Component<IAppContext, State> {
     showCensusNameModal() {
         this.setState({
             censusNameModalvisible: true,
-        });
-
+        })
     }
 
     createCensus(input) {
@@ -305,16 +307,64 @@ class Members extends Component<IAppContext, State> {
             })
     }
 
+    onTagsChange(selectedTags: string[], values: any[], options: any[], tags: any[]) : void {
+        let diff = []
+        const adding = selectedTags.length < values.length
+        if (adding) {
+            diff = values.filter((t) => !selectedTags.includes(t))
+        } else {
+            diff = selectedTags.filter((t) => !values.includes(t))
+        }
+        diff = diff.map((tag) => tags.find((t) => t.name === tag).id)
+        const tagID = Number(diff.pop())
+        const memberIds = []
+        this.state.selectedRows.forEach((row) => {
+            if (!adding && !row.tags?.length) {
+                // current selection actually has no tags attached, skip
+                return
+            }
+            memberIds.push(row.id)
+        })
+        const req : any = {
+            method: adding ? 'addTag' : 'removeTag',
+            memberIds,
+            tagID,
+        }
+        this.setState({loading: true})
+
+        this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet()).then((res) => {
+            if (res.ok) {
+                const data : IMember[] = [...this.state.data]
+                data.forEach((row, key) => {
+                    if (!memberIds.includes(row.id)) {
+                        return
+                    }
+                    let tagIds : number[] = []
+                    if (row.tags?.length) {
+                        tagIds = row.tags
+                    }
+                    if (adding) {
+                        tagIds.push(tagID)
+                    } else {
+                        tagIds = tagIds.filter((tag) => tag !== tagID)
+                    }
+                    data[key].tags = tagIds
+                })
+                return this.setState({
+                    data,
+                    tags,
+                    loading: false,
+                })
+            }
+
+            message.error("There was an error updating the members' tags")
+        })
+    }
+
     onTargetChange(target: string) {
         const pagination = { current: 1 }
         this.setState({ selectedTarget: target, pagination })
-        this.handleTableChange(pagination, { target, tag: this.state.selectedTag })
-    }
-
-    onTagChange(tag: string) {
-        const pagination = { current: 1}
-        this.setState({ selectedTag: tag, pagination })
-        this.handleTableChange(pagination, { tag, target: this.state.selectedTarget })
+        this.handleTableChange(pagination, { target })
     }
 
     onRowSelection(keys: ReactText[], rows: any[]) {
@@ -335,7 +385,7 @@ class Members extends Component<IAppContext, State> {
                         okText='Delete'
                         okType='primary'
                         cancelText='Cancel'
-                        onConfirm={this.deleteMember.bind(this, record)}
+                        onConfirm={this.deleteMember.bind(this, record.id)}
                     >
                         <a>Delete</a>
                     </Popconfirm>
@@ -367,18 +417,23 @@ class Members extends Component<IAppContext, State> {
                 return <span>No</span>
             }},
             /*
-                { title: 'id', dataIndex: 'id', sorter: false },
-                { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
-                        <>{moment().diff(dateOfBirth, 'years', false) }</>
-                )},
-                { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
-                        <>
-                                { tags && tags.map((item) => {
-                                        return <Tag color={"green"} key={item}>{item}</Tag>
-                                })}
-                        </>
-                )},
+            { title: 'id', dataIndex: 'id', sorter: false },
+            { title: 'Age', dataIndex: 'dateOfBirth', render: (dateOfBirth) => (
+                    <>{moment().diff(dateOfBirth, 'years', false) }</>
+            )},
             */
+            { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
+                <>
+                    { tags && tags.map((item) => {
+                        if (!this.state.tags.length) {
+                            return
+                        }
+                        const {id, name} = this.state.tags.find((t) => t.id === Number(item))
+                        return <Tag color={"green"} key={id}>{name}</Tag>
+                    })}
+                </>
+            )},
+
             {
                 title: 'Actions', key: 'action', render: (text, record, index) => (
                     <Dropdown
@@ -401,14 +456,90 @@ class Members extends Component<IAppContext, State> {
             },
         ]
 
+        let selectedTags = []
+        if (this.state.tags?.length && this.state.selectedRows?.length) {
+            this.state.selectedRows.forEach((row) => {
+                if (!row.tags?.length) {
+                    return
+                }
+                const tags = this.state.tags.filter((tag) => row.tags.includes(tag.id))
+                selectedTags = Array.from(new Set([
+                    ...selectedTags,
+                    ...tags.map((tag) => tag.name),
+                ]))
+            })
+        }
+
+        const tagsCol = {
+            xs: 24,
+            md: 17,
+            xl: 20,
+        }
+        const bulkCol = {
+            xs: 24,
+            md: 7,
+            xl: 4,
+        }
+
         return <div id="page-body">
             <div className="body-card">
                 <Row gutter={40} justify="start">
                     <Col xs={{ span: 24, order: 2 }} lg={{ span: 18, order: 1 }}>
                         <Divider orientation="left">Member list</Divider>
-                        <Paragraph>This is the list of members of your entity.
-                            From here you can generate validation links so that they can register and give them the right to vote. <br />
-                            You will be able to create censuses for voting processes with those members who are registered.</Paragraph>
+                        <Paragraph>
+                            This is the list of members of your entity. From here
+                            you can generate validation links so that they can
+                            register and give them the right to vote.
+                        </Paragraph>
+                        <Paragraph>
+                            You will be able to create censuses for voting
+                            processes with those members who are registered.
+                        </Paragraph>
+                        <Row>
+                            <Col {...tagsCol}>
+                                <TagsManagement
+                                    {...this.props}
+                                    onChange={this.onTagsChange.bind(this, selectedTags)}
+                                    onDeleted={(tags) => {
+                                        this.fetch().then(() => {
+                                            this.setState({
+                                                tags,
+                                                loading: false,
+                                            })
+                                        })
+                                    }}
+                                    onActionCall={() => {
+                                        this.setState({loading: true})
+                                    }}
+                                    onActionComplete={() => {
+                                        this.setState({loading: false})
+                                    }}
+                                    disabled={!this.state.selectedRows?.length}
+                                    selectedTags={selectedTags}
+                                />
+                            </Col>
+                            <Col {...bulkCol}>
+                                <BulkActions
+                                    disabled={!this.state.selectedRows?.length}
+                                    ids={this.state.selectedRows.map((row) => row.id)}
+                                    onDeleted={() => {
+                                        this.fetch()
+                                        this.setState({
+                                            visibleBulkActions: false,
+                                            loading: false,
+                                        })
+                                    }}
+                                    visible={this.state.visibleBulkActions}
+                                    onVisibleChange={(visible) => {
+                                        this.setState({visibleBulkActions: visible})
+                                    }}
+                                    onActionCall={() => {
+                                        this.setState({loading: true})
+                                    }}
+                                    {...this.props}
+                                />
+                            </Col>
+                        </Row>
                         <Table
                             rowKey="id"
                             columns={columns}
@@ -417,6 +548,10 @@ class Members extends Component<IAppContext, State> {
                             loading={this.state.loading}
                             onChange={(pagination, filters, sorter) => this.handleTableChange(pagination, filters, sorter)}
                             className='scroll-x'
+                            rowSelection={{
+                                type: 'checkbox',
+                                onChange: this.onRowSelection.bind(this),
+                            }}
                         />
                     </Col>
                     <Col xs={{ span: 24, order: 1 }} lg={{ span: 6, order: 2 }}>
@@ -436,26 +571,7 @@ class Members extends Component<IAppContext, State> {
                                         {this.state.targets.map((t) => <Select.Option key={t.name} value={t.name}>{t.name}</Select.Option>)}
                                     </Select>
                                 }
-
-                                {this.state.tags && this.state.tags.length > 0 &&
-                                    <Select
-                                        onChange={(val) => this.onTagChange(val)}
-                                        defaultValue={"Select a tag..."}
-                                        placeholder={"Select a tag..."}
-                                        allowClear={true}
-                                        style={{ width: '100%' }}
-                                    >
-                                        {this.state.tags.map((t) => <Select.Option key={t.name} value={t.name}>{t.name}</Select.Option>)}
-                                    </Select>
-                                }
                             </Col>
-                            {this.state.selectedRows.length > 0 &&
-                                <Col span={24}>
-                                    <Divider orientation="left">Batch Actions</Divider>
-                                    <p>You have selected {this.state.selectedRows.length} items</p>
-                                    <Button type="link" icon={<TagOutlined />}>Add Tag to selection</Button>
-                                </Col>
-                            }
                             <Col span={24}>
                                 <Divider orientation="left">Tools</Divider>
                                 {/*

@@ -11,6 +11,7 @@ import InviteMember from '../../components/invite-member'
 import { getNetworkState } from '../../lib/network'
 import { ITarget, IMember } from '../../lib/types'
 import { MOMENT_DATE_FORMAT_SQL } from '../../lib/constants'
+import TagsManagement from '../../components/tags-management'
 
 const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
@@ -23,7 +24,9 @@ type State = {
     entityId?: string,
     memberId?: string,
     member?: IMember,
+    tags?: any[],
     changed: boolean
+    tagsChanged: boolean
     targets?: ITarget[],
     pagination: {current: number, pageSize: number},
     loading: boolean,
@@ -38,6 +41,7 @@ class MemberView extends Component<IAppContext, State> {
         },
         loading: false,
         changed: false,
+        tagsChanged: false,
     }
 
     formRef = React.createRef<FormInstance>()
@@ -66,6 +70,7 @@ class MemberView extends Component<IAppContext, State> {
                 this.setState({
                     member,
                     targets,
+                    tags : member.tags
                 })
             },
             (error) => {
@@ -79,13 +84,19 @@ class MemberView extends Component<IAppContext, State> {
     }
 
     onFinish(values) {
-        values.dateOfBirth = moment(values.dateOfBirth).format()
-        const member = values
-        member.id = this.state.memberId
+        const member = {
+            ...values,
+            dateOfBirth: moment(values.dateOfBirth).format(),
+            id: this.state.memberId,
+        }
+        // send tags only if their value changed
+        if (this.state.tagsChanged) {
+            member.tags = this.state.tags
+        }
         const request = {
             method: 'updateMember',
             //   memberId: this.state.memberId,
-            member
+            member,
         }
 
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
@@ -144,7 +155,7 @@ class MemberView extends Component<IAppContext, State> {
     }
 
     render() {
-        const { member, memberId } = this.state
+        const { member, memberId, tags } = this.state
 
         const columns = [
             {title: 'Validated', dataIndex: 'verified'},
@@ -228,6 +239,23 @@ class MemberView extends Component<IAppContext, State> {
                                 </Form.Item>
                                 <Form.Item label="Date of Birth" name="dateOfBirth" rules={[{ required: true, message: 'Please input a Date Of Birth' }]}>
                                     <DatePicker format={'DD-MM-YYYY'} />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row gutter={24}>
+                            <Col xs={24} sm={12}>
+                                <Form.Item label='Tags'>
+                                    <TagsManagement
+                                        {...this.props}
+                                        selectedTagIds={Array.from(new Set(member.tags))}
+                                        onChange={(tags, options) => {
+                                            this.setState({
+                                                changed: true,
+                                                tagsChanged: true,
+                                                tags: options.map((tag) => parseInt(tag.key, 10)),
+                                            })
+                                        }}
+                                    />
                                 </Form.Item>
                             </Col>
                         </Row>

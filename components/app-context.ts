@@ -1,21 +1,21 @@
 import { createContext } from 'react'
-import { Wallet } from "ethers"
+import { Wallet } from 'ethers'
 import Web3Wallet from '../lib/web3-wallet'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 
-export type ISelected = "profile"
-    | "entity-edit"
-    | "feed"
-    | "new-post"
-    | "processes-active"
-    | "processes-ended"
-    | "new-vote"
-    | "processes-details"
-    | "members"
-    | "targets"
-    | "census"
-    | "members-import"
-    | "account-edit"
+export type ISelected = 'profile'
+    | 'entity-edit'
+    | 'feed'
+    | 'new-post'
+    | 'processes-active'
+    | 'processes-ended'
+    | 'new-vote'
+    | 'processes-details'
+    | 'members'
+    | 'targets'
+    | 'census'
+    | 'members-import'
+    | 'account-edit'
 
 export interface IAppContext {
     isWriteEnabled: boolean,
@@ -30,7 +30,7 @@ export interface IAppContext {
     processId: string,
     urlHash: string,
     setTitle: (title: string) => void
-    onGatewayError: (type: "private" | "public") => void
+    onGatewayError: (type: 'private' | 'public') => void
     setMenuVisible: (menuVisible: boolean) => void
     setMenuSelected: (menuSelected: ISelected) => void
     setMenuCollapsed: (menuCollapsed: boolean) => void
