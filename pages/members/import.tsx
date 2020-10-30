@@ -331,7 +331,7 @@ class MemberImport extends Component<IAppContext, State> {
                                     <Button type="primary" size="large" onClick={e => this.handleUpload()}>Import data</Button>
                                 </Col>
                             </Row>
-                        </DisabledLayer>*
+                        </DisabledLayer>
                     </Col>
                     <Col {...layout}>
                         <Divider orientation="left">Data preview</Divider>
