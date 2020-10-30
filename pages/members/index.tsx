@@ -141,7 +141,7 @@ class Members extends Component<IAppContext, State> {
     }
 
     fetchTags() {
-        this.props.managerBackendGateway.sendMessage({ method: "listTags" } as any, this.props.web3Wallet.getWallet())
+        return this.props.managerBackendGateway.sendMessage({ method: "listTags" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({ tags: result.tags })
             }, (error) => {
@@ -536,7 +536,9 @@ class Members extends Component<IAppContext, State> {
                                     onActionCall={() => {
                                         this.setState({loading: true})
                                     }}
-                                    onActionComplete={() => {
+                                    onActionComplete={async () => {
+                                        await this.fetchTags()
+                                        await this.fetch()
                                         this.setState({loading: false})
                                     }}
                                     {...this.props}
