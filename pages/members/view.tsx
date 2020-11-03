@@ -108,6 +108,7 @@ class MemberView extends Component<IAppContext, State> {
                     return false
                 }
                 message.success("Member details have been saved")
+                Router.push(`/members/#/${this.props.entityId}`)
             },
             (error) => {
                 message.error("Could not save the member")
