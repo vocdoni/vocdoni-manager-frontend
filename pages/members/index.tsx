@@ -61,7 +61,8 @@ type State = {
     censusNameModalvisible: boolean,
     censusGateway: DVoteGateway,
     actionsMenuOpen: any
-    visibleBulkActions: boolean
+    visibleBulkActions: boolean,
+    censusLoading: boolean,
 }
 
 class Members extends Component<IAppContext, State> {
@@ -83,6 +84,7 @@ class Members extends Component<IAppContext, State> {
         censusNameModalvisible: false,
         actionsMenuOpen: {},
         visibleBulkActions: false,
+        censusLoading: false,
     }
 
     async componentDidMount() {
@@ -240,6 +242,7 @@ class Members extends Component<IAppContext, State> {
     }
 
     createCensus(input) {
+        this.setState({censusLoading: true})
         // Defaulting targets
         const targetId = this.state.targets[0].id
         const targetName = this.state.targets[0].name
@@ -251,13 +254,13 @@ class Members extends Component<IAppContext, State> {
                 if (!result.ok) {
                     const error = "Could not export the census"
                     message.error(error)
-                    this.setState({ error })
+                    this.setState({ error, censusLoading: false })
                     return false
                 }
                 if (!result.claims) {
                     const error = "No claims found to export"
                     message.error(error)
-                    this.setState({ error })
+                    this.setState({ error, censusLoading: false })
                     return false
                 }
 
@@ -275,9 +278,9 @@ class Members extends Component<IAppContext, State> {
                 const merkleTreeUri = await publishCensus(censusId, gateway, wallet)
 
                 this.registerCensus(censusId, censusName, merkleRoot, merkleTreeUri, targetId)
-            }, (error) => {
+            }).catch((error) => {
                 message.error("Could not export the census")
-                this.setState({ error })
+                this.setState({ error, censusLoading: false })
             })
     }
 
@@ -294,7 +297,7 @@ class Members extends Component<IAppContext, State> {
                 if (!result.ok) {
                     const error = "Could not register the census"
                     message.error(error)
-                    this.setState({ error })
+                    this.setState({ error, censusLoading: false })
                     return false
                 }
 
@@ -302,7 +305,7 @@ class Members extends Component<IAppContext, State> {
                 Router.replace("/census/view#/" + this.props.entityId + "/" + censusId.split('/')[1])
             }, (error) => {
                 message.error("Could not register the census")
-                this.setState({ error })
+                this.setState({ error, censusLoading: false })
                 console.log(error)
             })
     }
@@ -605,10 +608,14 @@ class Members extends Component<IAppContext, State> {
                                             <Input type='text' max='800' step='1' min='1' />
                                         </Form.Item>
                                         <Form.Item>
-                                            <Button key='back' onClick={() => this.setState({censusNameModalvisible: false})}>
+                                            <Button
+                                                key='back'
+                                                onClick={() => this.setState({censusNameModalvisible: false})}
+                                                disabled={this.state.censusLoading}
+                                            >
                                                 Cancel
                                             </Button>
-                                            <Button type='primary' htmlType='submit'>
+                                            <Button type='primary' htmlType='submit' disabled={this.state.censusLoading}>
                                                 Create
                                             </Button>
                                         </Form.Item>
