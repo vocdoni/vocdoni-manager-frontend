@@ -14,6 +14,7 @@ import { GatewayPool } from 'dvote-js/dist/net/gateway-pool'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { getRandomUnsplashImage } from '../../lib/util'
 import { ICensus } from '../../lib/types'
 
 const { Entity } = API
@@ -68,6 +69,12 @@ class ProcessNew extends Component<IAppContext, State> {
     }
 
     refreshInterval = null
+
+    constructor(props) {
+        super(props)
+
+        this.state.process.details.headerImage = getRandomUnsplashImage()
+    }
 
     async componentDidMount() {
         this.props.setMenuSelected("new-vote")

@@ -39,3 +39,12 @@ export const downloadFileWithContents = (contents: string, settings?: FileDownlo
 
 export const sanitizeHtml = (html: MultiLanguage<string> | string) =>
     sanitize(html, {allowedTags: sanitize.defaults.allowedTags.concat(['img'])})
+
+export const getRandomInt = (max = 10) => Math.floor(Math.random() * Math.floor(max))
+
+export const getRandomUnsplashImage = (size = '800x600') : string => {
+    const categories = ['nature', 'architecture', 'pattern']
+    const base = `https://source.unsplash.com/${size}/?`
+
+    return base + categories[getRandomInt(categories.length)]
+}
