@@ -72,3 +72,9 @@ export interface ICensus {
     size: number,
     createdAt: string,
 }
+
+export type MemberImportData = {
+    firstName: string,
+    lastName: string,
+    email: string,
+}

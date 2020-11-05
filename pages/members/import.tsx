@@ -1,31 +1,26 @@
-import React, { useContext, Component } from 'react'
-import { Row, Col, Divider, Table, Button, Form, Checkbox, InputNumber, message } from 'antd'
+import React, { useContext, Component, ReactNode } from 'react'
+import { Row, Col, Divider, Table, Button, message } from 'antd'
 import Router from 'next/router'
 import { InboxOutlined, DownloadOutlined } from '@ant-design/icons'
 import Dragger from 'antd/lib/upload/Dragger'
 import { RcFile } from 'antd/lib/upload'
 
 import { getNetworkState } from '../../lib/network'
+import { MemberImportData } from '../../lib/types'
 import { getSpreadsheetReaderForFile } from '../../lib/import-utils'
-import { allowedImportTypes, CSV_MIME_TYPE } from '../../lib/constants'
 import AppContext, { IAppContext } from '../../components/app-context'
 import DisabledLayer from '../../components/disabled-layer'
+import MembersAddForm from '../../components/members-add-form'
 
-const MemberImportPage = props => {
+const MemberImportPage = () : ReactNode => {
     const context = useContext(AppContext)
 
     return <MemberImport {...context} />
 }
 
-type TableData = {
-    firstName: string,
-    lastName: string,
-    email: string,
-}
-
 type State = {
     entityId?: string,
-    data: TableData[],
+    data: MemberImportData[],
     file?: RcFile,
     importedColumnsAmount: number,
     firstNameColNumber: number,
@@ -124,7 +119,7 @@ class MemberImport extends Component<IAppContext, State> {
             const startRow = parseInt(rangeMatches[2], 10) + fromLine
             const endRow = parseInt(rangeMatches[4], 10)
 
-            const result: TableData[] = []
+            const result: MemberImportData[] = []
             for (let i = startRow; i <= endRow; i++) {
                 if (!worksheet[`${nameCol}${i}`] || !worksheet[`${emailCol}${i}`]) {
                     console.warn("Warning: Found empty values in row #" + i)
@@ -176,11 +171,11 @@ class MemberImport extends Component<IAppContext, State> {
         return charCodes.map(c => String.fromCharCode(c + 65)).join("")
     }
 
-    handleUpload() {
+    handleUpload(data) {
         this.setState({ uploading: true })
 
         const request = {
-            membersInfo: this.state.data,
+            membersInfo: data,
             method: "importMembers",
         }
 
@@ -326,23 +321,32 @@ class MemberImport extends Component<IAppContext, State> {
 
                             <Row>
                                 <Col {...columnLayout}>
-                                    <Divider orientation="left">Confirm import</Divider>
+                                    <Divider orientation='left'>Confirm import</Divider>
                                     <p>If the content in the preview is correct, click on the button to continue.</p>
-                                    <Button type="primary" size="large" onClick={e => this.handleUpload()}>Import data</Button>
+                                    <Button type='primary' size='large' onClick={() => this.handleUpload(this.state.data)}>
+                                        Import data
+                                    </Button>
                                 </Col>
                             </Row>
                         </DisabledLayer>
                     </Col>
                     <Col {...layout}>
-                        <Divider orientation="left">Data preview</Divider>
+                        <Divider orientation='left'>Data preview</Divider>
                         <Table
-                            rowKey={(member: TableData) => {
+                            rowKey={(member: MemberImportData) => {
                                 return `${member.email}-${member.lastName}`
                             }}
                             columns={columns}
                             dataSource={this.state.data}
                             loading={this.state.loading}
                         />
+                        <DisabledLayer disabled={this.state.data?.length > 0}>
+                            <Divider orientation='left'>Manual import</Divider>
+                            <MembersAddForm
+                                {...this.props}
+                                onSave={this.handleUpload.bind(this)}
+                            />
+                        </DisabledLayer>
                     </Col>
                 </Row>
             </div>
