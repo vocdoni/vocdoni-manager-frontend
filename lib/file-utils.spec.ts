@@ -1,7 +1,7 @@
 import { RcFile } from 'antd/lib/upload'
 import { Buffer } from 'buffer'
 
-import { getBufferEncoding, getProperFileMimeType } from './file-utils'
+import { getBufferEncoding, getProperFileMimeType, Uint8ToString } from './file-utils'
 import { XLSX_MIME_TYPE, XLS_MIME_TYPE } from './constants'
 
 const utf8 = [110,111,109,44,99,111,103,110,111,109,115,44,101,109,97,105,108,10,195,137,109,105,108,101,44,68,117,114,107,104,101,105,109,44,101,109,105,108,101,64,100,117,114,107,104,101,105,109,46,99,111,109,10]
@@ -39,6 +39,13 @@ describe('utils', () => {
                 name: 'test.testing.tests.xls',
             }
             expect(getProperFileMimeType(file as any)).toBe(XLS_MIME_TYPE)
+        })
+    })
+
+    describe('Uint8ToString', () => {
+        const chars = [65, 66, 67, 68]
+        it('properly converts Uint8Array to string', () => {
+            expect(Uint8ToString(new Uint8Array(chars))).toEqual('ABCD')
         })
     })
 })

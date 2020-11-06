@@ -11,6 +11,7 @@ import Truncate from 'react-truncate-html'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
+import Image from '../../components/image'
 // import MainLayout from '../../components/layout'
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
@@ -182,7 +183,12 @@ class ProcessEndedView extends Component<IAppContext, State> {
                             ]}
                         >
                             <List.Item.Meta
-                                avatar={<Avatar src={((vote as any).data as ProcessMetadata).details.headerImage} shape="square"/>}
+                                avatar={
+                                    <Avatar
+                                        icon={<Image src={((vote as any).data as ProcessMetadata).details.headerImage} />}
+                                        shape='square'
+                                    />
+                                }
                                 title={
                                     <Link href={`/processes#/${entityId}/${(vote as any).id}`}>
                                         <a>{((vote as any).data as ProcessMetadata).details.title.default}</a>

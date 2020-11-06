@@ -3,6 +3,7 @@ import { EntityMetadata, ProcessMetadata } from 'dvote-js'
 
 import If from '../if'
 import { Avatar } from 'antd'
+import Image from '../image'
 
 type Props = {
     process?: ProcessMetadata,
@@ -27,10 +28,10 @@ export default class HeaderImage extends Component<Props, undefined> {
 
         return (
             <If condition={headerImage}>
-                <img className='header-image' src={headerImage} alt={headerAlt} />
+                <Image className='header-image' src={headerImage} alt={headerAlt} />
                 <If condition={entityImage}>
                     <div className='entity-avatar'>
-                        <Avatar icon={<img src={entityImage} alt={entityAlt} />} size={150} />
+                        <Avatar icon={<Image src={entityImage} alt={entityAlt} />} size={150} />
                     </div>
                 </If>
             </If>

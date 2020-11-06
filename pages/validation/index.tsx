@@ -9,6 +9,7 @@ import QRCode from 'qrcode.react'
 // import MainLayout from '../../components/layout'
 import { getGatewayClients } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
+import Image from '../../components/image'
 // import MainLayout from '../../components/layout'
 // import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
@@ -100,7 +101,7 @@ class ValidationView extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={0} sm={8}>
                     <Divider orientation="left">Details</Divider>
-                    <img src={this.state.entity.media.avatar} className="avatar" />
+                    <Image src={this.state.entity.media.avatar} className='avatar' />
                 </Col>
             </Row>
         </div>

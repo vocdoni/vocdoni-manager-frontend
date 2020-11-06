@@ -17,6 +17,7 @@ import { Wallet, Signer } from 'ethers'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { IFeedPost, INewsFeed } from '../../lib/types'
+import Image from '../../components/image'
 // import MainLayout from "../../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -186,7 +187,11 @@ class PostView extends Component<IAppContext, State> {
                                     entityId,
                                     post,
                                 }}>
-                                    <Avatar src={post.image}  shape="square"/>
+                                    <Avatar
+                                        icon={<Image src={post.image} />}
+                                        shape='square'
+                                        style={{cursor: 'pointer'}}
+                                    />
                                 </PostLink>
                             }
                             title={

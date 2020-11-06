@@ -18,6 +18,8 @@ import { getRandomUnsplashImage } from '../../lib/util'
 import { ICensus } from '../../lib/types'
 import { main } from '../../i18n'
 import HTMLEditor from '../../components/html-editor'
+import Image from '../../components/image'
+import IPFSImageUpload from '../../components/ipfs-image-upload'
 
 const { Entity } = API
 const { RangePicker } = DatePicker
@@ -390,9 +392,23 @@ class ProcessNew extends Component<IAppContext, State> {
                         <Form.Item>
                             <label>Header image URL</label>
                             <Input
-                                // placeholder="Header image Uri"
+                                type='text'
                                 value={this.state.process.details.headerImage}
-                                onChange={ev => this.setNewProcessField(["details", "headerImage"], ev.target.value)}
+                                placeholder={'URL'}
+                                onChange={ev => this.setNewProcessField(['details', 'headerImage'], ev.target.value)}
+                                addonAfter={
+                                    <IPFSImageUpload
+                                        onChange={({file}) => {
+                                            let image = ''
+                                            if (file.status === 'done') {
+                                                image = file.response.src
+                                            }
+
+                                            this.setNewProcessField(['details', 'headerImage'], image)
+                                        }}
+                                        {...this.props}
+                                    />
+                                }
                             />
                             <small style={{ lineHeight: "35px" }}>
                                 <a href="https://unsplash.com/" target="_blank" rel="noreferrer">If you don't have images, try to find one at unsplash.com</a>
@@ -492,7 +508,7 @@ class ProcessNew extends Component<IAppContext, State> {
                                     disabledDate={(current) => this.isDisabledDate(current)}
                                     disabledTime={(current) => this.getDisabledTimes(current)}
                                     defaultValue={[moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]}
-                                    onChange={(dates: moment.Moment[], _) => {
+                                    onChange={(dates: moment.Moment[]) => {
                                         if (!dates || !dates.length) return
                                         this.updateDateRange(dates[0], dates[1])
                                     }}
@@ -539,9 +555,10 @@ class ProcessNew extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={0} md={10} className="right-col">
                     <Divider orientation="left">Header</Divider>
-                    {this.state.process.details.headerImage ?
-                        <img className="preview" src={this.state.process.details.headerImage} /> : null
-                    }
+                    <Image
+                        className='preview'
+                        src={this.state.process.details.headerImage}
+                    />
                 </Col>
             </Row>
         </div>

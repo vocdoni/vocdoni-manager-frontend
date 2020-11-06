@@ -17,6 +17,7 @@ import { getVoteMetadata, cancelProcess, isCanceled } from 'dvote-js/dist/api/vo
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
+import Image from '../../components/image'
 // import MainLayout from '../../components/layout'
 // import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
@@ -191,7 +192,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
                             ]}
                         >
                             <List.Item.Meta
-                                avatar={<Avatar src={((vote as any).data as ProcessMetadata).details.headerImage} shape="square" />}
+                                avatar={
+                                    <Avatar
+                                        icon={<Image src={((vote as any).data as ProcessMetadata).details.headerImage} />}
+                                        shape='square'
+                                    />
+                                }
                                 title={
                                     <Link href={`/processes#/${entityId}/${(vote as any).id}`}>
                                         <a>{((vote as any).data as ProcessMetadata).details.title.default}</a>

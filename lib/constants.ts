@@ -5,6 +5,14 @@ export const XLS_MIME_TYPE = 'application/vnd.ms-excel'
 export const ODS_MIME_TYPE = 'application/vnd.oasis.opendocument.spreadsheet'
 export const CSV_MIME_TYPE = 'text/csv'
 
+export const JPEG_MIME_TYPE = 'image/jpeg'
+export const PNG_MIME_TYPE = 'image/png'
+
+export const imageUploadMimeTypes = [
+    JPEG_MIME_TYPE,
+    PNG_MIME_TYPE,
+]
+
 export const excelMimeTypes = [
     XLSX_MIME_TYPE,
     XLS_MIME_TYPE,

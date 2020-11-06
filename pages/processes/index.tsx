@@ -10,6 +10,7 @@ import { getVoteMetadata, isCanceled, estimateDateAtBlock } from 'dvote-js/dist/
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
+import Image from '../../components/image'
 // import MainLayout from '../../components/layout'
 // import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
@@ -294,7 +295,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={24} sm={8}>
                     <Divider orientation="left">Media</Divider>
-                    <img src={process.details.headerImage} className="header-image" />
+                    <Image src={process.details.headerImage} className='header-image' />
 
                     {this.renderStatus()}
 

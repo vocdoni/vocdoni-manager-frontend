@@ -65,3 +65,18 @@ export const FileReaderPromise = (file: RcFile) : Promise<Buffer>=> new Promise(
 
     reader.readAsArrayBuffer(file)
 })
+
+/**
+ * What would we do without stackoverflow, huh?
+ *
+ * @param u8a
+ * @link https://stackoverflow.com/a/12713326/407456
+ */
+export const Uint8ToString = (u8a: Buffer | Uint8Array) : string => {
+    const CHUNK_SZ = 0x8000
+    const c = []
+    for (let i = 0; i < u8a.length; i += CHUNK_SZ) {
+        c.push(String.fromCharCode.apply(null, u8a.subarray(i, i + CHUNK_SZ)))
+    }
+    return c.join('')
+}

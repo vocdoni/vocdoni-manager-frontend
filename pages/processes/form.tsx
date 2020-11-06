@@ -24,6 +24,8 @@ import { getSpreadsheetReaderForFile, getJSONFromWorksheet } from '../../lib/imp
 import DisabledLayer from '../../components/disabled-layer'
 import { addClaimBulk, publishCensus, addCensus } from 'dvote-js/dist/api/census'
 import { Wallet } from 'ethers'
+import IPFSImageUpload from '../../components/ipfs-image-upload'
+import Image from '../../components/image'
 
 const { Entity } = API
 const { RangePicker } = DatePicker
@@ -476,9 +478,23 @@ class ProcessNew extends Component<IAppContext, State> {
                         <Form.Item>
                             <label>Header image URL</label>
                             <Input
-                                // placeholder="Header image Uri"
+                                type='text'
                                 value={this.state.process.details.headerImage}
-                                onChange={ev => this.setNewProcessField(["details", "headerImage"], ev.target.value)}
+                                placeholder={'URL'}
+                                onChange={ev => this.setNewProcessField(['details', 'headerImage'], ev.target.value)}
+                                addonAfter={
+                                    <IPFSImageUpload
+                                        onChange={({file}) => {
+                                            let image = ''
+                                            if (file.status === 'done') {
+                                                image = file.response.src
+                                            }
+
+                                            this.setNewProcessField(['details', 'headerImage'], image)
+                                        }}
+                                        {...this.props}
+                                    />
+                                }
                             />
                             <small style={{ lineHeight: "35px" }}>
                                 <a href="https://unsplash.com/" target="_blank" rel="noreferrer">If you don't have images, try to find one at unsplash.com</a>
@@ -584,9 +600,10 @@ class ProcessNew extends Component<IAppContext, State> {
 
                 <Col xs={0} md={10} className="right-col">
                     <Divider orientation="left">Header</Divider>
-                    {this.state.process.details.headerImage ?
-                        <img className="preview" src={this.state.process.details.headerImage} /> : null
-                    }
+                    <Image
+                        className='preview'
+                        src={this.state.process.details.headerImage}
+                    />
                 </Col>
             </DisabledLayer>
         </div >

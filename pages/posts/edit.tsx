@@ -13,6 +13,8 @@ import { fetchFileString } from 'dvote-js/dist/api/file'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { sanitizeHtml } from '../../lib/util'
 import AppContext, { IAppContext } from '../../components/app-context'
+import IPFSImageUpload from '../../components/ipfs-image-upload'
+import Image from '../../components/image'
 
 const { Entity } = API
 let Editor: any // = await import('react-draft-wysiwyg')
@@ -85,6 +87,19 @@ class PostEdit extends Component<IAppContext, State> {
         catch (err) {
             message.error("Could not read the entity metadata")
         }
+    }
+
+    onErrorImage() {
+        this.setState({
+            newsPost: {
+                ...this.state.newsPost,
+                image: '',
+            }
+        })
+        return Modal.error({
+            title: 'Invalid image',
+            content: 'The provided image could not be loaded.',
+        })
     }
 
     shouldComponentUpdate() {
@@ -291,11 +306,23 @@ class PostEdit extends Component<IAppContext, State> {
                     <Form>
                         <Form.Item>
                             <label>Header image</label>
-                            <Input type="text"
+                            <Input
+                                type='text'
                                 value={this.state.newsPost.image}
-                                // prefix={<FileImageOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder={"URL"}
-                                onChange={ev => this.setselectedPostField(["image"], ev.target.value)}
+                                placeholder={'URL'}
+                                onChange={ev => this.setselectedPostField(['image'], ev.target.value)}
+                                addonAfter={
+                                    <IPFSImageUpload
+                                        onChange={({file}) => {
+                                            let image = ''
+                                            if (file.status === 'done') {
+                                                image = file.response.src
+                                            }
+                                            this.setselectedPostField(['image'], image)
+                                        }}
+                                        {...this.props}
+                                    />
+                                }
                             />
 
                             <p style={{ marginBottom: 0 }}>
@@ -339,9 +366,11 @@ class PostEdit extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={0} md={10} className="right-col">
                     <Divider orientation="left">Header</Divider>
-                    {this.state.newsPost.image ?
-                        <img className="preview" src={this.state.newsPost.image} /> : null
-                    }
+                    <Image
+                        className='preview'
+                        src={this.state.newsPost.image}
+                        onError={this.onErrorImage.bind(this)}
+                    />
                 </Col>
             </Row>
         </div>

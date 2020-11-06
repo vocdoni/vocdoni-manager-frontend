@@ -1,17 +1,15 @@
 import { useContext, Component } from 'react'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, Modal, Tag } from 'antd'
-import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from 'dvote-js'
-import Link from 'next/link'
+import { message, Spin, Divider, Row, Col } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
+import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
 import Router from 'next/router'
-import { Wallet, Signer } from 'ethers'
-import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
 import { fetchFileString } from 'dvote-js/dist/api/file'
 // import { by639_1 } from 'iso-language-codes'
 
-import { getGatewayClients, getNetworkState } from '../../lib/network'
+import { getGatewayClients } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
+import Image from '../../components/image'
 
 // let Editor: any // = await import('react-draft-wysiwyg')
 // let EditorState, ContentState, convertToRaw
@@ -142,7 +140,7 @@ class PostView extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={24} sm={8}>
                     <div style={{ textAlign: "center" }}>
-                        <img width={272} alt={post.title} src={post.image} />
+                        <Image alt={post.title} src={post.image} />
                     </div>
                 </Col>
             </Row>

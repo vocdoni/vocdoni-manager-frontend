@@ -1,8 +1,7 @@
 import { useContext, Component } from 'react'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, Modal } from 'antd'
+import { message, Spin, Button, Input, Form, Divider, Row, Col, Modal } from 'antd'
 import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from 'dvote-js'
-import Link from 'next/link'
 import Router from 'next/router'
 import { Wallet, Signer } from 'ethers'
 import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
@@ -13,6 +12,8 @@ import { fetchFileString } from 'dvote-js/dist/api/file'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getRandomUnsplashImage, sanitizeHtml } from '../../lib/util'
+import IPFSImageUpload from '../../components/ipfs-image-upload'
+import Image from '../../components/image'
 // import { main } from '../i18n'
 
 const { Entity } = API
@@ -144,12 +145,12 @@ class PostNew extends Component<IAppContext, State> {
         this.setState({
             newsPost: {
                 ...this.state.newsPost,
-                image: "",
+                image: '',
             }
         })
         return Modal.error({
-            title: "Invalid image",
-            content: "The provided image could not be loaded.",
+            title: 'Invalid image',
+            content: 'The provided image could not be loaded.',
         })
     }
 
@@ -286,16 +287,28 @@ class PostNew extends Component<IAppContext, State> {
 
                         <Form.Item>
                             <label>Header image</label>
-                            <Input type="text"
-                                size="large"
+                            <Input
+                                type='text'
                                 value={this.state.newsPost.image}
-                                // prefix={<FileImageOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder={"URL"}
-                                onChange={ev => this.setselectedPostField(["image"], ev.target.value)}
+                                placeholder={'URL'}
+                                onChange={ev => this.setselectedPostField(['image'], ev.target.value)}
+                                addonAfter={
+                                    <IPFSImageUpload
+                                        onChange={({file}) => {
+                                            let image = ''
+                                            if (file.status === 'done') {
+                                                image = file.response.src
+                                            }
+                                            this.setselectedPostField(['image'], image)
+                                        }}
+                                        {...this.props}
+                                    />
+                                }
                             />
-
                             <p style={{ marginBottom: 0 }}>
-                                <a href="https://unsplash.com" target="_blank" rel="noreferrer"><small>If you don't have images, try to find one at unsplash.com</small></a>
+                                <a href="https://unsplash.com" target="_blank" rel="noreferrer"><small>
+                                    If you don't have images, try to find one at unsplash.com.
+                                </small></a>
                             </p>
                         </Form.Item>
 
@@ -334,13 +347,11 @@ class PostNew extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={0} md={10} className="right-col">
                     <Divider orientation="left">Header</Divider>
-                    {this.state.newsPost.image ?
-                        <img
-                            className="preview"
-                            src={this.state.newsPost.image}
-                            onError={this.onErrorImage.bind(this)}
-                        /> : null
-                    }
+                    <Image
+                        className='preview'
+                        src={this.state.newsPost.image}
+                        onError={this.onErrorImage.bind(this)}
+                    />
                 </Col>
             </Row>
         </div>

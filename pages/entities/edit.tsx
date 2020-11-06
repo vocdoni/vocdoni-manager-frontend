@@ -9,6 +9,8 @@ import { Wallet, Signer } from 'ethers'
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { updateEntity } from 'dvote-js/dist/api/entity'
+import IPFSImageUpload from '../../components/ipfs-image-upload'
+import Image from '../../components/image'
 
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
@@ -288,18 +290,46 @@ class EntityEdit extends Component<IAppContext, State> {
                     {/* <h2>General</h2> */}
                     <label>Avatar (URL)</label>
                     <Input
-                        placeholder="Link to an avatar icon"
+                        type='text'
+                        value={entity.media.avatar}
                         prefix={<FileImageOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        value={entity.media && entity.media.avatar}
-                        onChange={ev => this.onFieldChange("media", "avatar", ev.target.value)}
+                        placeholder={'Link to an avatar icon'}
+                        onChange={(ev) => this.onFieldChange('media', 'avatar', ev.target.value)}
+                        addonAfter={
+                            <IPFSImageUpload
+                                onChange={({file}) => {
+                                    let image = ''
+                                    if (file.status === 'done') {
+                                        image = file.response.src
+                                    }
+
+                                    this.onFieldChange('media', 'avatar', image)
+                                }}
+                                {...this.props}
+                            />
+                        }
                     />
                     <br /><br />
                     <label>Header Image (URL)</label>
                     <Input
-                        placeholder="Link to a header image"
+                        type='text'
+                        value={entity.media.header}
                         prefix={<FileImageOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                        value={entity.media && entity.media.header}
-                        onChange={ev => this.onFieldChange("media", "header", ev.target.value)}
+                        placeholder={'Link to a header image'}
+                        onChange={(ev) => this.onFieldChange('media', 'header', ev.target.value)}
+                        addonAfter={
+                            <IPFSImageUpload
+                                onChange={({file}) => {
+                                    let image = ''
+                                    if (file.status === 'done') {
+                                        image = file.response.src
+                                    }
+
+                                    this.onFieldChange('media', 'header', image)
+                                }}
+                                {...this.props}
+                            />
+                        }
                     />
                     <br /><br />
 
@@ -314,7 +344,10 @@ class EntityEdit extends Component<IAppContext, State> {
                 </Col>
                 <Col xs={0} md={10} className="right-col">
                     <Divider orientation="left">Media</Divider>
-                    <img src={this.state.entity.media.header} className="header-image" />
+                    <Image
+                        src={this.state.entity.media.header}
+                        className='header-image'
+                    />
                 </Col>
             </Row>
         </div>

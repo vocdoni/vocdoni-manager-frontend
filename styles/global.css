@@ -71,8 +71,9 @@ h1, h2, h3, h4, h5, h6 {
     text-decoration: none;
 }
 
-.ant-input-affix-wrapper {
-    margin-top: 5px;
+.body-card label {
+    margin-bottom: 5px;
+    display: inline-block;
 }
 
 pre {
@@ -90,4 +91,8 @@ pre {
 
 .ant-typography span.key + button {
     margin-left: 15px;
+}
+
+.ant-input-group-addon .ant-upload-list {
+    display: none !important;
 }
