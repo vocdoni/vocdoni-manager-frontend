@@ -118,6 +118,7 @@ manager-docker-release:
       - package.json
       - tsconfig.json
     refs:
+      - master
       - release
       - /^release-.*$/
       - stage
