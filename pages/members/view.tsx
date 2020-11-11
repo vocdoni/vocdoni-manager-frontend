@@ -118,7 +118,7 @@ class MemberView extends Component<IAppContext, State> {
     }
 
     removeMember() {
-        const request = { method: "deleteMember", memberIds: [this.state.memberId] }
+        const request = { method: "deleteMembers", memberIds: [this.state.memberId] }
         this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
