@@ -291,7 +291,7 @@ class MainApp extends App<Props, State> {
         return <AppContext.Provider value={injectedGlobalContext}>
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title> </title>
+                <title>{this.state.title}</title>
             </Head>
             <Layout>
                 <Component {...pageProps} />

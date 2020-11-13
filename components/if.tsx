@@ -1,21 +1,24 @@
-import React, { Fragment, Component, ReactNode } from 'react'
+import React, { Fragment, Component, ReactNode, ReactChild } from 'react'
 import PropTypes from 'prop-types'
 
 type Props = {
     condition: boolean,
-    children: ReactNode,
+    children: ReactChild | ReactChild[],
 }
 
 export default class If extends Component<Props> {
     static propTypes = {
-        condition: PropTypes.bool.isRequired,
+        condition: PropTypes.oneOfType([
+            PropTypes.bool,
+            PropTypes.oneOf([null, undefined]),
+        ]).isRequired,
         children: PropTypes.oneOfType([
             PropTypes.arrayOf(PropTypes.node),
             PropTypes.node,
         ]).isRequired,
     }
 
-    render() {
+    render() : ReactNode {
         const { condition, children } = this.props
 
         if (!condition) {

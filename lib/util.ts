@@ -1,5 +1,4 @@
 import sanitize from 'sanitize-html'
-import chardet from 'charset-detector'
 import { MultiLanguage } from 'dvote-js'
 
 export function isServer(): boolean {
@@ -47,4 +46,16 @@ export const getRandomUnsplashImage = (size = '800x600') : string => {
     const base = `https://source.unsplash.com/${size}/?`
 
     return base + categories[getRandomInt(categories.length)]
+}
+
+export const areAllNumbers = (slice: any[]) => {
+    let found = false
+    for (const i in slice) {
+        if (typeof slice[i] !== 'number') {
+            found = true
+            break
+        }
+    }
+
+    return !found
 }

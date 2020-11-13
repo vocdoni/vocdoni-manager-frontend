@@ -297,7 +297,12 @@ class ProcessActiveView extends Component<IAppContext, State> {
                                     <ul style={{ paddingLeft: 10, listStyle: "none" }}>
                                         {
                                             entry.voteResults.map((result, i) => <li key={i}>
-                                                <Badge overflowCount={9999999999} count={result.votes || "–"} style={{ backgroundColor: "#848484" }} /> &nbsp;{result.title.default}
+                                                <Badge
+                                                    overflowCount={9999999999}
+                                                    count={result.votes || "–"}
+                                                    style={{ backgroundColor: "#848484" }}
+                                                />
+                                                &nbsp;{result.title.default}
                                             </li>)
                                         }
                                     </ul>

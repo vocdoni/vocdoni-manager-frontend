@@ -18,3 +18,5 @@ export const allowedImportTypes = [
 
 
 export const MOMENT_DATE_FORMAT_SQL = 'YYYY-MM-DD'
+
+export const HEX_REGEX = /^(0x)?[0-9a-fA-F]+$/

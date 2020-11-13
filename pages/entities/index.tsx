@@ -11,6 +11,7 @@ import QRCode from 'qrcode.react'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
+import Link from 'next/link'
 
 const { Entity } = API
 const { Paragraph } = Typography
@@ -115,8 +116,6 @@ class EntityView extends Component<IAppContext, State> {
                     <List >
                         <List.Item ><Paragraph copyable={{ text: subscriptionLink  }}>Copy the link to share the entity</Paragraph></List.Item>
                     </List>
-
-
                 </Col>
             </Row>
         </div>

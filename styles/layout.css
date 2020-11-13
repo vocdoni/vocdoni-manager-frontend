@@ -1,7 +1,5 @@
 /* BASE LAYOUT */
 
-#layout {}
-
 #layout .top-bar {
     color: var(--clear);
     /* background-color:var(--main-color); */
@@ -103,4 +101,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.vote-process .ant-card-cover {
+    position: relative;
+}
+.vote-process .ant-card-cover .entity-avatar {
+    position: absolute;
+    bottom: -75px;
+    left: 50%;
+    margin-left: -75px;
 }

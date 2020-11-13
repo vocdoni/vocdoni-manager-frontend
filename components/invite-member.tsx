@@ -1,7 +1,7 @@
-import React, { Component, ReactNode } from 'react'
-import { Modal, Button, Spin } from 'antd'
+import React, { Component, ReactChild } from 'react'
+import { Modal, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { DVoteGateway, IDvoteRequestParameters } from 'dvote-js/dist/net/gateway'
+import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 
 import Web3Wallet from '../lib/web3-wallet'
 import If from './if'
@@ -11,7 +11,7 @@ type Props = {
         id: string,
         email: string,
     },
-    children: ReactNode,
+    children: ReactChild | ReactChild[],
     managerBackendGateway: DVoteGateway,
     web3Wallet: Web3Wallet,
 }

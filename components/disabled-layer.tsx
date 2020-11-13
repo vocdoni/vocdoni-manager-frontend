@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { ReactChild } from 'react'
 import classNames from 'classnames'
 
 type Props = {
     disabled: boolean
     text?: string
-    children: any
+    children: ReactChild | ReactChild[],
 }
 
 const DisabledLayerText = (props: Props) => {

@@ -19,10 +19,6 @@
     color: rgba(0, 0, 0, 0.75);
 }
 
-#process-view img.header-image {
-    max-width: 90%;
-}
-
 /* EDIT */
 
 #process-edit .body-card {
@@ -69,4 +65,8 @@
 }
 #process-new img.preview {
     max-width: 90%;
+}
+
+.vote-process .ant-card-body > h1:first-of-type {
+    margin-top: 2em;
 }
