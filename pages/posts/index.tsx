@@ -152,6 +152,7 @@ class PostView extends Component<IAppContext, State> {
             const ownEntityId = getEntityId(address)
             hideEditControls = this.state.entityId !== ownEntityId
         }
+        const that = this
 
         return <div className="body-card">
             <Divider orientation="left">News feed</Divider>
@@ -171,6 +172,7 @@ class PostView extends Component<IAppContext, State> {
                     <List.Item
                         key={idx}
                         actions={PostListActions({
+                            that,
                             hideEditControls,
                             entityId,
                             post,
@@ -252,7 +254,7 @@ const PostLink = ({hideEditControls, post, entityId, children} : any) => {
 }
 
 const PostListActions = (props: any) => {
-    const {hideEditControls, entityId, post, idx} = props
+    const {that, hideEditControls, entityId, post, idx} = props
 
     const actions = []
     if (!hideEditControls) {
@@ -269,8 +271,7 @@ const PostListActions = (props: any) => {
             <IconText
                 icon={CloseCircleOutlined}
                 text="Remove"
-                onClick={() =>
-                    this.confirmDeletePost(this.state.startIndex + idx)
+                onClick={ () => that.confirmDeletePost(that.state.startIndex + idx)
                 } key="remove"
             />
         )
