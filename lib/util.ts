@@ -37,7 +37,7 @@ export const downloadFileWithContents = (contents: string, settings?: FileDownlo
     element.remove()
 }
 
-export const sanitizeHtml = (html: MultiLanguage<string> | string) =>
+export const sanitizeHtml = (html: MultiLanguage<string> | string) : string =>
     sanitize(html, {allowedTags: sanitize.defaults.allowedTags.concat(['img'])})
 
 export const getRandomInt = (max = 10) => Math.floor(Math.random() * Math.floor(max))

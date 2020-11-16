@@ -1,9 +1,10 @@
 import { createElement, useContext, Component } from 'react'
 import { message, Spin, Avatar, Skeleton, Modal } from 'antd'
-import { Divider, Menu, List } from 'antd'
-import { EditOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { Divider, List } from 'antd'
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { LoadingOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, MultiLanguage, ProcessMetadata } from 'dvote-js'
+import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
+import Truncate from 'react-truncate-html'
 // import Router from 'next/router'
 import Link from 'next/link'
 // import { INewsFeed } from '../../lib/types'
@@ -196,7 +197,14 @@ class ProcessActiveView extends Component<IAppContext, State> {
                                         <a>{((vote as any).data as ProcessMetadata).details.title.default}</a>
                                     </Link>
                                 }
-                                description={((vote as any).data as ProcessMetadata).details.description.default}
+                                description={(
+                                    <Truncate
+                                        lines={2}
+                                        dangerouslySetInnerHTML={{
+                                            __html: ((vote as any).data as ProcessMetadata).details.description.default,
+                                        }}
+                                    />
+                                )}
                             />
                         </List.Item>
                     </Skeleton>

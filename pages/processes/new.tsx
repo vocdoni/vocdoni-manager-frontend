@@ -16,6 +16,8 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { getRandomUnsplashImage } from '../../lib/util'
 import { ICensus } from '../../lib/types'
+import { main } from '../../i18n'
+import HTMLEditor from '../../components/html-editor'
 
 const { Entity } = API
 const { RangePicker } = DatePicker
@@ -24,15 +26,7 @@ const { Option } = Select
 // const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180", 10)
 // const BLOCK_MARGIN = 5 // extra blocks
 
-/* HTML EDITOR
-let Editor: any // = await import("react-draft-wysiwyg")
-let EditorState, ContentState, convertToRaw
-let draftToHtml: any // = await import('draftjs-to-html')
-let htmlToDraft: any // = await import('html-to-draftjs')
-*/
-
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-// import { main } from "../i18n"
 
 // MAIN COMPONENT
 const ProcessNewPage = props => {
@@ -49,12 +43,14 @@ type State = {
     entityId?: string,
     process?: ProcessMetadata,
     censuses: ICensus[],
+    selectedCensusId: string,
     bootnodes?: GatewayBootNodes,
     descriptionEditorState?: any,
     startBlock: number
     startDate: moment.Moment
     numberOfBlocks: number,
-    endDate: moment.Moment
+    endDate: moment.Moment,
+    targets: any[],
 }
 
 // Stateful component
@@ -66,6 +62,8 @@ class ProcessNew extends Component<IAppContext, State> {
         startDate: null,
         endDate: null,
         censuses: [],
+        targets: [],
+        selectedCensusId: '',
     }
 
     refreshInterval = null
@@ -73,7 +71,13 @@ class ProcessNew extends Component<IAppContext, State> {
     constructor(props) {
         super(props)
 
-        this.state.process.details.headerImage = getRandomUnsplashImage()
+        this.state.process.details.headerImage = getRandomUnsplashImage('1500x450')
+        this.state.process.details.questions[0].voteOptions.push({
+            title: {
+                default: main.blankVoteOption,
+            },
+            value: 2,
+        })
     }
 
     async componentDidMount() {
@@ -87,20 +91,6 @@ class ProcessNew extends Component<IAppContext, State> {
 
         this.props.setTitle("New process")
 
-        /* HTML EDITOR
-        // Do the imports dynamically because `window` does not exist on SSR
-
-        Editor = (await import('react-draft-wysiwyg')).Editor
-        const DraftJS = await import('draft-js')
-        EditorState = DraftJS.EditorState
-        ContentState = DraftJS.ContentState
-        convertToRaw = DraftJS.convertToRaw
-        draftToHtml = (await import('draftjs-to-html')).default
-        htmlToDraft = (await import('html-to-draftjs')).default
-
-        this.setState({ descriptionEditorState: EditorState.createEmpty() })
-       */
-
         try {
             await this.refreshMetadata()
 
@@ -108,6 +98,9 @@ class ProcessNew extends Component<IAppContext, State> {
             this.updateDateRange(defaultRange[0], defaultRange[1])
 
             await this.fetchCensuses()
+            const {targets} = await this.props.fetchTargets()
+
+            this.setState({targets})
         }
         catch (err) {
             message.error("Could not check the entity metadata")
@@ -123,15 +116,6 @@ class ProcessNew extends Component<IAppContext, State> {
             const gateway = await getGatewayClients()
             const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
-
-            /* HTML EDITOR
-            const contentBlock = htmlToDraft("<p></p>")
-            if (contentBlock) {
-              const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-              const descriptionEditorState = EditorState.createWithContent(contentState)
-              this.setState({ descriptionEditorState })
-            }
-            */
 
             this.setState({ entity, entityId, dataLoading: false })
             this.props.setTitle(entity.name.default)
@@ -168,7 +152,16 @@ class ProcessNew extends Component<IAppContext, State> {
             type: "single-choice",
             question: { default: "" },
             description: { default: "" },
-            voteOptions: [{ title: { default: "" }, value: 0 }, { title: { default: "" }, value: 1 }]
+            voteOptions: [{
+                title: { default: "Yes" },
+                value: 0,
+            }, {
+                title: { default: "No" },
+                value: 1,
+            }, {
+                title: { default: main.blankVoteOption },
+                value: 2,
+            }]
         })
         this.setState({ process: proc })
     }
@@ -280,7 +273,6 @@ class ProcessNew extends Component<IAppContext, State> {
             return // message.warn("The metadata fields are not valid")
         }
 
-        const that = this
         Modal.confirm({
             title: "Confirm",
             icon: <ExclamationCircleOutlined />,
@@ -288,9 +280,7 @@ class ProcessNew extends Component<IAppContext, State> {
             okText: "Create Process",
             okType: "primary",
             cancelText: "Not now",
-            onOk() {
-                that.submit()
-            },
+            onOk: this.submit.bind(this),
         })
     }
 
@@ -320,32 +310,49 @@ class ProcessNew extends Component<IAppContext, State> {
             })
         }
 
-        return createVotingProcess(newProcess, this.props.web3Wallet.getWallet(), gwPool)
-            .then(processId => {
-                message.success("The voting process with ID " + processId.substr(0, 8) + " has been created")
-                hideLoading()
-                this.setState({ processCreating: false })
+        let censusId = this.state.selectedCensusId
 
-                Router.push("/processes#/" + this.state.entityId + "/" + processId)
-            }).catch(err => {
-                hideLoading()
-                this.setState({ processCreating: false })
+        if (!newProcess.census.merkleRoot.length || !newProcess.census.merkleTree.length) {
+            // hardcoded to first target for now (all)
+            const [target] = this.state.targets
+            const {census, merkleRoot, merkleTreeUri}= await this.props.createCensusForTarget(null, target)
 
-                console.error("The voting process could not be created", err)
-                message.error("The voting process could not be created")
-            })
+            newProcess.census.merkleRoot = `0x${merkleRoot}` // just don't ask 🙃
+            newProcess.census.merkleTree = merkleTreeUri
+            censusId = census
+        }
+
+        try {
+            const wallet = this.props.web3Wallet.getWallet()
+            const processId = await createVotingProcess(newProcess, wallet, gwPool)
+
+            const emailsReq : any = {
+                method: 'sendVotingLinks',
+                processId,
+                censusId,
+            }
+
+            // Avoid crash from e-mail sending
+            let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
+            try {
+                await this.props.managerBackendGateway.sendMessage(emailsReq, wallet)
+            } catch (e) {
+                msg += ' There was an error sending e-mails tho.'
+            }
+
+            message.success(msg)
+
+            hideLoading()
+
+            return Router.push(`/processes/#/${this.state.entityId}/${processId}`)
+        } catch (error) {
+            hideLoading()
+            this.setState({ processCreating: false })
+
+            console.error("The voting process could not be created", error)
+            message.error("The voting process could not be created")
+        }
     }
-
-    // editorContentChanged(state) {
-    //   this.setState({ descriptionEditorState: state })
-
-    //   const newHtml = draftToHtml(convertToRaw(state.getCurrentContent()))
-    //   const element = document.createElement("div")
-    //   element.innerHTML = newHtml
-    //   const newText = element.innerText
-    //   this.setselectedPostField(["content_text"], newText)
-    //   this.setselectedPostField(["content_html"], newHtml)
-    // }
 
     renderProcessNew() {
         const questions = this.state.process.details.questions
@@ -368,11 +375,11 @@ class ProcessNew extends Component<IAppContext, State> {
                         </Form.Item>
                         <Form.Item>
                             <label>Description</label>
-                            <Input.TextArea
-                                placeholder="Description"
-                                autoSize={{ minRows: 4, maxRows: 8 }}
-                                value={this.state.process.details.description.default}
-                                onChange={ev => this.setNewProcessField(["details", "description", "default"], ev.target.value)}
+                            <HTMLEditor
+                                toolbar='reduced'
+                                onContentChanged={(contents: string) =>
+                                    this.setNewProcessField(['details', 'description', 'default'], contents)
+                                }
                             />
                         </Form.Item>
                         <Form.Item>
@@ -406,23 +413,39 @@ class ProcessNew extends Component<IAppContext, State> {
 
                     <Form>
                         <Form.Item>
+                            <p>Use an existing census, or leave it blank to create one on the fly with all the members.</p>
                             <Select
                                 showSearch
                                 size="large"
+                                allowClear
                                 placeholder="Select a Census"
                                 optionFilterProp="children"
                                 filterOption={(input, option) =>
                                     censuses.find(x => x.id == option.key).name.includes(input)
                                 }
-                                onChange={name => {
-                                    const targetCensus = censuses.find(x => x.name == name)
-                                    if (!targetCensus) return
+                                value={this.state.selectedCensusId}
+                                onChange={id => {
+                                    const targetCensus = censuses.find(x => x.id == id)
+                                    // deselect behavior
+                                    if (!targetCensus) {
+                                        return this.setState({
+                                            process: {
+                                                ...this.state.process,
+                                                census: {
+                                                    merkleRoot: '',
+                                                    merkleTree: '',
+                                                },
+                                            },
+                                            selectedCensusId: '',
+                                        })
+                                    }
 
                                     this.setNewProcessField(['census', 'merkleRoot'], targetCensus.merkleRoot)
                                     this.setNewProcessField(['census', 'merkleTree'], targetCensus.merkleTreeUri)
+                                    this.setState({selectedCensusId: targetCensus.id})
                                 }}>
                                 {censuses.map(d => (
-                                    <Option key={d.id} data={d} value={d.name}>{d.name}</Option>
+                                    <Option key={d.id} data={d} value={d.id}>{d.name}</Option>
                                 ))}
                             </Select>
                         </Form.Item>
@@ -542,11 +565,11 @@ class ProcessNew extends Component<IAppContext, State> {
 
                 <Form.Item>
                     <label>Description</label>
-                    <Input.TextArea
-                        placeholder="Description"
-                        autoSize={{ minRows: 4, maxRows: 8 }}
-                        value={this.state.process.details.questions[questionIdx].description.default}
-                        onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], ev.target.value)}
+                    <HTMLEditor
+                        toolbar='simple'
+                        onContentChanged={(contents: string) =>
+                            this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], contents)
+                        }
                     />
                 </Form.Item>
 

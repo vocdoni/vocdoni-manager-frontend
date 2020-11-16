@@ -20,15 +20,13 @@ import {
     DashOutlined,
     DownloadOutlined,
     ExportOutlined,
-    TagOutlined,
 } from '@ant-design/icons'
 import Router from 'next/router'
 import Link from 'next/link'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 // import moment from 'moment'
-import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
 
-import { getNetworkState, getGatewayClients } from '../../lib/network'
+import { getNetworkState } from '../../lib/network'
 import { ITarget, IMember } from '../../lib/types'
 import AppContext, { IAppContext } from '../../components/app-context'
 import InviteTokens from '../../components/invite-tokens'
@@ -133,13 +131,12 @@ class Members extends Component<IAppContext, State> {
     }
 
     fetchTargets() {
-        this.props.managerBackendGateway.sendMessage({ method: "listTargets" } as any, this.props.web3Wallet.getWallet())
-            .then((result) => {
-                this.setState({ targets: result.targets })
-            }, (error) => {
-                message.error("Could not fetch the targets data")
-                this.setState({ error })
-            })
+        this.props.fetchTargets().then((result) => {
+            this.setState({ targets: result.targets })
+        }, (error) => {
+            message.error("Could not fetch the targets data")
+            this.setState({ error })
+        })
     }
 
     fetchTags() {
@@ -241,73 +238,24 @@ class Members extends Component<IAppContext, State> {
         })
     }
 
-    createCensus(input) {
+    async createCensus(censusName: string, id: string, name: string) {
         this.setState({censusLoading: true})
-        // Defaulting targets
-        const targetId = this.state.targets[0].id
-        const targetName = this.state.targets[0].name
 
-        const request = { method: "dumpTarget", targetID: targetId }
-        const wallet = this.props.web3Wallet.getWallet()
-        this.props.managerBackendGateway.sendMessage(request as any, wallet)
-            .then(async (result) => {
-                if (!result.ok) {
-                    const error = "Could not export the census"
-                    message.error(error)
-                    this.setState({ error, censusLoading: false })
-                    return false
-                }
-                if (!result.claims) {
-                    const error = "No claims found to export"
-                    message.error(error)
-                    this.setState({ error, censusLoading: false })
-                    return false
-                }
+        try {
+            const {census} = await this.props.createCensusForTarget(censusName, {id, name})
+            const [, censusPath] = census.split('/')
 
-                //const censusName = targetName + '_' + (Math.floor(Date.now() / 1000));
-                const censusName = input.name || targetName + '_' + (Math.floor(Date.now() / 1000))
-                const gateway = await getGatewayClients()
-                // tslint:disable-next-line
-                const { censusId } = await addCensus(censusName, [wallet["signingKey"].publicKey], gateway, wallet)
-                const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, result.claims, true, gateway, wallet)
-                if (invalidClaims.length > 0) {
-                    message.warn(`Found ${invalidClaims.length} invalid claims`)
-                }
-                // TODO: Show information about found claims and invalidClaims?
+            message.success('Census has been exported')
+            Router.replace(`/census/view/#/${this.props.entityId}/${censusPath}`)
 
-                const merkleTreeUri = await publishCensus(censusId, gateway, wallet)
-
-                this.registerCensus(censusId, censusName, merkleRoot, merkleTreeUri, targetId)
-            }).catch((error) => {
-                message.error("Could not export the census")
-                this.setState({ error, censusLoading: false })
+        } catch (err) {
+            const error = err?.message ? err?.message : err
+            message.error(error)
+            this.setState({
+                error,
+                censusLoading: false,
             })
-    }
-
-    async registerCensus(censusId, name, merkleRoot, merkleTreeUri, targetId) {
-        const regRequest = {
-            method: "addCensus",
-            censusId,
-            targetId,
-            census: { name, merkleRoot, merkleTreeUri }
         }
-
-        this.props.managerBackendGateway.sendMessage(regRequest as any, this.props.web3Wallet.getWallet())
-            .then(async (result) => {
-                if (!result.ok) {
-                    const error = "Could not register the census"
-                    message.error(error)
-                    this.setState({ error, censusLoading: false })
-                    return false
-                }
-
-                message.success("Census has been exported")
-                Router.replace("/census/view#/" + this.props.entityId + "/" + censusId.split('/')[1])
-            }, (error) => {
-                message.error("Could not register the census")
-                this.setState({ error, censusLoading: false })
-                console.log(error)
-            })
     }
 
     onTagsChange(selectedTags: string[], values: any[], options: any[], tags: any[]) : void {
@@ -603,7 +551,13 @@ class Members extends Component<IAppContext, State> {
                                     closable={false}
                                     footer={false}
                                 >
-                                    <Form onFinish={this.createCensus.bind(this)}>
+                                    <Form onFinish={async (values) => {
+                                        // Defaulting targets
+                                        const [target] = this.state.targets
+                                        const {id, name} = target
+
+                                        return await this.createCensus(values.name, id, name)
+                                    }}>
                                         <Form.Item name='name'>
                                             <Input type='text' max='800' step='1' min='1' />
                                         </Form.Item>

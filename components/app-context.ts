@@ -39,6 +39,9 @@ export interface IAppContext {
     setProcessId: (processId: string) => void,
     managerBackendGateway: DVoteGateway,
     setUrlHash: (urlHash: string) => void,
+    createCensusForTarget: (name: string, target: {id: string, name: string}) =>
+        Promise<{census: string, merkleRoot: string, merkleTreeUri: string}>,
+    fetchTargets: () => Promise<any>,
 }
 
 // Global context provided to every page

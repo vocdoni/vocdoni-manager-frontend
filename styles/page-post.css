@@ -21,6 +21,7 @@
 
 /* EDIT */
 
+.rdw-editor-wrapper a,
 #post-edit a {
     color: inherit;
 }

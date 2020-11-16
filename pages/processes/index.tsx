@@ -81,7 +81,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
             .then(() => this.loadProcessResults())
             .then(() => {
                 const interval = BLOCK_TIME * 1000
-                if (!this.refreshInterval) this.refreshInterval = setInterval(() => this.refreshBlockHeight(), interval)
+                if (!this.refreshInterval) {
+                    this.refreshInterval = setInterval(() =>
+                        this.refreshBlockHeight()
+                    , interval)
+                }
             }).catch(err => {
                 console.error(err)
                 this.setState({ error: "Could not load the process status" })
@@ -105,8 +109,20 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 
     async refreshBlockHeight() {
-        const gateway = await getGatewayClients()
-        const currentBlock = await getBlockHeight(gateway)
+        let gateway = null,
+            currentBlock = this.state.currentBlock || 0
+        try {
+            gateway = await getGatewayClients()
+            currentBlock = await getBlockHeight(gateway)
+        } catch (err) {
+            const msg = [
+                'There was an error updating the blockchain information.',
+                'Refresh the page if you don\'t see changes in a while.',
+            ]
+            console.error(err)
+            return message.error(msg.join(' '))
+        }
+
         this.setState({ currentBlock, currentDate: moment() })
     }
 
@@ -215,14 +231,14 @@ class ProcessActiveView extends Component<IAppContext, State> {
                 <Col xs={24} sm={20} md={14}>
                     <Divider orientation="left">Vote details</Divider>
                     <h3>{process.details.title.default}</h3>
-                    <p>{process.details.description.default}</p>
+                    <div dangerouslySetInnerHTML={{__html: process.details.description.default}} />
 
                     {
                         procQuestions.map((question, idx) => <div key={idx}>
                             <br />
                             <Divider orientation="left">Question {idx + 1}</Divider>
                             <h4>{question.question.default}</h4>
-                            <p>{question.description.default}</p>
+                            <p dangerouslySetInnerHTML={{__html: question.description.default}} />
                             <ul>
                                 {question.voteOptions.map((option, i) => <li key={i}>
                                     {option.title.default}

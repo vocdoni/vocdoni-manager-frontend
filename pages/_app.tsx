@@ -5,13 +5,14 @@ import { message, Row, Col, Card, Button } from 'antd'
 import { Wallet } from 'ethers'
 import { DVoteGateway } from 'dvote-js/dist/net/gateway'
 import { ReloadOutlined } from '@ant-design/icons'
+import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
 
 import AppContext, { ISelected } from '../components/app-context'
 import MainLayout from '../components/layout'
 import GeneralError from '../components/error'
-import { initNetwork, getNetworkState } from '../lib/network'
+import { initNetwork, getNetworkState, getGatewayClients } from '../lib/network'
 import { IAppContext } from '../components/app-context'
-import Web3Wallet, { getWeb3Wallet } from '../lib/web3-wallet'
+import { getWeb3Wallet } from '../lib/web3-wallet'
 import { isWriteEnabled } from '../lib/util'
 
 // import { } from '../lib/types'
@@ -148,6 +149,58 @@ class MainApp extends App<Props, State> {
         this.setState({ urlHash })
     }
 
+    async createCensusForTarget(
+        name: string,
+        {id, name: targetName}: {id: string, name: string})
+        : Promise<{census: string, merkleRoot: string, merkleTreeUri: string}>
+    {
+        const wallet = getWeb3Wallet().getWallet()
+
+        const censusName = name || targetName + '_' + (Math.floor(Date.now() / 1000))
+        const gateway = await getGatewayClients()
+        const { censusId } = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
+
+        const addReq = { method: 'addCensus', targetId: id, censusId, census: {name: censusName} }
+        // We don't need the response from addCensus (in case of error should be thrown anyways)
+        await this.state.managerBackendGateway.sendMessage(addReq as any, wallet)
+        const dumpReq = { method: 'dumpCensus', censusId}
+        const dumpCensus = await this.state.managerBackendGateway.sendMessage(dumpReq as any, wallet)
+        if (!dumpCensus.claims?.length) {
+            throw new Error('No claims found to export')
+        }
+
+        const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, dumpCensus.claims, true, gateway, wallet)
+        if (invalidClaims.length) {
+            message.warn(`Found ${invalidClaims.length} invalid claims`)
+        }
+        const merkleTreeUri = await publishCensus(censusId, gateway, wallet)
+        const census = {
+            merkleRoot,
+            merkleTreeUri,
+        }
+        const updReq = {
+            method: 'updateCensus',
+            censusId,
+            census,
+            invalidClaims,
+        }
+        // No need for the result here either
+        await this.state.managerBackendGateway.sendMessage(updReq as any, wallet)
+
+        return {
+            census: censusId,
+            merkleRoot,
+            merkleTreeUri,
+        }
+    }
+
+    fetchTargets() {
+        return this.state.managerBackendGateway.sendMessage(
+            {method: 'listTargets'} as any,
+            getWeb3Wallet().getWallet(),
+        )
+    }
+
     async refreshWeb3Status() {
         const { isConnected } = getNetworkState()
         this.setState({ isConnected })
@@ -229,6 +282,8 @@ class MainApp extends App<Props, State> {
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
             setUrlHash: (hash) => this.setUrlHash(hash),
             managerBackendGateway: this.state.managerBackendGateway,
+            createCensusForTarget: (name, target) => this.createCensusForTarget(name, target),
+            fetchTargets: () => this.fetchTargets(),
         }
 
         // Does the current component want its own layout?

@@ -1,21 +1,17 @@
 import { createElement, useContext, Component } from 'react'
 import { message, Spin, Avatar, Skeleton, Modal, Divider, Menu, List } from 'antd'
-import { EditOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
+import { CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { LoadingOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, MultiLanguage, ProcessMetadata } from 'dvote-js'
-import Router from 'next/router'
+import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
 import Link from 'next/link'
 import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
-import { fetchFileString } from 'dvote-js/dist/api/file'
-import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { Wallet, Signer } from 'ethers'
 import { getVoteMetadata, isCanceled, cancelProcess } from 'dvote-js/dist/api/vote'
+import Truncate from 'react-truncate-html'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { INewsFeed, IFeedPost } from '../../lib/types'
 import AppContext, { IAppContext } from '../../components/app-context'
 // import MainLayout from '../../components/layout'
-// import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
@@ -127,7 +123,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
 
         try {
             const gateway = await getGatewayClients()
-            const state = getNetworkState()
+            getNetworkState()
 
             const entityMetadata = this.state.entity
             entityMetadata.votingProcesses.active = activeProcesses
@@ -174,7 +170,7 @@ class ProcessEndedView extends Component<IAppContext, State> {
                         this.setState({ startIndex: (page - 1) * PAGE_SIZE })
                         window.scrollTo({ top: 0 })
                     },
-                    pageSize: PAGE_SIZE
+                    pageSize: PAGE_SIZE,
                 }}
                 dataSource={(this.state.processes || []) as any}
                 renderItem={(vote: ({ id: string, data: ProcessMetadata } | string), idx: number) => (
@@ -192,7 +188,14 @@ class ProcessEndedView extends Component<IAppContext, State> {
                                         <a>{((vote as any).data as ProcessMetadata).details.title.default}</a>
                                     </Link>
                                 }
-                                description={((vote as any).data as ProcessMetadata).details.description.default}
+                                description={(
+                                    <Truncate
+                                        lines={2}
+                                        dangerouslySetInnerHTML={{
+                                            __html: ((vote as any).data as ProcessMetadata).details.description.default,
+                                        }}
+                                    />
+                                )}
                             />
                         </List.Item>
                     </Skeleton>
