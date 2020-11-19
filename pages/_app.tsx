@@ -104,11 +104,11 @@ class MainApp extends App<Props, State> {
         this.setState({ managerBackendGateway })
     }
 
-    hashChange(e: HashChangeEvent) {
+    hashChange() : void {
         this.setUrlHash(location.hash.substr(2))
     }
 
-    useNewWallet(newWallet: Wallet) {
+    useNewWallet(newWallet: Wallet) : void {
         getWeb3Wallet().setWallet(newWallet)
         initNetwork().then(async () => {
             message.success("Connected")
@@ -122,30 +122,30 @@ class MainApp extends App<Props, State> {
         })
     }
 
-    setTitle(title: string) {
+    setTitle(title: string) : void {
         this.setState({ title })
     }
-    setMenuVisible(menuVisible: boolean) {
+    setMenuVisible(menuVisible: boolean) : void {
         this.setState({ menuVisible })
     }
-    setMenuSelected(menuSelected: ISelected) {
+    setMenuSelected(menuSelected: ISelected) : void {
         this.setState({ menuSelected })
         this.setMenuVisible(true)
         this.setMenuDisabled(false)
     }
-    setMenuCollapsed(menuCollapsed: boolean) {
+    setMenuCollapsed(menuCollapsed: boolean) : void {
         this.setState({ menuCollapsed })
     }
-    setMenuDisabled(menuDisabled: boolean) {
+    setMenuDisabled(menuDisabled: boolean) : void {
         this.setState({ menuDisabled })
     }
-    setEntityId(entityId: string) {
+    setEntityId(entityId: string) : void {
         this.setState({ entityId })
     }
-    setProcessId(processId: string) {
+    setProcessId(processId: string) : void {
         this.setState({ processId })
     }
-    setUrlHash(urlHash: string) {
+    setUrlHash(urlHash: string) : void {
         this.setState({ urlHash })
     }
 

@@ -3,7 +3,7 @@ import { Form, Input, Button, message, Row, Col, Spin, Card, Divider, Checkbox }
 import Router from 'next/router'
 // import Link from 'next/link'
 import { EtherUtils } from 'dvote-js'
-import { LoadingOutlined, AlignLeftOutlined } from '@ant-design/icons'
+import { LoadingOutlined } from '@ant-design/icons'
 import beautify from 'json-beautify'
 import moment from 'moment'
 

@@ -1,7 +1,6 @@
 import { useContext, Component } from 'react'
-import { Row, Col, Divider, Typography, Button, Modal, Input, message } from 'antd'
+import { Row, Col, Divider, Typography } from 'antd'
 import Title from 'antd/lib/typography/Title'
-import { EtherUtils } from 'dvote-js'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import ButtonShowPrivateKey from '../../components/button-show-private-key'

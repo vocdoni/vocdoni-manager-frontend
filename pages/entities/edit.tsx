@@ -1,15 +1,14 @@
 import { useContext, Component } from 'react'
-import { message, Spin, Button, Input, Select, Divider, Menu, Row, Col, Modal } from 'antd'
+import { message, Spin, Button, Input, Divider, Row, Col, Modal } from 'antd'
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
-import Link from 'next/link'
 import Router from 'next/router'
 import { Wallet, Signer } from 'ethers'
 // import { by639_1 } from 'iso-language-codes'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
+import { updateEntity } from 'dvote-js/dist/api/entity'
 
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'

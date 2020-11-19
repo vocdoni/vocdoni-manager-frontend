@@ -1,6 +1,6 @@
 import { DeleteOutlined, DownOutlined, MailOutlined } from '@ant-design/icons'
 import { Dropdown, Menu, Button, Popconfirm, message } from 'antd'
-import React, { Component, CSSProperties, FunctionComponent, ReactNode } from 'react'
+import React, { Component, CSSProperties, ReactNode } from 'react'
 
 import { IAppContext } from './app-context'
 
@@ -23,77 +23,77 @@ type BulkActionsState = {
     forcedClose: boolean
 }
 
-type BulkActionsOverlayState = {
-    // This line jump is required by ts
-}
-
 class BulkActionsOverlay extends Component<BulkActionsOverlayProps, BulkActionsState> {
+    onRemoveConfirm() : void {
+        const req : any = {
+            method: 'deleteMembers',
+            memberIds: this.props.ids,
+        }
+
+        if (this.props.onActionCall) {
+            this.props.onActionCall()
+        }
+
+        this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet())
+            .then((res) => {
+                if (res.ok) {
+                    if (this.props.onDeleted) {
+                        return this.props.onDeleted(this.props.ids)
+                    }
+                    return message.success('Members successfuly removed')
+                }
+                message.error('There was an error removing those members')
+                console.error(res)
+            }).catch((error) => {
+                message.error('There was an error removing those members')
+                console.error(error)
+            })
+    }
+
+    onValidateClick() : void {
+        const req : any = {
+            method: 'sendValidationLinks',
+            memberIds: this.props.ids,
+        }
+
+        if (this.props.onActionCall) {
+            this.props.onActionCall()
+        }
+
+        this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet())
+            .then((res) => {
+                if (res.ok) {
+                    if (this.props.onActionComplete) {
+                        this.props.onActionComplete()
+                    }
+                    return message.success('Validation links properly sent')
+                }
+                message.error('There was an error sending those validation links')
+                console.error(res)
+            }).catch((error) => {
+                if (this.props.onActionComplete) {
+                    this.props.onActionComplete()
+                }
+
+                message.error('There was an error sending those validation links')
+                console.error(error)
+            })
+    }
+
     render() : ReactNode {
         return (
             <Menu>
                 <Menu.Item key='remove' danger>
                     <Popconfirm
                         title='Are you sure you want to remove these members? This action cannot be undone'
-                        onConfirm={() => {
-                            const req : any = {
-                                method: 'deleteMembers',
-                                memberIds: this.props.ids,
-                            }
-
-                            if (this.props.onActionCall) {
-                                this.props.onActionCall()
-                            }
-
-                            this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet())
-                                .then((res) => {
-                                    if (res.ok) {
-                                        if (this.props.onDeleted) {
-                                            return this.props.onDeleted(this.props.ids)
-                                        }
-                                        return message.success('Members successfuly removed')
-                                    }
-                                    message.error('There was an error removing those members')
-                                    console.error(res)
-                                }).catch((error) => {
-                                    message.error('There was an error removing those members')
-                                    console.error(error)
-                                })
-                        }}
+                        onConfirm={this.onRemoveConfirm.bind(this)}
                     >
                         <span><DeleteOutlined /> Remove</span>
                     </Popconfirm>
                 </Menu.Item>
                 <Menu.Item
                     key='validate'
-                    onClick={() => {
-                        const req : any = {
-                            method: 'sendValidationLinks',
-                            memberIds: this.props.ids,
-                        }
-
-                        if (this.props.onActionCall) {
-                            this.props.onActionCall()
-                        }
-
-                        this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet())
-                            .then((res) => {
-                                if (res.ok) {
-                                    if (this.props.onActionComplete) {
-                                        this.props.onActionComplete()
-                                    }
-                                    return message.success('Validation links properly sent')
-                                }
-                                message.error('There was an error sending those validation links')
-                                console.error(res)
-                            }).catch((error) => {
-                                if (this.props.onActionComplete) {
-                                    this.props.onActionComplete()
-                                }
-
-                                message.error('There was an error sending those validation links')
-                                console.error(error)
-                            })
-                    }}
+                    onClick={this.onValidateClick.bind(this)}
                 >
                     <span><MailOutlined /> Send validation email</span>
                 </Menu.Item>
@@ -108,7 +108,7 @@ export default class BulkActions extends Component<BulkActionsProps, BulkActions
         forcedClose: false,
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(props, state) : BulkActionsState {
         if (state.forcedClose) {
             return {
                 ...state,

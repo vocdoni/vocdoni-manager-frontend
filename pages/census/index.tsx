@@ -1,8 +1,7 @@
 import { useContext, Component, ReactText } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
-import { Row, Col, Divider, Table, Tag, Select, Space, Button, message, Modal } from 'antd'
-import { DeleteRowOutlined } from '@ant-design/icons'
+import { Row, Col, Divider, Table, message } from 'antd'
 
 import { ICensus } from '../../lib/types'
 import { getNetworkState } from '../../lib/network'

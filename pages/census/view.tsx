@@ -1,7 +1,6 @@
 import React, { useContext, Component } from 'react'
 import { Row, Col, Divider, Button, message, Descriptions, Popconfirm } from 'antd'
 import Router from 'next/router'
-import Link from 'next/link'
 import { DeleteOutlined } from '@ant-design/icons'
 
 import { getNetworkState } from '../../lib/network'
