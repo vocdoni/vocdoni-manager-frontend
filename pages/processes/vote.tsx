@@ -30,6 +30,8 @@ import ViewWrapper from '../../components/processes/ViewWrapper'
 import Questions from '../../components/processes/Questions'
 import { areAllNumbers } from '../../lib/util'
 
+import styles from '../../components/vote.module.css'
+
 const { Entity } = API
 
 const BLOCK_TIME: number = parseInt(process.env.BLOCK_TIME, 10)
@@ -338,6 +340,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                 visible={this.state.showSubmitConfirmation}
                 okText={main.confirm}
                 cancelText={main.goBack}
+                okButtonProps={{className: styles.btn}}
                 onOk={() => {
                     this.setState({ showSubmitConfirmation: false })
                     setTimeout(() => this.onSubmitVote(), 100) // wait a bit for the modal to dismiss
@@ -348,8 +351,20 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             </Modal>
 
             <div className='bottom-button-wrapper'>
-                <Button size={'large'} onClick={() => this.backFromConfirmSummary()}>{main.goBack}</Button>
-                <Button type='primary' size={'large'} onClick={() => this.setState({ showSubmitConfirmation: true })}>{main.castMyVote}</Button>
+                <Button
+                    size='large'
+                    onClick={() => this.backFromConfirmSummary()}
+                >
+                    {main.goBack}
+                </Button>
+                <Button
+                    type='primary'
+                    size='large'
+                    onClick={() => this.setState({ showSubmitConfirmation: true })}
+                    className={styles.btn}
+                >
+                    {main.castMyVote}
+                </Button>
             </div>
         </div>
     }

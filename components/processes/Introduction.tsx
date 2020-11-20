@@ -1,9 +1,11 @@
-import { Divider } from 'antd'
+import { Button, Divider } from 'antd'
 import React, { Component, ReactNode } from 'react'
 import ReactPlayer from 'react-player'
 
 import If from '../if'
 import { ViewWrapperProps } from './ViewWrapper'
+
+import styles from '../vote.module.css'
 
 export default class Introduction extends Component<ViewWrapperProps, undefined> {
     render() : ReactNode {
@@ -11,7 +13,7 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
             return null
         }
 
-        const { process } = this.props
+        const { process, entityId } = this.props
 
         return <>
             <h1>{process.details.title.default}</h1>
@@ -32,6 +34,19 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                         className='react-player'
                     />
                 </div>
+            </If>
+            <If condition={entityId && entityId === '0x8b95114ee6e6f00489c8a83b302867224757fc9d1dfcf16ed07280c63acab3a7'}>
+                <Divider />
+                {/* Visca el hardcoding */}
+                <h2>Participa a l'Assamblea telemàtica</h2>
+                <p>Envia les teves preguntes i comentaris omplint el següent formulari. Et respondrem properament.</p>
+                <Button
+                    target='_blank'
+                    href='https://forms.office.com/Pages/ResponsePage.aspx?id=UuSsAjtiHUuX0V7mJ6BRkitHe94NQgBAngyYntH7c2xUNk1COUg5V01DWTYxT1BWTFk4UUNXRFo3NS4u'
+                    className={styles.btn}
+                >
+                    Participa-hi
+                </Button>
             </If>
         </>
     }

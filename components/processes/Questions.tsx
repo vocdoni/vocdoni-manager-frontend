@@ -5,6 +5,9 @@ import React, { Component, ReactNode } from 'react'
 import main from '../../i18n/ca'
 import { areAllNumbers } from '../../lib/util'
 
+// harcoding style
+import styles from '../vote.module.css'
+
 type Props = {
     process: ProcessMetadata,
     onSubmitClick: (values: number[]) => void,
@@ -64,7 +67,11 @@ export default class Questions extends Component<Props, State> {
                     >
                         {
                             question.voteOptions.map((option, i) => (
-                                <Radio key={i} style={radioStyle} value={option.value}>
+                                <Radio
+                                    key={i}
+                                    style={radioStyle}
+                                    value={option.value}
+                                >
                                     {option.title.default}
                                 </Radio>
                             ))
@@ -78,9 +85,9 @@ export default class Questions extends Component<Props, State> {
             <div className='bottom-button-wrapper'>
                 <Button
                     type='primary'
-                    style={{ margin: 'auto' }}
                     size={'large'}
                     disabled={!allQuestionsChosen}
+                    className={styles.btn}
                     onClick={() => this.props.onSubmitClick(choices)}
                 >
                     {main.confirmSelection}

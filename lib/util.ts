@@ -1,5 +1,6 @@
 import sanitize from 'sanitize-html'
-import { MultiLanguage } from 'dvote-js'
+import { EntityMetadata, MultiLanguage } from 'dvote-js'
+import { CSSProperties } from 'react'
 
 export function isServer(): boolean {
     return typeof window === 'undefined'
