@@ -1,4 +1,4 @@
-import React, { Component, Fragment, ReactNode } from 'react'
+import React, { Component, Fragment, ReactChild, ReactNode } from 'react'
 import { message, notification, Spin, Modal, Divider, Button } from 'antd'
 import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
 import { LoadingOutlined } from '@ant-design/icons'
@@ -68,8 +68,6 @@ type Status = {
     hasEnded: boolean,
     isInCensus: boolean,
 }
-
-const timeout = (s: number) => new Promise((r) => setTimeout(r, s*1000))
 
 // Stateful component
 class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
@@ -339,7 +337,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             }
         }
         else if (isSubmitting) {
-            contents = <>{main.submittingVote}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
+            contents = <><Divider />{main.submittingVote}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
         }
         else if (!hasStarted) {
             contents = <>{main.theProcessHasNotStarted}</>
@@ -357,15 +355,15 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         return <div className='vote-status'>{contents}</div>
     }
 
-    // STAGE 0/X
     renderReadOnlySummary(status: Status) : ReactNode {
-        return <div className='center-content'>
-            <Divider />
-            {this.renderStatus(status)}
-        </div>
+        return (
+            <>
+                <Divider />
+                {this.renderStatus(status)}
+            </>
+        )
     }
 
-    // STAGE 3
     renderConfirmSummary() : ReactNode {
         const { process, choices } = this.state
         return <>
@@ -430,7 +428,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         </div>
     }
 
-    renderProcess() : any {
+    renderProcess() : ReactNode {
         const {
             process,
             choices,
@@ -452,7 +450,6 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         const isInCensus = !!this.state.merkleProof
 
         const canVote = !hasVoted && hasStarted && !hasEnded && isInCensus && !isCanceled
-        // const canSubmit = allQuestionsChosen && !hasVoted && hasStarted && !hasEnded && isInCensus && !isCanceled
 
         const status = {
             loadingStatus,
@@ -486,6 +483,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         else {
             body = <Questions
                 process={process}
+                choices={this.state.choices}
                 onSubmitClick={(values) => this.onContinueClicked(values)}
             />
         }
@@ -541,8 +539,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
     }
 }
 
-// tslint:disable-next-line
-ProcessVoteView.Layout = function ProcessLayout(props: any) {
+ProcessVoteView.Layout = function ProcessLayout(props: {children: ReactChild}) {
     return <>{props.children}</>
 }
 

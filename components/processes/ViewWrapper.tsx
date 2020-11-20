@@ -7,7 +7,7 @@ import HeaderImage from './HeaderImage'
 import Introduction from './Introduction'
 
 export type ViewWrapperProps  = ProcessVoteViewState & {
-    children: ReactChild | ReactChild[],
+    children: ReactChild | ReactChild[] | ReactNode | ReactNode[],
     process?: ProcessMetadata,
     entity?: EntityMetadata,
 }

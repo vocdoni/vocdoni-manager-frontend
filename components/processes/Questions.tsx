@@ -12,6 +12,7 @@ type Props = {
     process: ProcessMetadata,
     onSubmitClick: (values: number[]) => void,
     onOptionChange?: (questionId: number, value: any) => void
+    choices: number[],
 }
 
 type State = {
@@ -27,6 +28,12 @@ const radioStyle = {
 export default class Questions extends Component<Props, State> {
     state = {
         choices: [],
+    }
+
+    componentDidMount() : void {
+        if (this.props.choices) {
+            this.setState({choices: this.props.choices})
+        }
     }
 
     setQuestionChoice(questionIdx: number, choiceValue: number) : void {
@@ -54,7 +61,7 @@ export default class Questions extends Component<Props, State> {
             <Divider />
             <h2>{main.selectQuestionsTitle}</h2>
             {
-                process.details.questions.map((question, questionIdx) => <div key={questionIdx} className='stage2'>
+                process.details.questions.map((question, questionIdx) => <div key={questionIdx} className='vote-questions'>
                     <Divider />
                     <h4>{question.question.default}</h4>
                     <div
