@@ -27,5 +27,9 @@ export default ({
     processDescriptionStage4: 'Moltes gràcies per votar!',
     retryConnection: 'Intenta-ho de nou',
     yourVoteHasBeenRegisteredOn: 'Your vote has been registered on ',
+    confirm: 'Confirm',
     selectQuestionsTitle: 'Voting',
+    titleCSVLogin: 'Enter your data',
+    buttonCSVLogin: 'Verify',
+    errorCSVInvalidData: 'The entered data doesn\'t seem correct, please, check it.',
 })

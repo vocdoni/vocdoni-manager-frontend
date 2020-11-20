@@ -67,6 +67,7 @@
     max-width: 90%;
 }
 
+.vote-process .ant-card-body form h1:first-of-type,
 .vote-process .ant-card-body > h1:first-of-type {
     margin-top: 2em;
 }
