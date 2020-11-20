@@ -1,4 +1,4 @@
-import React, { Component, Fragment, ReactComponentElement, ReactElement, ReactNode } from 'react'
+import React, { Component, Fragment, ReactNode } from 'react'
 import { message, notification, Spin, Modal, Divider, Button } from 'antd'
 import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
 import { LoadingOutlined } from '@ant-design/icons'
@@ -215,9 +215,13 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             })
         }
         catch (err) {
-            this.setState({ refreshingVoteStatus: false })
-            if (err && err.message == 'The Merkle Proof could not be fetched')
+            this.setState({
+                refreshingVoteStatus: false,
+            })
+
+            if (err && err.message == 'The Merkle Proof could not be fetched') {
                 return message.warn(main.youAreNotInTheCensus)
+            }
 
             message.error(main.couldNotCheckCensus)
         }

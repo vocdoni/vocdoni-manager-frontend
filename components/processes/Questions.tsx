@@ -51,6 +51,7 @@ export default class Questions extends Component<Props, State> {
         const allQuestionsChosen = areAllNumbers(this.state.choices) && choices.length == process.details.questions.length
 
         return <>
+            <Divider />
             <h2>{main.selectQuestionsTitle}</h2>
             {
                 process.details.questions.map((question, questionIdx) => <div key={questionIdx} className='stage2'>
