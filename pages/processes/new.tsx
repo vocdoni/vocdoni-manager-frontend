@@ -394,6 +394,14 @@ class ProcessNew extends Component<IAppContext, State> {
                             </small>
                         </Form.Item>
                         <Form.Item>
+                            <label>Stream URL</label>
+                            <Input
+                                placeholder="https://www.youtube.com/watch?v=BO8lX3hDU30"
+                                value={this.state.process.details.streamUrl}
+                                onChange={ev => this.setNewProcessField(['details', 'streamUrl'], ev.target.value)}
+                            />
+                        </Form.Item>
+                        <Form.Item>
                             <label>Vote Count Type</label>
                             <br />
                             <Radio.Group buttonStyle="solid" value={this.state.process.type} onChange={e => this.setNewProcessField(["type"], e.target.value)}>
