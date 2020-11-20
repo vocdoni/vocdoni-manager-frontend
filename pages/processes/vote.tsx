@@ -58,6 +58,17 @@ export type ProcessVoteViewState = {
     choices: number[],
 }
 
+type Status = {
+    loadingStatus: boolean,
+    refreshingVoteStatus: boolean,
+    hasVoted: boolean,
+    isSubmitting: boolean,
+    isCanceled: boolean,
+    hasStarted: boolean,
+    hasEnded: boolean,
+    isInCensus: boolean,
+}
+
 const timeout = (s: number) => new Promise((r) => setTimeout(r, s*1000))
 
 // Stateful component
@@ -295,35 +306,71 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         }
     }
 
-    renderStatus(status: {
-        loadingStatus: boolean, refreshingVoteStatus: boolean, hasVoted: boolean, isSubmitting: boolean, isCanceled: boolean, hasStarted: boolean, hasEnded: boolean, isInCensus: boolean
-    }) : ReactNode {
-        const { loadingStatus, refreshingVoteStatus, hasVoted, isSubmitting, isCanceled, hasStarted, hasEnded, isInCensus } = status
+    // This should be a component and be directly in the render
+    renderStatus(status: Status) : ReactNode {
+        const {
+            loadingStatus,
+            refreshingVoteStatus,
+            hasVoted,
+            isSubmitting,
+            isCanceled,
+            hasStarted,
+            hasEnded,
+            isInCensus,
+        } = status
 
-        if (loadingStatus || refreshingVoteStatus) return <p><span className='status muted'>{main.loading}... &nbsp; <Spin indicator={<LoadingOutlined />} /></span></p>
+        let contents : ReactNode = null
+
+        if (loadingStatus || refreshingVoteStatus) {
+            contents = <>{main.loading}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
+        }
         else if (hasVoted) {
             if (this.state.hasVotedOnDate) {
-                const strDate = this.state.hasVotedOnDate.date() + '/' + (this.state.hasVotedOnDate.month() + 1) + '/' + this.state.hasVotedOnDate.year() + ' ' + this.state.hasVotedOnDate.hours() + ':' + ('0' + this.state.hasVotedOnDate.minutes()).substr(-2) + 'h'
-                return <><p><span className='status success'>{main.yourVoteHasBeenRegisteredOn} {strDate}</span></p></>
+                const strDate = this.state.hasVotedOnDate.date()
+                    + '/' + (this.state.hasVotedOnDate.month() + 1)
+                    + '/' + this.state.hasVotedOnDate.year()
+                    + ' ' + this.state.hasVotedOnDate.hours()
+                    + ':' + ('0' + this.state.hasVotedOnDate.minutes()).substr(-2)
+                    + 'h'
+                contents = <>{main.yourVoteHasBeenRegisteredOn} {strDate}</>
             }
-            else
-                return <><p><span className='status success'>{main.yourVoteIsRegistered}</span></p></>
+            else {
+                contents = <>{main.yourVoteIsRegistered}</>
+            }
         }
-        else if (isSubmitting) return <p><span className='status muted'>{main.submittingVote}... &nbsp; <Spin indicator={<LoadingOutlined />} /></span></p>
-        else if (!hasStarted) return <p><span className='status muted'>{main.theProcessHasNotStarted}</span></p>
-        else if (isCanceled || hasEnded) return <p><span className='status muted'>{main.theProcessHasEnded}</span></p>
-        else if (isInCensus) return <p><span className='status success'>{main.youCanVote}</span></p>
-        else return <p><span className='status warning'>{main.youAreNotInTheCensus}</span></p>
+        else if (isSubmitting) {
+            contents = <>{main.submittingVote}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
+        }
+        else if (!hasStarted) {
+            contents = <>{main.theProcessHasNotStarted}</>
+        }
+        else if (isCanceled || hasEnded) {
+            contents = <>{main.theProcessHasEnded}</>
+        }
+        else if (isInCensus) {
+            contents = <>{main.youCanVote}</>
+        }
+        else {
+            contents = <>{main.youAreNotInTheCensus}</>
+        }
+
+        return <div className='vote-status'>{contents}</div>
+    }
+
+    // STAGE 0/X
+    renderReadOnlySummary(status: Status) : ReactNode {
+        return <div className='center-content'>
+            <Divider />
+            {this.renderStatus(status)}
+        </div>
     }
 
     // STAGE 3
     renderConfirmSummary() : ReactNode {
         const { process, choices } = this.state
-
-        return <div className='center-content'>
-            {/* <Divider>{process.details.title.default}</Divider> */}
+        return <>
             <Divider />
-            <p style={{ marginBottom: 30 }} className='info-text'><MultiLine text={main.processDescriptionStage3} /></p>
+            <p className='info-text'><MultiLine text={main.processDescriptionStage3} /></p>
             {
                 process.details.questions.map((question, idx) => <Fragment key={idx}>
                     {
@@ -370,43 +417,16 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     {main.castMyVote}
                 </Button>
             </div>
-        </div>
+        </>
     }
 
-    // STAGE 4
-    renderSubmitting() : ReactNode {
+    renderHasVotedSummary(status: Status) : ReactNode {
         return <div className='center-content'>
-            {/* <Divider>{main.votingStatus}</Divider> */}
-            <Divider />
-            <p><span className='status muted'>{main.submittingVote}... &nbsp; <Spin indicator={<LoadingOutlined />} /></span></p>
-        </div>
-    }
-
-    // STAGE 5
-    renderHasVotedSummary(status: {
-        loadingStatus: boolean, refreshingVoteStatus: boolean, hasVoted: boolean, isSubmitting: boolean, isCanceled: boolean, hasStarted: boolean, hasEnded: boolean, isInCensus: boolean
-    }) : ReactNode {
-        // const { loadingStatus, refreshingVoteStatus, hasVoted, isSubmitting, isCanceled, hasStarted, hasEnded, isInCensus } = status
-        const { process } = this.state
-
-        return <div className='center-content'>
-            {/* <Divider>{process.details.title.default}</Divider> */}
             <Divider />
             {this.renderStatus(status)}
-            <p className='info-text' style={{ marginBottom: 0 }}><MultiLine text={main.processDescriptionStage4} /></p>
-            {/* <p>{process.details.description.default}</p> */}
-        </div>
-    }
-
-    // STAGE 0/X
-    renderReadOnlySummary(status: {
-        loadingStatus: boolean, refreshingVoteStatus: boolean, hasVoted: boolean, isSubmitting: boolean, isCanceled: boolean, hasStarted: boolean, hasEnded: boolean, isInCensus: boolean
-    }) : ReactNode {
-        // const { loadingStatus, refreshingVoteStatus, hasVoted, isSubmitting, isCanceled, hasStarted, hasEnded, isInCensus } = status
-        return <div className='center-content'>
-            {/* <Divider>{main.votingStatus}</Divider> */}
-            <Divider />
-            {this.renderStatus(status)}
+            <p className='vote-status' style={{marginTop: '1em'}}>
+                <MultiLine text={main.processDescriptionStage4} />
+            </p>
         </div>
     }
 
@@ -434,20 +454,31 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         const canVote = !hasVoted && hasStarted && !hasEnded && isInCensus && !isCanceled
         // const canSubmit = allQuestionsChosen && !hasVoted && hasStarted && !hasEnded && isInCensus && !isCanceled
 
+        const status = {
+            loadingStatus,
+            refreshingVoteStatus,
+            hasVoted,
+            isSubmitting,
+            isCanceled,
+            hasStarted,
+            hasEnded,
+            isInCensus,
+        }
+
         let body: ReactNode
         if (!canVote) {
             if (hasVoted) {
-                body = this.renderHasVotedSummary({ loadingStatus, refreshingVoteStatus, hasVoted, isSubmitting, isCanceled, hasStarted, hasEnded, isInCensus })
+                body = this.renderHasVotedSummary(status)
             }
             else {
-                body = this.renderReadOnlySummary({ loadingStatus, refreshingVoteStatus, hasVoted, isSubmitting, isCanceled, hasStarted, hasEnded, isInCensus })
+                body = this.renderReadOnlySummary(status)
             }
         }
         else if (isSubmitting) {
-            body = this.renderSubmitting()
+            body = this.renderStatus(status)
         }
         else if (refreshingVoteStatus) {
-            body = this.renderReadOnlySummary({ loadingStatus, refreshingVoteStatus, hasVoted, isSubmitting, isCanceled, hasStarted, hasEnded, isInCensus })
+            body = this.renderReadOnlySummary(status)
         }
         else if (allQuestionsChosen && showConfirmChoices) {
             body = this.renderConfirmSummary()

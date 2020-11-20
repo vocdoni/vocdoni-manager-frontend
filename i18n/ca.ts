@@ -20,7 +20,7 @@ export default ({
     theProcessHasNotStarted: 'La votació encara no ha començat',
     theProcessHasEnded: 'La votació ha acabat',
     youCanVote: 'Pots emetre el teu vot',
-    processDescriptionStage3: 'Aquesta és la llista que votaràs:',
+    processDescriptionStage3: 'Aquestes són les teves seleccions:',
     youAreAboutToSendYourVoteConfirmContinue: 'Estàs a punt votar. Aquesta acció no es pot desfer. Vols continuar?',
     goBack: 'Torna enrere',
     castMyVote: 'Envia el meu vot',

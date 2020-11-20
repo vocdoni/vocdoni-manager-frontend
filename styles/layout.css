@@ -112,3 +112,9 @@
     left: 50%;
     margin-left: -75px;
 }
+
+.vote-status {
+    font-style: italic;
+    color: gray;
+    text-align: center;
+}
