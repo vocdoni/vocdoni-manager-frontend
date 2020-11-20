@@ -2,7 +2,7 @@ import React, { Fragment, Component, ReactNode, ReactChild } from 'react'
 import PropTypes from 'prop-types'
 
 type Props = {
-    condition: boolean,
+    condition: boolean | number | null | undefined | string,
     children: ReactChild | ReactChild[],
 }
 
@@ -10,7 +10,9 @@ export default class If extends Component<Props> {
     static propTypes = {
         condition: PropTypes.oneOfType([
             PropTypes.bool,
+            PropTypes.number,
             PropTypes.oneOf([null, undefined]),
+            PropTypes.string,
         ]).isRequired,
         children: PropTypes.oneOfType([
             PropTypes.arrayOf(PropTypes.node),
