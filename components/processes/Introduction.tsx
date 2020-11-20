@@ -26,9 +26,7 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                 <div className='player-wrapper'>
                     <ReactPlayer
                         url={process.details.streamUrl}
-                        muted={true}
                         controls={true}
-                        playing={true}
                         width='100%'
                         height='100%'
                         className='react-player'
