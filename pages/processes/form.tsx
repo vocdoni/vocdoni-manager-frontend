@@ -23,11 +23,10 @@ import { RcFile } from 'antd/lib/upload'
 import { getSpreadsheetReaderForFile, getJSONFromWorksheet } from '../../lib/import-utils'
 import DisabledLayer from '../../components/disabled-layer'
 import { addClaimBulk, publishCensus, addCensus } from 'dvote-js/dist/api/census'
-import { utils, Wallet } from 'ethers'
+import { Wallet } from 'ethers'
 
 const { Entity } = API
 const { RangePicker } = DatePicker
-const { Option } = Select
 
 // const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180", 10)
 // const BLOCK_MARGIN = 5 // extra blocks
@@ -336,10 +335,9 @@ class ProcessNew extends Component<IAppContext, State> {
             const wallet = this.props.web3Wallet.getWallet()
             const processId = await createVotingProcess(newProcess, wallet, gwPool)
 
-            // Avoid crash from e-mail sending
-            let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
-
-            message.success(msg)
+            message.success(
+                `The voting process with ID ${processId.substr(0, 8)} has been created.`
+            )
 
             hideLoading()
 
@@ -387,7 +385,7 @@ class ProcessNew extends Component<IAppContext, State> {
             if (!rangeMatches) throw new Error("Invalid document range")
 
             let parsed = getJSONFromWorksheet(worksheet)
-            let title = parsed.shift()
+            const title = parsed.shift()
             if (!this.state.entityId || this.state.entityId.length == 0) {
                 throw new Error("entity info not available")
             }

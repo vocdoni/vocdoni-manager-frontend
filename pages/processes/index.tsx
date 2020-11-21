@@ -226,7 +226,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const procQuestions = this.state.process.details.questions
         const resultQuestions = this.state.results && this.state.results.questions && this.state.results.questions || []
         const formURI = (this.state.process.details["formURI"]) ?  this.state.process.details["formURI"] : null
-    
+
         return <div className="body-card">
             <Row justify="space-between">
                 <Col xs={24} sm={20} md={14}>
@@ -266,12 +266,14 @@ class ProcessActiveView extends Component<IAppContext, State> {
                         </> : null
                     }
                     <br />
-                    {(formURI) ? <>
-                    <h4>Form URI</h4>
-                             <Link href={`/processes/login/#/${process.details.entityId}/${processId}/${formURI}`}>
-                             <pre> <a>{formURI}</a></pre>
+                    {(formURI) ? (
+                        <>
+                            <h4>Form URI</h4>
+                            <Link href={`/processes/login/#/${process.details.entityId}/${processId}/${formURI}`}>
+                                <pre> <a>{formURI}</a></pre>
                             </Link>
-                        </>:null
+                        </>
+                    ) : null
                     }
 
                     <Divider orientation="left">Time frame</Divider>
