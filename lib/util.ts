@@ -1,6 +1,7 @@
 import sanitize from 'sanitize-html'
-import { EntityMetadata, MultiLanguage } from 'dvote-js'
-import { CSSProperties } from 'react'
+import { MultiLanguage } from 'dvote-js'
+import { ethers } from 'ethers'
+import { digestHexClaim } from 'dvote-js/dist/api/census'
 
 export function isServer(): boolean {
     return typeof window === 'undefined'
@@ -59,4 +60,22 @@ export const areAllNumbers = (slice: any[]) => {
     }
 
     return !found
+}
+
+
+export const importedRowToString = (row: string[], entityId: string): string => {
+    return row.reduce((i, j) => { return i + j })  + entityId
+}
+
+export const extractDigestedPubKeyFromFormData = (data: string): {privKey: string, digestedHexClaim: string} => {
+    // TODO implement spaces/accents/capitals conversion ?
+    const bytes = ethers.utils.toUtf8Bytes(data)
+    const hashed = ethers.utils.keccak256(bytes)
+    const tempWallet = new ethers.Wallet(hashed)
+    const pubKey = tempWallet['signingKey'].publicKey
+    console.log("\t", data, "\n\t", JSON.stringify(tempWallet, null, 2), "\n\t", "pubKey", pubKey)
+    return {
+        privKey: tempWallet.privateKey,
+        digestedHexClaim: digestHexClaim(pubKey)
+    }
 }

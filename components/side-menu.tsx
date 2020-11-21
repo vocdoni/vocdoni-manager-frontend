@@ -60,7 +60,14 @@ const SideMenu = () => {
                 <a>Create</a>
             </Link>
         </Menu.Item>
-            }
+         }
+         {!hideEditControls &&
+         <Menu.Item key="new-form-vote" disabled={context.menuDisabled}>
+            <Link href={"/processes/form"}>
+                <a>Create Form</a>
+            </Link>
+        </Menu.Item>
+        }
         </Menu.SubMenu>
         {
             !hideEditControls &&

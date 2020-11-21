@@ -24,3 +24,7 @@ export const getSpreadsheetReaderForFile = async (file: RcFile) => {
 
     return xlsx.read(buffer, {type: 'buffer'})
 }
+
+export const getJSONFromWorksheet = (ws: xlsx.WorkSheet) : string[][] => {
+    return xlsx.utils.sheet_to_json(ws, { header: 1, raw: false });
+}

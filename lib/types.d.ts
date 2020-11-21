@@ -78,3 +78,8 @@ export type MemberImportData = {
     lastName: string,
     email: string,
 }
+
+export type VotingFormImportData = {
+    title: string,
+    digestedHexClaims: string[],
+}
