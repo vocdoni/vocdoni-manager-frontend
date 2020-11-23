@@ -317,7 +317,7 @@ class ProcessNew extends Component<IAppContext, State> {
             const [target] = this.state.targets
             const {census, merkleRoot, merkleTreeUri}= await this.props.createCensusForTarget(null, target)
 
-            newProcess.census.merkleRoot = `0x${merkleRoot}` // just don't ask 🙃
+            newProcess.census.merkleRoot = merkleRoot
             newProcess.census.merkleTree = merkleTreeUri
             censusId = census
         }

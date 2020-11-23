@@ -17,7 +17,7 @@ import { HEX_REGEX } from '../../lib/constants'
 import HeaderImage from '../../components/processes/HeaderImage'
 import style from '../../components/vote.module.css'
 import If from '../../components/if'
-import { extractDigestedPubKeyFromFormData, importedRowToString } from '../../lib/util'
+import { extractDigestedPubKeyFromFormData, findHexId, importedRowToString } from '../../lib/util'
 import { generateProof } from 'dvote-js/dist/api/census'
 import ErrorCard from '../../components/error-card'
 import SinglePageLayout from '../../components/layouts/single-page'
@@ -80,7 +80,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             const entity = await Entity.getEntityMetadata(entityId, gateway)
             const processes = await getProcessList(entityId, gateway)
 
-            const exists = processes.find((pid: string) => `0x${pid}` === processId)
+            const exists = processes.find(findHexId(processId))
             if (!exists) {
                 throw new Error('not-found')
             }

@@ -28,7 +28,7 @@ import { HEX_REGEX } from '../../lib/constants'
 import NotFound from '../../components/not-found'
 import ViewWrapper from '../../components/processes/ViewWrapper'
 import Questions from '../../components/processes/Questions'
-import { areAllNumbers } from '../../lib/util'
+import { areAllNumbers, findHexId } from '../../lib/util'
 
 import styles from '../../components/vote.module.css'
 
@@ -169,7 +169,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             const entity = await Entity.getEntityMetadata(entityId, gateway)
             const processes = await getProcessList(entityId, gateway)
 
-            const exists = processes.find((pid: string) => `0x${pid}` === processId)
+            const exists = processes.find(findHexId(processId))
             if (!exists) {
                 throw new Error('not-found')
             }

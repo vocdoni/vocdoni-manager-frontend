@@ -1,4 +1,4 @@
-import { areAllNumbers, getRandomInt, getRandomUnsplashImage } from './util'
+import { areAllNumbers, findHexId, getRandomInt, getRandomUnsplashImage } from './util'
 
 describe('utils', () => {
     describe('getRandomInt()', () => {
@@ -24,6 +24,35 @@ describe('utils', () => {
         it('returns false if any of the slice contents are not numbers', () => {
             const slice = [1, 2, 1231, 'n']
             expect(areAllNumbers(slice)).toBeFalsy()
+        })
+    })
+    describe('findHexId', () => {
+        const hexes = [
+            '0x131',
+            '0x221',
+            '0x312',
+            '0xaF1',
+        ]
+        const nunHex = [
+            '131',
+            '221',
+            '312'
+        ]
+        it('works with prefixed slices', () => {
+            let found = hexes.find(findHexId('0x131'))
+            expect(found).toEqual('0x131')
+            found = hexes.find(findHexId('221'))
+            expect(found).toEqual('0x221')
+        })
+        it('works with non-prefixed slices', () => {
+            let found = nunHex.find(findHexId('312'))
+            expect(found).toEqual('312')
+            found = nunHex.find(findHexId('221'))
+            expect(found).toEqual('221')
+        })
+        it('works with upper and lower case', () => {
+            const found = hexes.find(findHexId('aF1'))
+            expect(found).toEqual('0xaF1')
         })
     })
 })

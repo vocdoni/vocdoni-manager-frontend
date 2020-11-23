@@ -79,3 +79,19 @@ export const extractDigestedPubKeyFromFormData = (data: string): {privKey: strin
         digestedHexClaim: digestHexClaim(pubKey)
     }
 }
+
+export const isHex = (hex: string) : boolean => /^0x[0-9a-f]/i.test(hex)
+
+export const findHexId = (id: string) => (sid: string) : boolean => {
+    const idIsHex = isHex(id)
+    const sidIsHex = isHex(sid)
+
+    if (!sidIsHex && idIsHex) {
+        return `0x${sid}` === id
+    } else if (sidIsHex && !idIsHex) {
+        return `0x${id}` === sid
+    }
+
+    // none of the ids are prefixed
+    return sid === id
+}
