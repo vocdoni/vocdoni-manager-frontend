@@ -111,6 +111,8 @@
     bottom: -75px;
     left: 50%;
     margin-left: -75px;
+    width: auto;
+    display: inline-block;
 }
 .vote-status {
     font-style: italic;
