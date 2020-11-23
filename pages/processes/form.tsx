@@ -455,8 +455,6 @@ class ProcessNew extends Component<IAppContext, State> {
                 <Divider orientation="left">New vote</Divider>
                 <Row justify="center"></Row>
                 <Col xs={24} sm={20} md={14}>
-
-
                     <Form>
                         <Form.Item>
                             <label>Title</label>
@@ -486,6 +484,14 @@ class ProcessNew extends Component<IAppContext, State> {
                             <small style={{ lineHeight: "35px" }}>
                                 <a href="https://unsplash.com/" target="_blank" rel="noreferrer">If you don't have images, try to find one at unsplash.com</a>
                             </small>
+                        </Form.Item>
+                        <Form.Item>
+                            <label>Stream URL</label>
+                            <Input
+                                placeholder="https://www.youtube.com/watch?v=BO8lX3hDU30"
+                                value={this.state.process.details.streamUrl}
+                                onChange={ev => this.setNewProcessField(['details', 'streamUrl'], ev.target.value)}
+                            />
                         </Form.Item>
                         <Form.Item>
                             <label>Vote Count Type</label>
