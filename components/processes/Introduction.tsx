@@ -36,8 +36,12 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
             <If condition={entityId && entityId === '0x8b95114ee6e6f00489c8a83b302867224757fc9d1dfcf16ed07280c63acab3a7'}>
                 <Divider />
                 {/* Visca el hardcoding */}
-                <h2>Participa a l'Assamblea telemàtica</h2>
-                <p>Envia les teves preguntes i comentaris omplint el següent formulari. Et respondrem properament.</p>
+                <h2>Precs i preguntes</h2>
+                <p>
+                    Envia les teves preguntes i comentaris omplint el formulari.
+                    Les preguntes rebudes seran llegides al final de cada punt
+                    de l’ordre del dia o al torn obert de paraules.
+                </p>
                 <Button
                     target='_blank'
                     href='https://forms.office.com/Pages/ResponsePage.aspx?id=UuSsAjtiHUuX0V7mJ6BRkitHe94NQgBAngyYntH7c2xUNk1COUg5V01DWTYxT1BWTFk4UUNXRFo3NS4u'
