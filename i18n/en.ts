@@ -30,6 +30,6 @@ export default ({
     confirm: 'Confirm',
     selectQuestionsTitle: 'Voting',
     titleCSVLogin: 'Enter your data',
-    buttonCSVLogin: 'Verify',
+    buttonCSVLogin: 'Log in',
     errorCSVInvalidData: 'The entered data doesn\'t seem correct, please, check it.',
 })

@@ -30,6 +30,6 @@ export default ({
     confirm: 'Confirma',
     selectQuestionsTitle: 'Votació',
     titleCSVLogin: 'Introdueix les teves dades',
-    buttonCSVLogin: 'Verifica',
+    buttonCSVLogin: 'Identifica\'t',
     errorCSVInvalidData: 'Les dades no semblen correctes, si et plau, revísa-les.',
 })
