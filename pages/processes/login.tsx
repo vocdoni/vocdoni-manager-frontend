@@ -1,7 +1,8 @@
 import React, { Component, ReactChild, ReactNode } from 'react'
-import { message, Row, Col, Card, Form, Input, Button } from 'antd'
+import { message, Card, Form, Input, Button } from 'antd'
 import { CardProps } from 'antd/lib/card'
 import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
+import { Wallet } from 'ethers'
 import Router from 'next/router'
 import {
     getVoteMetadata,
@@ -17,8 +18,9 @@ import HeaderImage from '../../components/processes/HeaderImage'
 import style from '../../components/vote.module.css'
 import If from '../../components/if'
 import { extractDigestedPubKeyFromFormData, importedRowToString } from '../../lib/util'
-import { Wallet } from 'ethers'
 import { generateProof } from 'dvote-js/dist/api/census'
+import ErrorCard from '../../components/error-card'
+import SinglePageLayout from '../../components/layouts/single-page'
 
 const { Entity } = API
 
@@ -27,12 +29,11 @@ export type ProcessVoteLoginState = {
     processId?: string,
     entity?: EntityMetadata,
     process?: ProcessMetadata,
-    error?: string,
     fields: string[],
     isCanceled?: boolean,
     loading: boolean,
     verifying: boolean,
-    connectionError?: string,
+    error?: string,
 }
 
 class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
@@ -91,19 +92,13 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             this.context.setTitle(voteMetadata.details.title.default)
         }
         catch (err) {
-            const notfounds = [
-                'not-found',
-                'The given entity has no metadata defined yet',
-            ]
-            if (notfounds.includes(err?.message)) {
-                return this.setState({
-                    loading: false,
-                })
-            }
+            const error = (err && err.message == 'Request timed out') ? main.processListLoadTimeout : main.notFound
 
-            const str = (err && err.message == 'Request timed out') ? main.processListLoadTimeout : main.couldNotLoadVote
-            message.error(str)
-            this.setState({ connectionError: str, loading: false })
+            message.error(error)
+            this.setState({
+                loading: false,
+                error,
+            })
         }
     }
 
@@ -151,24 +146,6 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
     }
 
     render() : ReactNode {
-        const resp = {
-            xs: {
-                span: 24,
-            },
-            md: {
-                span: 14,
-                push: 5,
-            },
-            xl: {
-                span: 10,
-                push: 7,
-            },
-            xxl: {
-                span: 8,
-                push: 8,
-            }
-        }
-
         const card = {
             className: 'voting-page',
         } as CardProps
@@ -177,35 +154,41 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             card.cover = <HeaderImage {...this.state} />
         }
 
+        if (this.state.error?.length) {
+            return (
+                <SinglePageLayout>
+                    <ErrorCard>{this.state.error}</ErrorCard>
+                </SinglePageLayout>
+            )
+        }
+
         return (
-            <Row className='vote-process login'>
-                <Col {...resp} style={{marginTop: '1em'}}>
-                    <Card {...card} style={{marginBottom: '10em'}} loading={this.state.loading}>
-                        <Form layout='vertical' onFinish={this.login.bind(this)}>
-                            <If condition={this.state.process?.details?.title?.default?.length}>
-                                <h1>{this.state.process?.details?.title?.default}</h1>
-                            </If>
-                            <h2>{main.titleCSVLogin}</h2>
-                            {
-                                this.state.fields.map((field, key) => (
-                                    <Form.Item label={field} name={field} key={key}>
-                                        <Input />
-                                    </Form.Item>
-                                ))
-                            }
-                            <Button
-                                htmlType='submit'
-                                type='primary'
-                                className={style.btn}
-                                disabled={this.state.verifying}
-                                loading={this.state.verifying || this.state.loading}
-                            >
-                                {main.buttonCSVLogin}
-                            </Button>
-                        </Form>
-                    </Card>
-                </Col>
-            </Row>
+            <SinglePageLayout>
+                <Card {...card} style={{marginBottom: '10em'}} loading={this.state.loading}>
+                    <Form layout='vertical' onFinish={this.login.bind(this)}>
+                        <If condition={this.state.process?.details?.title?.default?.length}>
+                            <h1>{this.state.process?.details?.title?.default}</h1>
+                        </If>
+                        <h2>{main.titleCSVLogin}</h2>
+                        {
+                            this.state.fields.map((field, key) => (
+                                <Form.Item label={field} name={field} key={key}>
+                                    <Input />
+                                </Form.Item>
+                            ))
+                        }
+                        <Button
+                            htmlType='submit'
+                            type='primary'
+                            className={style.btn}
+                            disabled={this.state.verifying}
+                            loading={this.state.verifying || this.state.loading}
+                        >
+                            {main.buttonCSVLogin}
+                        </Button>
+                    </Form>
+                </Card>
+            </SinglePageLayout>
         )
     }
 }

@@ -1,7 +1,8 @@
-import { Card, Col, Row } from 'antd'
+import { Card } from 'antd'
 import { EntityMetadata, ProcessMetadata } from 'dvote-js'
 import React, { Component, ReactChild, ReactNode } from 'react'
 import { ProcessVoteViewState } from '../../pages/processes/vote'
+import SinglePageLayout from '../layouts/single-page'
 
 import HeaderImage from './HeaderImage'
 import Introduction from './Introduction'
@@ -54,15 +55,13 @@ export default class ViewWrapper extends Component<ViewWrapperProps, undefined> 
         }
 
         return (
-            <Row className='vote-process'>
-                <Col {...resp} style={{marginTop: '1em'}}>
-                    <Card {...card} style={{marginBottom: '10em'}}>
-                        <Introduction {...this.props} />
-                        <div ref={this.endIntroRef} />
-                        {this.props.children}
-                    </Card>
-                </Col>
-            </Row>
+            <SinglePageLayout responsive={resp}>
+                <Card {...card} style={{marginBottom: '10em'}}>
+                    <Introduction {...this.props} />
+                    <div ref={this.endIntroRef} />
+                    {this.props.children}
+                </Card>
+            </SinglePageLayout>
         )
     }
 }
