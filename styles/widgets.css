@@ -96,3 +96,8 @@ form .ant-picker {
     top: 0;
     left: 0;
 }
+
+.dragger-fix + span {
+    display: block;
+    overflow: hidden;
+}

@@ -434,6 +434,7 @@ class ProcessNew extends Component<IAppContext, State> {
                         <p>In this section you can add new members to your organization's database. Once you upload the CSV file with the attributes of each user, an individual validation link will be generated which you will have to send to each user so that they can register in the entity. </p>
                         {/* <p>You can add new members by creating a new CSV or updating the existing one (The system will skip the existing members and only add the new ones).</p> */}
                         <br /><br />
+                        <div className='dragger-fix' />
                         <Dragger
                             beforeUpload={(file) => this.beforeUpload(file)}
                             onRemove={(file) => this.onRemoveUpload(file)}
