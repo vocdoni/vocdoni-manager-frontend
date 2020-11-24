@@ -311,33 +311,39 @@ class ProcessNew extends Component<IAppContext, State> {
         }
 
         let censusId = this.state.selectedCensusId
+        let sendEmails = false
 
         if (!newProcess.census.merkleRoot.length || !newProcess.census.merkleTree.length) {
             // hardcoded to first target for now (all)
             const [target] = this.state.targets
-            const {census, merkleRoot, merkleTreeUri}= await this.props.createCensusForTarget(null, target)
+            const {census, merkleRoot, merkleTreeUri} = await this.props.createCensusForTarget(null, target)
 
-            newProcess.census.merkleRoot = (merkleRoot.startsWith("0x")) ? merkleRoot : `0x${merkleRoot}`
+            newProcess.census.merkleRoot = (merkleRoot.startsWith('0x')) ? merkleRoot : `0x${merkleRoot}`
             newProcess.census.merkleTree = merkleTreeUri
             censusId = census
+
+            sendEmails = true
         }
 
         try {
             const wallet = this.props.web3Wallet.getWallet()
             const processId = await createVotingProcess(newProcess, wallet, gwPool)
 
-            const emailsReq : any = {
-                method: 'sendVotingLinks',
-                processId,
-                censusId,
-            }
 
-            // Avoid crash from e-mail sending
             let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
-            try {
-                await this.props.managerBackendGateway.sendMessage(emailsReq, wallet)
-            } catch (e) {
-                msg += ' There was an error sending e-mails tho.'
+            if (sendEmails) {
+                const emailsReq : any = {
+                    method: 'sendVotingLinks',
+                    processId,
+                    censusId,
+                }
+                // Avoid crash from e-mail sending
+                try {
+                    await this.props.managerBackendGateway.sendMessage(emailsReq, wallet)
+                } catch (e) {
+                    msg += ' There was an error sending e-mails tho.'
+                }
+
             }
 
             message.success(msg)
