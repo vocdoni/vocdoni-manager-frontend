@@ -22,17 +22,6 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                 className='process-description'
                 dangerouslySetInnerHTML={{__html: process.details.description.default}}
             />
-            <If condition={process.details.streamUrl?.length}>
-                <div className='player-wrapper'>
-                    <ReactPlayer
-                        url={process.details.streamUrl}
-                        controls={true}
-                        width='100%'
-                        height='100%'
-                        className='react-player'
-                    />
-                </div>
-            </If>
             <If condition={entityId && entityId === '0x8b95114ee6e6f00489c8a83b302867224757fc9d1dfcf16ed07280c63acab3a7'}>
                 <Divider />
                 {/* Visca el hardcoding */}
@@ -47,8 +36,19 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                     href='https://forms.office.com/Pages/ResponsePage.aspx?id=UuSsAjtiHUuX0V7mJ6BRkitHe94NQgBAngyYntH7c2xUNk1COUg5V01DWTYxT1BWTFk4UUNXRFo3NS4u'
                     className={styles.btn}
                 >
-                    Participa-hi
+                    Formulari
                 </Button>
+            </If>
+            <If condition={process.details.streamUrl?.length}>
+                <div className='player-wrapper'>
+                    <ReactPlayer
+                        url={process.details.streamUrl}
+                        controls={true}
+                        width='100%'
+                        height='100%'
+                        className='react-player'
+                    />
+                </div>
             </If>
         </>
     }

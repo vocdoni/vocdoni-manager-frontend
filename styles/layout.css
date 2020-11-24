@@ -119,7 +119,9 @@
     color: gray;
     text-align: center;
 }
+.vote-questions {
+    counter-increment: questions;
+}
 .vote-questions h4::before {
-    counter-increment: section;
-    content: counter(section) ". ";
+    content: counter(questions) ". ";
 }

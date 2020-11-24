@@ -38,7 +38,7 @@ export default class HTMLEditor extends Component<Props, State> {
             image: { inDropdown: true },
         },
         reduced: {
-            options: ['inline', 'list', 'link', 'emoji', 'image', 'remove', 'history'],
+            options: ['inline', 'blockType', 'list', 'link', 'emoji', 'image', 'remove', 'history'],
             inline: {
                 options: ['bold', 'italic', 'underline'],
                 // inDropdown: true,
@@ -48,6 +48,7 @@ export default class HTMLEditor extends Component<Props, State> {
             },
             list: { inDropdown: true },
             image: { inDropdown: true },
+            blockType: {inDropdown: true},
         },
         simple: {
             options: ['inline', 'link'],

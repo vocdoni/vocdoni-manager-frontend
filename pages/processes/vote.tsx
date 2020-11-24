@@ -501,7 +501,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                 </ViewWrapper>
             )
         }
-        else if ((!this.state.entity || !this.state.process) && !this.state.connectionError) {
+        else if ((!this.state.entity || !this.state.process) && !this.state.connectionError && !this.state.loadingStatus) {
             return <ViewWrapper {...this.state}>
                 <NotFound />
             </ViewWrapper>
