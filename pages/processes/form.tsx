@@ -269,7 +269,6 @@ class ProcessNew extends Component<IAppContext, State> {
 
         const gateway = await getGatewayClients()
         const { censusId } = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
-
         const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, claims, true, gateway, wallet)
         if (invalidClaims.length) {
             message.warn(`Found ${invalidClaims.length} invalid claims`)
@@ -327,7 +326,7 @@ class ProcessNew extends Component<IAppContext, State> {
         const censusName = newProcess.details.title.default + "_"+ (Math.floor(Date.now() / 1000)) || "form_" + (Math.floor(Date.now() / 1000))
         const { merkleRoot, merkleTreeUri } = await this.createCensus(censusName, claims, wallet.getWallet())
 
-        newProcess.census.merkleRoot = `0x${merkleRoot}` // just don't ask 🙃
+        newProcess.census.merkleRoot = (merkleRoot.startsWith("0x")) ? merkleRoot : `0x${merkleRoot}`
         newProcess.census.merkleTree = merkleTreeUri
         newProcess.details["formURI"] = Buffer.from(censusData.title).toString( "base64")
 
