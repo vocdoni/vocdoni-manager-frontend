@@ -329,7 +329,6 @@ class ProcessNew extends Component<IAppContext, State> {
             const wallet = this.props.web3Wallet.getWallet()
             const processId = await createVotingProcess(newProcess, wallet, gwPool)
 
-
             let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
             if (sendEmails) {
                 const emailsReq : any = {

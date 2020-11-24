@@ -101,3 +101,7 @@ form .ant-picker {
     display: block;
     overflow: hidden;
 }
+
+.bottom-button-wrapper button + button {
+    margin-left: .5em;
+}
