@@ -40,6 +40,7 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                 </Button>
             </If>
             <If condition={process.details.streamUrl?.length}>
+                <Divider />
                 <div className='player-wrapper'>
                     <ReactPlayer
                         url={process.details.streamUrl}
