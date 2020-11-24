@@ -73,7 +73,6 @@ export const extractDigestedPubKeyFromFormData = (data: string): {privKey: strin
     const hashed = ethers.utils.keccak256(bytes)
     const tempWallet = new ethers.Wallet(hashed)
     const pubKey = tempWallet['signingKey'].publicKey
-    console.log("\t", data, "\n\t", JSON.stringify(tempWallet, null, 2), "\n\t", "pubKey", pubKey)
     return {
         privKey: tempWallet.privateKey,
         digestedHexClaim: digestHexClaim(pubKey)
