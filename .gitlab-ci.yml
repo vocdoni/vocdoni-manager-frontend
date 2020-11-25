@@ -16,6 +16,8 @@ variables:
 test:
   image: node:12
   stage: test
+  tags:
+    - vocdoni
   cache:
     paths:
       - node_modules
@@ -28,6 +30,8 @@ test:
 manager-build:
   image: node:12
   stage: build
+  tags:
+    - vocdoni
   script:
     - npm install
     - npm run export
@@ -45,6 +49,8 @@ manager-build:
 
 manager-docker:
   stage: build
+  tags:
+    - vocdoni
   image: docker:stable
   services:
     - docker:dind
@@ -83,6 +89,8 @@ manager-docker:
 
 manager-docker-release:
   stage: build
+  tags:
+    - vocdoni
   image: docker:stable
   services:
     - docker:dind
