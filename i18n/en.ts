@@ -35,4 +35,5 @@ export default ({
     invalidImageError: 'Only jpg and png files are allowed. The file you uploaded is not valid.',
     btnImageUpload: 'Upload image',
     btnImageUploading: 'Uploading image',
+    filesizeLimit: 'The image is bigger than the current filesize limit (%s)',
 })

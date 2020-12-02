@@ -35,4 +35,5 @@ export default ({
     invalidImageError: 'Només es poden pujar fitxers jpg i png. El fitxer que puges no és vàlid.',
     btnImageUpload: 'Carrega imatge',
     btnImageUploading: 'Carregant imatge',
+    filesizeLimit: 'La imatge és més gran que la mida màxima permesa (%s)',
 })

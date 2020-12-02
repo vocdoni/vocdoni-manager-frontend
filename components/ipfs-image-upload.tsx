@@ -4,8 +4,9 @@ import { Button, message, Upload } from 'antd'
 import { RcFile, UploadProps } from 'antd/lib/upload'
 import { RcCustomRequestOptions, UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
 import { addFile } from 'dvote-js/dist/api/file'
+import fileSize from 'filesize'
 
-import { imageUploadMimeTypes } from '../lib/constants'
+import { imageUploadMimeTypes, IMAGEUPLOAD_FILESIZE_LIMIT } from '../lib/constants'
 import { FileReaderPromise } from '../lib/file-utils'
 import { getGatewayClients } from '../lib/network'
 import { main } from '../i18n'
@@ -27,6 +28,17 @@ export default class IPFSImageUpload extends Component<UploadProps & IAppContext
     beforeUpload(file: RcFile) : boolean {
         if (!imageUploadMimeTypes.includes(file.type)) {
             message.error(main.invalidImageError)
+
+            return false
+        }
+
+        if (file.size > IMAGEUPLOAD_FILESIZE_LIMIT) {
+            message.error(
+                main.filesizeLimit.replace(
+                    '%s',
+                    fileSize(IMAGEUPLOAD_FILESIZE_LIMIT)
+                )
+            )
 
             return false
         }
