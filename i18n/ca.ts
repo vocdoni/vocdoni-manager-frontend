@@ -33,4 +33,6 @@ export default ({
     buttonCSVLogin: 'Identifica\'t',
     errorCSVInvalidData: 'Les dades no semblen correctes, si et plau, revísa-les.',
     invalidImageError: 'Només es poden pujar fitxers jpg i png. El fitxer que puges no és vàlid.',
+    btnImageUpload: 'Carrega imatge',
+    btnImageUploading: 'Carregant imatge',
 })

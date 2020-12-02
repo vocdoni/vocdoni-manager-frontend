@@ -33,4 +33,6 @@ export default ({
     buttonCSVLogin: 'Log in',
     errorCSVInvalidData: 'The entered data doesn\'t seem correct, please, check it.',
     invalidImageError: 'Only jpg and png files are allowed. The file you uploaded is not valid.',
+    btnImageUpload: 'Upload image',
+    btnImageUploading: 'Uploading image',
 })

@@ -31,11 +31,34 @@ export default class IPFSImageUpload extends Component<UploadProps & IAppContext
             return false
         }
 
-        this.setState({file})
+        this.setState({
+            file,
+            uploading: true,
+        })
 
         return true
     }
 
+    onChange(info: UploadChangeParam) : void {
+        if (info.file.status === 'removed') {
+            this.setState({
+                fileList: [],
+                file: null,
+                uploading: false,
+            })
+        } else if (info.fileList.length) {
+            this.setState({
+                // only retain last upload
+                fileList: [info.fileList.pop()],
+            })
+        }
+        if (info.file.status !== 'uploading') {
+            this.setState({uploading: false})
+        }
+        if (this.props.onChange) {
+            this.props.onChange(info)
+        }
+    }
 
     async request({file, filename, onError, onSuccess}: RcCustomRequestOptions) : Promise<any> {
         try {
@@ -50,32 +73,18 @@ export default class IPFSImageUpload extends Component<UploadProps & IAppContext
     }
 
     render() : ReactNode {
+        const text = this.state.uploading ? main.btnImageUploading : main.btnImageUpload
         return (
-
             <Upload
                 beforeUpload={this.beforeUpload.bind(this)}
                 customRequest={this.request.bind(this)}
                 {...this.props}
-                onChange={(info : UploadChangeParam) => {
-                    if (info.file.status === 'removed') {
-                        this.setState({
-                            fileList: [],
-                            file: null,
-                        })
-                    } else if (info.fileList.length) {
-                        this.setState({
-                            // only retain last upload
-                            fileList: [info.fileList.pop()],
-                        })
-                    }
-                    if (this.props.onChange) {
-                        this.props.onChange(info)
-                    }
-                }}
+                // onChange and fileList shall not be overwriten
+                onChange={this.onChange.bind(this)}
                 fileList={this.state.fileList}
             >
-                <Button icon={<UploadOutlined />} type='text' size='small'>
-                    Upload image
+                <Button icon={<UploadOutlined />} type='text' size='small' loading={this.state.uploading}>
+                    {text}
                 </Button>
             </Upload>
         )
