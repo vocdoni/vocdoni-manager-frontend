@@ -12,10 +12,9 @@ import {
 
 import AppContext from '../../components/app-context'
 import { getGatewayClients } from '../../lib/network'
-import main from '../../i18n/ca'
+import { main } from '../../i18n'
 import { HEX_REGEX } from '../../lib/constants'
 import HeaderImage from '../../components/processes/HeaderImage'
-import style from '../../components/vote.module.css'
 import If from '../../components/if'
 import { extractDigestedPubKeyFromFormData, findHexId, importedRowToString } from '../../lib/util'
 import { generateProof } from 'dvote-js/dist/api/census'
@@ -180,7 +179,6 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                         <Button
                             htmlType='submit'
                             type='primary'
-                            className={style.btn}
                             disabled={this.state.verifying}
                             loading={this.state.verifying || this.state.loading}
                         >

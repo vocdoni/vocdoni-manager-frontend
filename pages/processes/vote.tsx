@@ -1,5 +1,6 @@
 import React, { Component, Fragment, ReactChild, ReactNode } from 'react'
 import { message, notification, Spin, Modal, Divider, Button } from 'antd'
+import Text from 'antd/lib/typography/Text'
 import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Wallet } from 'ethers'
@@ -23,14 +24,12 @@ import { MessageType } from 'antd/lib/message'
 import AppContext from '../../components/app-context'
 import { getGatewayClients } from '../../lib/network'
 import MultiLine from '../../components/multi-line-text'
-import main from '../../i18n/ca'
+import { main } from '../../i18n'
 import { HEX_REGEX } from '../../lib/constants'
 import NotFound from '../../components/not-found'
 import ViewWrapper from '../../components/processes/ViewWrapper'
 import Questions from '../../components/processes/Questions'
 import { areAllNumbers, findHexId } from '../../lib/util'
-
-import styles from '../../components/vote.module.css'
 
 const { Entity } = API
 
@@ -330,7 +329,14 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     + ' ' + this.state.hasVotedOnDate.hours()
                     + ':' + ('0' + this.state.hasVotedOnDate.minutes()).substr(-2)
                     + 'h'
-                contents = <>{main.yourVoteHasBeenRegisteredOn} {strDate}</>
+                contents = <>
+                    <p>{main.yourVoteHasBeenRegisteredOn} {strDate}</p>
+                    <p>
+                        {main.nullifierNotice} <Text copyable={{text: this.state.nullifier}}>
+                            {this.state.nullifier.substr(0, 10)}...
+                        </Text>
+                    </p>
+                </>
             }
             else {
                 contents = <>{main.yourVoteIsRegistered}</>
@@ -368,7 +374,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         const { process, choices } = this.state
         return <>
             <Divider />
-            <p className='info-text'><MultiLine text={main.processDescriptionStage3} /></p>
+            <p className='info-text'><MultiLine text={main.theseAreYourSelections} /></p>
             {
                 process.details.questions.map((question, idx) => <Fragment key={idx}>
                     {
@@ -389,7 +395,6 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                 visible={this.state.showSubmitConfirmation}
                 okText={main.confirm}
                 cancelText={main.goBack}
-                okButtonProps={{className: styles.btn}}
                 onOk={() => {
                     this.setState({ showSubmitConfirmation: false })
                     setTimeout(() => this.onSubmitVote(), 100) // wait a bit for the modal to dismiss
@@ -410,7 +415,6 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     type='primary'
                     size='large'
                     onClick={() => this.setState({ showSubmitConfirmation: true })}
-                    className={styles.btn}
                 >
                     {main.castMyVote}
                 </Button>

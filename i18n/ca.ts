@@ -20,7 +20,7 @@ export default ({
     theProcessHasNotStarted: 'La votació encara no ha començat',
     theProcessHasEnded: 'La votació ha acabat',
     youCanVote: 'Pots emetre el teu vot',
-    processDescriptionStage3: 'Aquestes són les teves seleccions:',
+    theseAreYourSelections: 'Aquestes són les teves seleccions:',
     youAreAboutToSendYourVoteConfirmContinue: 'Estàs a punt votar. Aquesta acció no es pot desfer. Vols continuar?',
     goBack: 'Torna enrere',
     castMyVote: 'Envia el meu vot',
@@ -36,4 +36,5 @@ export default ({
     btnImageUpload: 'Carrega imatge',
     btnImageUploading: 'Carregant imatge',
     filesizeLimit: 'La imatge és més gran que la mida màxima permesa (%s)',
+    nullifierNotice: 'El codi a continuació serveix com a comprovant únic del teu vot. Potser t\'interessi desar-lo:',
 })

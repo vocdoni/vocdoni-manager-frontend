@@ -2,11 +2,8 @@ import { Button, Divider, message, Radio } from 'antd'
 import { ProcessMetadata } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 // hardcoded to cat for now
-import main from '../../i18n/ca'
+import { main } from '../../i18n'
 import { areAllNumbers } from '../../lib/util'
-
-// harcoding style
-import styles from '../vote.module.css'
 
 type Props = {
     process: ProcessMetadata,
@@ -95,7 +92,6 @@ export default class Questions extends Component<Props, State> {
                     type='primary'
                     size={'large'}
                     disabled={!allQuestionsChosen}
-                    className={styles.btn}
                     onClick={() => this.props.onSubmitClick(choices)}
                 >
                     {main.confirmSelection}

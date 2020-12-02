@@ -1,11 +1,9 @@
-import { Button, Divider } from 'antd'
+import { Divider } from 'antd'
 import React, { Component, ReactNode } from 'react'
 import ReactPlayer from 'react-player'
 
 import If from '../if'
 import { ViewWrapperProps } from './ViewWrapper'
-
-import styles from '../vote.module.css'
 
 export default class Introduction extends Component<ViewWrapperProps, undefined> {
     render() : ReactNode {
@@ -13,7 +11,7 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
             return null
         }
 
-        const { process, entityId } = this.props
+        const { process } = this.props
 
         return <>
             <h1>{process.details.title.default}</h1>
@@ -22,23 +20,6 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                 className='process-description'
                 dangerouslySetInnerHTML={{__html: process.details.description.default}}
             />
-            <If condition={entityId && entityId === '0x8b95114ee6e6f00489c8a83b302867224757fc9d1dfcf16ed07280c63acab3a7'}>
-                <Divider />
-                {/* Visca el hardcoding */}
-                <h2>Precs i preguntes</h2>
-                <p>
-                    Envia les teves preguntes i comentaris omplint el formulari.
-                    Les preguntes rebudes seran llegides al final de cada punt
-                    de l’ordre del dia o al torn obert de paraules.
-                </p>
-                <Button
-                    target='_blank'
-                    href='https://forms.office.com/Pages/ResponsePage.aspx?id=UuSsAjtiHUuX0V7mJ6BRkitHe94NQgBAngyYntH7c2xUNk1COUg5V01DWTYxT1BWTFk4UUNXRFo3NS4u'
-                    className={styles.btn}
-                >
-                    Formulari
-                </Button>
-            </If>
             <If condition={process.details.streamUrl?.length}>
                 <Divider />
                 <div className='player-wrapper'>
