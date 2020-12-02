@@ -1,4 +1,4 @@
-import { useContext, Component } from 'react'
+import { useContext, Component, ReactNode } from 'react'
 import { message, Spin, Button, Input, Divider, Row, Col, Modal } from 'antd'
 import { InfoCircleOutlined, BookOutlined, FileImageOutlined, LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
@@ -25,14 +25,6 @@ const { Entity } = API
 //   return prev
 // }, [])
 
-// MAIN COMPONENT
-const EntityEditPage = props => {
-    // Get the global context and pass it to our stateful component
-    const context = useContext(AppContext)
-
-    return <EntityEdit {...context} />
-}
-
 type State = {
     entityLoading?: boolean,
     entityUpdating?: boolean,
@@ -44,15 +36,17 @@ type State = {
 
 // Stateful component
 class EntityEdit extends Component<IAppContext, State> {
+    static contextType = AppContext
+    context!: React.ContextType<typeof AppContext>
+
     state: State = {
         email: ""
     }
 
-    async componentDidMount() {
+    async componentDidMount() : Promise<boolean> {
         if (getNetworkState().readOnly) {
             return Router.replace("/entities" + location.hash)
         }
-        // this.props.setTitle("Loading")
 
         try {
             await this.fetchMetadata()
@@ -62,9 +56,9 @@ class EntityEdit extends Component<IAppContext, State> {
         }
     }
 
-    async fetchMetadata() {
+    async fetchMetadata() : Promise<void> {
         try {
-            this.props.setMenuSelected("entity-edit")
+            this.context.setMenuSelected("entity-edit")
 
             const entityId = location.hash.substr(2)
             this.setState({ entityLoading: true, entityId })
@@ -73,9 +67,15 @@ class EntityEdit extends Component<IAppContext, State> {
             const entity = await Entity.getEntityMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
+            const req : any = {method: 'getEntity'}
+            const bk = await this.context.managerBackendGateway.sendMessage(req, this.context.web3Wallet.getWallet())
+            if (bk.entity.email?.length) {
+                this.setState({email: bk.entity.email})
+            }
+
             this.setState({ entity, entityId, entityLoading: false })
-            this.props.setTitle(entity.name.default)
-            this.props.setEntityId(entityId)
+            this.context.setTitle(entity.name.default)
+            this.context.setEntityId(entityId)
         }
         catch (err) {
             this.setState({ entityLoading: false })
@@ -83,7 +83,7 @@ class EntityEdit extends Component<IAppContext, State> {
         }
     }
 
-    shouldComponentUpdate() {
+    shouldComponentUpdate() : boolean {
         const entityId = location.hash.substr(2)
         if (entityId !== this.state.entityId) {
             this.fetchMetadata()
@@ -92,30 +92,30 @@ class EntityEdit extends Component<IAppContext, State> {
     }
 
     // EVENTS
-    onExistingLanguagesChange(languages) {
+    onExistingLanguagesChange(languages) : void {
         const entity = Object.assign({}, this.state.entity, { languages })
         this.setState({ entity })
     }
-    onExistingDefaultLanguageChange(language) {
+    onExistingDefaultLanguageChange(language) : void {
         const defaultLang = this.state.entity.languages.filter(ln => ln === language)
         const otherLang = this.state.entity.languages.filter(ln => ln !== language)
         const entity = Object.assign({}, this.state.entity, { languages: defaultLang.concat(otherLang) })
         this.setState({ entity })
     }
-    onNameChange(name: string, lang: string) {
+    onNameChange(name: string, lang: string) : void {
         const newName = Object.assign({}, this.state.entity.name, { [lang]: name })
         const entity = Object.assign({}, this.state.entity, { name: newName })
         this.setState({ entity })
     }
-    onEmailChange(email: string) {
+    onEmailChange(email: string) : void {
         this.setState({ email })
     }
-    onDescriptionChange(description: string, lang: string) {
+    onDescriptionChange(description: string, lang: string) : void {
         const newDescription = Object.assign({}, this.state.entity.description, { [lang]: description })
         const entity = Object.assign({}, this.state.entity, { description: newDescription })
         this.setState({ entity })
     }
-    onFieldChange(key: string, subkey: string, value: string) {
+    onFieldChange(key: string, subkey: string, value: string) : void {
         if (subkey === null) {
             const entity = Object.assign({}, this.state.entity, { [key]: value })
             this.setState({ entity })
@@ -128,7 +128,7 @@ class EntityEdit extends Component<IAppContext, State> {
         }
     }
 
-    confirmUpdateMetadata() {
+    confirmUpdateMetadata() : void {
         const that = this;
         Modal.confirm({
             title: "Confirm",
@@ -143,14 +143,14 @@ class EntityEdit extends Component<IAppContext, State> {
         })
     }
 
-    async updateMetadata() {
+    async updateMetadata() : Promise<any> {
         this.setState({ entityUpdating: true })
 
-        const address = this.props.web3Wallet.getAddress()
-        const balance = await this.props.web3Wallet.getProvider().getBalance(address)
+        const address = this.context.web3Wallet.getAddress()
+        const balance = await this.context.web3Wallet.getProvider().getBalance(address)
 
         if (balance.lte(0)) {
-            return Modal.warning({
+            Modal.warning({
                 title: "Not enough balance",
                 icon: <ExclamationCircleOutlined />,
                 content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
@@ -158,6 +158,7 @@ class EntityEdit extends Component<IAppContext, State> {
                     this.setState({ entityUpdating: false })
                 },
             })
+            return
         }
 
         const entity = Object.assign({}, this.state.entity)
@@ -185,7 +186,7 @@ class EntityEdit extends Component<IAppContext, State> {
 
         return getGatewayClients().then(gateway => {
             const state = getNetworkState()
-            return updateEntity(this.props.web3Wallet.getAddress(), entity, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            return updateEntity(this.context.web3Wallet.getAddress(), entity, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
         }).then(newOrigin => {
             return this.fetchMetadata()
         }).then(() => {
@@ -197,7 +198,7 @@ class EntityEdit extends Component<IAppContext, State> {
         })
     }
 
-    entityBackendUpdate(entityName: string, entityEmail:string) {
+    entityBackendUpdate(entityName: string, entityEmail:string) : Promise<any> {
         const request = {
             method: "updateEntity",
             entity: {
@@ -205,7 +206,7 @@ class EntityEdit extends Component<IAppContext, State> {
                 email: entityEmail,
             }
         }
-        return this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet());
+        return this.context.managerBackendGateway.sendMessage(request as any, this.context.web3Wallet.getWallet());
     }
 
     // renderSupportedLanaguages(entity) {
@@ -236,7 +237,7 @@ class EntityEdit extends Component<IAppContext, State> {
     //   </Row>
     // }
 
-    renderEntityEdit() {
+    renderEntityEdit() : ReactNode {
         const { entity: entity, email:email } = this.state
 
         return <div className="body-card">
@@ -353,18 +354,18 @@ class EntityEdit extends Component<IAppContext, State> {
         </div>
     }
 
-    renderNotFound() {
+    renderNotFound() : ReactNode {
         return <div className="not-found">
             <h4>Entity not found</h4>
             <p>The entity you are looking for cannot be found</p>
         </div>
     }
 
-    renderLoading() {
+    renderLoading() : ReactNode {
         return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    render() {
+    render() : ReactNode {
         return <div id="entity-edit">
             {
                 this.state.entityLoading ?
@@ -384,13 +385,4 @@ class EntityEdit extends Component<IAppContext, State> {
     }
 }
 
-
-// // Custom layout
-// EntityEditPage.Layout = props => <MainLayout>
-
-//   <div>
-//     {props.children}
-//   </div>
-// </MainLayout>
-
-export default EntityEditPage
+export default EntityEdit
