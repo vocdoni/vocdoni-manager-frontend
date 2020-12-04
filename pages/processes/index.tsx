@@ -1,16 +1,18 @@
-import { useContext, Component, ReactNode } from 'react'
-import { Divider, Menu, message, Spin, Col, Row, Badge } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, MultiLanguage, ProcessMetadata, ProcessResults } from 'dvote-js'
+import { Component, ReactNode } from 'react'
+import { Divider, message, Spin, Col, Row, Badge } from 'antd'
+import Text from 'antd/lib/typography/Text'
+import { LinkOutlined, LoadingOutlined } from '@ant-design/icons'
+import { API, EntityMetadata, ProcessMetadata, ProcessResults } from 'dvote-js'
 import moment from 'moment'
 import Router from 'next/router'
-import Link from 'next/link'
-import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
 import { getVoteMetadata, isCanceled, estimateDateAtBlock } from 'dvote-js/dist/api/vote'
 
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import AppContext, { IAppContext } from '../../components/app-context'
+import { EXPLORER_URL } from '../../env-config'
+import { getGatewayClients } from '../../lib/network'
+import AppContext from '../../components/app-context'
 import Image from '../../components/image'
+import If from '../../components/if'
+import { appLink } from '../../lib/util'
 // import MainLayout from '../../components/layout'
 // import { main } from '../i18n'
 // import MultiLine from '../components/multi-line-text'
@@ -19,14 +21,6 @@ import Image from '../../components/image'
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Entity, Census } = API
 const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10", 10) || 10
-
-// MAIN COMPONENT
-const ProcessActiveViewPage = props => {
-    // Get the global context and pass it to our stateful component
-    const context = useContext(AppContext)
-
-    return <ProcessActiveView {...context} />
-}
 
 type State = {
     dataLoading?: boolean,
@@ -46,7 +40,10 @@ type State = {
 }
 
 // Stateful component
-class ProcessActiveView extends Component<IAppContext, State> {
+class ProcessActiveView extends Component<undefined, State> {
+    static contextType = AppContext
+    context!: React.ContextType<typeof AppContext>
+
     state: State = {
         currentBlock: null,
         currentDate: moment(),
@@ -58,11 +55,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
 
     refreshInterval = null
 
-    componentDidMount() {
+    componentDidMount() : void {
         this.init()
     }
 
-    init() {
+    init() : Promise<any> {
         const params = location.hash.substr(2).split("/")
         if (params.length !== 2) {
             message.error("The requested data is not valid")
@@ -74,8 +71,8 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const processId = params[1]
         this.setState({ entityId, processId })
 
-        this.props.setEntityId(entityId)
-        this.props.setProcessId(processId)
+        this.context.setEntityId(entityId)
+        this.context.setProcessId(processId)
 
         return this.refreshBlockHeight()
             .then(() => this.refreshMetadata())
@@ -93,7 +90,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
             })
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps, nextState) : boolean {
         const params = location.hash.substr(2).split("/")
         if (params.length !== 2) return true
 
@@ -105,11 +102,11 @@ class ProcessActiveView extends Component<IAppContext, State> {
         return true
     }
 
-    componentWillUnmount() {
+    componentWillUnmount() : void {
         clearInterval(this.refreshInterval)
     }
 
-    async refreshBlockHeight() {
+    async refreshBlockHeight() : Promise<void> {
         let gateway = null,
             currentBlock = this.state.currentBlock || 0
         try {
@@ -121,15 +118,17 @@ class ProcessActiveView extends Component<IAppContext, State> {
                 'Refresh the page if you don\'t see changes in a while.',
             ]
             console.error(err)
-            return message.error(msg.join(' '))
+            message.error(msg.join(' '))
+
+            return
         }
 
         this.setState({ currentBlock, currentDate: moment() })
     }
 
-    async refreshMetadata() {
+    async refreshMetadata() : Promise<void> {
         try {
-            this.props.setMenuSelected("processes-details")
+            this.context.setMenuSelected("processes-details")
 
             const params = location.hash.substr(2).split("/")
             if (params.length !== 2) {
@@ -152,7 +151,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
             const censusSize = parseInt(await Census.getCensusSize(metadata.census.merkleRoot, gateway) || "0", 10)
 
             this.setState({ entity, process: metadata, canceled, dataLoading: false, censusSize, estimatedStartDate, estimatedEndDate })
-            this.props.setTitle(entity.name.default)
+            this.context.setTitle(entity.name.default)
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -164,7 +163,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         }
     }
 
-    async loadProcessResults() {
+    async loadProcessResults() : Promise<void> {
         if (!this.state.processId || !this.state.process) return
         // NOTE: on polls it's fine, but on other process types may need to wait until the very end
         else if (!this.state.currentBlock || this.state.process.startBlock > this.state.currentBlock) return
@@ -199,7 +198,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         }
     }
 
-    renderProcessesInfo() {
+    renderProcessesInfo() : ReactNode {
         const params = location.hash.substr(2).split("/")
         if (params.length !== 2) {
             message.error("The requested data is not valid")
@@ -210,7 +209,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         // const entityId = params[0]
         const processId = params[1]
 
-        const { process, currentBlock, currentDate, censusSize } = this.state
+        const { process, censusSize } = this.state
 
         const startDate = moment(this.state.estimatedStartDate)
         const endDate = moment(this.state.estimatedEndDate)
@@ -227,6 +226,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         const procQuestions = this.state.process.details.questions
         const resultQuestions = this.state.results && this.state.results.questions && this.state.results.questions || []
         const formURI = (this.state.process.details["formURI"]) ?  this.state.process.details["formURI"] : null
+        const explorerURI = `${EXPLORER_URL}/process/${processId.replace('0x', '')}`
 
         return <div className="body-card">
             <Row justify="space-between">
@@ -255,24 +255,32 @@ class ProcessActiveView extends Component<IAppContext, State> {
                     <h4>Process Type</h4>
                     <p>{processType}</p>
                     <h4>Process ID</h4>
-                    <pre>{processId}</pre>
-                    <h4>Census Merkle Root</h4>
-                    <pre>{process.census.merkleRoot}</pre>
-                    <h4>Census Merkle Tree</h4>
-                    <pre>{process.census.merkleTree}</pre>
-                    {
-                        censusSize > 0 ? <>
-                            <h4>Census Size</h4>
+                    <p>
+                        <pre><Text copyable={{text: processId}}>{processId.substr(0, 10)}...</Text></pre>
+                    </p>
+                    <p>
+                        <Text ellipsis>
+                            <a href={explorerURI} target='_blank' rel='noreferrer'>
+                                Detailed info (explorer) <LinkOutlined />
+                            </a>
+                        </Text>
+                    </p>
+                    <If condition={censusSize > 0}>
+                        <h4>Census Size</h4>
+                        <p>
                             <pre>{censusSize}</pre>
-                        </> : null
-                    }
-                    <br />
+                        </p>
+                    </If>
                     {(formURI) ? (
                         <>
                             <h4>Form URI</h4>
-                            <Link href={`/processes/login/#/${process.details.entityId}/${processId}/${formURI}`}>
-                                <pre> <a>{formURI}</a></pre>
-                            </Link>
+                            <a
+                                target='_blank'
+                                rel='noreferrer'
+                                href={appLink(`/processes/login/#/${process.details.entityId}/${processId}/${formURI}`)}
+                            >
+                                {formURI} <LinkOutlined />
+                            </a>
                         </>
                     ) : null
                     }
@@ -326,7 +334,7 @@ class ProcessActiveView extends Component<IAppContext, State> {
         </div >
     }
 
-    renderStatus() {
+    renderStatus() : ReactNode {
         if (!this.state.currentBlock || !this.state.process) return null
 
         const items: ReactNode[] = []
@@ -345,18 +353,18 @@ class ProcessActiveView extends Component<IAppContext, State> {
         </>
     }
 
-    renderNotFound() {
+    renderNotFound() : ReactNode {
         return <div className="not-found">
             <h4>Entity or vote not found</h4>
             <p>The entity you are looking for cannot be found</p>
         </div>
     }
 
-    renderLoading() {
+    renderLoading() : ReactNode {
         return <div>Loading the vote details...  <Spin indicator={<LoadingOutlined />} /></div>
     }
 
-    render() {
+    render() : ReactNode {
         return <div id="process-view">
             {
                 this.state.dataLoading ?
@@ -376,9 +384,4 @@ class ProcessActiveView extends Component<IAppContext, State> {
     }
 }
 
-// // Using a custom layout
-// ProcessActiveViewPage.Layout = props => <MainLayout>
-//   {props.children}
-// </MainLayout>
-
-export default ProcessActiveViewPage
+export default ProcessActiveView

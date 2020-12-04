@@ -94,3 +94,18 @@ export const findHexId = (id: string) => (sid: string) : boolean => {
     // none of the ids are prefixed
     return sid === id
 }
+
+/**
+ * If domain contains `manager`, will be replaced with `app`
+ *
+ * @param path The path to be appended
+ */
+export const appLink = (path: string) : string => {
+    const { location } = window
+
+    if (/^manager/.test(location.hostname)) {
+        return location.origin.replace('//manager.', '//app.') + path
+    }
+
+    return location.origin + path
+}
