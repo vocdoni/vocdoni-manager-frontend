@@ -64,6 +64,9 @@ export default class IPFSImageUpload extends Component<UploadProps & IAppContext
                 fileList: [info.fileList.pop()],
             })
         }
+        if (info.file.status === 'error') {
+            message.error((info.file.error as Error).toString())
+        }
         if (info.file.status !== 'uploading') {
             this.setState({uploading: false})
         }

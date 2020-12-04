@@ -306,7 +306,7 @@ class EntityEdit extends Component<IAppContext, State> {
 
                                     this.onFieldChange('media', 'avatar', image)
                                 }}
-                                {...this.props}
+                                {...this.context}
                             />
                         }
                     />
@@ -328,7 +328,7 @@ class EntityEdit extends Component<IAppContext, State> {
 
                                     this.onFieldChange('media', 'header', image)
                                 }}
-                                {...this.props}
+                                {...this.context}
                             />
                         }
                     />

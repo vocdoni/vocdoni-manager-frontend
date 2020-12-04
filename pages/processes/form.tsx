@@ -404,7 +404,6 @@ class ProcessNew extends Component<IAppContext, State> {
                 const { digestedHexClaim } = extractDigestedPubKeyFromFormData(importedRowToString(row, this.state.entityId))
                 return digestedHexClaim
             })
-            console.log(result)
             return result
         } catch (err) {
             throw new Error("The Excel file can't be processed")
