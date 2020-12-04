@@ -36,5 +36,5 @@ export default ({
     btnImageUpload: 'Upload image',
     btnImageUploading: 'Uploading image',
     filesizeLimit: 'The image is bigger than the current filesize limit (%s)',
-    nullifierNotice: 'The next code acts as a receipt of your ballot. You might be interested in storing it:',
+    nullifierNotice: 'Please, store the following code as the unique receipt of your ballot:',
 })

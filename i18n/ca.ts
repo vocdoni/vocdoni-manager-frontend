@@ -36,5 +36,5 @@ export default ({
     btnImageUpload: 'Carrega imatge',
     btnImageUploading: 'Carregant imatge',
     filesizeLimit: 'La imatge és més gran que la mida màxima permesa (%s)',
-    nullifierNotice: 'El codi a continuació serveix com a comprovant únic del teu vot. Potser t\'interessi desar-lo:',
+    nullifierNotice: 'Si et plau, desa el codi següent com a comprovant únic de l\'emissió del teu vot:',
 })
