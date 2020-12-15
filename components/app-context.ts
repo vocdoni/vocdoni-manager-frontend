@@ -7,8 +7,7 @@ export type ISelected = 'profile'
     | 'entity-edit'
     | 'feed'
     | 'new-post'
-    | 'processes-active'
-    | 'processes-ended'
+    | 'processes'
     | 'new-vote'
     | 'new-form-vote'
     | 'processes-details'
@@ -20,6 +19,7 @@ export type ISelected = 'profile'
 
 export interface IAppContext {
     isWriteEnabled: boolean,
+    isReadOnly: boolean,
     title: string,
     web3Wallet: Web3Wallet,
     onNewWallet: (wallet: Wallet) => any,

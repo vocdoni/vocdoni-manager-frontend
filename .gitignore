@@ -2,3 +2,5 @@ build
 .next
 node_modules
 .vscode
+
+report.*

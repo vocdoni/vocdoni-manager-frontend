@@ -43,6 +43,7 @@ async function generatePathMap() {
             '/processes': { page: '/processes' },
             '/processes/active': { page: '/processes/active' },
             '/processes/ended': { page: '/processes/ended' },
+            '/processes/list': { page: '/processes/list' },
             '/processes/vote': { page: '/processes/vote' },
             '/processes/login': { page: '/processes/login' },
             '/posts': { page: '/posts' },

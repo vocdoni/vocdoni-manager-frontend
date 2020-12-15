@@ -1,9 +1,7 @@
 /* BASE LAYOUT */
-
 #layout .top-bar {
     color: var(--clear);
-    /* background-color:var(--main-color); */
-    background-color: #444444;
+    background-color:var(--main-color);
 }
 #layout .top-bar .title {
     margin: 0;
@@ -42,6 +40,7 @@
 }
 
 /* Align the content to the center */
+.vertically-centered,
 #layout .content #page-body.center {
     align-items: center;
     width:100%;

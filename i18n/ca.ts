@@ -41,4 +41,7 @@ export default ({
     connectingWait: 'Connectant a la xarxa. Espera si et plau...',
     connected: 'Connectat',
     couldNotConnect: 'No s\'ha pogut establir connexió',
+    finishes: 'Finalitza',
+    finished: 'Ha finalitzat',
+    active: 'Actiu',
 })

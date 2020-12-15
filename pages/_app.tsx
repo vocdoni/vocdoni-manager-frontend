@@ -22,6 +22,7 @@ import 'antd/dist/antd.css'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import '../styles/index.css'
 import { main } from '../i18n'
+import { getEntityId } from 'dvote-js/dist/api/entity'
 // import IndexPage from '.'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -121,6 +122,19 @@ class MainApp extends App<Props, State> {
             message.error(main.couldNotConnect)
             this.setState({ connectionError: err.message })
         })
+    }
+
+    isReadOnly() : boolean {
+        const { readOnly } = getNetworkState()
+        const address = getWeb3Wallet().getAddress()
+
+        const isReadOnly = readOnly || !address
+
+        if (!isReadOnly) {
+            return this.state.entityId !== getEntityId(address)
+        }
+
+        return isReadOnly
     }
 
     setTitle(title: string) : void {
@@ -263,6 +277,7 @@ class MainApp extends App<Props, State> {
 
         const injectedGlobalContext: IAppContext = {
             isWriteEnabled: isWriteEnabled(),
+            isReadOnly: this.isReadOnly(),
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
             web3Wallet: getWeb3Wallet(),

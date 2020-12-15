@@ -1,5 +1,6 @@
+import { Tag } from 'antd'
 import { fetchFileBytes } from 'dvote-js/dist/api/file'
-import React, { Component, ReactNode } from 'react'
+import React, { Component, HTMLProps, ReactNode } from 'react'
 import { Uint8ToString } from '../lib/file-utils'
 import { getGatewayClients } from '../lib/network'
 
@@ -8,11 +9,15 @@ type State = {
     remote: string,
 }
 
-interface ImageProps {
+const TagType = 'tag'
+const BackgroundType = 'background'
+
+type ImageType = typeof TagType | typeof BackgroundType
+
+interface ImageProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLImageElement>, HTMLImageElement> {
+    type?: ImageType,
     src: string,
-    className?: string,
     alt?: string,
-    onError?: (e: any) => void,
 }
 
 const getImageSource = async (src: string) : Promise<string> => {
@@ -37,6 +42,19 @@ export default class Image extends Component<ImageProps, State> {
     state = {
         image: '',
         remote: '',
+    }
+
+    type : string
+
+    constructor(props: ImageProps) {
+        super(props)
+        if (!props.type || (props.type && ![TagType, BackgroundType].includes(props.type))) {
+            this.type = TagType
+
+            return
+        }
+
+        this.type = props.type
     }
 
     static getDerivedStateFromProps(props: ImageProps, state : State) : State {
@@ -85,6 +103,17 @@ export default class Image extends Component<ImageProps, State> {
 
         if (!image?.length || (image?.length && image.indexOf('ipfs') === 0 && !this.state.remote)) {
             return null
+        }
+
+        if (this.type === BackgroundType) {
+            return (
+                <div
+                    className='background-cover-image'
+                    style={{
+                        backgroundImage: `url(${image})`,
+                    }}
+                />
+            )
         }
 
         return (

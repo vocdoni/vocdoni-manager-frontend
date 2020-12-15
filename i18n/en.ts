@@ -41,4 +41,7 @@ export default ({
     connectingWait: 'Connecting to the network. Please wait...',
     connected: 'Connected',
     couldNotConnect: 'Could not connect',
+    finishes: 'Finishes',
+    finished: 'Finished',
+    active: 'Active',
 })

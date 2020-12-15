@@ -3,7 +3,7 @@ body {
     margin: 0;
     font-size: 14px;
     font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
-    background-color: var(--clear-95) !important;
+    background-color: var(--clear) !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -21,6 +21,7 @@ h1, h2, h3, h4, h5, h6 {
     --dark-90: #4b4040;
 
     --gray-logo: #f2f0ed;
+    --cyan: #99CCEE;
 
     /* --main-color: #25658a; */
     --main-color: #444444;
@@ -59,7 +60,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* GLOBAL VIEWS */
-
 #global-message {
     display: flex;
     justify-content: center;
@@ -68,9 +68,55 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* COMMON */
+.ant-layout {
+    background-color: var(--clear) !important;
+}
+.ant-layout-content .content-wrapper {
+    flex: auto;
+    max-width: 512px;
+    padding-top: 30px;
+    margin: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+}
 
+@media (min-width: 768px) {
+    .ant-layout-content .content-wrapper {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.ant-layout-content .content-wrapper .ant-select .ant-select-selection-item {
+    font-size: 20px;
+}
+
+.ant-layout-content .content-wrapper .ant-select:not(.ant-select-disabled) .ant-select-selector,
+.ant-layout-content .content-wrapper .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+    border: none;
+    outline: none;
+    box-shadow: none;
+}
+
+.ant-layout-content .content-wrapper > div.ant-col .loading {
+    padding-bottom: 100px;
+}
+.loading .spinner {
+    margin-left: 10px;
+}
+.ant-layout-sider-dark .ant-menu {
+    background-color: #F3F0ED !important;
+}
 .ant-menu-item a {
     text-decoration: none;
+}
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+    background-color: var(--cyan);
+}
+.ant-menu-item-selected,
+.ant-menu-item-selected a {
+    color: white;
+    font-weight: bold;
 }
 
 .body-card label {

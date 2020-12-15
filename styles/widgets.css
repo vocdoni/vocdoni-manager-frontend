@@ -105,3 +105,75 @@ form .ant-picker {
 .bottom-button-wrapper button + button {
     margin-left: .5em;
 }
+
+.card-list {
+    margin-top: 2em;
+}
+
+.inline-card {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px #F2F2F2;
+}
+
+.inline-card a {
+    color: var(--main-color);
+}
+.inline-card a:focus,
+.inline-card a:active,
+.inline-card a:hover {
+    color: black;
+}
+
+.inline-card-contents,
+.inline-card-contents .state {
+    display: flex;
+    justify-content: space-between;
+}
+
+.inline-card-contents .state {
+    flex-direction: column;
+    font-size: smaller;
+}
+
+@media (min-width: 640px) {
+    .inline-card-contents .state {
+        flex-direction: row;
+    }
+}
+
+.state .status {
+    color: orange;
+    font-weight: bold;
+}
+
+.state .status.finished {
+    color: var(--cyan);
+}
+
+.inline-card-contents {
+    flex-direction: column;
+    padding: 10px 10px 10px 0;
+    width: 100%;
+}
+
+.inline-card-img {
+    margin-right: 15px;
+    min-height: 80px;
+}
+
+.inline-card-img a {
+    display: block;
+    height: 100%;
+}
+
+.background-cover-image {
+    display: block;
+    height: 100%;
+    width: 100%;
+    min-width: 150px;
+    background-size: cover;
+}
