@@ -508,6 +508,14 @@ class ProcessNew extends Component<IAppContext, State> {
                             />
                         </Form.Item>
                         <Form.Item>
+                            <label>Questions and answers button URL</label>
+                            <Input
+                                value={this.state.process.details['requestsURL']}
+                                onChange={ev => this.setNewProcessField(['details', 'requestsURL'], ev.target.value)}
+                            />
+                            <small>A link to any kind of form or website for Q&amp;A with the voters before and during the voting process</small>
+                        </Form.Item>
+                        <Form.Item>
                             <label>Vote Count Type</label>
                             <br />
                             <Radio.Group buttonStyle="solid" value={this.state.process.type} onChange={e => this.setNewProcessField(["type"], e.target.value)}>
