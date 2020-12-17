@@ -2,7 +2,7 @@ import React, { Fragment, Component, ReactNode, ReactChild } from 'react'
 import PropTypes from 'prop-types'
 
 type Props = {
-    condition?: boolean | number | null | string,
+    condition?: any,
     children: ReactChild | ReactChild[],
 }
 

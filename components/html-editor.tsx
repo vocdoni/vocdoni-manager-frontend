@@ -1,26 +1,29 @@
-import { any } from 'prop-types'
+import { Input } from 'antd'
 import React, { Component, ReactNode } from 'react'
 
 import { sanitizeHtml } from '../lib/util'
 
 let Editor: any // = await import('react-draft-wysiwyg')
-let EditorState, convertToRaw
-let draftToHtml: any // = await import('draftjs-to-html')
+let EditorState, convertToRaw, ContentState
+let draftToHtml, htmlToDraft: any // = await import('draftjs-to-html')
 
 type Props = {
     toolbar?: string,
     onContentChanged?: (contents: string) => void,
+    value?: string,
 }
 
 type State = {
     editorState: string,
     toolbar: any,
+    html: string,
 }
 
 export default class HTMLEditor extends Component<Props, State> {
     state = {
         editorState: null,
         toolbar: null,
+        html: null,
     }
 
     toolbars = {
@@ -65,10 +68,18 @@ export default class HTMLEditor extends Component<Props, State> {
         Editor = (await import('react-draft-wysiwyg')).Editor
         const DraftJS = await import('draft-js')
         EditorState = DraftJS.EditorState
-        // ContentState = DraftJS.ContentState
+        ContentState = DraftJS.ContentState
         convertToRaw = DraftJS.convertToRaw
         draftToHtml = (await import('draftjs-to-html')).default
-        // htmlToDraft = (await import('html-to-draftjs')).default
+        htmlToDraft = (await import('html-to-draftjs')).default
+
+        let state = EditorState.createEmpty()
+
+        if (this.props.value?.length) {
+            const block = htmlToDraft(this.props.value)
+            const contents = ContentState.createFromBlockArray(block.contentBlocks)
+            state = EditorState.createWithContent(contents)
+        }
 
         let toolbar = this.props.toolbar
         if (!toolbar?.length) {
@@ -76,17 +87,22 @@ export default class HTMLEditor extends Component<Props, State> {
         }
 
         this.setState({
-            editorState: EditorState.createEmpty(),
+            editorState: state,
             toolbar: this.toolbars[toolbar],
+            html: this.props.value,
         })
     }
 
     editorContentChanged(editorState: any) : void {
-        this.setState({editorState})
+        const html = draftToHtml(convertToRaw(editorState.getCurrentContent()))
+        this.setState({
+            editorState,
+            html,
+        })
 
         if (this.props.onContentChanged) {
             this.props.onContentChanged(
-                sanitizeHtml(draftToHtml(convertToRaw(editorState.getCurrentContent())))
+                sanitizeHtml(html)
             )
         }
     }
@@ -96,13 +112,15 @@ export default class HTMLEditor extends Component<Props, State> {
             return null
         }
 
-        return <Editor
-            editorState={this.state.editorState}
-            toolbarClassName='toolbar-box'
-            toolbar={this.state.toolbar}
-            wrapperClassName='wrapper-box'
-            editorClassName='editor-box'
-            onEditorStateChange={state => this.editorContentChanged(state)}
-        />
+        return (
+            <Editor
+                editorState={this.state.editorState}
+                toolbarClassName='toolbar-box'
+                toolbar={this.state.toolbar}
+                wrapperClassName='wrapper-box'
+                editorClassName='editor-box'
+                onEditorStateChange={this.editorContentChanged.bind(this)}
+            />
+        )
     }
 }

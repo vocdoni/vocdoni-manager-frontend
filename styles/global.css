@@ -7,7 +7,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-weight: 600 !important;
+    font-weight: 600;
 }
 
 /* VARIABLES */
@@ -21,6 +21,9 @@ h1, h2, h3, h4, h5, h6 {
     --dark-90: #4b4040;
 
     --gray-logo: #f2f0ed;
+    --gray-80: #bbb;
+    --gray-90: #888;
+
     --cyan: #99CCEE;
 
     /* --main-color: #25658a; */
@@ -74,10 +77,13 @@ h1, h2, h3, h4, h5, h6 {
 .ant-layout-content .content-wrapper {
     flex: auto;
     max-width: 512px;
-    padding-top: 30px;
     margin: auto;
     padding-left: 20px;
     padding-right: 20px;
+}
+
+.content-wrapper.spaced-top {
+    padding-top: 30px;
 }
 
 @media (min-width: 768px) {
@@ -98,7 +104,7 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: none;
 }
 
-.ant-layout-content .content-wrapper > div.ant-col .loading {
+.ant-layout-content .content-wrapper.spaced-top > div.ant-col .loading {
     padding-bottom: 100px;
 }
 .loading .spinner {
@@ -143,6 +149,14 @@ pre {
 
 .ant-input-group-addon .ant-upload-list {
     display: none !important;
+}
+
+.rounded {
+    border-radius: 4px;
+}
+
+.rounded-lg {
+    border-radius: 10px;
 }
 
 div#__next {

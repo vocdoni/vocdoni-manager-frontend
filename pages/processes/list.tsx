@@ -1,5 +1,5 @@
 import { Component, ReactNode } from 'react'
-import { message, Select, Row, Col, Button } from 'antd'
+import { message, Select, Row, Col } from 'antd'
 import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
 import moment from 'moment'
 import Link from 'next/link'
@@ -148,16 +148,15 @@ class ProcessListView extends Component<undefined, State> {
     }
 
     render() : ReactNode {
-        const found = this.state.entity && this.state.processes && this.state.processes.length
         const processes = this.filterProcesses(this.state.filter) || []
 
         return (
-            <div className='content-wrapper'>
-                <Loading loading={this.state.loading} text='Loading the votes of the entity...'>
-                    <If condition={!found}>
+            <div className='content-wrapper spaced-top'>
+                <Loading loading={this.state.loading} text={main.loadingEntity}>
+                    <If condition={!this.state.entity}>
                         <NotFound />
                     </If>
-                    <If condition={found}>
+                    <If condition={this.state.entity}>
                         <Row className='list-header' justify='space-between' align='middle'>
                             <Col>
                                 <Select
@@ -171,9 +170,9 @@ class ProcessListView extends Component<undefined, State> {
                                 </Select>
                             </Col>
                             <Col>
-                                <Button href={'/processes/form'} size='small' type='link'>
+                                <Link href={'/processes/form'} size='small' type='link'>
                                     <a><PlusOutlined /> Create new process</a>
-                                </Button>
+                                </Link>
                             </Col>
                         </Row>
                         <div className='card-list'>

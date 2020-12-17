@@ -174,6 +174,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             }
 
             const voteMetadata = await getVoteMetadata(processId, gateway)
+
             const canceled = await isCanceled(processId, gateway)
 
             this.setState({ entity, process: voteMetadata, isCanceled: canceled, loadingStatus: false })

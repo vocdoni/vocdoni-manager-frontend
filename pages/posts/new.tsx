@@ -301,7 +301,6 @@ class PostNew extends Component<IAppContext, State> {
                                             }
                                             this.setselectedPostField(['image'], image)
                                         }}
-                                        {...this.props}
                                     />
                                 }
                             />

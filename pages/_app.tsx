@@ -124,8 +124,14 @@ class MainApp extends App<Props, State> {
         })
     }
 
-    isReadOnly() : boolean {
+    get isReadOnlyNetwork() : boolean {
         const { readOnly } = getNetworkState()
+
+        return readOnly
+    }
+
+    get isReadOnly() : boolean {
+        const readOnly = this.isReadOnlyNetwork
         const address = getWeb3Wallet().getAddress()
 
         const isReadOnly = readOnly || !address
@@ -277,7 +283,8 @@ class MainApp extends App<Props, State> {
 
         const injectedGlobalContext: IAppContext = {
             isWriteEnabled: isWriteEnabled(),
-            isReadOnly: this.isReadOnly(),
+            isReadOnly: this.isReadOnly,
+            isReadOnlyNetwork: this.isReadOnlyNetwork,
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
             web3Wallet: getWeb3Wallet(),
@@ -297,6 +304,7 @@ class MainApp extends App<Props, State> {
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
             setUrlHash: (hash) => this.setUrlHash(hash),
+            params: window.location.hash.substr(2).split('/'),
             managerBackendGateway: this.state.managerBackendGateway,
             createCensusForTarget: (name, target) => this.createCensusForTarget(name, target),
             fetchTargets: () => this.fetchTargets(),

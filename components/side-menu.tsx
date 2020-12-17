@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from 'react'
+import React from 'react'
 import Link from 'next/link'
 import { Menu } from 'antd'
-import { HomeOutlined, TeamOutlined, SettingOutlined, BookOutlined, CommentOutlined } from '@ant-design/icons'
+import { TeamOutlined, SettingOutlined, BookOutlined, CommentOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { useContext } from 'react'
 
 import AppContext from './app-context'
@@ -13,13 +13,11 @@ const SideMenu = () : JSX.Element => {
     const isReadOnly = context.isReadOnly
 
     return <Menu mode='inline' selectedKeys={[selectedKeys]} defaultOpenKeys={['entity', 'census']} style={{ height: '100%', borderRight: 0 }}>
-        <Menu.SubMenu title='Entity' key='entity' icon={<HomeOutlined />} disabled={context.menuDisabled}>
-            <Menu.Item key='profile' disabled={context.menuDisabled}>
-                <Link href={'/entities#/' + entityId}>
-                    <a>Summary</a>
-                </Link>
-            </Menu.Item>
-        </Menu.SubMenu>
+        <Menu.Item key='profile' disabled={context.menuDisabled} icon={<InfoCircleOutlined />}>
+            <Link href={'/entities#/' + entityId}>
+                <a>Details</a>
+            </Link>
+        </Menu.Item>
         <Menu.SubMenu title='News' key='news' icon={<BookOutlined />} disabled={context.menuDisabled}>
             <Menu.Item key='feed' disabled={context.menuDisabled}>
                 <Link href={'/posts#/' + entityId}>
@@ -57,11 +55,6 @@ const SideMenu = () : JSX.Element => {
         {
             !isReadOnly &&
             <Menu.SubMenu title='Settings' key='settings' icon={<SettingOutlined />} disabled={context.menuDisabled}>
-                <Menu.Item key='entity-edit' disabled={context.menuDisabled}>
-                    <Link href={'/entities/edit#/' + entityId}>
-                        <a>Edit profile</a>
-                    </Link>
-                </Menu.Item>
                 <Menu.Item key='account-edit' disabled={context.menuDisabled}>
                     <Link href={'/account/edit#/' + entityId}>
                         <a>Account</a>

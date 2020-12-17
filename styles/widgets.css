@@ -8,7 +8,17 @@
 .card:hover {
     box-shadow: 0 5px 10px 0 rgba(0,0,0,0.1);
 }
-
+.canvas-wrapper.grayed {
+    padding: .75em;
+    background-color: var(--clear-95);
+}
+.canvas-wrapper.grayed canvas {
+    padding: 5px;
+    background-color: white;
+}
+.canvas-wrapper > a {
+    display: flex;
+}
 .canvas-wrapper canvas {
     height: auto !important;
     max-width: 100%;
@@ -118,7 +128,6 @@ form .ant-picker {
     overflow: hidden;
     box-shadow: 0 0 20px #F2F2F2;
 }
-
 .inline-card a {
     color: var(--main-color);
 }
@@ -176,4 +185,11 @@ form .ant-picker {
     width: 100%;
     min-width: 150px;
     background-size: cover;
+}
+
+.note {
+    background-color: var(--clear-95);
+    padding: 1em;
+    color: var(--gray-90);
+    font-size: .9em;
 }

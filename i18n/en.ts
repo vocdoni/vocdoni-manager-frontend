@@ -44,4 +44,9 @@ export default ({
     finishes: 'Finishes',
     finished: 'Finished',
     active: 'Active',
+    loadingEntity: 'Loading the details of the entity...',
+    qrNote: 'By scanning this QR code with Vocdoni\'s App a user can subscribe to the activity of your organization',
+    orgName: 'Organization name',
+    notEnoughBalance: 'Not enough balance',
+    notEnoughBalanceNote: 'To continue with the transaction you need to get some xDAI tokens.<br /> Copy the following address and get in touch with us: <code>{address}</code>',
 })

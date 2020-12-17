@@ -344,7 +344,6 @@ class ProcessNew extends Component<IAppContext, State> {
                 } catch (e) {
                     msg += ' There was an error sending e-mails tho.'
                 }
-
             }
 
             message.success(msg)
@@ -406,7 +405,6 @@ class ProcessNew extends Component<IAppContext, State> {
 
                                             this.setNewProcessField(['details', 'headerImage'], image)
                                         }}
-                                        {...this.props}
                                     />
                                 }
                             />

@@ -1,6 +1,5 @@
-import { Tag } from 'antd'
 import { fetchFileBytes } from 'dvote-js/dist/api/file'
-import React, { Component, HTMLProps, ReactNode } from 'react'
+import React, { Component, ReactNode } from 'react'
 import { Uint8ToString } from '../lib/file-utils'
 import { getGatewayClients } from '../lib/network'
 
@@ -12,9 +11,9 @@ type State = {
 const TagType = 'tag'
 const BackgroundType = 'background'
 
-type ImageType = typeof TagType | typeof BackgroundType
+export type ImageType = typeof TagType | typeof BackgroundType
 
-interface ImageProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLImageElement>, HTMLImageElement> {
+export interface ImageProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLImageElement>, HTMLImageElement> {
     type?: ImageType,
     src: string,
     alt?: string,
@@ -106,9 +105,14 @@ export default class Image extends Component<ImageProps, State> {
         }
 
         if (this.type === BackgroundType) {
+            let className = 'background-cover-image'
+            if (this.props.className?.length) {
+                className += ` ${this.props.className}`
+            }
             return (
                 <div
-                    className='background-cover-image'
+                    {...this.props}
+                    className={className}
                     style={{
                         backgroundImage: `url(${image})`,
                     }}

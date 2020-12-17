@@ -491,7 +491,6 @@ class ProcessNew extends Component<IAppContext, State> {
 
                                             this.setNewProcessField(['details', 'headerImage'], image)
                                         }}
-                                        {...this.props}
                                     />
                                 }
                             />

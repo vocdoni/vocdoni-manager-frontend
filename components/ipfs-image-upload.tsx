@@ -10,7 +10,7 @@ import { imageUploadMimeTypes, IMAGEUPLOAD_FILESIZE_LIMIT } from '../lib/constan
 import { FileReaderPromise } from '../lib/file-utils'
 import { getGatewayClients } from '../lib/network'
 import { main } from '../i18n'
-import { IAppContext } from './app-context'
+import AppContext from './app-context'
 
 type State = {
     uploading: boolean,
@@ -18,7 +18,10 @@ type State = {
     fileList: UploadFile[],
 }
 
-export default class IPFSImageUpload extends Component<UploadProps & IAppContext, State> {
+export default class IPFSImageUpload extends Component<UploadProps, State> {
+    static contextType = AppContext
+    context!: React.ContextType<typeof AppContext>
+
     state = {
         uploading: false,
         file: null,
@@ -78,7 +81,7 @@ export default class IPFSImageUpload extends Component<UploadProps & IAppContext
     async request({file, filename, onError, onSuccess}: RcCustomRequestOptions) : Promise<any> {
         try {
             const buffer = await FileReaderPromise(file)
-            const wallet = await this.props.web3Wallet.getWallet()
+            const wallet = await this.context.web3Wallet.getWallet()
             const gateway = await getGatewayClients()
             const origin = await addFile(buffer, filename, wallet, gateway)
             return onSuccess({src: origin}, file)

@@ -20,6 +20,7 @@ export type ISelected = 'profile'
 export interface IAppContext {
     isWriteEnabled: boolean,
     isReadOnly: boolean,
+    isReadOnlyNetwork: boolean,
     title: string,
     web3Wallet: Web3Wallet,
     onNewWallet: (wallet: Wallet) => any,
@@ -30,6 +31,7 @@ export interface IAppContext {
     entityId: string,
     processId: string,
     urlHash: string,
+    params: string[],
     setTitle: (title: string) => void
     onGatewayError: (type: 'private' | 'public') => void
     setMenuVisible: (menuVisible: boolean) => void

@@ -44,4 +44,9 @@ export default ({
     finishes: 'Finalitza',
     finished: 'Ha finalitzat',
     active: 'Actiu',
+    loadingEntity: 'Carregant els detalls de l\'entitat...',
+    qrNote: 'Escanejant aquest codi QR amb l\'app de Vocdoni, un usuari es pot suscriure a la teva organització.',
+    orgName: 'Nom de la organització',
+    notEnoughBalance: 'No hi ha prou saldo',
+    notEnoughBalanceNote: 'Per poder continuar amb la transacció necessites tenir tokens xDAI.<br /> Posa\'t en contacte amb nosaltres indicant-nos l\'adreça següent: <code>{address}</code>',
 })
