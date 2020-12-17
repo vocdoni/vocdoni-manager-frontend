@@ -26,6 +26,8 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                     href={process.details['requestsURL']}
                     type='primary'
                     style={{marginTop: '2em'}}
+                    target='_blank'
+                    rel='noopener noreferrer nofollow'
                 >
                     {main.requestsButton}
                 </Button>
