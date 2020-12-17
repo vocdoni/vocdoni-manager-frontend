@@ -125,3 +125,7 @@
 .vote-questions h4::before {
     content: counter(questions) ". ";
 }
+
+.entity-avatar .ant-avatar {
+    background-color: #A1A1A1;
+}

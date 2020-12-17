@@ -1,4 +1,4 @@
-import { areAllNumbers, findHexId, getRandomInt, getRandomUnsplashImage } from './util'
+import { areAllNumbers, findHexId, getRandomInt, getRandomUnsplashImage, sanitizeHtml } from './util'
 
 describe('utils', () => {
     describe('getRandomInt()', () => {
@@ -53,6 +53,13 @@ describe('utils', () => {
         it('works with upper and lower case', () => {
             const found = hexes.find(findHexId('aF1'))
             expect(found).toEqual('0xaF1')
+        })
+    })
+    describe('sanitizeHtml', () => {
+        it('does not remove h1 nor h2', () => {
+            const text = '<h1>Heading 1</h1><h2>Heading 2</h2>'
+
+            expect(sanitizeHtml(text)).toEqual(text)
         })
     })
 })
