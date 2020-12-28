@@ -21,6 +21,7 @@ import { isWriteEnabled } from '../lib/util'
 import 'antd/dist/antd.css'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import '../styles/index.css'
+import { main } from '../i18n'
 // import IndexPage from '.'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -87,7 +88,7 @@ class MainApp extends App<Props, State> {
 
     async connect(): Promise<void> {
         await initNetwork().then(async () => {
-            message.success("Connected")
+            message.success(main.connected)
             this.setState({ connectionError: null })
             this.refreshWeb3Status()
         }).catch(err => {
@@ -111,13 +112,13 @@ class MainApp extends App<Props, State> {
     useNewWallet(newWallet: Wallet) : void {
         getWeb3Wallet().setWallet(newWallet)
         initNetwork().then(async () => {
-            message.success("Connected")
+            message.success(main.connected)
             return this.refreshWeb3Status()
         }).then(() => {
             this.setState({})
         }).catch(err => {
             this.refreshWeb3Status()
-            message.error("Could not connect")
+            message.error(main.couldNotConnect)
             this.setState({ connectionError: err.message })
         })
     }
@@ -210,11 +211,11 @@ class MainApp extends App<Props, State> {
         // TODO: reconnect or shift
         new Promise(resolve => setTimeout(resolve, 1000 * 3))
             .then(() => initNetwork()).then(() => {
-                // message.success("Connected")
+                // message.success(main.connected)
                 this.refreshWeb3Status()
             }).catch(err => {
                 this.refreshWeb3Status()
-                message.error("Could not connect")
+                message.error(main.couldNotConnect)
             })
     }
 

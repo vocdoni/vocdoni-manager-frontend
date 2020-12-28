@@ -1,7 +1,13 @@
-import { API, Wrappers, Network, EntityMetadata, IGatewayPool, GatewayDiscoveryParameters, IEntityResolverContract, IVotingProcessContract, GatewayBootNodes } from "dvote-js"
-import { message } from "antd"
-import { Wallet, Signer, getDefaultProvider } from "ethers"
-import Web3Wallet, { getWeb3Wallet } from "./web3-wallet"
+import {
+    Network,
+    IGatewayPool,
+    GatewayDiscoveryParameters,
+    IEntityResolverContract,
+    IVotingProcessContract,
+} from 'dvote-js'
+import { message } from 'antd'
+import { getWeb3Wallet } from './web3-wallet'
+import { main } from '../i18n'
 
 const { Pool: { GatewayPool }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
 // const {GatewayInfo} = Wrappers
@@ -30,7 +36,7 @@ export async function initNetwork() {
     }
     const web3Wallet = getWeb3Wallet()
 
-    const hideLoading = message.loading("Connecting to the network. Please wait...", 0)
+    const hideLoading = message.loading(main.connectingWait, 0)
 
     try {
         if (!web3Wallet.hasWallet()) {
@@ -41,7 +47,7 @@ export async function initNetwork() {
                 numberOfGateways: 2,
                 race: false,
                 timeout: 900,
-                testing : (TEST_CONTRACTS) ? true : false 
+                testing : (TEST_CONTRACTS) ? true : false
             }
             gateway = await GatewayPool.discover(options)
 
@@ -56,7 +62,7 @@ export async function initNetwork() {
                 numberOfGateways: 2,
                 race: false,
                 timeout: 900,
-                testing : (TEST_CONTRACTS) ? true : false 
+                testing : (TEST_CONTRACTS) ? true : false
             }
             gateway = await GatewayPool.discover(options)
             web3Wallet.connect(gateway.getProvider())

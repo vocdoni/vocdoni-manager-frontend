@@ -38,4 +38,7 @@ export default ({
     filesizeLimit: 'La imatge és més gran que la mida màxima permesa (%s)',
     nullifierNotice: 'Si et plau, desa el codi següent com a comprovant únic de l\'emissió del teu vot:',
     requestsButton: 'Precs i preguntes',
+    connectingWait: 'Connectant a la xarxa. Espera si et plau...',
+    connected: 'Connectat',
+    couldNotConnect: 'No s\'ha pogut establir connexió',
 })

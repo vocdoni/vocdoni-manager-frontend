@@ -38,4 +38,7 @@ export default ({
     filesizeLimit: 'The image is bigger than the current filesize limit (%s)',
     nullifierNotice: 'Please, store the following code as the unique receipt of your ballot:',
     requestsButton: 'Questions and answers',
+    connectingWait: 'Connecting to the network. Please wait...',
+    connected: 'Connected',
+    couldNotConnect: 'Could not connect',
 })
