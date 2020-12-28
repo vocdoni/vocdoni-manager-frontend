@@ -96,3 +96,32 @@ pre {
 .ant-input-group-addon .ant-upload-list {
     display: none !important;
 }
+
+.vote-process.login {
+    min-height: 100vh;
+    position: relative;
+}
+
+footer.poweredby {
+    position: absolute;
+    height: 200px;
+    background-color: var(--main-color);
+    text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer.poweredby img {
+    display: block;
+}
+
+footer.poweredby a {
+    color: #6c757d;
+}
+footer.poweredby a:hover,
+footer.poweredby a:active,
+footer.poweredby a:focus {
+    color: #969696;
+}
