@@ -39,7 +39,7 @@ export default class SinglePageLayout extends Component<SinglePageLayoutProps, u
                     <footer className='poweredby'>
                         <a href='https://vocdoni.io' target='_blank' rel='noreferrer'>
                             Powered by Vocdoni
-                            <img src='/media/logo_white.png' alt='Vocdoni logo' />
+                            <img src='/media/logo_square_white.png' alt='Vocdoni logo' />
                         </a>
                     </footer>
                 </Col>

@@ -20,6 +20,8 @@ h1, h2, h3, h4, h5, h6 {
     --dark: #222;
     --dark-90: #4b4040;
 
+    --gray-logo: #f2f0ed;
+
     /* --main-color: #25658a; */
     --main-color: #444444;
 }
@@ -104,7 +106,7 @@ pre {
 
 footer.poweredby {
     position: absolute;
-    height: 200px;
+    height: 100px;
     background-color: var(--main-color);
     text-align: center;
     width: 100%;
@@ -114,11 +116,11 @@ footer.poweredby {
 }
 
 footer.poweredby img {
-    display: block;
+    width: 35px;
 }
 
 footer.poweredby a {
-    color: #6c757d;
+    color: var(--gray-logo);
 }
 footer.poweredby a:hover,
 footer.poweredby a:active,
