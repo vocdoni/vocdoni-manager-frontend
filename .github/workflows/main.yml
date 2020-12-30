@@ -1,0 +1,99 @@
+---
+
+name: Main
+
+on: [push, pull_request]
+
+jobs:
+  node-tests:
+    runs-on: self-hosted
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: Install dependencies
+      run: npm install
+        npm test
+
+    - name: Run tests
+      run: npm test
+
+  docker-release:
+    runs-on: self-hosted
+    needs: [go-tests]
+    if:
+      github.ref == 'refs/heads/master' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/release-*'
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - uses: docker/setup-buildx-action@v1
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v1
+        with:
+          image: tonistiigi/binfmt:latest
+          platforms: all
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
+      - name: Get short branch name
+        id: var
+        shell: bash
+        # Grab the short branch name, convert slashes to dashes
+        run: |
+         echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/} | tr '/' '-' )"
+
+      - name: Push to Docker Hub and ghcr.io
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            ETH_NETWORK_ID=$ETH_NETWORK_ID
+            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
+            BOOTNODES_URL_RW=$BOOTNODES_URL_RW
+            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
+            REGISTER_URL=$REGISTER_URL
+            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
+            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
+            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
+          tags: |
+            vocdoni/${{ github.event.repository.name }}:latest, vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }},
+            ghcr.io/vocdoni/${{ github.event.repository.name }}:latest,ghcr.io/vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }}
+
+      - name: Push to Docker Hub and ghcr.io (nginx-runtime)
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          target: nginx-runtime
+          platforms: linux/amd64
+          push: true
+          build-args: |
+            ETH_NETWORK_ID=$ETH_NETWORK_ID
+            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
+            BOOTNODES_URL_RW=$BOOTNODES_URL_RW
+            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
+            REGISTER_URL=$REGISTER_URL
+            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
+            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
+            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
+          tags: |
+            vocdoni/${{ github.event.repository.name }}:nginx-latest, vocdoni/${{ github.event.repository.name }}:nginx-${{ steps.var.outputs.branch }},
+            ghcr.io/vocdoni/${{ github.event.repository.name }}:nginx-latest,ghcr.io/vocdoni/${{ github.event.repository.name }}:nginx-${{ steps.var.outputs.branch }}
