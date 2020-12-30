@@ -99,20 +99,25 @@ pre {
     display: none !important;
 }
 
-.vote-process.login {
+div#__next {
     min-height: 100vh;
+}
+
+.vote-process.login {
     position: relative;
+    min-height: 100vh;
 }
 
 footer.poweredby {
     position: absolute;
-    height: 100px;
+    height: 60px;
     background-color: var(--main-color);
     text-align: center;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    bottom: 0;
 }
 
 footer.poweredby img {

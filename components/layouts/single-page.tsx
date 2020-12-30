@@ -35,14 +35,12 @@ export default class SinglePageLayout extends Component<SinglePageLayoutProps, u
                 <Col {...resp} style={{marginTop: '1em'}}>
                     {this.props.children}
                 </Col>
-                <Col span={24}>
-                    <footer className='poweredby'>
-                        <a href='https://vocdoni.io' target='_blank' rel='noreferrer'>
-                            Powered by Vocdoni
-                            <img src='/media/logo_square_white.png' alt='Vocdoni logo' />
-                        </a>
-                    </footer>
-                </Col>
+                <footer className='poweredby'>
+                    <a href='https://vocdoni.io' target='_blank' rel='noreferrer'>
+                        Powered by Vocdoni
+                        <img src='/media/logo_square_white.png' alt='Vocdoni logo' />
+                    </a>
+                </footer>
             </Row>
         )
     }
