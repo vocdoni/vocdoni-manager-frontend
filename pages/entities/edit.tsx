@@ -31,7 +31,9 @@ type State = {
     entity?: EntityMetadata,
     entityId?: string,
     bootnodes?: GatewayBootNodes,
-    email?: string,
+    email: string,
+    callbackSecret: string,
+    callbackUrl: string,
 }
 
 // Stateful component
@@ -39,8 +41,12 @@ class EntityEdit extends Component<IAppContext, State> {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
 
+    backendfields = ['email', 'callbackSecret', 'callbackUrl']
+
     state: State = {
-        email: ""
+        email: '',
+        callbackSecret: '',
+        callbackUrl: '',
     }
 
     async componentDidMount() : Promise<boolean> {
@@ -69,8 +75,14 @@ class EntityEdit extends Component<IAppContext, State> {
 
             const req : any = {method: 'getEntity'}
             const bk = await this.context.managerBackendGateway.sendMessage(req, this.context.web3Wallet.getWallet())
-            if (bk.entity.email?.length) {
-                this.setState({email: bk.entity.email})
+            const values = {}
+            for (const field of this.backendfields) {
+                if (bk.entity[field]?.length) {
+                    values[field] = bk.entity[field]
+                }
+            }
+            if (Object.values(values).length > 0) {
+                this.setState(values)
             }
 
             this.setState({ entity, entityId, entityLoading: false })
@@ -107,8 +119,11 @@ class EntityEdit extends Component<IAppContext, State> {
         const entity = Object.assign({}, this.state.entity, { name: newName })
         this.setState({ entity })
     }
-    onEmailChange(email: string) : void {
-        this.setState({ email })
+    onStateFieldChange(field: string, value: string) : void {
+        this.setState({
+            ...this.state,
+            [field]: value,
+        })
     }
     onDescriptionChange(description: string, lang: string) : void {
         const newDescription = Object.assign({}, this.state.entity.description, { [lang]: description })
@@ -182,7 +197,12 @@ class EntityEdit extends Component<IAppContext, State> {
         // Filter extraneous actions
         entity.actions = entity.actions.filter(meta => !!meta.actionKey)
 
-        await this.entityBackendUpdate(entity.name[entity.languages[0]], this.state.email)
+        await this.entityBackendUpdate({
+            name: entity.name[entity.languages[0]],
+            email: this.state.email,
+            callbackUrl: this.state.callbackUrl,
+            callbackSecret: this.state.callbackSecret,
+        })
 
         return getGatewayClients().then(gateway => {
             const state = getNetworkState()
@@ -198,13 +218,10 @@ class EntityEdit extends Component<IAppContext, State> {
         })
     }
 
-    entityBackendUpdate(entityName: string, entityEmail:string) : Promise<any> {
+    entityBackendUpdate(entity: any) : Promise<any> {
         const request = {
             method: "updateEntity",
-            entity: {
-                name : entityName,
-                email: entityEmail,
-            }
+            entity,
         }
         return this.context.managerBackendGateway.sendMessage(request as any, this.context.web3Wallet.getWallet());
     }
@@ -268,7 +285,7 @@ class EntityEdit extends Component<IAppContext, State> {
                                 value={email}
                                 prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                                 placeholder={"Entity email"}
-                                onChange={val => this.onEmailChange(val.target.value)} />
+                                onChange={val => this.onStateFieldChange('email', val.target.value)} />
                             <br /><br />
                         </div>
                     }
@@ -332,6 +349,25 @@ class EntityEdit extends Component<IAppContext, State> {
                             />
                         }
                     />
+                    <Divider orientation="left">API configuration</Divider>
+                    <div>
+                        <label>Callback Url</label>
+                        <Input type="text"
+                            value={this.state.callbackUrl}
+                            prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder={"Callback url"}
+                            onChange={val => this.onStateFieldChange('callbackUrl', val.target.value)} />
+                        <br /><br />
+                    </div>
+                    <div>
+                        <label>Callback Secret</label>
+                        <Input type='password'
+                            // value={this.state.callbackSecret}
+                            prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                            placeholder={"Callback secret"}
+                            onChange={val => this.onStateFieldChange('callbackSecret', val.target.value)} />
+                        <br /><br />
+                    </div>
                     <br /><br />
 
                     <Divider />
