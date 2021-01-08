@@ -49,4 +49,8 @@ export default ({
     orgName: 'Organization name',
     notEnoughBalance: 'Not enough balance',
     notEnoughBalanceNote: 'To continue with the transaction you need to get some xDAI tokens.<br /> Copy the following address and get in touch with us: <code>{address}</code>',
+    newProcess: 'New process',
+    processCreationConfirmButton: 'Create process',
+    processCreationCancelButton: 'Not now',
+    processCreationAdvice: 'Creating the process will register it into the blockchain, wich <b>cannot be undone</b>. Do you want to continue?',
 })

@@ -7,8 +7,12 @@ let Editor: any // = await import('react-draft-wysiwyg')
 let EditorState, convertToRaw, ContentState
 let draftToHtml, htmlToDraft: any // = await import('draftjs-to-html')
 
+type ToolbarSimple = 'simple'
+type ToolbarFull = 'full'
+type ToolbarReduced = 'reduced'
+
 type Props = {
-    toolbar?: string,
+    toolbar?: ToolbarSimple | ToolbarFull | ToolbarReduced,
     onContentChanged?: (contents: string) => void,
     value?: string,
 }

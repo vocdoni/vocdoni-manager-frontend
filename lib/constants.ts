@@ -30,3 +30,7 @@ export const MOMENT_DATE_FORMAT_SQL = 'YYYY-MM-DD'
 export const HEX_REGEX = /^(0x)?[0-9a-fA-F]+$/
 
 export const IMAGEUPLOAD_FILESIZE_LIMIT = 8 * 1024 * 1024 // 8MB
+
+// These may be removed as soon as we update dvote-js
+export const POLL_TYPE_NORMAL = 'poll-vote'
+export const POLL_TYPE_ANONYMOUS = 'encrypted-poll'

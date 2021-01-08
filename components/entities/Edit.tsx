@@ -236,6 +236,7 @@ export default class Edit extends Component<EditProps, EditState> {
                             <Form.Item>
                                 <Input
                                     placeholder='Organization name'
+                                    size='large'
                                     value={values.name}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         this.setFieldValue('name', e.target.value)

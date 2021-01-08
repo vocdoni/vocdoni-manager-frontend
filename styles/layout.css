@@ -133,7 +133,7 @@
     background-color: var(--cyan);
 }
 header .header-image {
-    min-height: 200px;
+    min-height: 150px;
     background-color: var(--cyan);
 }
 
@@ -216,4 +216,122 @@ header .header-image,
     .entity-share .copy-link a {
         text-align: left;
     }
+}
+
+.date-time-picker,
+.label-wrapper label,
+.stretched-form .label-wrapper,
+.stretched-form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.date-time-picker,
+.label-wrapper label {
+    flex-direction: row;
+}
+
+form .label-wrapper.no-icon,
+form .label-wrapper + div {
+    margin-left: 25px;
+}
+
+form .label-wrapper + .label-wrapper,
+form .label-wrapper + div small + * {
+    margin-top: 15px;
+}
+
+form .ant-picker {
+    width: 100%;
+}
+
+.label-wrapper label svg {
+    width: 15px;
+    margin-right: 10px;
+}
+
+.content-wrapper .ant-select .ant-select-selection-item {
+    font-size: 20px;
+}
+
+.content-wrapper .label-wrapper .ant-select {
+    width: auto;
+}
+
+.reduced-select .ant-select-item-option-content,
+.content-wrapper .label-wrapper .ant-select .ant-select-selection-item {
+    font-size: 12px;
+}
+
+.ant-select svg {
+    vertical-align: middle;
+}
+
+.ant-select-item-option-content svg {
+    vertical-align: bottom;
+}
+
+.ant-select-item-option-content svg {
+    width: 20px;
+}
+
+.stretched-form form {
+    max-width: 90%;
+    margin-top: 20px;
+}
+
+.stretched-form .label-wrapper {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+form ol,
+form ul {
+    padding-left: 1em;
+}
+
+ol .ant-form-item,
+ul .ant-form-item {
+    margin-bottom: 10px;
+}
+
+.ant-upload.ant-upload-drag.inline-uploader,
+.rdw-editor-main.editor-box,
+form input[type=text],
+form input[type=password],
+form .ant-input-group-addon,
+form .ant-input-group-addon button {
+    background-color: var(--inputs-bg);
+    border: none;
+    border-radius: var(--border-radius-small);
+}
+
+form .editor-box {
+    padding: 0 1em;
+}
+
+.ant-input-group-addon svg {
+    width: 15px;
+    vertical-align: bottom;
+    stroke: var(--gray-90);
+}
+
+.ant-upload.ant-upload-drag.inline-uploader {
+    border-radius: var(--border-radius-large);
+    margin-top: 15px;
+}
+
+.ant-upload.ant-upload-drag.inline-uploader p {
+    display: flex;
+    justify-content: center;
+}
+
+form .ant-alert {
+    border-radius: var(--border-radius-large);
+    font-size: .75em;
+}
+
+form .ant-alert.ant-alert-info .ant-alert-message {
+    color: #2e3592;
 }

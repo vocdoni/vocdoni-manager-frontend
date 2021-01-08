@@ -49,4 +49,8 @@ export default ({
     orgName: 'Nom de la organització',
     notEnoughBalance: 'No hi ha prou saldo',
     notEnoughBalanceNote: 'Per poder continuar amb la transacció necessites tenir tokens xDAI.<br /> Posa\'t en contacte amb nosaltres indicant-nos l\'adreça següent: <code>{address}</code>',
+    newProcess: 'Nou procés',
+    processCreationConfirmButton: 'Crear procés',
+    processCreationCancelButton: 'Ara no',
+    processCreationAdvice: 'Quan creïs el procés es registrarà a la blockchain, cosa que <b>no es pot desfer</b>. Vols continuar?',
 })

@@ -21,10 +21,16 @@ h1, h2, h3, h4, h5, h6 {
     --dark-90: #4b4040;
 
     --gray-logo: #f2f0ed;
+    --gray-50: #f2f2f2;
     --gray-80: #bbb;
     --gray-90: #888;
 
+    --border-radius-small: 4px;
+    --border-radius-large: 10px;
+
     --cyan: #99CCEE;
+
+    --inputs-bg: var(--gray-50);
 
     /* --main-color: #25658a; */
     --main-color: #444444;
@@ -93,10 +99,6 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-.ant-layout-content .content-wrapper .ant-select .ant-select-selection-item {
-    font-size: 20px;
-}
-
 .ant-layout-content .content-wrapper .ant-select:not(.ant-select-disabled) .ant-select-selector,
 .ant-layout-content .content-wrapper .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
     border: none;
@@ -152,11 +154,11 @@ pre {
 }
 
 .rounded {
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
 }
 
 .rounded-lg {
-    border-radius: 10px;
+    border-radius: var(--border-radius-large);
 }
 
 div#__next {

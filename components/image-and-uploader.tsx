@@ -1,6 +1,7 @@
-import { FileImageOutlined } from '@ant-design/icons'
-import { Input, Modal } from 'antd'
+import { Input, Modal, Form } from 'antd'
+import { FormItemProps } from 'antd/lib/form'
 import React, { Component, CSSProperties, ReactNode } from 'react'
+import { UploadCloud } from 'react-feather'
 
 import Image, { ImageProps } from './image'
 import IPFSImageUpload from './ipfs-image-upload'
@@ -35,6 +36,13 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
         })
     }
 
+    onCancel() : void {
+        this.setState({
+            src: this.props.src,
+        })
+        this.toggleVisible()
+    }
+
     onConfirm(image: string) : void {
         this.setState({isModalVisible: false})
 
@@ -44,7 +52,7 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
     render() : ReactNode {
         const { src } = this.props
         let isImageSet = src?.length > 0
-        let contents = <FileImageOutlined onClick={this.toggleVisible.bind(this)} />
+        let contents = <UploadCloud onClick={this.toggleVisible.bind(this)} />
         const classes = ['image-uploader-wrapper', 'empty']
         if (isImageSet) {
             contents = <Image src={src} onClick={this.toggleVisible.bind(this)} />
@@ -57,34 +65,45 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
             style.cursor = 'pointer'
         }
 
+        const isValid = isImageSet && /^(https?|ipfs):\/\//.test(this.state.src)
+        const inputAttrs : FormItemProps = {}
+        if (!isValid) {
+            inputAttrs.validateStatus = 'error'
+            inputAttrs.help = 'Must be either an http or an ipfs link'
+        }
         return (
             <div className={classes.join(' ')} style={style}>
                 {contents}
                 <Modal
                     visible={this.state.isModalVisible}
                     closable={false}
-                    onCancel={this.toggleVisible.bind(this)}
+                    onCancel={this.onCancel.bind(this)}
                     onOk={this.onConfirm.bind(this, this.state.src)}
+                    okButtonProps={{
+                        disabled: !isValid,
+                    }}
                 >
-                    <Input
-                        type='text'
-                        value={this.state.src}
-                        placeholder={'URL'}
-                        onChange={(e) => this.setState({src: e.target.value})}
-                        addonAfter={
-                            <IPFSImageUpload
-                                onChange={({file}) => {
-                                    let image = ''
-                                    if (file.status === 'done') {
-                                        image = file.response.src
-                                    }
-                                    this.setState({
-                                        src: image,
-                                    })
-                                }}
-                            />
-                        }
-                    />
+                    <Form.Item {...inputAttrs}>
+                        <Input
+                            type='text'
+                            value={this.state.src}
+                            placeholder={'URL'}
+                            onChange={(e) => this.setState({src: e.target.value})}
+                            addonAfter={
+                                <IPFSImageUpload
+                                    onChange={({file}) => {
+                                        let image = ''
+                                        if (file.status === 'done') {
+                                            image = file.response.src
+                                        }
+                                        this.setState({
+                                            src: image,
+                                        })
+                                    }}
+                                />
+                            }
+                        />
+                    </Form.Item>
                 </Modal>
             </div>
         )

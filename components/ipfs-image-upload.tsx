@@ -100,6 +100,7 @@ export default class IPFSImageUpload extends Component<UploadProps, State> {
                 // onChange and fileList shall not be overwriten
                 onChange={this.onChange.bind(this)}
                 fileList={this.state.fileList}
+                accept={imageUploadMimeTypes.join(',')}
             >
                 <Button icon={<UploadOutlined />} type='text' size='small' loading={this.state.uploading}>
                     {text}

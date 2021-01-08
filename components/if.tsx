@@ -8,12 +8,7 @@ type Props = {
 
 export default class If extends Component<Props> {
     static propTypes = {
-        condition: PropTypes.oneOfType([
-            PropTypes.bool,
-            PropTypes.number,
-            PropTypes.oneOf([null]),
-            PropTypes.string,
-        ]),
+        condition: PropTypes.any,
         children: PropTypes.oneOfType([
             PropTypes.arrayOf(PropTypes.node),
             PropTypes.node,

@@ -63,7 +63,7 @@ class ProcessListView extends Component<undefined, State> {
         try {
             this.context.setMenuSelected('processes')
 
-            const entityId = location.hash.substr(2)
+            const [entityId] = this.context.params
             this.setState({ loading: true, entityId })
 
             const gateway = await getGatewayClients()
@@ -170,8 +170,10 @@ class ProcessListView extends Component<undefined, State> {
                                 </Select>
                             </Col>
                             <Col>
-                                <Link href={'/processes/form'} size='small' type='link'>
-                                    <a><PlusOutlined /> Create new process</a>
+                                <Link href={'/processes/new'}>
+                                    <a style={{marginLeft: 10}}>
+                                        <PlusOutlined /> New
+                                    </a>
                                 </Link>
                             </Col>
                         </Row>

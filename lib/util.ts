@@ -129,3 +129,17 @@ export const appLink = (path: string) : string => {
 
     return location.origin + path
 }
+
+/**
+ * Generates ranges of numbers.
+ *
+ * @param start Begining range number
+ * @param end End range number
+ */
+export const range = (start: number, end: number) : number[] => {
+    const result: number[] = []
+    for (let i = start; i < end; i++) {
+        result.push(i)
+    }
+    return result
+}

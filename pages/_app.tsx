@@ -22,7 +22,8 @@ import 'antd/dist/antd.css'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import '../styles/index.css'
 import { main } from '../i18n'
-import { getEntityId } from 'dvote-js/dist/api/entity'
+import { getEntityId, getEntityMetadata } from 'dvote-js/dist/api/entity'
+import { EntityMetadata } from 'dvote-js'
 // import IndexPage from '.'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
@@ -40,6 +41,7 @@ type State = {
     menuSelected?: ISelected
     menuCollapsed?: boolean
     menuDisabled?: boolean
+    entity?: EntityMetadata
     entityId?: string
     processId?: string
     urlHash?: string
@@ -60,12 +62,17 @@ class MainApp extends App<Props, State> {
         urlHash: '',
     }
 
-    componentDidMount(): void {
+    async componentDidMount(): Promise<void> {
         if (window.location.pathname == "/" && !isWriteEnabled()) {
             if (!process.env.BOOTNODES_URL_RW) window.location.href = process.env.FALLBACK_REDIRECT_URL
         }
 
-        this.connect()
+        await this.connect()
+
+        const [entityId] = this.params
+        if (entityId) {
+            await this.refreshEntityMetadata(entityId)
+        }
 
         window.addEventListener('beforeunload', this.beforeUnload)
 
@@ -124,6 +131,10 @@ class MainApp extends App<Props, State> {
         })
     }
 
+    async getEntityMetadata(id: string) : Promise<EntityMetadata> {
+        return getEntityMetadata(id, await getGatewayClients())
+    }
+
     get isReadOnlyNetwork() : boolean {
         const { readOnly } = getNetworkState()
 
@@ -172,7 +183,8 @@ class MainApp extends App<Props, State> {
 
     async createCensusForTarget(
         name: string,
-        {id, name: targetName}: {id: string, name: string})
+        {id, name: targetName}: {id: string, name: string},
+        ephemeral?: boolean)
         : Promise<{census: string, merkleRoot: string, merkleTreeUri: string}>
     {
         const wallet = getWeb3Wallet().getWallet()
@@ -215,11 +227,35 @@ class MainApp extends App<Props, State> {
         }
     }
 
-    fetchTargets() {
+    fetchTargets() : Promise<any> {
         return this.state.managerBackendGateway.sendMessage(
             {method: 'listTargets'} as any,
             getWeb3Wallet().getWallet(),
         )
+    }
+
+    fetchCensuses() : Promise<any> {
+        return this.state.managerBackendGateway.sendMessage(
+            {method: 'listCensus'} as any,
+            getWeb3Wallet().getWallet(),
+        )
+    }
+
+    async refreshEntityMetadata(entityId?: string) : Promise<void> {
+        if (!entityId) {
+            entityId = getEntityId(getWeb3Wallet().getAddress())
+        }
+
+        this.setState({ loading: true })
+        const entity = await this.getEntityMetadata(entityId)
+        if (!entity) throw new Error('Entity not found')
+
+        this.setState({
+            entityId,
+            entity,
+            loading: false,
+            title: entity.name.default,
+        })
     }
 
     async refreshWeb3Status() {
@@ -252,6 +288,10 @@ class MainApp extends App<Props, State> {
         // </div>
     }
 
+    get params() : string[] {
+        return window.location.hash.substr(2).split('/')
+    }
+
     renderRetry() {
         return <div id="index">
             <Row justify="center" align="middle">
@@ -282,6 +322,8 @@ class MainApp extends App<Props, State> {
         const { Component, pageProps } = this.props
 
         const injectedGlobalContext: IAppContext = {
+            gatewayClients: getGatewayClients(),
+            getEntityMetadata: this.getEntityMetadata.bind(this),
             isWriteEnabled: isWriteEnabled(),
             isReadOnly: this.isReadOnly,
             isReadOnlyNetwork: this.isReadOnlyNetwork,
@@ -296,18 +338,21 @@ class MainApp extends App<Props, State> {
             menuSelected: this.state.menuSelected,
             menuCollapsed: this.state.menuCollapsed,
             menuDisabled: this.state.menuDisabled,
+            entity: this.state.entity,
             entityId: this.state.entityId,
             processId: this.state.processId,
             urlHash: this.state.urlHash,
+            refreshEntityMetadata: this.refreshEntityMetadata.bind(this),
             setMenuVisible: (visible) => this.setMenuVisible(visible),
             setMenuSelected: (selected) => this.setMenuSelected(selected),
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
             setUrlHash: (hash) => this.setUrlHash(hash),
-            params: window.location.hash.substr(2).split('/'),
+            params: this.params,
             managerBackendGateway: this.state.managerBackendGateway,
-            createCensusForTarget: (name, target) => this.createCensusForTarget(name, target),
+            createCensusForTarget: (name, target, ephemeral) => this.createCensusForTarget(name, target, ephemeral),
             fetchTargets: () => this.fetchTargets(),
+            fetchCensuses: () => this.fetchCensuses(),
         }
 
         // Does the current component want its own layout?

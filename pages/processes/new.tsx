@@ -1,219 +1,216 @@
-import { useContext, Component } from 'react'
-import { message, Spin, Button, Input, Form, Divider, Row, Col, DatePicker, Radio, Modal, Select } from 'antd'
-import { LoadingOutlined, RocketOutlined, PlusOutlined, MinusOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, GatewayBootNodes, ProcessMetadata } from 'dvote-js'
+import { Button, DatePicker, Form, Input, message, Modal, Switch } from 'antd'
+import { str } from 'dot-object'
+import { EntityMetadata, ProcessMetadata } from 'dvote-js'
+import { createVotingProcess, estimateBlockAtDateTime } from 'dvote-js/dist/api/vote'
+import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
 import moment from 'moment'
 import Router from 'next/router'
-import { getEntityId } from 'dvote-js/dist/api/entity'
-import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
-import { createVotingProcess, estimateBlockAtDateTime } from 'dvote-js/dist/api/vote'
-import { GatewayPool } from 'dvote-js/dist/net/gateway-pool'
-// import { by639_1 } from 'iso-language-codes'
-// import { Wallet, Signer } from 'ethers'
-// import { checkValidProcessMetadata } from 'dvote-js/dist/models/voting-process'
+import React, { Component, ReactNode } from 'react'
+import {
+    Activity,
+    AlertCircle,
+    AlignLeft,
+    ArrowRightCircle,
+    Calendar,
+    HelpCircle,
+    MessageSquare,
+    MousePointer,
+    Youtube,
+} from 'react-feather'
 
-import AppContext, { IAppContext } from '../../components/app-context'
-import { getGatewayClients, getNetworkState } from '../../lib/network'
-import { getRandomUnsplashImage } from '../../lib/util'
-import { ICensus } from '../../lib/types'
-import { main } from '../../i18n'
+import AppContext from '../../components/app-context'
 import HTMLEditor from '../../components/html-editor'
-import Image from '../../components/image'
-import IPFSImageUpload from '../../components/ipfs-image-upload'
+import If from '../../components/if'
+import ImageAndUploader from '../../components/image-and-uploader'
+import { POLL_TYPE_ANONYMOUS, POLL_TYPE_NORMAL } from '../../lib/constants'
+import { ICensus, VotingFormImportData } from '../../lib/types'
+import { getRandomUnsplashImage, range } from '../../lib/util'
+import { main } from '../../i18n'
+import { MessageType } from 'antd/lib/message'
+import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
+import ParticipantsSelector from '../../components/processes/ParticipantsSelector'
+import QuestionsForm, { LegacyQuestions } from '../../components/processes/QuestionsForm'
 
-const { Entity } = API
-const { RangePicker } = DatePicker
-const { Option } = Select
-
-// const ORACLE_CONFIRMATION_DELAY = parseInt(process.env.ORACLE_CONFIRMATION_DELAY || "180", 10)
-// const BLOCK_MARGIN = 5 // extra blocks
-
-// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-
-// MAIN COMPONENT
-const ProcessNewPage = props => {
-    // Get the global context and pass it to our stateful component
-    const context = useContext(AppContext)
-
-    return <ProcessNew {...context} />
-}
-
-type State = {
-    dataLoading?: boolean,
-    processCreating?: boolean,
+export type ProcessNewState = {
+    loading?: boolean,
+    creating?: boolean,
     entity?: EntityMetadata,
     entityId?: string,
     process?: ProcessMetadata,
     censuses: ICensus[],
-    selectedCensusId: string,
-    bootnodes?: GatewayBootNodes,
-    descriptionEditorState?: any,
+    censusFileData: VotingFormImportData,
+    selectedCensus: string,
     startBlock: number
     startDate: moment.Moment
     numberOfBlocks: number,
     endDate: moment.Moment,
     targets: any[],
+    streamingInputVisible: boolean,
+    qnaInputVisible: boolean,
+    webVoting: boolean,
 }
 
-// Stateful component
-class ProcessNew extends Component<IAppContext, State> {
-    state: State = {
+type CensusInfo = {
+    merkleRoot: string,
+    merkleTreeUri: string,
+    id: string,
+    formURI?: string,
+}
+
+class ProcessNew extends Component<undefined, ProcessNewState> {
+    static contextType = AppContext
+    context!: React.ContextType<typeof AppContext>
+
+    state: ProcessNewState = {
         process: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
+        creating: false,
+        loading: true,
         startBlock: null,
         numberOfBlocks: null,
         startDate: null,
         endDate: null,
         censuses: [],
         targets: [],
-        selectedCensusId: '',
+        selectedCensus: '',
+        censusFileData: {
+            digestedHexClaims: [],
+            title: '',
+        },
+        streamingInputVisible: false,
+        qnaInputVisible: false,
+        webVoting: false,
     }
 
-    refreshInterval = null
 
-    constructor(props) {
+    constructor(props: undefined) {
         super(props)
 
         this.state.process.details.headerImage = getRandomUnsplashImage('1500x450')
-        this.state.process.details.questions[0].voteOptions.push({
-            title: {
-                default: main.blankVoteOption,
-            },
-            value: 2,
-        })
+        this.state.process.type = 'encrypted-poll'
     }
 
-    async componentDidMount() {
-        this.props.setMenuSelected("new-vote")
-
-        const { readOnly } = getNetworkState()
-        // if readonly, show the view page
-        if (readOnly) {
-            return Router.replace("/")
-        }
-
-        this.props.setTitle("New process")
-
-        try {
-            await this.refreshMetadata()
-
-            const defaultRange = [moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]
-            this.updateDateRange(defaultRange[0], defaultRange[1])
-
-            await this.fetchCensuses()
-            const {targets} = await this.props.fetchTargets()
-
-            this.setState({targets})
-        }
-        catch (err) {
-            message.error("Could not check the entity metadata")
-        }
-    }
-
-    async refreshMetadata() {
-        try {
-            const entityId = getEntityId(this.props.web3Wallet.getAddress())
-
-            this.setState({ dataLoading: true, entityId })
-
-            const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, gateway)
-            if (!entity) throw new Error()
-
-            this.setState({ entity, entityId, dataLoading: false })
-            this.props.setTitle(entity.name.default)
-            this.props.setEntityId(entityId)
-        }
-        catch (err) {
-            this.setState({ dataLoading: false })
-            throw err
-        }
-    }
-
-    async fetchCensuses() {
-        const request = {
-            method: "listCensus",
-        }
-
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
-            .then((result) => {
-                if (!result.censuses) {
-                    return // avoid setting censuses as undefined
-                }
-                this.setState({
-                    censuses: result.censuses,
-                })
-            },
-            (error) => {
-                return new Error(error)
-            })
-    }
-
-    addQuestion() {
-        const proc = this.state.process
-        proc.details.questions.push({
-            type: "single-choice",
-            question: { default: "" },
-            description: { default: "" },
-            voteOptions: [{
-                title: { default: "Yes" },
-                value: 0,
-            }, {
-                title: { default: "No" },
-                value: 1,
-            }, {
-                title: { default: main.blankVoteOption },
-                value: 2,
-            }]
-        })
-        this.setState({ process: proc })
-    }
-
-    addOption(questionIdx) {
-        const process = this.state.process
-        const optionCount = process.details.questions[questionIdx].voteOptions.length
-        process.details.questions[questionIdx].voteOptions.push({ title: { default: "" }, value: optionCount })
-        this.setState({ process })
-    }
-
-    removeQuestion(questionIdx) {
-        const process = this.state.process;
-        process.details.questions.splice(questionIdx, 1)
-        this.setState({ process })
-    }
-
-    removeOption(questionIdx, optionIdx) {
-        const process = this.state.process;
-        process.details.questions[questionIdx].voteOptions.splice(optionIdx, 1)
-        this.setState({ process })
-    }
-
-    setNestedKey(obj, path, value) {
-        if (path.length === 1) {
-            obj[path] = value
+    async componentDidMount() : Promise<void> {
+        this.context.setMenuSelected('new-vote')
+        if (this.context.isReadOnlyNetwork) {
+            Router.replace('/')
             return
         }
-        return this.setNestedKey(obj[path[0]], path.slice(1), value)
+        this.context.setTitle(main.newProcess)
+
+        try {
+            await this.context.refreshEntityMetadata()
+
+            const beginDate = moment().add(30, 'minutes')
+            const endDate = moment().add(3, 'days').add(30, 'minutes')
+            this.updateDateRange(beginDate, endDate)
+
+            const { censuses } = await this.context.fetchCensuses()
+            const { targets } = await this.context.fetchTargets()
+            this.setState({
+                targets: targets || [],
+                censuses: censuses || [],
+                loading: false,
+            })
+        }
+        catch (err) {
+            console.error(err)
+            message.error('Could not check the entity metadata')
+            this.setState({ loading: false })
+        }
     }
 
-    setNewProcessField(path, value) {
-        const process = this.state.process
-        this.setNestedKey(process, path, value)
-        this.setState({ process })
+    async hasBalance(loading: MessageType) : Promise<boolean> {
+        const address = this.context.web3Wallet.getAddress()
+        const balance = await this.context.web3Wallet.getProvider().getBalance(address)
+
+        if (balance.lte(0)) {
+            Modal.warning({
+                title: 'Not enough balance',
+                icon: <AlertCircle />,
+                content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
+                onOk: () => {
+                    this.setState({ creating: false })
+                    loading()
+                }
+            })
+            return false
+        }
+
+        return true
     }
 
-    isDisabledDate(queryDate: moment.Moment) {
+    /**
+     * Checks possible errors in the form and returns them as an array of
+     * strings, or true in case there are no errors.
+     */
+    formErrors(): string[] | boolean {
+        const { process } = this.state
+        const errors = []
+
+        if (!process.details.title.default.length) {
+            errors.push('The process must have a title')
+        }
+
+        if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
+            errors.push('The dates are not valid')
+        }
+
         const threshold = moment().add(8, 'minutes')
+        if (this.state.numberOfBlocks <= 0) {
+            errors.push('The start date needs to be before the end one')
+        }
+        if (this.state.startDate.isSameOrBefore(threshold, 'minute')) {
+            errors.push('The start date needs to be at least a few minutes in the future')
+        }
+        if (this.state.endDate.isSameOrBefore(this.state.startDate, 'minute')) {
+            errors.push('The end date needs to be after the start date')
+        }
 
-        return !queryDate || queryDate.isBefore(threshold, 'day')
+        if (errors.length) {
+            return errors
+        }
+
+        return true
     }
 
-    getDisabledTimes(queryDate: moment.Moment) {
+    /**
+     * Validates data and shows a confirm dialog before actually submitting it
+     */
+    confirm() : void {
+        const validations = this.formErrors()
+        if (validations !== true) {
+            for (const validation of validations) {
+                message.error(validation)
+            }
+            return
+        }
+
+        Modal.confirm({
+            title: main.confirm,
+            icon: <AlertCircle />,
+            content: <span dangerouslySetInnerHTML={{__html: main.processCreationAdvice}} />,
+            okText: main.processCreationConfirmButton,
+            okType: 'primary',
+            cancelText: main.processCreationCancelButton,
+            onOk: this.submit.bind(this),
+        })
+    }
+
+    /**
+     * Determines the disabled hours & minutes for the specified date.
+     *
+     * @param queryDate The date to be queried
+     */
+    getDisabledTimes(queryDate: moment.Moment) : {
+        disabledHours: () => number[],
+        disabledMinutes: () => number[]
+    } {
         const threshold = moment().add(8, 'minutes')
 
         if (!queryDate) return
         else if (!moment(queryDate).isSame(threshold, 'day')) return
-        else if (moment(queryDate).isAfter(threshold, "hours")) return
-        else if (moment(queryDate).isBefore(threshold, "hours")) {
+        else if (moment(queryDate).isAfter(threshold, 'hours')) return
+        else if (moment(queryDate).isBefore(threshold, 'hours')) {
             return {
                 disabledHours: () => range(0, threshold.hours()),
                 disabledMinutes: () => range(0, 60)
@@ -226,121 +223,150 @@ class ProcessNew extends Component<IAppContext, State> {
         }
     }
 
-    updateDateRange(startDate: moment.Moment, endDate: moment.Moment) {
-        let gwPool: GatewayPool
-        let startBlock: number, endBlock: number
+    /**
+     * Returns the proper census information based on the user
+     * selection (either from 'file', 'all' or a specific census id)
+     */
+    async getProperCensus(ephemeral: boolean) : Promise<CensusInfo> {
+        const wallet = this.context.web3Wallet.getWallet()
+        const gateway = await this.context.gatewayClients
 
-        return getGatewayClients().then(pool => {
-            gwPool = pool
+        switch (this.state.selectedCensus) {
+            // Generates an ephemeral census from the loaded file
+            case 'file': {
+                const censusName = (this.state.process.details.title.default || (new Date()).toDateString()) + '_' + Math.floor(Date.now() / 1000)
+                const claims = this.state.censusFileData.digestedHexClaims
+                const { censusId } = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
+                const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, claims, true, gateway, wallet)
+                if (invalidClaims.length) {
+                    message.warn(`Found ${invalidClaims.length} invalid claims`)
+                }
+                const merkleTreeUri = await publishCensus(censusId, gateway, wallet)
 
-            return estimateBlockAtDateTime(startDate.toDate(), gwPool)
-        }).then(block => {
-            startBlock = block
+                return {
+                    merkleRoot,
+                    merkleTreeUri,
+                    id: censusId,
+                    formURI: Buffer.from(this.state.censusFileData.title).toString('base64'),
+                }
+            }
 
-            return estimateBlockAtDateTime(endDate.toDate(), gwPool)
-        }).then(block => {
-            endBlock = block
-            const numberOfBlocks = endBlock - startBlock
+            // Create a new one based on the "all" target
+            case 'all': {
+                const [target] = this.state.targets
+                const {
+                    census,
+                    merkleTreeUri,
+                    merkleRoot,
+                } = await this.context.createCensusForTarget(null, target, ephemeral)
 
-            this.setState({ startDate, startBlock, endDate, numberOfBlocks })
-        })
-    }
+                return {
+                    merkleRoot,
+                    merkleTreeUri,
+                    id: census,
+                }
+            }
 
-    async validateFields(): Promise<boolean> {
-        if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
-            message.error("The dates are not valid")
-            return false
+            // Retrieve from the id stored in selectedCensus
+            default: {
+                const {
+                    merkleRoot,
+                    merkleTreeUri,
+                    id,
+                } = this.state.censuses.find((x) => x.id === this.state.selectedCensus)
+
+                return {
+                    merkleRoot,
+                    merkleTreeUri,
+                    id,
+                }
+            }
         }
 
+        throw new Error('Error grabbing proper census')
+    }
+
+    isDisabledDate(queryDate: moment.Moment) : boolean {
         const threshold = moment().add(8, 'minutes')
 
-        if (this.state.numberOfBlocks <= 0) {
-            message.error("The start date needs to be before the end one")
-            return false
-        }
-        if (this.state.startDate.isSameOrBefore(threshold, 'minute')) {
-            message.error("The start date needs to be at least a few minutes in the future")
-            return false
-        }
-        if (this.state.endDate.isSameOrBefore(this.state.startDate, 'minute')) {
-            message.error("The end date needs to be after the start date")
-            return false
-        }
-
-        return true
+        return !queryDate || queryDate.isBefore(threshold, 'day')
     }
 
-    async confirmSubmit() {
-        if (!(await this.validateFields())) {
-            return // message.warn("The metadata fields are not valid")
-        }
+    async updateDateRange(startDate: moment.Moment, endDate: moment.Moment) : Promise<void> {
+        const pool = await this.context.gatewayClients
+        const startBlock = await estimateBlockAtDateTime(startDate.toDate(), pool)
+        const endBlock = await estimateBlockAtDateTime(endDate.toDate(), pool)
+        const numberOfBlocks = endBlock - startBlock
 
-        Modal.confirm({
-            title: "Confirm",
-            icon: <ExclamationCircleOutlined />,
-            content: "The process will be registered on the blockchain. Do you want to continue?",
-            okText: "Create Process",
-            okType: "primary",
-            cancelText: "Not now",
-            onOk: this.submit.bind(this),
+        this.setState({startDate, startBlock, endDate, numberOfBlocks})
+    }
+
+    onFieldChange(field: string, {target: {value}}: React.ChangeEvent<HTMLInputElement>) : void {
+        this.setProcessField(field, value)
+    }
+
+    setProcessField(field: string, value: string) : void {
+        const { process } = this.state
+        str(field, value, process)
+        this.setState({process})
+    }
+
+    setQuestions(questions: LegacyQuestions) : void {
+        this.setState({
+            process: {
+                ...this.state.process,
+                details: {
+                    ...this.state.process.details,
+                    questions,
+                }
+            }
         })
     }
 
-    async submit() {
-        const gwPool = await getGatewayClients()
+    async submit() : Promise<void> {
+        const { process } = this.state
+        const loading = message.loading('Action in progress...', 0)
+        this.setState({ creating: true })
 
-        const newProcess = this.state.process
-        newProcess.startBlock = this.state.startBlock
-        newProcess.numberOfBlocks = this.state.numberOfBlocks
-        newProcess.details.entityId = this.state.entityId
+        let census : CensusInfo = null
 
-        const hideLoading = message.loading('Action in progress..', 0)
-        this.setState({ processCreating: true })
+        try {
+            census = await this.getProperCensus(this.state.webVoting)
 
-        const address = this.props.web3Wallet.getAddress()
-        const balance = await this.props.web3Wallet.getProvider().getBalance(address)
+            process.census.merkleRoot = census.merkleRoot
+            process.census.merkleTree = census.merkleTreeUri
+            process.startBlock = this.state.startBlock
+            process.numberOfBlocks = this.state.numberOfBlocks
+            process.details.entityId = this.context.entityId
+            if (census.formURI?.length) {
+                process.details['formURI'] = census.formURI
+            }
+        } catch (e) {
+            message.error(e)
+            this.setState({creating: false})
+            loading()
 
-        if (balance.lte(0)) {
-            return Modal.warning({
-                title: "Not enough balance",
-                icon: <ExclamationCircleOutlined />,
-                content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
-                onOk: () => {
-                    this.setState({ processCreating: false })
-                    hideLoading()
-                }
-            })
+            return
         }
 
-        let censusId = this.state.selectedCensusId
-        let sendEmails = false
-
-        if (!newProcess.census.merkleRoot.length || !newProcess.census.merkleTree.length) {
-            // hardcoded to first target for now (all)
-            const [target] = this.state.targets
-            const {census, merkleRoot, merkleTreeUri} = await this.props.createCensusForTarget(null, target)
-
-            newProcess.census.merkleRoot = (merkleRoot.startsWith('0x')) ? merkleRoot : `0x${merkleRoot}`
-            newProcess.census.merkleTree = merkleTreeUri
-            censusId = census
-
-            sendEmails = true
+        if (!await this.hasBalance(loading)) {
+            return
         }
 
         try {
-            const wallet = this.props.web3Wallet.getWallet()
-            const processId = await createVotingProcess(newProcess, wallet, gwPool)
+            const wallet = this.context.web3Wallet.getWallet()
+            const processId = await createVotingProcess(process, wallet, await this.context.gatewayClients)
 
             let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
-            if (sendEmails) {
+            if (this.state.webVoting) {
                 const emailsReq : any = {
                     method: 'sendVotingLinks',
                     processId,
-                    censusId,
+                    censusId: census.id,
                 }
                 // Avoid crash from e-mail sending
                 try {
-                    await this.props.managerBackendGateway.sendMessage(emailsReq, wallet)
+                    await this.context.managerBackendGateway.sendMessage(emailsReq, wallet)
                 } catch (e) {
                     msg += ' There was an error sending e-mails tho.'
                 }
@@ -348,346 +374,199 @@ class ProcessNew extends Component<IAppContext, State> {
 
             message.success(msg)
 
-            hideLoading()
+            loading()
 
-            return Router.push(`/processes/#/${this.state.entityId}/${processId}`)
+            Router.push(`/processes/#/${this.context.entityId}/${processId}`)
         } catch (error) {
-            hideLoading()
-            this.setState({ processCreating: false })
+            loading()
+            this.setState({ creating: false })
 
-            console.error("The voting process could not be created", error)
-            message.error("The voting process could not be created")
+            console.error('The voting process could not be created', error)
+            message.error('The voting process could not be created')
         }
     }
 
-    renderProcessNew() {
-        const questions = this.state.process.details.questions
-        const censuses = this.state.censuses
+    render() : ReactNode {
+        const { process, loading, creating, selectedCensus } = this.state
 
-        return <div className="body-card">
-            <Row justify="start">
-                <Col xs={24} sm={20} md={14}>
-                    <Divider orientation="left">New vote</Divider>
-
-                    <Form>
-                        <Form.Item>
-                            <label>Title</label>
-                            <Input
-                                size="large"
-                                placeholder="Human Rights Declaration"
-                                value={this.state.process.details.title.default}
-                                onChange={ev => this.setNewProcessField(['details', 'title', 'default'], ev.target.value)}
-                            />
-                        </Form.Item>
-                        <Form.Item>
-                            <label>Description</label>
-                            <HTMLEditor
-                                toolbar='reduced'
-                                onContentChanged={(contents: string) =>
-                                    this.setNewProcessField(['details', 'description', 'default'], contents)
-                                }
-                            />
-                        </Form.Item>
-                        <Form.Item>
-                            <label>Header image URL</label>
-                            <Input
-                                type='text'
-                                value={this.state.process.details.headerImage}
-                                placeholder={'URL'}
-                                onChange={ev => this.setNewProcessField(['details', 'headerImage'], ev.target.value)}
-                                addonAfter={
-                                    <IPFSImageUpload
-                                        onChange={({file}) => {
-                                            let image = ''
-                                            if (file.status === 'done') {
-                                                image = file.response.src
-                                            }
-
-                                            this.setNewProcessField(['details', 'headerImage'], image)
-                                        }}
-                                    />
-                                }
-                            />
-                            <small style={{ lineHeight: "35px" }}>
-                                <a href="https://unsplash.com/" target="_blank" rel="noreferrer">If you don't have images, try to find one at unsplash.com</a>
-                            </small>
-                        </Form.Item>
-                        <Form.Item>
-                            <label>Stream URL</label>
-                            <Input
-                                placeholder="https://www.youtube.com/watch?v=BO8lX3hDU30"
-                                value={this.state.process.details.streamUrl}
-                                onChange={ev => this.setNewProcessField(['details', 'streamUrl'], ev.target.value)}
-                            />
-                        </Form.Item>
-                        <Form.Item>
-                            <label>Questions and answers button URL</label>
-                            <Input
-                                value={this.state.process.details['requestsURL']}
-                                onChange={ev => this.setNewProcessField(['details', 'requestsURL'], ev.target.value)}
-                            />
-                            <small>A link to any kind of form or website for Q&amp;A with the voters before and during the voting process</small>
-                        </Form.Item>
-                        <Form.Item>
-                            <label>Vote Count Type</label>
-                            <br />
-                            <Radio.Group buttonStyle="solid" value={this.state.process.type} onChange={e => this.setNewProcessField(["type"], e.target.value)}>
-                                <Radio.Button value="poll-vote">Real Time</Radio.Button>
-                                <Radio.Button value="encrypted-poll">Secret Until the End</Radio.Button>
-                            </Radio.Group>
-                            {
-                                // this.state.process.type === "poll-vote" ?
-                                //     <p><small>On a standard poll, all votes become public as soon as they are registered. <br />Participants are not anonymous.</small></p> :
-                                //     <p><small>On an encrypted poll, votes remain encrypted until the process has ended. <br />Participants are not anonymous.</small></p>
-                            }
-                        </Form.Item>
-                    </Form>
-
-                    <br />
-                    <Divider orientation="left">Census</Divider>
-
-                    <Form>
-                        <Form.Item>
-                            <p>Use an existing census, or leave it blank to create one on the fly with all the members.</p>
-                            <Select
-                                showSearch
-                                size="large"
-                                allowClear
-                                placeholder="Select a Census"
-                                optionFilterProp="children"
-                                filterOption={(input, option) =>
-                                    censuses.find(x => x.id == option.key).name.includes(input)
-                                }
-                                value={this.state.selectedCensusId}
-                                onChange={id => {
-                                    const targetCensus = censuses.find(x => x.id == id)
-                                    // deselect behavior
-                                    if (!targetCensus) {
-                                        return this.setState({
-                                            process: {
-                                                ...this.state.process,
-                                                census: {
-                                                    merkleRoot: '',
-                                                    merkleTree: '',
-                                                },
-                                            },
-                                            selectedCensusId: '',
-                                        })
-                                    }
-
-                                    this.setNewProcessField(['census', 'merkleRoot'], targetCensus.merkleRoot)
-                                    this.setNewProcessField(['census', 'merkleTree'], targetCensus.merkleTreeUri)
-                                    this.setState({selectedCensusId: targetCensus.id})
-                                }}>
-                                {censuses.map(d => (
-                                    <Option key={d.id} data={d} value={d.id}>{d.name}</Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                        <p>The selected census will define who has voting rights in this specific voting process.</p>
-                    </Form>
-
-                    {/* <h2>Questions</h2> */}
-                    {
-                        questions.map((_, idx) => this.renderQuestionForm(idx))
-                    }
-
-                    <div style={{ display: "flex", justifyContent: "flex-end", paddingTop: 24 }}>
-                        <Button
-                            type="default"
-                            icon={<PlusOutlined />}
-                            onClick={() => this.addQuestion()}>
-                            Add a question</Button>
-                    </div>
-
-                    <br />
-                    <Divider orientation="left">Time frame</Divider>
-
-                    <p>Select the date range to allow incoming votes</p>
-                    <Form>
-                        <Form.Item>
-                            <div>
-                                <RangePicker
-                                    // open
-                                    format='YYYY/MM/DD HH:mm'
-                                    placeholder={["Vote start", "Vote end"]}
-                                    disabledDate={(current) => this.isDisabledDate(current)}
-                                    disabledTime={(current) => this.getDisabledTimes(current)}
-                                    defaultValue={[moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]}
-                                    onChange={(dates: moment.Moment[]) => {
-                                        if (!dates || !dates.length) return
-                                        this.updateDateRange(dates[0], dates[1])
-                                    }}
-                                    showTime />
-                            </div>
-                            {/*<div>
-                                    <DatePicker
-                                    disabledDate={(current) => this.disabledDate(current)}
-                                    disabledTime={(current) => this.disabledTime(current)}
-                                    showTime={{ format: 'HH:mm' }}
-                                    format="YYYY-MM-DD HH:mm"
-                                    placeholder="Start"
-                                    onOk={(dates) => this.setStartDate(dates)}
-                                    onChange={(dates, _) => this.setStartDate(dates)}
-                                    onOpenChange={(status) => this.onOpen(status)}
-                                    />
-                                    &nbsp;&nbsp;
-                                    <DatePicker
-                                    disabledDate={(current) => this.disabledDate(current)}
-                                    disabledTime={(current) => this.disabledTime(current)}
-                                    showTime={{ format: 'HH:mm' }}
-                                    format="YYYY-MM-DD HH:mm"
-                                    placeholder="End"
-                                    onOk={(dates) => this.setEndDate(dates)}
-                                    onChange={(dates, _) => this.setEndDate(dates)}
-                                    onOpenChange={(status) => this.onOpen(status)}
-                                    />
-                                </div> */}
-                            {/* {this.state.startBlock ? <p>Estimated start block: {this.state.startBlock}</p> : null} */}
-                            {/* {this.state.startBlock && this.state.numberOfBlocks ? <p>Estimated end block: {this.state.startBlock + this.state.numberOfBlocks}</p> : null} */}
-                        </Form.Item>
-                        <p>In this version, the time displayed for the start and end of voting processes is only indicative and may vary as it is based on blockchain blocks. We're working to achieve more reliable times.</p>
-                    </Form>
-
-                    <Divider />
-
-                    <div style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
-                        {this.state.processCreating ?
-                            <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} />} /> :
-                            <Button type="primary" size={'large'} onClick={() => this.confirmSubmit()}>
-                                <RocketOutlined /> Create process</Button>
-                        }
-                    </div>
-                </Col>
-                <Col xs={0} md={10} className="right-col">
-                    <Divider orientation="left">Header</Divider>
-                    <Image
-                        className='preview'
-                        src={this.state.process.details.headerImage}
-                    />
-                </Col>
-            </Row>
-        </div>
-    }
-
-    renderQuestionForm(questionIdx) {
-
-        const question = this.state.process.details.questions
-
-        return <div key={'question' + questionIdx} style={{ paddingTop: 24 }}>
-            <Divider orientation="left">Question {questionIdx + 1}</Divider>
-
-            <Form>
-                <Form.Item>
-                    <label>Question title</label>
-                    <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-                        <Input
-                            addonBefore={(questionIdx + 1).toString()}
-                            // placeholder="Question"
-                            size="large"
-                            value={this.state.process.details.questions[questionIdx].question.default}
-                            onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'question', 'default'], ev.target.value)}
+        return (
+            <div className='content-wrapper stretched-form'>
+                <header>
+                    <div className='header-image'>
+                        <ImageAndUploader
+                            uploaderActive
+                            src={process.details.headerImage}
+                            onConfirm={this.setProcessField.bind(this, 'details.headerImage')}
                         />
-
-                        <Button
-                            type="default"
-                            icon={<MinusOutlined />}
-                            size={'large'}
-                            disabled={this.state.process.details.questions.length <= 1}
-                            onClick={() => this.removeQuestion(questionIdx)}>
-                        </Button>
                     </div>
-                </Form.Item>
-
-                <Form.Item>
-                    <label>Description</label>
-                    <HTMLEditor
-                        toolbar='simple'
-                        onContentChanged={(contents: string) =>
-                            this.setNewProcessField(['details', 'questions', questionIdx, 'description', 'default'], contents)
-                        }
-                    />
-                </Form.Item>
-
-                <div>
-                    {
-                        question[questionIdx].voteOptions.map((option, optionIdx) => this.renderOptionForm(questionIdx, optionIdx))
-                    }
-                </div>
-
-
-                {/* <div style={{float: "right", paddingTop: 8, paddingBottom: 24}}> */}
-                <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-                    <Button
-                        type="default"
-                        icon={<PlusOutlined />}
-                        onClick={() => this.addOption(questionIdx)}>
-                        Add Option</Button>
-                </div>
-            </Form>
-        </div>
-    }
-
-    renderOptionForm(questionIdx: number, optionIdx: number) {
-        return <Form.Item key={optionIdx}>
-            <label>Option {(optionIdx + 1).toString()}</label>
-            <div style={{ paddingTop: 8, display: "flex", flexDirection: "row", justifyContent: "flex-start" }}>
-                <Input
-                    style={{ width: "100%" }}
-                    // placeholder="Option"
-                    // addonBefore={(optionIdx + 1).toString()}
-                    value={this.state.process.details.questions[questionIdx].voteOptions[optionIdx].title.default}
-                    onChange={ev => this.setNewProcessField(['details', 'questions', questionIdx, 'voteOptions', optionIdx, 'title', 'default'], ev.target.value)}
-                />
-
-                <Button
-                    type="default"
-                    icon={<MinusOutlined />}
-                    style={{ marginLeft: 8 }}
-                    disabled={this.state.process.details.questions[questionIdx].voteOptions.length <= 2}
-                    onClick={() => this.removeOption(questionIdx, optionIdx)}>
-                </Button>
-            </div>
-        </Form.Item>
-    }
-
-    renderLoading() {
-        return <div>Loading the details of the entity...  <Spin indicator={<LoadingOutlined />} /></div>
-    }
-
-    render() {
-        return <div id="process-new">
-            {
-                this.state.dataLoading ?
-                    <div id="page-body" className="center">
-                        {this.renderLoading()}
-                    </div>
-                    :
-                    (this.state.entity && this.state.process) ?
-                        <div id="page-body">
-                            {this.renderProcessNew()}
+                </header>
+                <Form onFinish={this.confirm.bind(this)}>
+                    <Form.Item>
+                        <Input
+                            size='large'
+                            placeholder='Process title'
+                            value={process.details.title.default}
+                            onChange={this.onFieldChange.bind(this, 'details.title.default')}
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><AlignLeft /> Description</label>
                         </div>
-                        : null
-            }
-        </div >
+                        <HTMLEditor
+                            value={process.details.description.default}
+                            onContentChanged={this.setProcessField.bind(this, 'details.description.default')}
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><Calendar /> Period</label>
+                        </div>
+                        <div>
+                            <DatePicker.RangePicker
+                                format='YYYY/MM/DD HH:mm'
+                                placeholder={['Vote start', 'Vote end']}
+                                disabledDate={(current) => this.isDisabledDate(current)}
+                                disabledTime={(current) => this.getDisabledTimes(current)}
+                                defaultValue={[moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]}
+                                onChange={(dates: moment.Moment[]) => {
+                                    if (!dates || !dates.length) return
+                                    this.updateDateRange(dates[0], dates[1])
+                                }}
+                                showTime
+                            />
+                        </div>
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><Activity /> Real-time results</label>
+                            <Switch
+                                onChange={(checked: boolean) =>
+                                    this.setProcessField('type', checked ? POLL_TYPE_ANONYMOUS : POLL_TYPE_NORMAL)
+                                }
+                                checked={process.type === POLL_TYPE_ANONYMOUS}
+                            />
+                        </div>
+                        <div>
+                            <small>Vote results can be seen before the process has ended.</small>
+                        </div>
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><Youtube /> Live streaming</label>
+                            <Switch
+                                onChange={(streamingInputVisible: boolean) =>
+                                    this.setState({streamingInputVisible})
+                                }
+                                checked={this.state.streamingInputVisible}
+                            />
+                        </div>
+                        <div>
+                            <small>Not available within the app.</small>
+                            <If condition={this.state.streamingInputVisible}>
+                                <Input
+                                    placeholder='https://youtu.be/dQw4w9WgXcQ'
+                                />
+                            </If>
+                        </div>
+                    </Form.Item>
+                    <Form.Item>
+                        <ParticipantsSelector
+                            loading={loading}
+                            options={this.state.censuses.map(({id, name}) => ({label: name, value: id}))}
+                            onChange={(selectedCensus: string, censusFileData: VotingFormImportData) => {
+                                this.setState({
+                                    selectedCensus,
+                                    censusFileData
+                                })
+                                if (selectedCensus === 'file') {
+                                    this.setState({
+                                        webVoting: true,
+                                    })
+                                }
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><MessageSquare /> Questions and answers button</label>
+                            <Switch
+                                onChange={(qnaInputVisible: boolean) =>
+                                    this.setState({qnaInputVisible})
+                                }
+                                checked={this.state.qnaInputVisible}
+                            />
+                        </div>
+                        <div>
+                            <If condition={this.state.qnaInputVisible}>
+                                <Input placeholder='https://...' />
+                            </If>
+                        </div>
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><HelpCircle /> Questions</label>
+                        </div>
+                        <QuestionsForm
+                            onChange={this.setQuestions.bind(this)}
+                        />
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><MousePointer /> Voting channels</label>
+                        </div>
+                        <div>
+                            <small>
+                                Voting using the Vocdoni App is the only method
+                                that currently guarantees full anonimity and
+                                maximum security.<br />
+                            </small>
+                            <small>
+                                Web voting is offered as an additional alternative when:
+                                <ul>
+                                    <li>
+                                        Live streaming is enabled
+                                    </li>
+                                    <li>
+                                        Access to non-registered users must be guaranteed
+                                    </li>
+                                    <li>
+                                        Attribute authentication is selected to define participants.
+                                    </li>
+                                </ul>
+                            </small>
+                        </div>
+                        <div className='label-wrapper no-icon'>
+                            <label>Web voting</label>
+                            <Switch
+                                checked={this.state.webVoting}
+                                disabled={selectedCensus.startsWith('0x')}
+                                onChange={(webVoting) => this.setState({webVoting})}
+                            />
+                        </div>
+                        <div><small>
+                            Allows non-registered members to vote on a web page
+                            via a voting link that will be sent via e-mail.
+                            Registered members must vote using Vocdoni App anyway.
+                        </small></div>
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><ArrowRightCircle /> Publishing</label>
+                        </div>
+                        <Button
+                            disabled={loading || creating}
+                            type='primary'
+                            size='large'
+                            htmlType='submit'
+                        >
+                            Publish final process
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </div>
+        )
     }
 }
 
-function range(start: number, end: number) {
-    const result: number[] = []
-    for (let i = start; i < end; i++) {
-        result.push(i)
-    }
-    return result
-}
-
-
-// // Custom layout
-// ProcessNewPage.Layout = props => <MainLayout>
-
-//   <div>
-//     {props.children}
-//   </div>
-// </MainLayout>
-
-export default ProcessNewPage
+export default ProcessNew
