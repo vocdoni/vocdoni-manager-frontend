@@ -58,6 +58,7 @@ class EntityEdit extends Component<IAppContext, State> {
             await this.fetchMetadata()
         }
         catch (err) {
+            console.error(err)
             message.error("Could not read the entity metadata")
         }
     }
@@ -362,7 +363,7 @@ class EntityEdit extends Component<IAppContext, State> {
                     <div>
                         <label>Callback Secret</label>
                         <Input type='password'
-                            // value={this.state.callbackSecret}
+                            value={this.state.callbackSecret}
                             prefix={<InfoCircleOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                             placeholder={"Callback secret"}
                             onChange={val => this.onStateFieldChange('callbackSecret', val.target.value)} />
