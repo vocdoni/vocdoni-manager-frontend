@@ -426,7 +426,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         return <div className='center-content'>
             <Divider />
             {this.renderStatus(status)}
-            <p className='vote-status' style={{marginTop: '1em'}}>
+            <p className='vote-status'>
                 <MultiLine text={main.processDescriptionStage4} />
             </p>
         </div>

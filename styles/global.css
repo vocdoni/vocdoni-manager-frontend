@@ -108,6 +108,21 @@ div#__next {
     min-height: 100vh;
 }
 
+.vote-process.login .ant-card {
+    border: none;
+    margin-bottom: 4.3em;
+}
+
+@media (min-width: 768px) {
+    .vote-process.login {
+        margin-top: 1em;
+    }
+
+    .vote-process.login .ant-card {
+        margin-bottom: 10em;
+    }
+}
+
 footer.poweredby {
     position: absolute;
     height: 60px;

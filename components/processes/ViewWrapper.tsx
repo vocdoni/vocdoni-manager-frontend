@@ -56,7 +56,7 @@ export default class ViewWrapper extends Component<ViewWrapperProps, undefined> 
 
         return (
             <SinglePageLayout responsive={resp}>
-                <Card {...card} style={{marginBottom: '10em'}}>
+                <Card {...card}>
                     <Introduction {...this.props} />
                     <div ref={this.endIntroRef} />
                     {this.props.children}

@@ -32,7 +32,7 @@ export default class SinglePageLayout extends Component<SinglePageLayoutProps, u
 
         return (
             <Row className='vote-process login'>
-                <Col {...resp} style={{marginTop: '1em'}}>
+                <Col {...resp}>
                     {this.props.children}
                 </Col>
                 <footer className='poweredby'>
