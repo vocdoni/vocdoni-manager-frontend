@@ -3,7 +3,7 @@ import { ProcessMetadata } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 // hardcoded to cat for now
 import { main } from '../../i18n'
-import { areAllNumbers } from '../../lib/util'
+import { areAllNumbers, toArray } from '../../lib/util'
 
 type Props = {
     process: ProcessMetadata,
@@ -13,7 +13,9 @@ type Props = {
 }
 
 type State = {
-    choices: number[],
+    choices: {
+        [key: number]: number,
+    },
 }
 
 const radioStyle = {
@@ -24,7 +26,7 @@ const radioStyle = {
 
 export default class Questions extends Component<Props, State> {
     state = {
-        choices: [],
+        choices: {},
     }
 
     componentDidMount() : void {
@@ -43,7 +45,7 @@ export default class Questions extends Component<Props, State> {
             return
         }
 
-        const choices = [...this.state.choices]
+        const choices = {...this.state.choices}
         choices[questionIdx] = choiceValue
 
         this.setState({ choices })
@@ -52,7 +54,7 @@ export default class Questions extends Component<Props, State> {
     render() : ReactNode {
         const { process } = this.props
         const { choices } = this.state
-        const allQuestionsChosen = areAllNumbers(this.state.choices) && choices.length == process.details.questions.length
+        const allQuestionsChosen = areAllNumbers(this.state.choices) && Object.values(choices).length === process.details.questions.length
 
         return <>
             <Divider />
@@ -92,7 +94,7 @@ export default class Questions extends Component<Props, State> {
                     type='primary'
                     size={'large'}
                     disabled={!allQuestionsChosen}
-                    onClick={() => this.props.onSubmitClick(choices)}
+                    onClick={() => this.props.onSubmitClick(toArray(choices))}
                 >
                     {main.confirmSelection}
                 </Button>

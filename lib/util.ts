@@ -50,7 +50,13 @@ export const getRandomUnsplashImage = (size = '800x600') : string => {
     return base + categories[getRandomInt(categories.length)]
 }
 
-export const areAllNumbers = (slice: any[]) => {
+/**
+ * Determines if the specified slice contains only numbers.
+ * Careful: use only with objects. Arrays containing empty positions give false positive.
+ *
+ * @param slice The slice to be analized
+ */
+export const areAllNumbers = (slice: any) => {
     let found = false
     for (const i in slice) {
         if (typeof slice[i] !== 'number') {
@@ -62,6 +68,20 @@ export const areAllNumbers = (slice: any[]) => {
     return !found
 }
 
+/**
+ * Converts an object to an array. Note that it should only be used for objects
+ * having numeric key values (obviously, as they're arrays, keys must be in series)
+ *
+ * @param slice Slice to be converted to array.
+ */
+export const toArray = (slice: any) => {
+    const keys = Object.keys(slice).sort()
+    const array = []
+    for (const k in keys) {
+        array[k] = slice[k]
+    }
+    return array
+}
 
 export const importedRowToString = (row: string[], entityId: string): string => {
     return row.reduce((i, j) => { return i + j })  + entityId

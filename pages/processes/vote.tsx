@@ -442,7 +442,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             showConfirmChoices,
         } = this.state
 
-        const allQuestionsChosen = areAllNumbers(choices) && choices.length == process.details.questions.length
+        const allQuestionsChosen = areAllNumbers(choices) && choices.length === process.details.questions.length
 
         const startTimestamp = currentDate.valueOf() + (process.startBlock - currentBlock) * BLOCK_TIME * 1000
         const startDate = moment(startTimestamp)
