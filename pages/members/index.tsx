@@ -242,7 +242,7 @@ class Members extends Component<IAppContext, State> {
         this.setState({censusLoading: true})
 
         try {
-            const {census} = await this.props.createCensusForTarget(censusName, {id, name})
+            const {census} = await this.props.createCensusForTarget(censusName, {id, name}, false)
             const [, censusPath] = census.split('/')
 
             message.success('Census has been exported')

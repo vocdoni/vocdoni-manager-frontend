@@ -193,7 +193,7 @@ class MainApp extends App<Props, State> {
         const gateway = await getGatewayClients()
         const { censusId } = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
 
-        const addReq = { method: 'addCensus', targetId: id, censusId, census: {name: censusName} }
+        const addReq = { method: 'addCensus', targetId: id, censusId, census: {name: censusName, ephemeral} }
         // We don't need the response from addCensus (in case of error should be thrown anyways)
         await this.state.managerBackendGateway.sendMessage(addReq as any, wallet)
         const dumpReq = { method: 'dumpCensus', censusId}
