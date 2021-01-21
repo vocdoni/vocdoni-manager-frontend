@@ -1,26 +1,23 @@
 import { Component, ReactNode } from 'react'
+import { Plus } from 'react-feather'
 import { message, Select, Row, Col } from 'antd'
-import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
-import moment from 'moment'
+import { ProcessMetadata } from 'dvote-js'
 import Link from 'next/link'
 import { estimateDateAtBlock, getVoteMetadata, isCanceled } from 'dvote-js/dist/api/vote'
 
 import { getGatewayClients } from '../../lib/network'
+import FinishDate from '../../components/processes/FinishDate'
 import AppContext from '../../components/app-context'
+import If from '../../components/if'
 import Image from '../../components/image'
 import Loading from '../../components/loading'
-import If from '../../components/if'
 import NotFound from '../../components/not-found'
-import { PlusOutlined } from '@ant-design/icons'
 import InlineCard from '../../components/inline-card'
 import { main } from '../../i18n'
-
-const { Entity } = API
+import Ficon from '../../components/ficon'
 
 type State = {
     loading?: boolean,
-    entity?: EntityMetadata,
-    entityId?: string,
     processes: ProcessComponentData[],
     startIndex: number,
     filter: string,
@@ -33,19 +30,8 @@ type ProcessComponentData = {
     canceled: boolean,
 }
 
-const FinishDate = (date: Date) : string => {
-    const d = moment(date)
-    let suffix = main.finished
-
-    if (d.isAfter(Date.now())) {
-        suffix = main.finishes
-    }
-
-    return `${suffix} ${d.fromNow()}`
-}
-
 // Stateful component
-class ProcessListView extends Component<undefined, State> {
+export default class ProcessListView extends Component<undefined, State> {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
 
@@ -64,15 +50,14 @@ class ProcessListView extends Component<undefined, State> {
             this.context.setMenuSelected('processes')
 
             const [entityId] = this.context.params
-            this.setState({ loading: true, entityId })
+            this.setState({ loading: true })
 
             const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, gateway)
-            if (!entity) throw new Error()
+            await this.context.refreshEntityMetadata(entityId)
 
             const processIds = [
-                ...entity.votingProcesses.ended,
-                ...entity.votingProcesses.active
+                ...this.context.entity.votingProcesses.ended,
+                ...this.context.entity.votingProcesses.active
             ] || []
 
             const processes = [].concat(this.state.processes)
@@ -109,30 +94,32 @@ class ProcessListView extends Component<undefined, State> {
             }).reverse()
 
             this.setState({ processes })
-
             this.setState({
-                entity,
-                entityId,
                 loading: false,
             })
-            this.context.setTitle(entity.name.default)
-            this.context.setEntityId(entityId)
         }
         catch (err) {
             this.setState({ loading: false })
 
-            if (err && err.message === 'Request timed out')
+            if (err && err.message === 'Request timed out') {
                 message.error('The list of voting processes took too long to load')
-            else if (err && err.message === 'failed')
+            }
+            else if (err && err.message === 'failed') {
                 message.error('One of the processes could not be loaded')
-            else
+            }
+            else {
                 message.error('The list of voting processes could not be loaded')
+            }
         }
     }
 
     componentDidUpdate() : void {
-        const entityId = location.hash.substr(2)
-        if (entityId !== this.state.entityId) {
+        if (!this.context.entityId) {
+            return
+        }
+
+        const [entityId] = this.context.params
+        if (entityId !== this.context.entityId && !this.context.loadingEntityMetadata && !this.state.loading) {
             this.init()
         }
     }
@@ -142,7 +129,7 @@ class ProcessListView extends Component<undefined, State> {
             return this.state.processes
         }
 
-        const processes = this.state.entity.votingProcesses
+        const processes = this.context.entity.votingProcesses
 
         return this.state.processes.filter(({id}) => processes[filter].includes(id))
     }
@@ -152,11 +139,11 @@ class ProcessListView extends Component<undefined, State> {
 
         return (
             <div className='content-wrapper spaced-top'>
-                <Loading loading={this.state.loading} text={main.loadingEntity}>
-                    <If condition={!this.state.entity}>
+                <Loading loading={this.context.loadingEntityMetadata} text={main.loadingEntity}>
+                    <If condition={!this.context.entity}>
                         <NotFound />
                     </If>
-                    <If condition={this.state.entity}>
+                    <If condition={this.context.entity}>
                         <Row className='list-header' justify='space-between' align='middle'>
                             <Col>
                                 <Select
@@ -170,54 +157,56 @@ class ProcessListView extends Component<undefined, State> {
                                 </Select>
                             </Col>
                             <Col>
-                                <Link href={'/processes/new'}>
-                                    <a style={{marginLeft: 10}}>
-                                        <PlusOutlined /> New
-                                    </a>
-                                </Link>
+                                <If condition={!this.context.isReadOnly}>
+                                    <Link href={'/processes/new'}>
+                                        <a style={{marginLeft: 10}}>
+                                            <Ficon icon='Plus' /> New
+                                        </a>
+                                    </Link>
+                                </If>
                             </Col>
                         </Row>
-                        <div className='card-list'>
-                            {
-                                processes.map((process) => {
-                                    return <InlineCard
-                                        key={process.id}
-                                        image={(
-                                            <Link href={`/processes#/${this.state.entityId}/${process.id}`}>
-                                                <a>
-                                                    <Image
-                                                        src={process.data.details.headerImage}
-                                                        type='background'
-                                                        style={{
-                                                            maxWidth: 200,
-                                                        }}
-                                                    />
-                                                </a>
-                                            </Link>
-                                        )}
-                                        title={(
-                                            <Link href={`/processes/#/${this.state.entityId}/${process.id}`}>
-                                                <a>{process.data.details.title.default}</a>
-                                            </Link>
-                                        )}
-                                    >
-                                        <div className='state'>
-                                            <div className={`status ${process.canceled && 'finished'}`}>
-                                                {process.canceled ? main.finished : main.active}
+                        <Loading loading={this.state.loading} text={main.loadingProcesses}>
+                            <div className='card-list'>
+                                {
+                                    processes.map((process) => {
+                                        return <InlineCard
+                                            key={process.id}
+                                            image={(
+                                                <Link href={`/processes#/${this.context.entityId}/${process.id}`}>
+                                                    <a>
+                                                        <Image
+                                                            src={process.data.details.headerImage}
+                                                            type='background'
+                                                            style={{
+                                                                maxWidth: 200,
+                                                            }}
+                                                        />
+                                                    </a>
+                                                </Link>
+                                            )}
+                                            title={(
+                                                <Link href={`/processes/#/${this.context.entityId}/${process.id}`}>
+                                                    <a>{process.data.details.title.default}</a>
+                                                </Link>
+                                            )}
+                                        >
+                                            <div className='state'>
+                                                <div className={`status ${process.canceled && 'finished'}`}>
+                                                    {process.canceled ? main.finished : main.active}
+                                                </div>
+                                                <div className='date'>
+                                                    <FinishDate process={process} />
+                                                </div>
                                             </div>
-                                            <div className='date'>
-                                                {FinishDate(process.date)}
-                                            </div>
-                                        </div>
-                                    </InlineCard>
-                                })
-                            }
-                        </div>
+                                        </InlineCard>
+                                    })
+                                }
+                            </div>
+                        </Loading>
                     </If>
                 </Loading>
             </div>
         )
     }
 }
-
-export default ProcessListView

@@ -78,7 +78,7 @@ class EntityView extends Component<undefined, State> {
 
     render() : ReactNode {
         const { entity } = this.state
-        const found = Object.keys(entity).length > 0
+        const found = entity && Object.keys(entity).length > 0
 
         return (
             <div className='content-wrapper'>

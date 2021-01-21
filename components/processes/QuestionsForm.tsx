@@ -2,7 +2,8 @@ import { Input, Form, Button } from 'antd'
 import { str } from 'dot-object'
 import { MultiLanguage } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
-import { X } from 'react-feather'
+
+import Ficon from '../ficon'
 import HTMLEditor from '../html-editor'
 
 type VoteOption = {
@@ -177,7 +178,7 @@ export default class QuestionsForm extends Component<Props, State> {
                                                 disabled={questions.length <= 1}
                                                 onClick={this.removeQuestion.bind(this, i)}
                                             >
-                                                <X />
+                                                <Ficon icon='X' />
                                             </Button>
                                         )}
                                         onChange={
@@ -210,10 +211,11 @@ export default class QuestionsForm extends Component<Props, State> {
                                                         addonAfter={(
                                                             <Button
                                                                 size='small'
+                                                                type='text'
                                                                 disabled={q.voteOptions.length <= 2}
                                                                 onClick={this.removeOption.bind(this, i, k)}
                                                             >
-                                                                <X />
+                                                                <Ficon icon='X' />
                                                             </Button>
                                                         )}
                                                     />

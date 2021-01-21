@@ -1,16 +1,12 @@
-import { Alert, message, Select, Upload } from 'antd'
+import { message, Select, Upload } from 'antd'
 import { RcFile } from 'antd/lib/upload'
 import React, { Component, ReactNode } from 'react'
-import {
-    Download,
-    FilePlus,
-    Users,
-} from 'react-feather'
 
 import AppContext from '../../components/app-context'
 import If from '../../components/if'
 import { VotingFormImportData } from '../../lib/types'
 import { parseSpreadsheetData } from '../../lib/import-utils'
+import Ficon from '../ficon'
 
 export type ParticipantsSelectorState = {
     selected: string,
@@ -59,7 +55,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         options.push({
             label: ((
                 <span>
-                    <Download /> From spreadsheet (Attribute auth.)
+                    <Ficon icon='Download' /> From spreadsheet (Attribute auth.)
                 </span>
             ) as unknown as string), // yes, seriously...
             value: 'file',
@@ -107,13 +103,14 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         return (
             <>
                 <div className='label-wrapper'>
-                    <label><Users /> Participants</label>
+                    <label><Ficon icon='Users' /> Participants</label>
                     <Select
                         dropdownClassName='reduced-select'
                         value={this.state.selected}
                         onChange={this.onChange.bind(this)}
                         options={this.options}
                         loading={this.props.loading}
+                        dropdownMatchSelectWidth={false}
                     />
                 </div>
                 <If condition={this.state.selected === 'file'}>
@@ -135,7 +132,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
                             })}
                         >
                             <p>
-                                <FilePlus /> Drag &amp; drop ot click to browse files (csv, xls, xlsx, ods...)
+                                <Ficon icon='FilePlus' /> Drag &amp; drop ot click to browse files (csv, xls, xlsx, ods...)
                             </p>
                         </Upload.Dragger>
                     </div>

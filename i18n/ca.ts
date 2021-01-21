@@ -3,6 +3,7 @@ export default ({
     generalErrorMessage: 'S\'ha trobat un error inesperat',
     blankVoteOption: "Blanc",
     loading: 'S\'està carregant',
+    loadingProcesses: 'Carregant processos de l\'entitat...',
     invalidQuestionOptionValue: 'El valor per aquesta resposta no representa una opció vàlida',
     confirmSelection: 'Confirma el vot',
     invalidRequest: 'La petició no és vàlida',
@@ -53,4 +54,5 @@ export default ({
     processCreationConfirmButton: 'Crear procés',
     processCreationCancelButton: 'Ara no',
     processCreationAdvice: 'Quan creïs el procés es registrarà a la blockchain, cosa que <b>no es pot desfer</b>. Vols continuar?',
+    processCreating: 'Creant procés...',
 })

@@ -1,7 +1,7 @@
 import { Input, Modal, Form } from 'antd'
 import { FormItemProps } from 'antd/lib/form'
 import React, { Component, CSSProperties, ReactNode } from 'react'
-import { UploadCloud } from 'react-feather'
+import Ficon from './ficon'
 
 import Image, { ImageProps } from './image'
 import IPFSImageUpload from './ipfs-image-upload'
@@ -52,7 +52,7 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
     render() : ReactNode {
         const { src } = this.props
         let isImageSet = src?.length > 0
-        let contents = <UploadCloud onClick={this.toggleVisible.bind(this)} />
+        let contents = <Ficon icon='UploadCloud' onClick={this.toggleVisible.bind(this)} />
         const classes = ['image-uploader-wrapper', 'empty']
         if (isImageSet) {
             contents = <Image src={src} onClick={this.toggleVisible.bind(this)} />

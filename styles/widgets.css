@@ -122,7 +122,8 @@
     margin-bottom: 20px;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 0 20px #F2F2F2;
+    box-shadow: 0 0 20px #ddd;
+    background-color: white;
 }
 .inline-card a {
     color: var(--main-color);

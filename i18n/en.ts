@@ -3,6 +3,7 @@ export default ({
     generalErrorMessage: "The web encountered a general error",
     blankVoteOption: "Blank",
     loading: 'Loading...',
+    loadingProcesses: 'Loading entity processes...',
     invalidQuestionOptionValue: 'The chosen value for this option has an invalid value',
     confirmSelection: 'Confirm your vote',
     invalidRequest: 'Invalid request',
@@ -53,4 +54,5 @@ export default ({
     processCreationConfirmButton: 'Create process',
     processCreationCancelButton: 'Not now',
     processCreationAdvice: 'Creating the process will register it into the blockchain, wich <b>cannot be undone</b>. Do you want to continue?',
+    processCreating: 'Creating process...',
 })

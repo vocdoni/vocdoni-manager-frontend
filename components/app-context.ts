@@ -26,6 +26,7 @@ export interface IAppContext {
     isWriteEnabled: boolean,
     isReadOnly: boolean,
     isReadOnlyNetwork: boolean,
+    loadingEntityMetadata: boolean,
     title: string,
     web3Wallet: Web3Wallet,
     onNewWallet: (wallet: Wallet) => any,
@@ -40,7 +41,7 @@ export interface IAppContext {
     params: string[],
     setTitle: (title: string) => void
     onGatewayError: (type: 'private' | 'public') => void
-    refreshEntityMetadata: () => Promise<void>,
+    refreshEntityMetadata: (entityId?: string, force?: boolean) => Promise<void>,
     setMenuVisible: (menuVisible: boolean) => void
     setMenuSelected: (menuSelected: ISelected) => void
     setMenuCollapsed: (menuCollapsed: boolean) => void
@@ -49,7 +50,7 @@ export interface IAppContext {
     setProcessId: (processId: string) => void,
     managerBackendGateway: DVoteGateway,
     setUrlHash: (urlHash: string) => void,
-    createCensusForTarget: (name: string, target: {id: string, name: string}, ephemeral?: boolean) =>
+    createCensusForTarget: (name: string, target: {id: string, name: string}, ephemeral: boolean) =>
         Promise<{census: string, merkleRoot: string, merkleTreeUri: string}>,
     fetchTargets: () => Promise<any>,
     fetchCensuses: () => Promise<any>,

@@ -15,8 +15,6 @@ import Edit from '../../components/entities/Edit'
 
 type State = {
     loading?: boolean,
-    entity?: EntityMetadata,
-    entityId?: string,
     editing: boolean,
 }
 
@@ -35,29 +33,19 @@ class EntityView extends Component<undefined, State> {
 
     async update() : Promise<void> {
         this.setState({loading: true})
-        await this.fetchMetadata()
+        await this.fetchMetadata(true)
         this.setState({
             loading: false,
             editing: false,
         })
     }
 
-    async fetchMetadata() : Promise<void> {
+    async fetchMetadata(force = false) : Promise<void> {
         try {
             const [entityId] = this.context.params
-            this.setState({ loading: true, entityId })
+            await this.context.refreshEntityMetadata(entityId, force)
 
-            const gateway = await getGatewayClients()
-            const entity = await getEntityMetadata(entityId, gateway)
-            if (!entity) throw new Error()
-
-            this.setState({
-                entity,
-                entityId,
-                loading: false,
-            })
-            this.context.setTitle(entity.name.default)
-            this.context.setEntityId(entityId)
+            this.context.setTitle(this.context.entity.name.default)
         }
         catch (err) {
             this.setState({ loading: false })
@@ -67,7 +55,7 @@ class EntityView extends Component<undefined, State> {
 
     shouldComponentUpdate() : boolean {
         const [entityId] = this.context.params
-        if (entityId !== this.state.entityId) {
+        if (entityId !== this.context.entityId) {
             this.fetchMetadata()
         }
 
@@ -75,19 +63,19 @@ class EntityView extends Component<undefined, State> {
     }
 
     render() : ReactNode {
-        const { entity, entityId } = this.state
+        const { entity, entityId } = this.context
         const found = entity && Object.keys(entity).length > 0
+        const loading = this.state.loading || this.context.loadingEntityMetadata
 
         return (
             <div className='content-wrapper'>
-                <Loading loading={this.state.loading} text={main.loadingEntity}>
+                <Loading loading={loading} text={main.loadingEntity}>
                     <If condition={!found}>
                         <NotFound />
                     </If>
                     <If condition={found}>
                         <If condition={!this.state.editing}>
                             <View
-                                entity={entity}
                                 id={entityId}
                                 onEditClick={() => this.setState({editing: true})}
                             />

@@ -118,7 +118,7 @@ class IndexView extends Component<IAppContext, State> {
     renderEntityInfo() {
         return <>
             <h4>{this.state.entity.name.default}</h4>
-            <p>{this.state.entity.description.default}</p>
+            <div dangerouslySetInnerHTML={{__html: this.state.entity.description.default}} />
             <p><Link href={`/entities/edit#/${this.state.entityId}`}><a><Button>Manage my entity</Button></a></Link></p>
         </>
     }

@@ -3,7 +3,7 @@ body {
     margin: 0;
     font-size: 14px;
     font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
-    background-color: var(--clear) !important;
+    background-color: #F3F0ED !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -16,6 +16,7 @@ h1, h2, h3, h4, h5, h6 {
     --clear: #FFFFFF;
     /*--clear-95: #F7F7F7;*/
     --clear-95: #f0f2f5;
+    --clear-99: #fefefe;
 
     --dark: #222;
     --dark-90: #4b4040;
@@ -30,7 +31,8 @@ h1, h2, h3, h4, h5, h6 {
 
     --cyan: #99CCEE;
 
-    --inputs-bg: var(--gray-50);
+    --inputs-bg: #E7E4E1;
+    --input-group-btn-hover-bg: var(--clear-95);
 
     /* --main-color: #25658a; */
     --main-color: #444444;
@@ -77,9 +79,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* COMMON */
-.ant-layout {
-    background-color: var(--clear) !important;
-}
 .ant-layout-content .content-wrapper {
     flex: auto;
     max-width: 512px;
@@ -97,6 +96,10 @@ h1, h2, h3, h4, h5, h6 {
         padding-left: 0;
         padding-right: 0;
     }
+}
+
+.content-wrapper .ant-select-selector {
+    background-color: transparent;
 }
 
 .ant-layout-content .content-wrapper .ant-select:not(.ant-select-disabled) .ant-select-selector,
@@ -208,4 +211,10 @@ footer.poweredby a:hover,
 footer.poweredby a:active,
 footer.poweredby a:focus {
     color: #969696;
+}
+
+.ficon svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.1em;
 }

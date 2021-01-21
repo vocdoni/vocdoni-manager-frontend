@@ -1,13 +1,14 @@
 import { Component, ReactNode } from 'react'
-import { Divider, message, Spin, Col, Row, Badge } from 'antd'
+import { Divider, message, Spin, Col, Row, Badge, Button, Modal } from 'antd'
 import Text from 'antd/lib/typography/Text'
-import { LinkOutlined, LoadingOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, ProcessMetadata, ProcessResults } from 'dvote-js'
+import { CloseCircleOutlined, ExclamationCircleOutlined, LinkOutlined, LoadingOutlined } from '@ant-design/icons'
+import { API, ProcessMetadata, ProcessResults } from 'dvote-js'
 import moment from 'moment'
 import Router from 'next/router'
-import { getVoteMetadata, isCanceled, estimateDateAtBlock } from 'dvote-js/dist/api/vote'
+import { getVoteMetadata, isCanceled, estimateDateAtBlock, cancelProcess } from 'dvote-js/dist/api/vote'
+import { updateEntity } from 'dvote-js/dist/api/entity'
+import { Signer, Wallet } from 'ethers'
 
-import { EXPLORER_URL } from '../../env-config'
 import { getGatewayClients } from '../../lib/network'
 import AppContext from '../../components/app-context'
 import Image from '../../components/image'
@@ -19,15 +20,13 @@ import { appLink } from '../../lib/util'
 // import { } from '../lib/types'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Entity, Census } = API
+const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Census } = API
 const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10", 10) || 10
 
 type State = {
     dataLoading?: boolean,
     currentBlock: number,
     currentDate: moment.Moment,
-    entity?: EntityMetadata,
-    entityId?: string,
     processId?: string,
     process?: ProcessMetadata,
     estimatedStartDate?: Date,
@@ -38,6 +37,8 @@ type State = {
     censusSize: number,
     error?: string,
 }
+
+const { EXPLORER_URL } = process.env
 
 // Stateful component
 class ProcessActiveView extends Component<undefined, State> {
@@ -60,16 +61,13 @@ class ProcessActiveView extends Component<undefined, State> {
     }
 
     init() : Promise<any> {
-        const params = location.hash.substr(2).split("/")
-        if (params.length !== 2) {
+        if (this.context.params.length !== 2) {
             message.error("The requested data is not valid")
             Router.replace("/")
             return
         }
 
-        const entityId = params[0]
-        const processId = params[1]
-        this.setState({ entityId, processId })
+        const [entityId, processId] = this.context.params
 
         this.context.setEntityId(entityId)
         this.context.setProcessId(processId)
@@ -94,8 +92,8 @@ class ProcessActiveView extends Component<undefined, State> {
         const params = location.hash.substr(2).split("/")
         if (params.length !== 2) return true
 
-        if (this.state.entityId !== undefined && this.state.processId !== undefined &&
-            (params[0] !== this.state.entityId || params[1] !== this.state.processId)) {
+        if (this.context.entityId !== undefined && this.context.processId !== undefined &&
+            (params[0] !== this.context.entityId || params[1] !== this.context.processId)) {
             this.init()
         }
 
@@ -139,21 +137,20 @@ class ProcessActiveView extends Component<undefined, State> {
 
             this.setState({ dataLoading: true })
 
-            const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(this.state.entityId, gateway)
-            if (!entity) throw new Error()
+            await this.context.refreshEntityMetadata()
 
-            const metadata = await getVoteMetadata(this.state.processId, gateway)
-            const canceled = await isCanceled(this.state.processId, gateway)
+            const gateway = await this.context.gatewayClients
+            const metadata = await getVoteMetadata(this.context.processId, gateway)
+            const canceled = await isCanceled(this.context.processId, gateway)
             const estimatedStartDate = await estimateDateAtBlock(metadata.startBlock, gateway)
             const estimatedEndDate = await estimateDateAtBlock(metadata.startBlock + metadata.numberOfBlocks, gateway)
 
             const censusSize = parseInt(await Census.getCensusSize(metadata.census.merkleRoot, gateway) || "0", 10)
 
-            this.setState({ entity, process: metadata, canceled, dataLoading: false, censusSize, estimatedStartDate, estimatedEndDate })
-            this.context.setTitle(entity.name.default)
+            this.setState({ process: metadata, canceled, dataLoading: false, censusSize, estimatedStartDate, estimatedEndDate })
         }
         catch (err) {
+            console.error(err)
             this.setState({ dataLoading: false })
 
             if (err && err.message === "Request timed out")
@@ -164,7 +161,7 @@ class ProcessActiveView extends Component<undefined, State> {
     }
 
     async loadProcessResults() : Promise<void> {
-        if (!this.state.processId || !this.state.process) return
+        if (!this.context.processId || !this.state.process) return
         // NOTE: on polls it's fine, but on other process types may need to wait until the very end
         else if (!this.state.currentBlock || this.state.process.startBlock > this.state.currentBlock) return
 
@@ -173,10 +170,10 @@ class ProcessActiveView extends Component<undefined, State> {
             const gateway = await getGatewayClients()
 
             hideLoading = message.loading("Loading results...", 0)
-            const totalVotes = await getEnvelopeHeight(this.state.processId, gateway)
+            const totalVotes = await getEnvelopeHeight(this.context.processId, gateway)
             this.setState({ totalVotes })
 
-            const resultsDigest = await getResultsDigest(this.state.processId, gateway)
+            const resultsDigest = await getResultsDigest(this.context.processId, gateway)
             this.setState({ results: resultsDigest })
             hideLoading()
         }
@@ -197,6 +194,104 @@ class ProcessActiveView extends Component<undefined, State> {
             message.error("The list of voting processes could not be loaded")
         }
     }
+
+    confirmMarkAsEnded() {
+        const that = this;
+        Modal.confirm({
+            title: "Confirm",
+            icon: <ExclamationCircleOutlined />,
+            content: "The process will be marked as ended and the vote scrutiny will be triggered (if necessary). Do you want to continue?",
+            okText: "Mark as ended",
+            okType: "primary",
+            cancelText: "Not now",
+            onOk() {
+                that.markAsEnded()
+            },
+        })
+    }
+
+    async markAsEnded() {
+        const hideLoading = message.loading('Ending the process...', 0)
+        const processId = this.context.processId
+        try {
+            const gateway = await this.context.gatewayClients
+
+            // Cancel if still needed
+            if (!(await isCanceled(processId, gateway))) {
+                await cancelProcess(processId, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            }
+
+            // Relist
+            let activeProcesses = JSON.parse(JSON.stringify(this.context.entity.votingProcesses.active))
+            const endedProcesses = JSON.parse(JSON.stringify(this.context.entity.votingProcesses.ended))
+            activeProcesses = activeProcesses.filter(id => id !== processId)
+            endedProcesses.unshift(processId)
+
+            const entityMetadata = this.context.entity
+            entityMetadata.votingProcesses.active = activeProcesses
+            entityMetadata.votingProcesses.ended = endedProcesses
+
+            const address = this.context.web3Wallet.getAddress()
+            await updateEntity(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+
+            hideLoading()
+
+            message.success("The process has ended successfully")
+            this.componentDidMount() // reload
+        }
+        catch (err) {
+            hideLoading()
+            console.error("The process could not be ended", err)
+            message.error("The process could not be ended")
+        }
+
+    }
+
+    confirmRemoveEnded() {
+        const that = this;
+        Modal.confirm({
+            title: "Confirm",
+            icon: <ExclamationCircleOutlined />,
+            content: "The process will be permanently removed and this change cannot be undone. Do you want to continue?",
+            okText: "Remove Permanently",
+            okType: "primary",
+            cancelText: "Not now",
+            onOk() {
+                that.removeFromEnded()
+            },
+        })
+    }
+
+    async removeFromEnded() {
+        const processId = this.context.processId
+        const endedProcesses = JSON.parse(JSON.stringify(this.context.entity.votingProcesses.ended)).filter(id => id !== processId)
+        const hideLoading = message.loading('Removing the process...', 0)
+
+        try {
+            const gateway = await this.context.gatewayClients
+
+            const entityMetadata = this.context.entity
+            entityMetadata.votingProcesses.ended = endedProcesses
+
+            const address = this.context.web3Wallet.getAddress()
+            await updateEntity(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            hideLoading()
+
+            if (!(await isCanceled(processId, gateway))) {
+                await cancelProcess(processId, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            }
+
+            message.success("The process has been removed successfully")
+            Router.push(`/processes/list/#/${this.context.entityId}`)
+        }
+        catch (err) {
+            hideLoading()
+            console.error("The process could not be removed", err)
+            message.error("The process could not be removed")
+        }
+
+    }
+
 
     renderProcessesInfo() : ReactNode {
         const params = location.hash.substr(2).split("/")
@@ -304,6 +399,25 @@ class ProcessActiveView extends Component<undefined, State> {
                 <Col xs={24} sm={8}>
                     <Divider orientation="left">Media</Divider>
                     <Image src={process.details.headerImage} className='header-image' />
+                    <If condition={!this.context.isReadOnly}>
+                        <Divider orientation='left'>Actions</Divider>
+                        <If condition={this.context.entity.votingProcesses.active.includes(processId)}>
+                            <Button
+                                onClick={this.confirmMarkAsEnded.bind(this)}
+                                type='text'
+                            >
+                                <CloseCircleOutlined /> Mark as ended
+                            </Button>
+                        </If>
+                        <If condition={this.context.entity.votingProcesses.ended.includes(processId)}>
+                            <Button
+                                onClick={this.confirmRemoveEnded.bind(this)}
+                                type='text'
+                            >
+                                <CloseCircleOutlined /> Remove process from entity
+                            </Button>
+                        </If>
+                    </If>
 
                     {this.renderStatus()}
 
@@ -372,7 +486,7 @@ class ProcessActiveView extends Component<undefined, State> {
                         {this.renderLoading()}
                     </div>
                     : this.state.error ? <div id="page-body" className="center">{this.state.error}</div> :
-                        (this.state.entity && this.state.process) ?
+                        (this.context.entity && this.state.process) ?
                             <div id="page-body">
                                 {this.renderProcessesInfo()}
                             </div>

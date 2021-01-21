@@ -12,6 +12,7 @@ import {
     AlignLeft,
     ArrowRightCircle,
     Calendar,
+    Check,
     HelpCircle,
     MessageSquare,
     MousePointer,
@@ -30,10 +31,12 @@ import { MessageType } from 'antd/lib/message'
 import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
 import ParticipantsSelector from '../../components/processes/ParticipantsSelector'
 import QuestionsForm, { LegacyQuestions } from '../../components/processes/QuestionsForm'
+import { LoadingOutlined } from '@ant-design/icons'
 
 export type ProcessNewState = {
     loading?: boolean,
     creating?: boolean,
+    confirmModalVisible: boolean,
     entity?: EntityMetadata,
     entityId?: string,
     process?: ProcessMetadata,
@@ -48,6 +51,12 @@ export type ProcessNewState = {
     streamingInputVisible: boolean,
     qnaInputVisible: boolean,
     webVoting: boolean,
+    steps: {
+        balance: boolean,
+        census: boolean,
+        create: boolean,
+        emails: boolean,
+    },
 }
 
 type CensusInfo = {
@@ -57,6 +66,13 @@ type CensusInfo = {
     formURI?: string,
 }
 
+const stepDescriptions = {
+    balance: 'Check balance',
+    census: 'Create census',
+    create: 'Create process',
+    emails: 'Send emails'
+}
+
 class ProcessNew extends Component<undefined, ProcessNewState> {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
@@ -64,6 +80,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
     state: ProcessNewState = {
         process: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
         creating: false,
+        confirmModalVisible: false,
         loading: true,
         startBlock: null,
         numberOfBlocks: null,
@@ -79,6 +96,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         streamingInputVisible: false,
         qnaInputVisible: false,
         webVoting: false,
+        steps: {
+            balance: false,
+            census: true,
+            create: false,
+            emails: false,
+        },
     }
 
 
@@ -98,7 +121,8 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         this.context.setTitle(main.newProcess)
 
         try {
-            await this.context.refreshEntityMetadata()
+            const [entityId] = this.context.params
+            await this.context.refreshEntityMetadata(entityId)
 
             const beginDate = moment().add(30, 'minutes')
             const endDate = moment().add(3, 'days').add(30, 'minutes')
@@ -119,6 +143,49 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         }
     }
 
+    modal() : ReactNode {
+        const { creating } = this.state
+        let content = <span dangerouslySetInnerHTML={{__html: main.processCreationAdvice}} />
+        if (creating) {
+            content = (
+                <ul className='process-steps'>
+                    {
+                        Object.keys(stepDescriptions).map((step) => (
+                            <li key={step}>
+                                <If condition={this.state.steps[step]}>
+                                    <Check color='green' />
+                                </If>
+                                <If condition={!this.state.steps[step]}>
+                                    <LoadingOutlined spin />
+                                </If> {stepDescriptions[step]}
+                            </li>
+                        ))
+                    }
+                </ul>
+            )
+        }
+
+        return (
+            <Modal
+                title={creating ? main.processCreating : main.confirm}
+                closable={false}
+                visible={this.state.confirmModalVisible}
+                okText={main.processCreationConfirmButton}
+                onOk={this.submit.bind(this)}
+                onCancel={() => this.setState({confirmModalVisible: false})}
+                okButtonProps={{
+                    disabled: creating,
+                }}
+                cancelButtonProps={{
+                    disabled: creating,
+                }}
+                confirmLoading={creating}
+            >
+                {content}
+            </Modal>
+        )
+    }
+
     async hasBalance(loading: MessageType) : Promise<boolean> {
         const address = this.context.web3Wallet.getAddress()
         const balance = await this.context.web3Wallet.getProvider().getBalance(address)
@@ -137,6 +204,20 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         }
 
         return true
+    }
+
+    /**
+     * Marks a step as done during the process creation.
+     *
+     * @param step The step object key
+     */
+    stepDone(step: 'balance' | 'census' | 'create' | 'emails') : void {
+        this.setState({
+            steps: {
+                ...this.state.steps,
+                [step]: true,
+            }
+        })
     }
 
     /**
@@ -185,15 +266,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             return
         }
 
-        Modal.confirm({
-            title: main.confirm,
-            icon: <AlertCircle />,
-            content: <span dangerouslySetInnerHTML={{__html: main.processCreationAdvice}} />,
-            okText: main.processCreationConfirmButton,
-            okType: 'primary',
-            cancelText: main.processCreationCancelButton,
-            onOk: this.submit.bind(this),
-        })
+        this.setState({confirmModalVisible: true})
     }
 
     /**
@@ -328,8 +401,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         const loading = message.loading('Action in progress...', 0)
         this.setState({ creating: true })
 
-        let census : CensusInfo = null
+        if (!await this.hasBalance(loading)) {
+            return
+        }
+        this.stepDone('balance')
 
+        let census : CensusInfo = null
         try {
             census = await this.getProperCensus(this.state.webVoting)
 
@@ -348,17 +425,15 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
             return
         }
-
-        if (!await this.hasBalance(loading)) {
-            return
-        }
+        this.stepDone('census')
 
         try {
             const wallet = this.context.web3Wallet.getWallet()
             const processId = await createVotingProcess(process, wallet, await this.context.gatewayClients)
+            this.stepDone('create')
 
             let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
-            if (this.state.webVoting) {
+            if (this.state.webVoting && this.state.selectedCensus !== 'file') {
                 const emailsReq : any = {
                     method: 'sendVotingLinks',
                     processId,
@@ -370,6 +445,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                 } catch (e) {
                     msg += ' There was an error sending e-mails tho.'
                 }
+                this.stepDone('emails')
             }
 
             message.success(msg)
@@ -388,6 +464,11 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
     render() : ReactNode {
         const { process, loading, creating, selectedCensus } = this.state
+
+        // avoid rendering if it's in read only
+        if (this.context.isReadOnly) {
+            return null
+        }
 
         return (
             <div className='content-wrapper stretched-form'>
@@ -498,6 +579,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             />
                         </div>
                         <div>
+                            <small>Will show a QnA button linking to where you want.</small>
                             <If condition={this.state.qnaInputVisible}>
                                 <Input placeholder='https://...' />
                             </If>
@@ -540,7 +622,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             <label>Web voting</label>
                             <Switch
                                 checked={this.state.webVoting}
-                                disabled={selectedCensus.startsWith('0x')}
+                                disabled={selectedCensus === 'file'}
                                 onChange={(webVoting) => this.setState({webVoting})}
                             />
                         </div>
@@ -564,6 +646,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                         </Button>
                     </Form.Item>
                 </Form>
+                {this.modal()}
             </div>
         )
     }

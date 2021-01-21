@@ -1,25 +1,28 @@
 import { EditOutlined, ShareAltOutlined } from '@ant-design/icons'
 import { Button, Col, Row } from 'antd'
-import { EntityMetadata } from 'dvote-js'
 import QRCode from 'qrcode.react'
 import React, { Component, ReactNode } from 'react'
 
-import { APP_LINKING_DOMAIN } from '../../env-config'
 import { main } from '../../i18n'
+import AppContext from '../app-context'
 import Copy from '../copy'
+import If from '../if'
 import Note from '../note'
 import HeaderImage from './HeaderImage'
 
 type ViewProps = {
-    entity: EntityMetadata,
     id: string,
     onEditClick: any,
 }
 
 export default class View extends Component<ViewProps, undefined> {
+    static contextType = AppContext
+    context!: React.ContextType<typeof AppContext>
+
     render() : ReactNode {
-        const { entity, id } = this.props
-        const link = `https://${APP_LINKING_DOMAIN}/entities/${id}`
+        const { id } = this.props
+        const { entity } = this.context
+        const link = `https://${process.env.APP_LINKING_DOMAIN}/entities/${id}`
 
         const columns = {
             left: {
@@ -43,11 +46,13 @@ export default class View extends Component<ViewProps, undefined> {
                     <Col>
                         <h1>{entity.name?.default}</h1>
                     </Col>
-                    <Col>
-                        <Button type='link' onClick={this.props.onEditClick}>
-                            <EditOutlined /> Edit
-                        </Button>
-                    </Col>
+                    <If condition={!this.context.isReadOnlyNetwork}>
+                        <Col>
+                            <Button type='link' onClick={this.props.onEditClick}>
+                                <EditOutlined /> Edit
+                            </Button>
+                        </Col>
+                    </If>
                     <Col span={24}>
                         <div dangerouslySetInnerHTML={{
                             __html: entity.description?.default

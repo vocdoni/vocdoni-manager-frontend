@@ -34,7 +34,7 @@ type Props = {
 
 type State = {
     isConnected: boolean
-
+    loadingEntityMetadata: boolean,
     // STATE SHARED WITH CHILDREN
     title: string
     menuVisible: boolean
@@ -52,6 +52,7 @@ type State = {
 class MainApp extends App<Props, State> {
     state: State = {
         isConnected: false,
+        loadingEntityMetadata: false,
         title: " ",
         menuVisible: true,
         menuSelected: "profile",
@@ -184,7 +185,7 @@ class MainApp extends App<Props, State> {
     async createCensusForTarget(
         name: string,
         {id, name: targetName}: {id: string, name: string},
-        ephemeral?: boolean)
+        ephemeral: boolean)
         : Promise<{census: string, merkleRoot: string, merkleTreeUri: string}>
     {
         const wallet = getWeb3Wallet().getWallet()
@@ -241,19 +242,28 @@ class MainApp extends App<Props, State> {
         )
     }
 
-    async refreshEntityMetadata(entityId?: string) : Promise<void> {
-        if (!entityId) {
+    async refreshEntityMetadata(entityId?: string, force?: boolean) : Promise<void> {
+        if (!entityId && !this.state.entityId) {
             entityId = getEntityId(getWeb3Wallet().getAddress())
+        } else if (
+            ((!entityId && this.state.entityId) ||
+            (entityId && this.state.entityId && this.state.entityId === entityId)) &&
+            this.state.entity && !force
+        ) {
+            // We already have the info stored in state and should not be changed
+            return
         }
 
-        this.setState({ loading: true })
+        entityId = entityId ? entityId : this.state.entityId
+
+        this.setState({ loadingEntityMetadata: true })
         const entity = await this.getEntityMetadata(entityId)
         if (!entity) throw new Error('Entity not found')
 
         this.setState({
             entityId,
             entity,
-            loading: false,
+            loadingEntityMetadata: false,
             title: entity.name.default,
         })
     }
@@ -327,6 +337,7 @@ class MainApp extends App<Props, State> {
             isWriteEnabled: isWriteEnabled(),
             isReadOnly: this.isReadOnly,
             isReadOnlyNetwork: this.isReadOnlyNetwork,
+            loadingEntityMetadata: this.state.loadingEntityMetadata,
             title: this.state.title,
             setTitle: (title) => this.setTitle(title),
             web3Wallet: getWeb3Wallet(),

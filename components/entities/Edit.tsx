@@ -292,7 +292,7 @@ const SaveButton = (props: {saving?: boolean} = {}) => {
     }
 
     return (
-        <Button type='primary' htmlType='submit' disabled={props.saving}>
+        <Button type='primary' htmlType='submit' disabled={props.saving} loading={props.saving}>
             <SaveOutlined /> {text}
         </Button>
     )

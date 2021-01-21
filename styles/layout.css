@@ -257,23 +257,12 @@ form .ant-picker {
 
 .content-wrapper .label-wrapper .ant-select {
     width: auto;
+    font-weight: bold;
 }
 
 .reduced-select .ant-select-item-option-content,
 .content-wrapper .label-wrapper .ant-select .ant-select-selection-item {
-    font-size: 12px;
-}
-
-.ant-select svg {
-    vertical-align: middle;
-}
-
-.ant-select-item-option-content svg {
-    vertical-align: bottom;
-}
-
-.ant-select-item-option-content svg {
-    width: 20px;
+    font-size: 1em;
 }
 
 .stretched-form form {
@@ -296,11 +285,22 @@ ul .ant-form-item {
     margin-bottom: 10px;
 }
 
+.content-wrapper .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    background-color: initial;
+}
+
+form .ant-input-group-addon .ant-btn[disabled],
+form .ant-input-group-addon .ant-btn:hover,
+form .ant-input-group-addon .ant-btn:focus,
+form .ant-input-group-addon .ant-btn:active {
+    background-color: var(--input-group-btn-hover-bg);
+}
+
 .ant-upload.ant-upload-drag.inline-uploader,
 .rdw-editor-main.editor-box,
-form input[type=text],
-form input[type=password],
-form .ant-input-group-addon,
+.content-wrapper form input[type=text],
+.content-wrapper form input[type=password],
+.content-wrapper form .ant-input-group-addon,
 form .ant-input-group-addon button {
     background-color: var(--inputs-bg);
     border: none;
@@ -312,8 +312,6 @@ form .editor-box {
 }
 
 .ant-input-group-addon svg {
-    width: 15px;
-    vertical-align: bottom;
     stroke: var(--gray-90);
 }
 
@@ -335,3 +333,16 @@ form .ant-alert {
 form .ant-alert.ant-alert-info .ant-alert-message {
     color: #2e3592;
 }
+
+.process-steps {
+    padding: 0;
+}
+
+.process-steps li {
+    list-style: none;
+}
+
+.process-steps li svg {
+    margin-right: 10px;
+}
+
