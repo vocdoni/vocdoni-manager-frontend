@@ -7,7 +7,7 @@ import { getNetworkState } from '../../lib/network'
 import { ICensus, ITarget } from '../../lib/types'
 import AppContext, { IAppContext } from '../../components/app-context'
 
-const CensusViewPage = props => {
+const CensusViewPage = () => {
     const context = useContext(AppContext)
     return <CensusView {...context} />
 }

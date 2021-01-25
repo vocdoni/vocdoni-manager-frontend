@@ -1,30 +1,13 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext } from "react"
 import AppContext from "./app-context"
 import Link from "next/link"
 // import { Button, Row, Col, } from "antd"
-import Icon, { UserOutlined, AlignRightOutlined } from "@ant-design/icons"
+import Icon from "@ant-design/icons"
 // import Avatar from "antd/lib/avatar/avatar"
 
 const UserMenu = () => {
     const context = useContext(AppContext)
     const hasWallet = context.web3Wallet.hasWallet()
-    let address = ''
-
-    if (hasWallet) {
-        address = context.web3Wallet.getAddress()
-    }
-
-    const [enoughEther, setEnoughEther] = useState(false)
-    useEffect(() => {
-        hasEnoughEther()
-    })
-
-    const hasEnoughEther = async () => {
-        if (context.web3Wallet.hasWallet() && context.web3Wallet.getProvider()) {
-            const balance = await context.web3Wallet.getBalance()
-            setEnoughEther((+balance / Math.pow(10, 16) > 1))
-        }
-    }
 
     if (!context.isWriteEnabled) {
         return null

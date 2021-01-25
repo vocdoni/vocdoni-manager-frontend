@@ -1,4 +1,4 @@
-import { useContext, Component } from 'react'
+import React, { Component } from 'react'
 import { Typography, Button, Modal, Input, message } from 'antd'
 import { EyeInvisibleOutlined, KeyOutlined } from '@ant-design/icons'
 import { EtherUtils } from 'dvote-js'
@@ -22,7 +22,7 @@ export default class ButtonShowPrivateKey extends Component<IAppContext, PrivKey
             content: (
                 <Input.Password onChange={({target}) => this.setState({password: target.value})} />
             ),
-            onOk: async (close) => {
+            onOk: async () => {
                 const wallets = await this.props.web3Wallet.getStored()
                 const pubKey : string = await this.props.web3Wallet.getWallet()['signingKey'].publicKey
                 const current = wallets.filter(({publicKey}) => publicKey === pubKey).pop()

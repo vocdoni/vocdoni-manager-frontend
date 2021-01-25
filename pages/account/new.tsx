@@ -12,7 +12,7 @@ import { downloadFileWithContents } from '../../lib/util'
 
 
 // MAIN COMPONENT
-const AccountNewPage = props => {
+const AccountNewPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 

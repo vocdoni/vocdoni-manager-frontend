@@ -25,7 +25,7 @@ let htmlToDraft: any // = await import('html-to-draftjs')
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 
 // MAIN COMPONENT
-const PostNewPage = props => {
+const PostNewPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 
@@ -201,7 +201,7 @@ class PostNew extends Component<IAppContext, State> {
 
         try {
             const gateway = await getGatewayClients()
-            const state = getNetworkState()
+            getNetworkState()
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(newsFeed))

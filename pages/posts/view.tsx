@@ -21,7 +21,7 @@ const { Entity } = API
 // import { main } from '../i18n'
 
 // MAIN COMPONENT
-const PostViewPage = props => {
+const PostViewPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 

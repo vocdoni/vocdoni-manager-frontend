@@ -88,7 +88,7 @@ class ProcessActiveView extends Component<undefined, State> {
             })
     }
 
-    shouldComponentUpdate(nextProps, nextState) : boolean {
+    shouldComponentUpdate() : boolean {
         const params = location.hash.substr(2).split("/")
         if (params.length !== 2) return true
 

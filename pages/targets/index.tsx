@@ -1,5 +1,5 @@
 import React, { useContext, Component, ReactText } from 'react'
-import { Row, Col, Divider, Table, Button, Space, Form, Input, message, Tag } from 'antd'
+import { Row, Col, Divider, Table, Button, Space, message, Tag } from 'antd'
 import Router from 'next/router'
 import { AimOutlined, DeleteRowOutlined } from '@ant-design/icons'
 import Link from 'next/link'
@@ -8,7 +8,7 @@ import { getNetworkState } from '../../lib/network'
 import { ITarget } from '../../lib/types'
 import AppContext, { IAppContext } from '../../components/app-context'
 
-const TargetsPage = props => {
+const TargetsPage = () => {
     const context = useContext(AppContext)
     return <Targets {...context} />
 }
@@ -139,7 +139,7 @@ class Targets extends Component<IAppContext, State> {
                     })}
                 </>
             )},
-            { title: 'Actions', key: 'action', render: (text, record, index) => (
+            { title: 'Actions', key: 'action', render: (text, record) => (
                 <Space size="middle">
                     <Link href={"/targets/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>
                     <a onClick={() => this.deleteTarget(record)}>Delete</a>

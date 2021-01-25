@@ -6,7 +6,7 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import ButtonShowPrivateKey from '../../components/button-show-private-key'
 
 // MAIN COMPONENT
-const AccountEditPage = props => {
+const AccountEditPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 

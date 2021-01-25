@@ -1,5 +1,4 @@
 import { Component, ReactNode } from 'react'
-import { Plus } from 'react-feather'
 import { message, Select, Row, Col } from 'antd'
 import { ProcessMetadata } from 'dvote-js'
 import Link from 'next/link'

@@ -1,4 +1,3 @@
-import { RcFile } from 'antd/lib/upload'
 import { Buffer } from 'buffer'
 
 import { getBufferEncoding, getProperFileMimeType, Uint8ToString } from './file-utils'

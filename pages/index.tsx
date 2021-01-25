@@ -6,18 +6,17 @@ import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import Router from 'next/router'
 
-import { getGatewayClients, getNetworkState } from '../lib/network'
+import { getGatewayClients } from '../lib/network'
 import { IWallet } from '../lib/types'
 import AppContext, { IAppContext } from '../components/app-context'
 
-const { Entity } = API
 // import MainLayout from "../components/layout"
 // import { main } from "../i18n"
 // import MultiLine from '../components/multi-line-text'
 // import { } from '../lib/types'
 
 // MAIN COMPONENT
-const IndexPage = props => {
+const IndexPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 

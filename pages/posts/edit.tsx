@@ -1,11 +1,10 @@
 import { useContext, Component } from 'react'
-import { message, Spin, Button, Input, Form, Divider, Menu, Row, Col, Modal } from 'antd'
+import { message, Spin, Button, Input, Form, Divider, Row, Col, Modal } from 'antd'
 import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
 import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from 'dvote-js'
-import Link from 'next/link'
 import Router from 'next/router'
 import { Wallet, Signer } from 'ethers'
-import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
+import { updateEntity } from 'dvote-js/dist/api/entity'
 import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
 import { fetchFileString } from 'dvote-js/dist/api/file'
 // import { by639_1 } from 'iso-language-codes'
@@ -26,7 +25,7 @@ let htmlToDraft: any // = await import('html-to-draftjs')
 // import { main } from '../i18n'
 
 // MAIN COMPONENT
-const PostEditPage = props => {
+const PostEditPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 
@@ -199,7 +198,7 @@ class PostEdit extends Component<IAppContext, State> {
             return
         }
 
-        const entityId = params[0]
+        // const entityId = params[0]
         const postId = params[1]
 
 
@@ -244,7 +243,7 @@ class PostEdit extends Component<IAppContext, State> {
 
         try {
             const gateway = await getGatewayClients()
-            const state = getNetworkState()
+            getNetworkState()
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(newsFeed))

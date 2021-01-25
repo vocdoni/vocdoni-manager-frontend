@@ -3,7 +3,7 @@ import Router from 'next/router'
 import { Form, Input, Button, message, Modal, Row, Col, Card } from 'antd'
 import { RcFile } from 'antd/lib/upload'
 import Dragger from 'antd/lib/upload/Dragger'
-import { API, EntityMetadata } from 'dvote-js'
+import { API } from 'dvote-js'
 import { getEntityId } from 'dvote-js/dist/api/entity'
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons'
 
@@ -12,7 +12,7 @@ import { getGatewayClients } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 import If from '../../components/if'
 
-const AccountImportPage = props => {
+const AccountImportPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 
@@ -80,10 +80,9 @@ class AccountImport extends Component<IAppContext> {
         const entityId = getEntityId(address)
 
         const gateway = await getGatewayClients()
-        let entity: EntityMetadata
         const self = this
         try {
-            entity = await API.Entity.getEntityMetadata(entityId, gateway)
+            await API.Entity.getEntityMetadata(entityId, gateway)
             Router.push("/entities/edit#/" + entityId)
         } catch (e) {
             Modal.confirm({

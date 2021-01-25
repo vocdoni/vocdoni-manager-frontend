@@ -7,7 +7,7 @@ import { ICensus } from '../../lib/types'
 import { getNetworkState } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 
-const CensusPage = props => {
+const CensusPage = () => {
     const context = useContext(AppContext)
     return <Census {...context} />
 }
@@ -130,20 +130,20 @@ class Census extends Component<IAppContext, State> {
         this.setState({selectedRowsKeys: keys, selectedRows: rows})
     }
 
-    generateLink(text, record, index) {
+    generateLink(text, record) {
         return <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>{text}</a></Link>
     }
 
     render() {
         const columns = [
-            { title: 'Name', dataIndex: 'name', key: 'name', render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Name', dataIndex: 'name', key: 'name', render: (text, record) => this.generateLink(text, record)  },
             // { title: 'Target', dataIndex: 'targetId', key: 'targetId', render: (text, record, index) => (
             //     <Link href={"/targets/view#/" + this.props.entityId + "/" + record.targetId}><a>{record.targetId}</a></Link>
             //   )
             // },
             //{ title: 'Census Id', dataIndex: 'id', key: 'id' },
             // { title: 'MerkleRoot', dataIndex: 'id', key: 'id' },
-            { title: 'Creation date', dataIndex: 'createdAt', key: 'createdAt', sorter: true,  render: (text, record, index) => this.generateLink(text, record, index)  },
+            { title: 'Creation date', dataIndex: 'createdAt', key: 'createdAt', sorter: true,  render: (text, record) => this.generateLink(text, record)  },
             //{ title: 'Actions', key: 'action', render: (text, record, index) => (
             //    <Space size="middle">
             //        <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>

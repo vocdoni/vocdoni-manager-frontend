@@ -8,7 +8,7 @@ import AppContext, { IAppContext } from '../../components/app-context'
 // import { } from '../lib/types'
 
 // MAIN COMPONENT
-const ProcessEditPage = props => {
+const ProcessEditPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 

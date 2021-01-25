@@ -1,4 +1,3 @@
-import { Input } from 'antd'
 import React, { Component, ReactNode } from 'react'
 
 import { sanitizeHtml } from '../lib/util'

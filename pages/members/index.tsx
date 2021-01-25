@@ -39,7 +39,7 @@ const defaultPageSize = 50
 const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
 
-const MembersPage = props => {
+const MembersPage = () => {
     const context = useContext(AppContext)
     return <Members {...context} />
 }
@@ -386,7 +386,7 @@ class Members extends Component<IAppContext, State> {
             )},
 
             {
-                title: 'Actions', key: 'action', render: (text, record, index) => (
+                title: 'Actions', key: 'action', render: (text, record) => (
                     <Dropdown
                         overlay={actionsMenu(record)}
                         visible={this.state.actionsMenuOpen[record.id]}

@@ -1,21 +1,17 @@
 # Vocdoni Manager
 
-Static web site project to manage Vocdoni entities and explore their contents. It also defines the mobile app settings for deep link handling.
+[![GitHub stars](https://img.shields.io/github/stars/vocdoni/vocdoni-manager-frontend)][stargazers]
+[![GitHub issues](https://img.shields.io/github/issues/vocdoni/vocdoni-manager-frontend)][issues]
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/vocdoni/vocdoni-manager-frontend/Main)][actions]
+
+Static web site project to manage Vocdoni entities and explore their contents. It also defines the mobile app settings for deep link handling and allows voting via web.
 
 ## Supported paths
 
-Important: The URL paths must not end with `/` or NextJS will trigger full reloads and the current wallet will be lost.
+Check the [`next.config.js`][next.config.js] file for a full list of the routes. You'll see them split in two:
 
-- `/entities#/<entity-id>`
-- `/entities/edit#/<entity-id>`
-- `/entities/new`
-- `/posts#/<entity-id>`
-- `/posts/edit#/<entity-id>/<post-id>`
-- `/posts/new`
-- `/processes#/<entity-id>/<process-id>`
-- `/processes/active#/<entity-id>`
-- `/processes/ended#/<entity-id>`
-- `/processes/new`
+- Public: those only accessible in read-only mode.
+- Private: only accessible in write mode (and with the wallet already unlocked).
 
 ## Standalone Ethereum wallets
 
@@ -48,6 +44,8 @@ At build time, the following env vars are read:
 - `ACTION_VISIBILITY_URL`
     - The endpoint where new organizations will tell app users to check their registration status
 
+Check the file [`env-config.js`][env-config.js] for a full featured list of the environment vars.
+
 ## Dockerfile
 
 A Dockerfile is provided for convenience. The image it creates is not meant to serve the frontend, but to **export** it.
@@ -64,3 +62,11 @@ docker run --rm -it -e "REGISTER_URL=https://localhost:12345/registry" -v manage
 # Serve it
 docker run --rm -it -v manager-frontend:/usr/share/nginx/html:ro -p 8000:80 nginx
 ```
+
+
+[next.config.js]: ./next.config.js
+[env-config.js]: ./env-config.js
+
+[issues]: https://github.com/vocdoni/vocdoni-manager-frontend/issues
+[stargazers]: https://github.com/vocdoni/vocdoni-manager-frontend/stargazers
+[actions]: https://github.com/vocdoni/vocdoni-manager-frontend/actions

@@ -10,7 +10,7 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { IMember, ITarget } from '../../lib/types'
 import { getNetworkState, getGatewayClients } from '../../lib/network'
 
-const TargetViewPage = props => {
+const TargetViewPage =  () => {
     const context: IAppContext = useContext(AppContext)
     return <TargetView {...context} />
 }
@@ -145,7 +145,7 @@ class TargetView extends Component<IAppContext, State> {
                 // tslint:disable-next-line
                 const { censusId, merkleRoot } = await addCensus(censusName, [wallet["signingKey"].publicKey], gateway, wallet)
                 //   console.log('censusId is', censusId)
-                const { invalidClaims } = await addClaimBulk(censusId, result.claims, true, gateway, wallet)
+                await addClaimBulk(censusId, result.claims, true, gateway, wallet)
 
                 // TODO: Show information about found claims and invalidClaims?
 

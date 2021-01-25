@@ -1,5 +1,5 @@
 import { useContext, Component } from 'react'
-import { message, Spin, Divider, Typography, Row, Col } from 'antd'
+import { message, Spin, Divider, Row, Col } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
 import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
 import QRCode from 'qrcode.react'

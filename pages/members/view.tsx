@@ -1,8 +1,8 @@
 import React, { useContext, Component } from 'react'
 import moment from 'moment'
 import Router from 'next/router'
-import { Row, Col, Divider, Button, Form, Input, message, DatePicker, Modal, Descriptions, Popconfirm} from 'antd'
-import { UserDeleteOutlined, SaveOutlined, ExclamationCircleOutlined, MailOutlined } from '@ant-design/icons'
+import { Row, Col, Divider, Button, Form, Input, message, DatePicker, Descriptions, Popconfirm} from 'antd'
+import { UserDeleteOutlined, SaveOutlined, MailOutlined } from '@ant-design/icons'
 import Paragraph from 'antd/lib/typography/Paragraph'
 import { FormInstance } from 'antd/lib/form'
 
@@ -15,7 +15,7 @@ import TagsManagement from '../../components/tags-management'
 
 const validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
-const MemberViewPage = props => {
+const MemberViewPage = () => {
     const context = useContext(AppContext)
     return <MemberView {...context} />
 }
@@ -156,22 +156,7 @@ class MemberView extends Component<IAppContext, State> {
     }
 
     render() {
-        const { member, memberId, tags } = this.state
-
-        const columns = [
-            {title: 'Validated', dataIndex: 'verified'},
-            {/*
-            { title: 'Name', dataIndex: 'name' },
-            { title: 'Filters', dataIndex: 'filters', key: 'filters', render: (filters: any) => (
-                <>
-                    { filters && filters.length > 0 && filters.map((i, index) => {
-                        return <Tag color={"gold"} key={index}>{`${i.field}:${i.operator}:${i.value}`}</Tag>
-                    })}
-                </>
-            )},
-            { title: 'Actions', key: 'action', render: (text, record, index) => ( <Space size="middle"></Space>)},
-            */}
-        ]
+        const { member, memberId } = this.state
 
         const entityId = this.props.entityId
         const validated = (member && 'publicKey' in member && member['publicKey'] != null) ? true : false
@@ -275,14 +260,6 @@ class MemberView extends Component<IAppContext, State> {
                         </Row>
                     </Form>
                         }
-                        {/* <Divider orientation="left">Matching targets</Divider>
-                <Table
-                    rowKey="id"
-                    columns={columns}
-                    dataSource={this.state.targets}
-                    pagination={false}
-                    loading={this.state.loading}
-                /> */}
                     </Col>
 
                     <Col xs={{span: 24, order: 1}} lg={{span: 6, order: 2}} className='detail-actions'>

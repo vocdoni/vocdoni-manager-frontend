@@ -273,19 +273,19 @@ class MainApp extends App<Props, State> {
         this.setState({ isConnected })
     }
 
-    onGatewayError(type: "private" | "public") {
+    onGatewayError() {
         // TODO: reconnect or shift
         new Promise(resolve => setTimeout(resolve, 1000 * 3))
             .then(() => initNetwork()).then(() => {
                 // message.success(main.connected)
                 this.refreshWeb3Status()
-            }).catch(err => {
+            }).catch(() => {
                 this.refreshWeb3Status()
                 message.error(main.couldNotConnect)
             })
     }
 
-    componentDidCatch(error: Error, _errorInfo: any/*ErrorInfo*/) {
+    componentDidCatch(error: Error) : React.ReactNode {
         console.error(error)
         return <GeneralError />
     }

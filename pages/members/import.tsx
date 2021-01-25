@@ -197,7 +197,7 @@ class MemberImport extends Component<IAppContext, State> {
             })
     }
 
-    onRemoveUpload(file) {
+    onRemoveUpload() {
         this.setState({
             data: [],
             file: null,
@@ -228,21 +228,21 @@ class MemberImport extends Component<IAppContext, State> {
         const columnLayout = {
             xs: 24,
         }
-        const inputColumnLayout = {
-            xs: 24,
-            xl: 8,
-            // xxl: 6, // uncomment if we add more than 3 cols
-        }
-        const formLayout = {
-            labelCol: {xs: 12, xl: 16},
-            wrapperCol: {xs: 10, xl: 8},
-        }
+        // const inputColumnLayout = {
+        //     xs: 24,
+        //     xl: 8,
+        //     // xxl: 6, // uncomment if we add more than 3 cols
+        // }
+        // const formLayout = {
+        //     labelCol: {xs: 12, xl: 16},
+        //     wrapperCol: {xs: 10, xl: 8},
+        // }
 
-        const inputProps = {
-            style: {
-                width: '100%',
-            }
-        }
+        // const inputProps = {
+        //     style: {
+        //         width: '100%',
+        //     }
+        // }
 
         let files = []
         if (this.state.file) {
@@ -264,7 +264,7 @@ class MemberImport extends Component<IAppContext, State> {
                                     <br /><br />
                                     <Dragger
                                         beforeUpload={(file) => this.beforeUpload(file)}
-                                        onRemove={(file) => this.onRemoveUpload(file)}
+                                        onRemove={() => this.onRemoveUpload()}
                                         multiple={false}
                                         fileList={files}
                                     >

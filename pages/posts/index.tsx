@@ -1,9 +1,8 @@
 import { useContext, Component, createElement } from 'react'
-import { message, Spin, Avatar, Modal, Divider, Menu, List } from 'antd'
+import { message, Spin, Avatar, Modal, Divider, List } from 'antd'
 import {
     LoadingOutlined,
     ExclamationCircleOutlined,
-    EyeOutlined,
     EditOutlined,
     CloseCircleOutlined,
 } from '@ant-design/icons'
@@ -24,11 +23,10 @@ import Image from '../../components/image'
 // import { } from '../lib/types'
 
 const { Entity } = API
-const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 const PAGE_SIZE = 6
 
 // MAIN COMPONENT
-const PostViewPage = props => {
+const PostViewPage = () => {
     // Get the global context and pass it to our stateful component
     const context = useContext(AppContext)
 
@@ -119,7 +117,7 @@ class PostView extends Component<IAppContext, State> {
 
         try {
             const gateway = await getGatewayClients()
-            const state = getNetworkState()
+            getNetworkState()
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(feed))

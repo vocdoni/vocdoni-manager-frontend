@@ -5,7 +5,6 @@ import { object as toObject } from 'dot-object'
 
 import { MemberImportData } from '../lib/types'
 import { IAppContext } from './app-context'
-import { DeleteOutlined } from '@ant-design/icons'
 
 type MembersAddFormState = {
     members: MemberImportData[],
@@ -94,7 +93,7 @@ class MembersAddForm extends Component<MembersAddFormProps, MembersAddFormState>
         this.props.onSave((toObject(values) as any).members)
     }
 
-    onDelete(index: number) : void {
+    onDelete() : void {
         const { members } = this.state
         members.pop()
         this.setState({

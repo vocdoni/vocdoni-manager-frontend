@@ -6,6 +6,10 @@ body {
     background-color: #F3F0ED !important;
 }
 
+.ant-layout {
+    background-color: #F3F0ED;
+}
+
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }

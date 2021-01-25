@@ -1,12 +1,9 @@
 import { message } from 'antd'
-import { EntityMetadata } from 'dvote-js'
-import { getEntityMetadata } from 'dvote-js/dist/api/entity'
 import { Component, ReactNode } from 'react'
 
 import { main } from '../../i18n'
 import AppContext from '../../components/app-context'
 import Loading from '../../components/loading'
-import { getGatewayClients } from '../../lib/network'
 import If from '../../components/if'
 import NotFound from '../../components/not-found'
 import View from '../../components/entities/View'

@@ -9,7 +9,7 @@ import { message } from 'antd'
 import { getWeb3Wallet } from './web3-wallet'
 import { main } from '../i18n'
 
-const { Pool: { GatewayPool }, Contracts: { getEntityResolverInstance, getVotingProcessInstance } } = Network
+const { Pool: { GatewayPool } } = Network
 // const {GatewayInfo} = Wrappers
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
