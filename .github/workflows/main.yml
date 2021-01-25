@@ -25,6 +25,7 @@ jobs:
 
   docker-release:
     runs-on: self-hosted
+    needs: [node-tests]
     if:
       github.ref == 'refs/heads/master' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/release-*'
     steps:
