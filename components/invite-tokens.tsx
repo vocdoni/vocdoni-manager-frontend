@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import { Modal, Button, Form, Input } from 'antd'
-import { DVoteGateway } from 'dvote-js/dist/net/gateway'
+import { DVoteGateway } from 'dvote-js'
 import Web3Wallet from '../lib/web3-wallet'
 
 const  validationUrlPrefix = "https://"+process.env.APP_LINKING_DOMAIN+"/validation"
 
 type Props = {
-    entityId: string,
+    address: string,
     managerBackendGateway: DVoteGateway,
     web3Wallet: Web3Wallet,
     visible: boolean,
@@ -21,7 +21,7 @@ export default class InviteTokens extends Component<Props> {
         }
 
         this.props.managerBackendGateway
-            .sendMessage(tokensReq as any, this.props.web3Wallet.getWallet())
+            .sendRequest(tokensReq as any, this.props.web3Wallet.getWallet())
             .then(this.downloadTokens, this.props.onError)
     }
 
@@ -31,7 +31,7 @@ export default class InviteTokens extends Component<Props> {
         }
         let data =result.tokens
         if (data.length > 0) {
-            data = data.map( token => token+","+validationUrlPrefix+'/'+this.props.entityId+'/'+token)
+            data = data.map( token => token+","+validationUrlPrefix+'/'+this.props.address+'/'+token)
         }
         data = (data || []).join("\n")
         const element = document.createElement("a")

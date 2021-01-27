@@ -34,7 +34,7 @@ export default class TagsManagement extends Component<TagsManagementProps, TagsM
         if (this.props.onActionCall) {
             this.props.onActionCall()
         }
-        this.props.managerBackendGateway.sendMessage(req as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(req as any, this.props.web3Wallet.getWallet())
             .then((res) => {
                 if (res.ok) {
                     if (this.props.onActionComplete) {
@@ -78,7 +78,7 @@ export default class TagsManagement extends Component<TagsManagementProps, TagsM
             this.props.onActionCall()
         }
 
-        this.props.managerBackendGateway.sendMessage(req as any, wallet)
+        this.props.managerBackendGateway.sendRequest(req as any, wallet)
             .then(() => {
                 let tags = [...this.state.tags]
                 let selectedTags = [...this.state.selectedTags]
@@ -115,7 +115,7 @@ export default class TagsManagement extends Component<TagsManagementProps, TagsM
             tagName,
         }
 
-        const { ok, tag } = await this.props.managerBackendGateway.sendMessage(req as any, this.props.web3Wallet.getWallet())
+        const { ok, tag } = await this.props.managerBackendGateway.sendRequest(req as any, this.props.web3Wallet.getWallet())
         if (ok && tag) {
             this.setState({tags: [...this.state.tags, tag]})
 

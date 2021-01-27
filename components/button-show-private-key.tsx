@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { Typography, Button, Modal, Input, message } from 'antd'
 import { EyeInvisibleOutlined, KeyOutlined } from '@ant-design/icons'
-import { EtherUtils } from 'dvote-js'
+import { WalletUtil } from 'dvote-js'
 
 import { IAppContext } from './app-context'
+import { Wallet } from 'ethers'
 
 type PrivKeyButtonState = {
     password: string,
@@ -24,25 +25,26 @@ export default class ButtonShowPrivateKey extends Component<IAppContext, PrivKey
             ),
             onOk: async () => {
                 const wallets = await this.props.web3Wallet.getStored()
-                const pubKey : string = await this.props.web3Wallet.getWallet()['signingKey'].publicKey
+                const pubKey : string = await this.props.web3Wallet.getWallet()._signingKey().publicKey
                 const current = wallets.filter(({publicKey}) => publicKey === pubKey).pop()
-                let wallet: any = null
+                let wallet: Wallet = null
+                console.log(wallet)
                 try {
-                    wallet = EtherUtils.Signers.walletFromSeededPassphrase(this.state.password, current.seed)
+                    wallet = WalletUtil.fromSeededPassphrase(this.state.password, current.seed)
                 } catch (error) {
                     message.error(error.toString())
                     // We need to throw the error to avoid the "Ok" button to get stuck
                     throw error
                 }
 
-                if (wallet.signingKey['publicKey'] !== current.publicKey) {
+                if (wallet._signingKey().publicKey !== current.publicKey) {
                     const msg = 'Password does not match with your current account'
                     message.error(msg)
 
                     throw new Error(msg)
                 }
 
-                this.setState({key: wallet.signingKey['privateKey']})
+                this.setState({key: wallet._signingKey().privateKey})
             }
         })
     }

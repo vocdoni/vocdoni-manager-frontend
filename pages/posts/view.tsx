@@ -1,24 +1,21 @@
 import { useContext, Component } from 'react'
 import { message, Spin, Divider, Row, Col } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
+import {
+    EntityMetadata,
+    JsonBootnodeData,
+    checkValidJsonFeed,
+    JsonFeed,
+    JsonFeedPost,
+    FileApi,
+    EntityApi,
+} from 'dvote-js'
 import Router from 'next/router'
-import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
-import { fetchFileString } from 'dvote-js/dist/api/file'
-// import { by639_1 } from 'iso-language-codes'
 
 import { getGatewayClients } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 import Image from '../../components/image'
 
-// let Editor: any // = await import('react-draft-wysiwyg')
-// let EditorState, ContentState, convertToRaw
-// let draftToHtml: any // = await import('draftjs-to-html')
-// let htmlToDraft: any // = await import('html-to-draftjs')
-const { Entity } = API
-
-// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-// import { main } from '../i18n'
 
 // MAIN COMPONENT
 const PostViewPage = () => {
@@ -36,7 +33,7 @@ type State = {
     postId?: string,
     newsFeed?: JsonFeed,
     newsPost?: JsonFeedPost,
-    bootnodes?: GatewayBootNodes,
+    bootnodes?: JsonBootnodeData,
     editorState?: any
 }
 
@@ -97,12 +94,12 @@ class PostView extends Component<IAppContext, State> {
             this.setState({ dataLoading: true, entityId, postId })
 
             const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, gateway)
+            const entity = await EntityApi.getMetadata(entityId, gateway)
             if (!entity) throw new Error()
 
             // TODO: MULTILANGUAGE
             const newsFeedOrigin = entity.newsFeed.default
-            const payload = await fetchFileString(newsFeedOrigin, gateway)
+            const payload = await FileApi.fetchString(newsFeedOrigin, gateway)
 
             let newsFeed: JsonFeed
             try {
@@ -120,7 +117,7 @@ class PostView extends Component<IAppContext, State> {
 
             this.setState({ newsPost, newsFeed, entity, entityId, postId, dataLoading: false })
             this.props.setTitle(entity.name.default)
-            this.props.setEntityId(entityId)
+            this.props.setAddress(entityId)
         }
         catch (err) {
             this.setState({ dataLoading: false })

@@ -17,9 +17,9 @@ export default class HeaderImage extends Component<Props, undefined> {
             entityImage = null,
             headerAlt = null,
             entityAlt = null
-        if (process?.details?.headerImage?.length) {
-            headerImage = process.details.headerImage
-            headerAlt = `${process.details.title.default} header image`
+        if (process?.media?.header?.length) {
+            headerImage = process.media.header
+            headerAlt = `${process.title.default} header image`
         }
         if (entity?.media?.avatar?.length) {
             entityImage = entity.media.avatar

@@ -1,22 +1,17 @@
 import { useContext, Component } from 'react'
 import { message, Spin, Divider, Row, Col } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, GatewayBootNodes } from 'dvote-js'
+import {
+    EntityApi,
+    EntityMetadata,
+    JsonBootnodeData,
+} from 'dvote-js'
 import QRCode from 'qrcode.react'
-// import Router from 'next/router'
-// import Link from 'next/link'
 
-// import MainLayout from '../../components/layout'
 import { getGatewayClients } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 import Image from '../../components/image'
-// import MainLayout from '../../components/layout'
-// import { main } from '../i18n'
-// import MultiLine from '../components/multi-line-text'
-// import { } from '../lib/types'
 
-const { Entity } = API
-// const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
 const APP_LINKING_DOMAIN = process.env.APP_LINKING_DOMAIN
 
 // MAIN COMPONENT
@@ -32,7 +27,7 @@ type State = {
     entity?: EntityMetadata,
     entityId?: string,
     token?: string,
-    bootnodesReadOnly?: GatewayBootNodes
+    bootnodesReadOnly?: JsonBootnodeData
 }
 
 // Stateful component
@@ -47,16 +42,16 @@ class ValidationView extends Component<IAppContext, State> {
 
     async fetchMetadata() {
         try {
-            const params = location.hash.substr(2).split("/")
+            const params = this.props.params
             if (params.length < 2) throw new Error("Invalid parameters")
             this.setState({ entityLoading: true, entityId: params[0], token: params[1] })
 
             const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(params[0], gateway)
+            const entity = await EntityApi.getMetadata(params[0], gateway)
             if (!entity) throw new Error()
 
             this.props.setTitle(entity.name.default)
-            this.props.setEntityId(params[0])
+            this.props.setAddress(params[0])
             this.setState({ entity, entityLoading: false })
         }
         catch (err) {
@@ -64,16 +59,6 @@ class ValidationView extends Component<IAppContext, State> {
             message.error("Could not read the entity metadata")
         }
     }
-
-    // shouldComponentUpdate() {
-    //     const entityId = location.hash.substr(2)
-    //     if (entityId !== this.state.entityId) {
-    //         this.fetchMetadata()
-    //         return false
-    //     }
-
-    //     return true
-    // }
 
     renderEntityInfo() {
         const params = location.hash.substr(2).split("/")
@@ -137,11 +122,5 @@ class ValidationView extends Component<IAppContext, State> {
         </div >
     }
 }
-
-// // Using a custom layout
-// const CustomLayout = (props: any) => <MainLayout>
-//     {props.children}
-// </MainLayout>
-// ValidationViewPage.Layout = CustomLayout
 
 export default ValidationViewPage

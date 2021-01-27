@@ -1,8 +1,7 @@
 import { createContext } from 'react'
 import { Wallet } from 'ethers'
-import { EntityMetadata } from 'dvote-js'
-import { DVoteGateway } from 'dvote-js/dist/net/gateway'
-import { GatewayPool } from 'dvote-js/dist/net/gateway-pool'
+import { DVoteGateway, EntityMetadata, GatewayPool } from 'dvote-js'
+
 
 import Web3Wallet from '../lib/web3-wallet'
 
@@ -35,18 +34,18 @@ export interface IAppContext {
     menuCollapsed: boolean,
     menuDisabled: boolean,
     entity: EntityMetadata,
-    entityId: string,
+    address: string,
     processId: string,
     urlHash: string,
     params: string[],
     setTitle: (title: string) => void
     onGatewayError: (type: 'private' | 'public') => void
-    refreshEntityMetadata: (entityId?: string, force?: boolean) => Promise<void>,
+    refreshEntityMetadata: (address?: string, force?: boolean) => Promise<void>,
     setMenuVisible: (menuVisible: boolean) => void
     setMenuSelected: (menuSelected: ISelected) => void
     setMenuCollapsed: (menuCollapsed: boolean) => void
     setMenuDisabled: (menuDisabled: boolean) => void
-    setEntityId: (entityId: string) => void
+    setAddress: (address: string) => void
     setProcessId: (processId: string) => void,
     managerBackendGateway: DVoteGateway,
     setUrlHash: (urlHash: string) => void,

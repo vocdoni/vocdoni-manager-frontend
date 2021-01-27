@@ -1,4 +1,4 @@
-import { fetchFileBytes } from 'dvote-js/dist/api/file'
+import { FileApi } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 import { Uint8ToString } from '../lib/file-utils'
 import { getGatewayClients } from '../lib/network'
@@ -26,7 +26,7 @@ const getImageSource = async (src: string) : Promise<string> => {
 
     try {
         const gw = await getGatewayClients()
-        const file = await fetchFileBytes(src, gw)
+        const file = await FileApi.fetchBytes(src, gw)
         const decoded = Uint8ToString(file)
         const image = btoa(decoded)
 

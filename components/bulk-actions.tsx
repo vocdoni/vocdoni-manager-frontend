@@ -34,7 +34,7 @@ class BulkActionsOverlay extends Component<BulkActionsOverlayProps, BulkActionsS
             this.props.onActionCall()
         }
 
-        this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(req, this.props.web3Wallet.getWallet())
             .then((res) => {
                 if (res.ok) {
                     if (this.props.onDeleted) {
@@ -60,7 +60,7 @@ class BulkActionsOverlay extends Component<BulkActionsOverlayProps, BulkActionsS
             this.props.onActionCall()
         }
 
-        this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(req, this.props.web3Wallet.getWallet())
             .then((res) => {
                 if (res.ok) {
                     if (this.props.onActionComplete) {

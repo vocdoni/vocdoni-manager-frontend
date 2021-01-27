@@ -1,10 +1,12 @@
+import { ProcessContractParameters } from 'dvote-js'
 import moment from 'moment'
 import { Component, ReactNode } from 'react'
+
 import { main } from '../../i18n'
 
 type FinishDateProps = {
     process: {
-        canceled: boolean,
+        params: ProcessContractParameters,
         date: Date,
     },
 }
@@ -13,7 +15,7 @@ export default class FinishDate extends Component<FinishDateProps, undefined> {
     render() : ReactNode {
         const { process } = this.props
 
-        if (process.canceled) {
+        if (process.params.status.isCanceled) {
             return null
         }
 

@@ -1,12 +1,18 @@
 import { useContext, Component } from 'react'
 import { message, Spin, Button, Input, Form, Divider, Row, Col, Modal } from 'antd'
 import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from 'dvote-js'
+import {
+    EntityMetadata,
+    JsonBootnodeData,
+    MultiLanguage,
+    EntityApi,
+    FileApi,
+    checkValidJsonFeed,
+    JsonFeed,
+    JsonFeedPost,
+} from 'dvote-js'
 import Router from 'next/router'
 import { Wallet, Signer } from 'ethers'
-import { updateEntity } from 'dvote-js/dist/api/entity'
-import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
-import { fetchFileString } from 'dvote-js/dist/api/file'
 // import { by639_1 } from 'iso-language-codes'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
@@ -15,7 +21,6 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import IPFSImageUpload from '../../components/ipfs-image-upload'
 import Image from '../../components/image'
 
-const { Entity } = API
 let Editor: any // = await import('react-draft-wysiwyg')
 let EditorState, ContentState, convertToRaw
 let draftToHtml: any // = await import('draftjs-to-html')
@@ -36,11 +41,11 @@ type State = {
     dataLoading?: boolean,
     postUpdating?: boolean,
     entity?: EntityMetadata,
-    entityId?: string,
+    address?: string,
     postId?: string,
     newsFeed?: JsonFeed,
     newsPost?: JsonFeedPost,
-    bootnodes?: GatewayBootNodes,
+    bootnodes?: JsonBootnodeData,
     editorState?: any
 }
 
@@ -53,19 +58,17 @@ class PostEdit extends Component<IAppContext, State> {
     }
 
     async init() {
-        const params = location.hash.substr(2).split("/")
-        if (params.length !== 2) {
+        if (this.props.params.length !== 2) {
             message.error("The requested data is not valid")
             Router.replace("/")
             return
         }
 
-        const entityId = params[0]
-        // const postId = params[1]
+        const [address] = this.props.params
 
         // if readonly, show the view page
         if (getNetworkState().readOnly) {
-            return Router.replace("/posts#" + entityId)
+            return Router.replace("/posts#" + address)
         }
 
         // Do the imports dynamically because `window` does not exist on SSR
@@ -102,17 +105,14 @@ class PostEdit extends Component<IAppContext, State> {
     }
 
     shouldComponentUpdate() {
-        const params = location.hash.substr(2).split("/")
-        if (params.length !== 2) {
+        if (this.props.params.length !== 2) {
             message.error("The requested data is not valid")
             Router.replace("/")
             return
         }
 
-        const entityId = params[0]
-        const postId = params[1]
-        if (entityId !== this.state.entityId
-        || postId !== this.state.postId) {
+        const [address, postId] = this.props.params
+        if (address !== this.state.address || postId !== this.state.postId) {
             this.init()
         }
 
@@ -130,18 +130,18 @@ class PostEdit extends Component<IAppContext, State> {
                 return
             }
 
-            const entityId = params[0]
+            const address = params[0]
             const postId = params[1]
 
-            this.setState({ dataLoading: true, entityId, postId })
+            this.setState({ dataLoading: true, address: address, postId })
 
             const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, gateway)
+            const entity = await EntityApi.getMetadata(address, gateway)
             if (!entity) throw new Error()
 
             // TODO: MULTILANGUAGE
             const newsFeedOrigin = entity.newsFeed.default
-            const payload = await fetchFileString(newsFeedOrigin, gateway)
+            const payload = await FileApi.fetchString(newsFeedOrigin, gateway)
 
             let newsFeed: JsonFeed
             try {
@@ -164,10 +164,10 @@ class PostEdit extends Component<IAppContext, State> {
                 this.setState({ editorState })
             }
 
-            this.setState({ newsPost, newsFeed, entity, entityId, postId, dataLoading: false })
+            this.setState({ newsPost, newsFeed, entity, address, postId, dataLoading: false })
             this.props.setTitle(entity.name.default)
 
-            this.props.setEntityId(entityId)
+            this.props.setAddress(address)
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -247,7 +247,7 @@ class PostEdit extends Component<IAppContext, State> {
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(newsFeed))
-            const feedContentUri = await API.File.addFile(feedContent, `feed_${this.state.newsPost.id}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            const feedContentUri = await FileApi.add(feedContent, `feed_${this.state.newsPost.id}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
             // message.success("The news feed was pinned on IPFS successfully");
 
@@ -255,7 +255,7 @@ class PostEdit extends Component<IAppContext, State> {
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
             const address = this.props.web3Wallet.getAddress()
-            await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            await EntityApi.setMetadata(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             hideLoading()
             this.setState({ postUpdating: false })
 

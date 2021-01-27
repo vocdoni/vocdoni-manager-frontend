@@ -77,7 +77,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
     }
 
     async processImport(file: RcFile) : Promise<void> {
-        const fileData : VotingFormImportData = await parseSpreadsheetData(this.context.entityId, file)
+        const fileData : VotingFormImportData = await parseSpreadsheetData(this.context.address, file)
 
         if (!fileData) {
             message.error('Unknown file format uploaded')

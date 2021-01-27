@@ -1,7 +1,7 @@
 import React, { Component, ReactChild } from 'react'
 import { Modal, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { DVoteGateway } from 'dvote-js/dist/net/gateway'
+import { DVoteGateway } from 'dvote-js'
 
 import Web3Wallet from '../lib/web3-wallet'
 import If from './if'
@@ -38,7 +38,7 @@ export default class InviteMember extends Component<Props> {
             title: 'Send validation e-mail',
             content: `You're about to send an e-mail to ${email}, please confirm.`,
             onOk: () => {
-                this.props.managerBackendGateway.sendMessage(req as any, wallet).then((response) => {
+                this.props.managerBackendGateway.sendRequest(req as any, wallet).then((response) => {
                     const {ok} = response
                     this.setState({loading: false})
                     if (ok) {

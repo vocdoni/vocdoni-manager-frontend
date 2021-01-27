@@ -55,4 +55,5 @@ export default ({
     processCreationCancelButton: 'Ara no',
     processCreationAdvice: 'Quan creïs el procés es registrarà a la blockchain, cosa que <b>no es pot desfer</b>. Vols continuar?',
     processCreating: 'Creant procés...',
+    entityLoadError: 'Hi ha hagut un error carregant les dades de l\'entitat',
 })

@@ -46,7 +46,7 @@ class Census extends Component<IAppContext, State> {
     }
 
     fetchCount() {
-        this.props.managerBackendGateway.sendMessage({ method: "countCensus" } as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest({ method: "countCensus" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.count) {
                     message.warning("No censuses were found")
@@ -81,7 +81,7 @@ class Census extends Component<IAppContext, State> {
             filter: params.filter
         }
 
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({
                     loading: false,
@@ -102,7 +102,7 @@ class Census extends Component<IAppContext, State> {
     }
 
     deleteCensus(record: any) {
-        this.props.managerBackendGateway.sendMessage({ method: "deleteCensus", id: record.id } as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest({ method: "deleteCensus", id: record.id } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not delete the census"
@@ -131,14 +131,14 @@ class Census extends Component<IAppContext, State> {
     }
 
     generateLink(text, record) {
-        return <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>{text}</a></Link>
+        return <Link href={"/census/view#/" + this.props.address + "/" + record.id}><a>{text}</a></Link>
     }
 
     render() {
         const columns = [
             { title: 'Name', dataIndex: 'name', key: 'name', render: (text, record) => this.generateLink(text, record)  },
             // { title: 'Target', dataIndex: 'targetId', key: 'targetId', render: (text, record, index) => (
-            //     <Link href={"/targets/view#/" + this.props.entityId + "/" + record.targetId}><a>{record.targetId}</a></Link>
+            //     <Link href={"/targets/view#/" + this.props.address + "/" + record.targetId}><a>{record.targetId}</a></Link>
             //   )
             // },
             //{ title: 'Census Id', dataIndex: 'id', key: 'id' },
@@ -146,7 +146,7 @@ class Census extends Component<IAppContext, State> {
             { title: 'Creation date', dataIndex: 'createdAt', key: 'createdAt', sorter: true,  render: (text, record) => this.generateLink(text, record)  },
             //{ title: 'Actions', key: 'action', render: (text, record, index) => (
             //    <Space size="middle">
-            //        <Link href={"/census/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>
+            //        <Link href={"/census/view#/" + this.props.address + "/" + record.id}><a>View</a></Link>
             //        <a onClick={() => this.deleteCensus(record)}>Delete</a>
             //    </Space>)
             //},

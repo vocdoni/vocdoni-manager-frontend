@@ -13,7 +13,7 @@ const CensusViewPage = () => {
 }
 
 type State = {
-    entityId?: string,
+    address?: string,
     censusId?: string,
     census?: ICensus,
     censusTarget?: ITarget,
@@ -33,10 +33,8 @@ class CensusView extends Component<IAppContext, State> {
 
         this.props.setMenuSelected("census")
 
-        const hash = location.hash.split('/')
-        const entityId = hash[1]
-        const censusId = hash[2]
-        this.setState({ entityId, censusId })
+        const [address, censusId] = this.props.params
+        this.setState({ address, censusId })
         this.fetchCensus(censusId)
     }
 
@@ -45,7 +43,7 @@ class CensusView extends Component<IAppContext, State> {
             method: 'getCensus',
             censusId: id,
         }
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({ census: result.census, censusTarget: result.target })
             },
@@ -57,7 +55,7 @@ class CensusView extends Component<IAppContext, State> {
 
     deleteCensus() {
         const request = { method: "deleteCensus", censusId: this.state.censusId }
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not delete the census"
@@ -67,7 +65,7 @@ class CensusView extends Component<IAppContext, State> {
                 }
 
                 message.success("Census has been deleted")
-                Router.replace("/census#/" + this.state.entityId)
+                Router.replace("/census#/" + this.state.address)
             },
             (error) => {
                 message.error("Could not delete the census")
@@ -87,7 +85,7 @@ class CensusView extends Component<IAppContext, State> {
                     <Descriptions column={2} layout="vertical" colon={false}>
                         <Descriptions.Item label="Name">{census.name}</Descriptions.Item>
                         {/* <Descriptions.Item label="Target">
-                        <Link href={"/targets/view#" + this.state.entityId + "/" + this.state.censusTarget.id}><a>{this.state.censusTarget.name}</a></Link>
+                        <Link href={"/targets/view#" + this.state.address + "/" + this.state.censusTarget.id}><a>{this.state.censusTarget.name}</a></Link>
                     </Descriptions.Item> */}
                         <Descriptions.Item label="Census ID">{census.id}</Descriptions.Item>
                         <Descriptions.Item label="Size">{census.size} members</Descriptions.Item>

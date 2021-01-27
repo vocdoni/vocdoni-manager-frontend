@@ -6,23 +6,21 @@ import {
     EditOutlined,
     CloseCircleOutlined,
 } from '@ant-design/icons'
-import { API, EntityMetadata, MultiLanguage } from 'dvote-js'
+import {
+    checkValidJsonFeed,
+    EntityApi,
+    EntityMetadata,
+    FileApi,
+    MultiLanguage,
+} from 'dvote-js'
 import Link from 'next/link'
-import { getEntityId, updateEntity } from 'dvote-js/dist/api/entity'
-import { fetchFileString } from 'dvote-js/dist/api/file'
-import { checkValidJsonFeed } from 'dvote-js/dist/models/json-feed'
 import { Wallet, Signer } from 'ethers'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { IFeedPost, INewsFeed } from '../../lib/types'
 import Image from '../../components/image'
-// import MainLayout from "../../components/layout"
-// import { main } from "../i18n"
-// import MultiLine from '../components/multi-line-text'
-// import { } from '../lib/types'
 
-const { Entity } = API
 const PAGE_SIZE = 6
 
 // MAIN COMPONENT
@@ -36,7 +34,7 @@ const PostViewPage = () => {
 type State = {
     dataLoading?: boolean,
     entity?: EntityMetadata,
-    entityId?: string,
+    address?: string,
     newsFeed?: INewsFeed,
     startIndex: number
 }
@@ -54,15 +52,15 @@ class PostView extends Component<IAppContext, State> {
 
     async fecthMetadata() {
         try {
-            const entityId = location.hash.substr(2)
-            this.setState({ dataLoading: true, entityId })
+            const address = location.hash.substr(2)
+            this.setState({ dataLoading: true, address })
 
             const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, gateway)
+            const entity = await EntityApi.getMetadata(address, gateway)
             if (!entity) throw new Error()
 
             const newsFeedOrigin = entity.newsFeed.default
-            const payload = await fetchFileString(newsFeedOrigin, gateway)
+            const payload = await FileApi.fetchString(newsFeedOrigin, gateway)
 
             let newsFeed
             try {
@@ -76,9 +74,9 @@ class PostView extends Component<IAppContext, State> {
                 throw new Error()
             }
 
-            this.setState({ newsFeed, entity, entityId, dataLoading: false })
+            this.setState({ newsFeed, entity, address, dataLoading: false })
             this.props.setTitle(entity.name.default)
-            this.props.setEntityId(entityId)
+            this.props.setAddress(address)
         }
         catch (err) {
             this.setState({ dataLoading: false })
@@ -87,8 +85,8 @@ class PostView extends Component<IAppContext, State> {
     }
 
     shouldComponentUpdate() {
-        const entityId = location.hash.substr(2)
-        if (entityId !== this.state.entityId) {
+        const [address] = this.props.params
+        if (address !== this.state.address) {
             this.fecthMetadata()
         }
         return true
@@ -121,7 +119,7 @@ class PostView extends Component<IAppContext, State> {
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(feed))
-            const feedContentUri = await API.File.addFile(feedContent, `feed_${Date.now()}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            const feedContentUri = await FileApi.add(feedContent, `feed_${Date.now()}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
             // message.success("The news feed was pinned on IPFS successfully")
 
@@ -129,7 +127,7 @@ class PostView extends Component<IAppContext, State> {
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
             const address = this.props.web3Wallet.getAddress()
-            await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            await EntityApi.setMetadata(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             hideLoading()
 
             message.success("The post has been deleted successfully")
@@ -143,13 +141,11 @@ class PostView extends Component<IAppContext, State> {
     }
 
     renderPostsList() {
-        const entityId = location.hash.substr(2)
         const address = this.props.web3Wallet.getAddress()
         const { readOnly } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
-            const ownEntityId = getEntityId(address)
-            hideEditControls = this.state.entityId !== ownEntityId
+            hideEditControls = this.state.address !== address
         }
         const that = this
 
@@ -173,7 +169,7 @@ class PostView extends Component<IAppContext, State> {
                         actions={PostListActions({
                             that,
                             hideEditControls,
-                            entityId,
+                            address,
                             post,
                             idx,
                         })}
@@ -182,7 +178,7 @@ class PostView extends Component<IAppContext, State> {
                             avatar={
                                 <PostLink {...{
                                     hideEditControls,
-                                    entityId,
+                                    address,
                                     post,
                                 }}>
                                     <Avatar
@@ -195,7 +191,7 @@ class PostView extends Component<IAppContext, State> {
                             title={
                                 <PostLink {...{
                                     hideEditControls,
-                                    entityId,
+                                    address,
                                     post,
                                 }}>
                                     {post.title}
@@ -247,10 +243,10 @@ const IconText = ({ icon, text, onClick }: { icon: any, text: string, onClick?: 
     </span>
 )
 
-const PostLink = ({hideEditControls, post, entityId, children} : any) => {
-    let link = `/posts/edit#/${entityId}/${post.id}`
+const PostLink = ({hideEditControls, post, address, children} : any) => {
+    let link = `/posts/edit#/${address}/${post.id}`
     if (hideEditControls) {
-        link = `/posts/view#/${entityId}/${post.id}`
+        link = `/posts/view#/${address}/${post.id}`
     }
 
     return <Link href={link}>{children}</Link>

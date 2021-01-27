@@ -19,7 +19,7 @@ const MemberImportPage = () : ReactNode => {
 }
 
 type State = {
-    entityId?: string,
+    address?: string,
     data: MemberImportData[],
     file?: RcFile,
     importedColumnsAmount: number,
@@ -51,9 +51,8 @@ class MemberImport extends Component<IAppContext, State> {
 
         this.props.setMenuSelected("members-import")
 
-        const hash = location.hash.split('/')
-        const entityId = hash[1]
-        this.setState({ entityId })
+        const [address] = this.props.params
+        this.setState({ address })
     }
 
     onChangeSkipFirstRow(checked) {
@@ -179,7 +178,7 @@ class MemberImport extends Component<IAppContext, State> {
             method: "importMembers",
         }
 
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not import the members"
@@ -188,7 +187,7 @@ class MemberImport extends Component<IAppContext, State> {
                     return false
                 }
                 message.success("Members have been imported")
-                Router.replace("/members#/" + this.state.entityId)
+                Router.replace("/members#/" + this.state.address)
             },
             (error) => {
                 message.error("Could not import the members")

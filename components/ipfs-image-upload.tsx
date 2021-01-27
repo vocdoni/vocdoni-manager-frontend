@@ -2,8 +2,8 @@ import React, { Component, ReactNode } from 'react'
 import { UploadOutlined } from '@ant-design/icons'
 import { Button, message, Upload } from 'antd'
 import { RcFile, UploadProps } from 'antd/lib/upload'
-import { RcCustomRequestOptions, UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
-import { addFile } from 'dvote-js/dist/api/file'
+import { UploadChangeParam, UploadFile } from 'antd/lib/upload/interface'
+import { FileApi } from 'dvote-js'
 import fileSize from 'filesize'
 
 import { imageUploadMimeTypes, IMAGEUPLOAD_FILESIZE_LIMIT } from '../lib/constants'
@@ -78,12 +78,12 @@ export default class IPFSImageUpload extends Component<UploadProps, State> {
         }
     }
 
-    async request({file, filename, onError, onSuccess}: RcCustomRequestOptions) : Promise<any> {
+    async request({file, filename, onError, onSuccess}: any) : Promise<any> {
         try {
             const buffer = await FileReaderPromise(file)
             const wallet = await this.context.web3Wallet.getWallet()
             const gateway = await getGatewayClients()
-            const origin = await addFile(buffer, filename, wallet, gateway)
+            const origin = await FileApi.add(buffer, filename, wallet, gateway)
             return onSuccess({src: origin}, file)
         } catch (error) {
             return onError(error)

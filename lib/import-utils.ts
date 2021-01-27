@@ -18,7 +18,7 @@ export const getSpreadsheetReaderForFile = async (file: RcFile) => {
 
     if (mime === CSV_MIME_TYPE) {
         const encoding = getBufferEncoding(buffer)
-        const decoder = new StringDecoder(encoding)
+        const decoder = new StringDecoder(encoding as BufferEncoding)
         const contents = decoder.write(buffer)
 
         return xlsx.read(contents, {type: 'string'})

@@ -1,8 +1,17 @@
+import { LoadingOutlined } from '@ant-design/icons'
 import { Button, DatePicker, Form, Input, message, Modal, Switch } from 'antd'
 import { str } from 'dot-object'
-import { EntityMetadata, ProcessMetadata } from 'dvote-js'
-import { createVotingProcess, estimateBlockAtDateTime } from 'dvote-js/dist/api/vote'
-import { ProcessMetadataTemplate } from 'dvote-js/dist/models/voting-process'
+import {
+    CensusOffChainApi,
+    EntityMetadata,
+    IProcessCreateParams,
+    ProcessCensusOrigin,
+    ProcessEnvelopeType,
+    ProcessMode,
+    ProcessMetadata,
+    ProcessMetadataTemplate,
+    VotingApi,
+} from 'dvote-js'
 import moment from 'moment'
 import Router from 'next/router'
 import React, { Component, ReactNode } from 'react'
@@ -23,15 +32,13 @@ import AppContext from '../../components/app-context'
 import HTMLEditor from '../../components/html-editor'
 import If from '../../components/if'
 import ImageAndUploader from '../../components/image-and-uploader'
-import { POLL_TYPE_ANONYMOUS, POLL_TYPE_NORMAL } from '../../lib/constants'
 import { ICensus, VotingFormImportData } from '../../lib/types'
 import { getRandomUnsplashImage, range } from '../../lib/util'
 import { main } from '../../i18n'
 import { MessageType } from 'antd/lib/message'
-import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
 import ParticipantsSelector from '../../components/processes/ParticipantsSelector'
 import QuestionsForm, { LegacyQuestions } from '../../components/processes/QuestionsForm'
-import { LoadingOutlined } from '@ant-design/icons'
+
 
 export type ProcessNewState = {
     loading?: boolean,
@@ -39,13 +46,13 @@ export type ProcessNewState = {
     confirmModalVisible: boolean,
     entity?: EntityMetadata,
     entityId?: string,
-    process?: ProcessMetadata,
+    process?: Omit<Omit<IProcessCreateParams, 'metadata'>, 'questionCount'> & { metadata: ProcessMetadata },
     censuses: ICensus[],
     censusFileData: VotingFormImportData,
     selectedCensus: string,
     startBlock: number
     startDate: moment.Moment
-    numberOfBlocks: number,
+    blockCount: number,
     endDate: moment.Moment,
     targets: any[],
     streamingInputVisible: boolean,
@@ -78,12 +85,35 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
     context!: React.ContextType<typeof AppContext>
 
     state: ProcessNewState = {
-        process: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
+        process: {
+            mode: ProcessMode.make({
+                autoStart: true,
+                interruptible: true,
+            }),
+            envelopeType: ProcessEnvelopeType.ANONYMOUS,
+            censusOrigin: ProcessCensusOrigin.OFF_CHAIN_TREE,
+            censusRoot: '',
+            censusUri: '',
+            metadata: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
+            startBlock: 0,
+            blockCount: 10000,
+            maxCount: 1, // forced for now
+            maxValue: 0, // auto-filled later
+            maxTotalCost: 0,
+            // Defines the exponent that will be used to compute the "cost" of the options
+            // voted and compare it against `maxTotalCost`.
+            // totalCost = Σ (value[i] ** costExponent) <= maxTotalCost
+            costExponent: 0, // forced for now
+            // How many times a vote can be replaced (only the last one counts)
+            maxVoteOverwrites: 0,
+            namespace: 0, // TODO: should be taken from processes contract
+            paramsSignature: '0x1111111111111111111111111111111111111111111111111111111111111111',
+        },
         creating: false,
         confirmModalVisible: false,
         loading: true,
         startBlock: null,
-        numberOfBlocks: null,
+        blockCount: null,
         startDate: null,
         endDate: null,
         censuses: [],
@@ -108,8 +138,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
     constructor(props: undefined) {
         super(props)
 
-        this.state.process.details.headerImage = getRandomUnsplashImage('1500x450')
-        this.state.process.type = 'encrypted-poll'
+        this.state.process.metadata.media.header = getRandomUnsplashImage('1500x450')
     }
 
     async componentDidMount() : Promise<void> {
@@ -228,16 +257,16 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         const { process } = this.state
         const errors = []
 
-        if (!process.details.title.default.length) {
+        if (!process.metadata.title.default.length) {
             errors.push('The process must have a title')
         }
 
-        if (isNaN(this.state.startBlock) || isNaN(this.state.numberOfBlocks)) {
+        if (isNaN(this.state.startBlock) || isNaN(this.state.blockCount)) {
             errors.push('The dates are not valid')
         }
 
         const threshold = moment().add(8, 'minutes')
-        if (this.state.numberOfBlocks <= 0) {
+        if (this.state.blockCount <= 0) {
             errors.push('The start date needs to be before the end one')
         }
         if (this.state.startDate.isSameOrBefore(threshold, 'minute')) {
@@ -260,7 +289,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
     confirm() : void {
         const validations = this.formErrors()
         if (validations !== true) {
-            for (const validation of validations) {
+            for (const validation of validations as string[]) {
                 message.error(validation)
             }
             return
@@ -307,17 +336,17 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         switch (this.state.selectedCensus) {
             // Generates an ephemeral census from the loaded file
             case 'file': {
-                const censusName = (this.state.process.details.title.default || (new Date()).toDateString()) + '_' + Math.floor(Date.now() / 1000)
-                const claims = this.state.censusFileData.digestedHexClaims
-                const { censusId } = await addCensus(censusName, [wallet['signingKey'].publicKey], gateway, wallet)
-                const { merkleRoot, invalidClaims } = await addClaimBulk(censusId, claims, true, gateway, wallet)
+                const censusName = (this.state.process.metadata.title.default || (new Date()).toDateString()) + '_' + Math.floor(Date.now() / 1000)
+                const claims = this.state.censusFileData.digestedHexClaims.map((claim) => ({key: claim, value: ''}))
+                const { censusId } = await CensusOffChainApi.addCensus(censusName, [wallet._signingKey().publicKey], wallet, gateway)
+                const { censusRoot, invalidClaims } = await CensusOffChainApi.addClaimBulk(censusId, claims, true, wallet, gateway)
                 if (invalidClaims.length) {
                     message.warn(`Found ${invalidClaims.length} invalid claims`)
                 }
-                const merkleTreeUri = await publishCensus(censusId, gateway, wallet)
+                const merkleTreeUri = await CensusOffChainApi.publishCensus(censusId, wallet, gateway)
 
                 return {
-                    merkleRoot,
+                    merkleRoot: censusRoot,
                     merkleTreeUri,
                     id: censusId,
                     formURI: Buffer.from(this.state.censusFileData.title).toString('base64'),
@@ -367,11 +396,11 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
     async updateDateRange(startDate: moment.Moment, endDate: moment.Moment) : Promise<void> {
         const pool = await this.context.gatewayClients
-        const startBlock = await estimateBlockAtDateTime(startDate.toDate(), pool)
-        const endBlock = await estimateBlockAtDateTime(endDate.toDate(), pool)
-        const numberOfBlocks = endBlock - startBlock
+        const startBlock = await VotingApi.estimateBlockAtDateTime(startDate.toDate(), pool)
+        const endBlock = await VotingApi.estimateBlockAtDateTime(endDate.toDate(), pool)
+        const blockCount = endBlock - startBlock
 
-        this.setState({startDate, startBlock, endDate, numberOfBlocks})
+        this.setState({startDate, startBlock, endDate, blockCount})
     }
 
     onFieldChange(field: string, {target: {value}}: React.ChangeEvent<HTMLInputElement>) : void {
@@ -379,19 +408,33 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
     }
 
     setProcessField(field: string, value: string) : void {
-        const { process } = this.state
-        str(field, value, process)
-        this.setState({process})
+        const { metadata } = this.state.process
+        str(field, value, metadata)
+        this.setState({
+            process: {
+                ...this.state.process,
+                metadata,
+            }
+        })
     }
 
     setQuestions(questions: LegacyQuestions) : void {
         this.setState({
             process: {
                 ...this.state.process,
-                details: {
-                    ...this.state.process.details,
+                metadata: {
+                    ...this.state.process.metadata,
                     questions,
-                }
+                },
+            },
+        })
+    }
+
+    toggleBitFlagField(field: string, flag: number) : void {
+        this.setState({
+            process: {
+                ...this.state.process,
+                [field]: flag ^= this.state.process.envelopeType as number,
             }
         })
     }
@@ -410,13 +453,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         try {
             census = await this.getProperCensus(this.state.webVoting)
 
-            process.census.merkleRoot = census.merkleRoot
-            process.census.merkleTree = census.merkleTreeUri
+            process.censusRoot = census.merkleRoot
+            process.censusUri = census.merkleTreeUri
             process.startBlock = this.state.startBlock
-            process.numberOfBlocks = this.state.numberOfBlocks
-            process.details.entityId = this.context.entityId
+            process.blockCount = this.state.blockCount
             if (census.formURI?.length) {
-                process.details['formURI'] = census.formURI
+                process.metadata.meta.formURI = census.formURI
             }
         } catch (e) {
             message.error(e)
@@ -427,9 +469,18 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         }
         this.stepDone('census')
 
+        // Auto-fill maxValue
+        let maxValue = 0
+        process.metadata.questions.forEach((question) => {
+            if (maxValue < question.choices.length) {
+                maxValue = question.choices.length
+            }
+        })
+        process.maxValue = maxValue
+
         try {
             const wallet = this.context.web3Wallet.getWallet()
-            const processId = await createVotingProcess(process, wallet, await this.context.gatewayClients)
+            const processId = await VotingApi.newProcess(process, wallet, await this.context.gatewayClients)
             this.stepDone('create')
 
             let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
@@ -441,7 +492,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                 }
                 // Avoid crash from e-mail sending
                 try {
-                    await this.context.managerBackendGateway.sendMessage(emailsReq, wallet)
+                    await this.context.managerBackendGateway.sendRequest(emailsReq, wallet)
                 } catch (e) {
                     msg += ' There was an error sending e-mails tho.'
                 }
@@ -452,7 +503,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
             loading()
 
-            Router.push(`/processes/#/${this.context.entityId}/${processId}`)
+            Router.push(`/processes/#/${this.context.address}/${processId}`)
         } catch (error) {
             loading()
             this.setState({ creating: false })
@@ -476,8 +527,8 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     <div className='header-image'>
                         <ImageAndUploader
                             uploaderActive
-                            src={process.details.headerImage}
-                            onConfirm={this.setProcessField.bind(this, 'details.headerImage')}
+                            src={process.metadata.media.header}
+                            onConfirm={this.setProcessField.bind(this, 'media.header')}
                         />
                     </div>
                 </header>
@@ -486,8 +537,8 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                         <Input
                             size='large'
                             placeholder='Process title'
-                            value={process.details.title.default}
-                            onChange={this.onFieldChange.bind(this, 'details.title.default')}
+                            value={process.metadata.title.default}
+                            onChange={this.onFieldChange.bind(this, 'title.default')}
                         />
                     </Form.Item>
                     <Form.Item>
@@ -495,8 +546,8 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             <label><AlignLeft /> Description</label>
                         </div>
                         <HTMLEditor
-                            value={process.details.description.default}
-                            onContentChanged={this.setProcessField.bind(this, 'details.description.default')}
+                            value={process.metadata.description.default}
+                            onContentChanged={this.setProcessField.bind(this, 'description.default')}
                         />
                     </Form.Item>
                     <Form.Item>
@@ -522,10 +573,10 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                         <div className='label-wrapper'>
                             <label><Activity /> Real-time results</label>
                             <Switch
-                                onChange={(checked: boolean) =>
-                                    this.setProcessField('type', checked ? POLL_TYPE_ANONYMOUS : POLL_TYPE_NORMAL)
+                                onChange={() =>
+                                    this.toggleBitFlagField('envelopeType', ProcessEnvelopeType.ANONYMOUS)
                                 }
-                                checked={process.type === POLL_TYPE_ANONYMOUS}
+                                checked={(ProcessEnvelopeType.ANONYMOUS & process.envelopeType as number) === 0}
                             />
                         </div>
                         <div>

@@ -3,8 +3,8 @@ import Router from 'next/router'
 import { Form, Input, Button, message, Modal, Row, Col, Card } from 'antd'
 import { RcFile } from 'antd/lib/upload'
 import Dragger from 'antd/lib/upload/Dragger'
-import { API } from 'dvote-js'
-import { getEntityId } from 'dvote-js/dist/api/entity'
+import { EntityApi } from 'dvote-js'
+
 import { ExclamationCircleOutlined, InboxOutlined } from '@ant-design/icons'
 
 import { FileReaderPromise } from '../../lib/file-utils'
@@ -77,13 +77,12 @@ class AccountImport extends Component<IAppContext> {
         }
 
         const address = this.props.web3Wallet.getAddress()
-        const entityId = getEntityId(address)
 
         const gateway = await getGatewayClients()
         const self = this
         try {
-            await API.Entity.getEntityMetadata(entityId, gateway)
-            Router.push("/entities/edit#/" + entityId)
+            await EntityApi.getMetadata(address, gateway)
+            Router.push(`/entities/edit/#/${address}`)
         } catch (e) {
             Modal.confirm({
                 title: "Entity not found",
