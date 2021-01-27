@@ -23,7 +23,7 @@ import {
 } from '@ant-design/icons'
 import Router from 'next/router'
 import Link from 'next/link'
-import { DVoteGateway } from 'dvote-js/dist/net/gateway'
+import { DVoteGateway } from 'dvote-js'
 // import moment from 'moment'
 
 import { getNetworkState } from '../../lib/network'
@@ -114,7 +114,7 @@ class Members extends Component<IAppContext, State> {
     }
 
     fetchCount(): Promise<number>{
-        return this.props.managerBackendGateway.sendMessage({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
+        return this.props.managerBackendGateway.sendRequest({ method: "countMembers" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 const count = result.count || 0
                 this.setState({ total: count})
@@ -140,7 +140,7 @@ class Members extends Component<IAppContext, State> {
     }
 
     fetchTags() {
-        return this.props.managerBackendGateway.sendMessage({ method: "listTags" } as any, this.props.web3Wallet.getWallet())
+        return this.props.managerBackendGateway.sendRequest({ method: "listTags" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({ tags: result.tags })
             }, (error) => {
@@ -158,7 +158,7 @@ class Members extends Component<IAppContext, State> {
             filter: params.filter
         }
 
-        return this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        return this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({
                     loading: false,
@@ -178,7 +178,7 @@ class Members extends Component<IAppContext, State> {
     }
 
     deleteMember(id: string) {
-        this.props.managerBackendGateway.sendMessage(
+        this.props.managerBackendGateway.sendRequest(
             {
                 method: 'deleteMembers',
                 memberIDs: [id],
@@ -205,7 +205,7 @@ class Members extends Component<IAppContext, State> {
     }
 
     exportTokens() {
-        this.props.managerBackendGateway.sendMessage({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest({ method: "exportTokens" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok || !result.membersTokens) {
                     const error = "Could not generate the validation links"
@@ -217,7 +217,7 @@ class Members extends Component<IAppContext, State> {
                 if (data.length > 0) {
                     data = data
                         .filter( x => x.emails.length>0 && x.tokens.length >0 )
-                        .map( entry => entry.emails + ',' + entry.tokens +',' +  validationUrlPrefix+'/'+this.props.entityId+'/'+entry.tokens)
+                        .map( entry => entry.emails + ',' + entry.tokens +',' +  validationUrlPrefix+'/'+this.props.address+'/'+entry.tokens)
                 }
                 data = (data || []).join("\n")
                 const element = document.createElement("a")
@@ -246,7 +246,7 @@ class Members extends Component<IAppContext, State> {
             const [, censusPath] = census.split('/')
 
             message.success('Census has been exported')
-            Router.replace(`/census/view/#/${this.props.entityId}/${censusPath}`)
+            Router.replace(`/census/view/#/${this.props.address}/${censusPath}`)
 
         } catch (err) {
             const error = err?.message ? err?.message : err
@@ -283,7 +283,7 @@ class Members extends Component<IAppContext, State> {
         }
         this.setState({loading: true})
 
-        this.props.managerBackendGateway.sendMessage(req, this.props.web3Wallet.getWallet()).then((res) => {
+        this.props.managerBackendGateway.sendRequest(req, this.props.web3Wallet.getWallet()).then((res) => {
             if (res.ok) {
                 const data : IMember[] = [...this.state.data]
                 data.forEach((row, key) => {
@@ -326,7 +326,7 @@ class Members extends Component<IAppContext, State> {
         const actionsMenu = (record) => {
             const items = [
                 <Menu.Item key='edit'>
-                    <Link href={`/members/view#/${this.props.entityId}/${record.id}`}>
+                    <Link href={`/members/view#/${this.props.address}/${record.id}`}>
                         <a>Edit</a>
                     </Link>
                 </Menu.Item>,

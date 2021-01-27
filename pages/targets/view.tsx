@@ -4,7 +4,7 @@ import Router from 'next/router'
 import { SaveOutlined, ExportOutlined, DeleteOutlined, PlusOutlined, MinusCircleOutlined } from '@ant-design/icons'
 import { FormInstance } from 'antd/lib/form'
 import TextArea from 'antd/lib/input/TextArea'
-import { addCensus, addClaimBulk, publishCensus } from 'dvote-js/dist/api/census'
+import { CensusOffChainApi } from 'dvote-js'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import { IMember, ITarget } from '../../lib/types'
@@ -72,7 +72,7 @@ class TargetView extends Component<IAppContext, State> {
             filter: params.filter
         }
 
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({
                     loading: false,
@@ -113,7 +113,7 @@ class TargetView extends Component<IAppContext, State> {
             }
         }
 
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not save the target"
@@ -131,7 +131,7 @@ class TargetView extends Component<IAppContext, State> {
     exportTarget() {
         const request = { method: "dumpTarget", targetID: this.state.targetId }
         const wallet = this.props.web3Wallet.getWallet()
-        this.props.managerBackendGateway.sendMessage(request as any, wallet)
+        this.props.managerBackendGateway.sendRequest(request as any, wallet)
             .then(async (result) => {
                 if (!result.ok) {
                     const error = "Could not export the target"
@@ -142,16 +142,13 @@ class TargetView extends Component<IAppContext, State> {
 
                 const censusName = this.state.target.name + '_' + (Math.floor(Date.now() / 1000));
                 const gateway = await getGatewayClients()
-                // tslint:disable-next-line
-                const { censusId, merkleRoot } = await addCensus(censusName, [wallet["signingKey"].publicKey], gateway, wallet)
-                //   console.log('censusId is', censusId)
-                await addClaimBulk(censusId, result.claims, true, gateway, wallet)
+                const { censusId, censusRoot } = await CensusOffChainApi.addCensus(censusName, [wallet._signingKey().publicKey], wallet, gateway)
+                await CensusOffChainApi.addClaimBulk(censusId, result.claims, true, wallet, gateway)
 
                 // TODO: Show information about found claims and invalidClaims?
+                const merkleTreeUri = await CensusOffChainApi.publishCensus(censusId, wallet, gateway)
 
-                const merkleTreeUri = await publishCensus(censusId, gateway, wallet)
-
-                this.registerCensus(censusId, censusName, merkleRoot, merkleTreeUri, this.state.targetId)
+                this.registerCensus(censusId, censusName, censusRoot, merkleTreeUri, this.state.targetId)
             }, (error) => {
                 message.error("Could not export the target")
                 this.setState({ error })
@@ -166,7 +163,7 @@ class TargetView extends Component<IAppContext, State> {
             census: { name, merkleRoot, merkleTreeUri }
         }
 
-        this.props.managerBackendGateway.sendMessage(regRequest as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(regRequest as any, this.props.web3Wallet.getWallet())
             .then(async (result) => {
                 if (!result.ok) {
                     const error = "Could not register the census"
@@ -176,7 +173,7 @@ class TargetView extends Component<IAppContext, State> {
                 }
 
                 message.success("Target has been exported")
-                Router.replace("/census/edit#/" + this.props.entityId)
+                Router.replace("/census/edit#/" + this.props.address)
             },
             (error) => {
                 message.error("Could not register the census")
@@ -187,7 +184,7 @@ class TargetView extends Component<IAppContext, State> {
 
     deleteTarget() {
         const request = { method: "deleteTarget", targetID: this.state.targetId }
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not delete the target"

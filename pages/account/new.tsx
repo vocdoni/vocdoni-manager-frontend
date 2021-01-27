@@ -2,7 +2,7 @@ import { useContext, Component } from 'react'
 import { Form, Input, Button, message, Row, Col, Spin, Card, Divider, Checkbox } from 'antd'
 import Router from 'next/router'
 // import Link from 'next/link'
-import { EtherUtils } from 'dvote-js'
+import { Random } from 'dvote-js'
 import { LoadingOutlined } from '@ant-design/icons'
 import beautify from 'json-beautify'
 import moment from 'moment'
@@ -45,7 +45,7 @@ class AccountNew extends Component<IAppContext, State> {
     }
 
     createWebWallet = async (name: string, passphrase: string) => {
-        const seed = EtherUtils.Signers.generateRandomHexSeed()
+        const seed = Random.getHex()
         await this.props.web3Wallet.store(name, seed, passphrase)
         await this.props.web3Wallet.load(name, passphrase)
         this.props.onNewWallet(this.props.web3Wallet.getWallet())
@@ -63,6 +63,7 @@ class AccountNew extends Component<IAppContext, State> {
             message.success({ content: 'Done creating account!', key })
             this.setState({ creatingAccount: false })
         } catch (e) {
+            console.error(e)
             message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key })
             this.setState({ creatingAccount: false })
             return false

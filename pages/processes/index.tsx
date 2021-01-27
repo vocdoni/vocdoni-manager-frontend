@@ -2,25 +2,27 @@ import { Component, ReactNode } from 'react'
 import { Divider, message, Spin, Col, Row, Badge, Button, Modal } from 'antd'
 import Text from 'antd/lib/typography/Text'
 import { CloseCircleOutlined, ExclamationCircleOutlined, LinkOutlined, LoadingOutlined } from '@ant-design/icons'
-import { API, ProcessMetadata, ProcessResults } from 'dvote-js'
+import {
+    CensusOffChainApi,
+    DigestedProcessResults,
+    EntityApi,
+    ProcessContractParameters,
+    ProcessEnvelopeType,
+    ProcessMetadata,
+    ProcessStatus,
+    VotingApi,
+} from 'dvote-js'
 import moment from 'moment'
 import Router from 'next/router'
-import { getVoteMetadata, isCanceled, estimateDateAtBlock, cancelProcess } from 'dvote-js/dist/api/vote'
-import { updateEntity } from 'dvote-js/dist/api/entity'
 import { Signer, Wallet } from 'ethers'
 
 import { getGatewayClients } from '../../lib/network'
+import { appLink } from '../../lib/util'
 import AppContext from '../../components/app-context'
 import Image from '../../components/image'
 import If from '../../components/if'
-import { appLink } from '../../lib/util'
-// import MainLayout from '../../components/layout'
-// import { main } from '../i18n'
-// import MultiLine from '../components/multi-line-text'
-// import { } from '../lib/types'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-const { Vote: { getBlockHeight, getEnvelopeHeight, getResultsDigest }, Census } = API
 const BLOCK_TIME = parseInt(process.env.BLOCK_TIME || "10", 10) || 10
 
 type State = {
@@ -29,9 +31,10 @@ type State = {
     currentDate: moment.Moment,
     processId?: string,
     process?: ProcessMetadata,
+    processParams?: ProcessContractParameters,
     estimatedStartDate?: Date,
     estimatedEndDate?: Date,
-    results: ProcessResults
+    results: DigestedProcessResults,
     totalVotes: number,
     canceled: boolean,
     censusSize: number,
@@ -69,7 +72,7 @@ class ProcessActiveView extends Component<undefined, State> {
 
         const [entityId, processId] = this.context.params
 
-        this.context.setEntityId(entityId)
+        this.context.setAddress(entityId)
         this.context.setProcessId(processId)
 
         return this.refreshBlockHeight()
@@ -92,8 +95,8 @@ class ProcessActiveView extends Component<undefined, State> {
         const params = location.hash.substr(2).split("/")
         if (params.length !== 2) return true
 
-        if (this.context.entityId !== undefined && this.context.processId !== undefined &&
-            (params[0] !== this.context.entityId || params[1] !== this.context.processId)) {
+        if (this.context.address !== undefined && this.context.processId !== undefined &&
+            (params[0] !== this.context.address || params[1] !== this.context.processId)) {
             this.init()
         }
 
@@ -109,7 +112,7 @@ class ProcessActiveView extends Component<undefined, State> {
             currentBlock = this.state.currentBlock || 0
         try {
             gateway = await getGatewayClients()
-            currentBlock = await getBlockHeight(gateway)
+            currentBlock = await VotingApi.getBlockHeight(gateway)
         } catch (err) {
             const msg = [
                 'There was an error updating the blockchain information.',
@@ -140,14 +143,22 @@ class ProcessActiveView extends Component<undefined, State> {
             await this.context.refreshEntityMetadata()
 
             const gateway = await this.context.gatewayClients
-            const metadata = await getVoteMetadata(this.context.processId, gateway)
-            const canceled = await isCanceled(this.context.processId, gateway)
-            const estimatedStartDate = await estimateDateAtBlock(metadata.startBlock, gateway)
-            const estimatedEndDate = await estimateDateAtBlock(metadata.startBlock + metadata.numberOfBlocks, gateway)
+            const process = await VotingApi.getProcessMetadata(this.context.processId, gateway)
+            const processParams = await VotingApi.getProcessParameters(this.context.processId, gateway)
+            const canceled = processParams.status.isCanceled
+            const estimatedStartDate = await VotingApi.estimateDateAtBlock(processParams.startBlock, gateway)
+            const estimatedEndDate = await VotingApi.estimateDateAtBlock(processParams.startBlock + processParams.blockCount, gateway)
+            const censusSize = parseInt(await CensusOffChainApi.getCensusSize(processParams.censusRoot, gateway) || "0", 10)
 
-            const censusSize = parseInt(await Census.getCensusSize(metadata.census.merkleRoot, gateway) || "0", 10)
-
-            this.setState({ process: metadata, canceled, dataLoading: false, censusSize, estimatedStartDate, estimatedEndDate })
+            this.setState({
+                dataLoading: false,
+                canceled,
+                process,
+                processParams,
+                censusSize,
+                estimatedStartDate,
+                estimatedEndDate
+            })
         }
         catch (err) {
             console.error(err)
@@ -163,17 +174,17 @@ class ProcessActiveView extends Component<undefined, State> {
     async loadProcessResults() : Promise<void> {
         if (!this.context.processId || !this.state.process) return
         // NOTE: on polls it's fine, but on other process types may need to wait until the very end
-        else if (!this.state.currentBlock || this.state.process.startBlock > this.state.currentBlock) return
+        else if (!this.state.currentBlock || this.state.processParams.startBlock > this.state.currentBlock) return
 
         let hideLoading
         try {
             const gateway = await getGatewayClients()
 
             hideLoading = message.loading("Loading results...", 0)
-            const totalVotes = await getEnvelopeHeight(this.context.processId, gateway)
+            const totalVotes = await VotingApi.getEnvelopeHeight(this.context.processId, gateway)
             this.setState({ totalVotes })
 
-            const resultsDigest = await getResultsDigest(this.context.processId, gateway)
+            const resultsDigest = await VotingApi.getResultsDigest(this.context.processId, gateway)
             this.setState({ results: resultsDigest })
             hideLoading()
         }
@@ -217,8 +228,8 @@ class ProcessActiveView extends Component<undefined, State> {
             const gateway = await this.context.gatewayClients
 
             // Cancel if still needed
-            if (!(await isCanceled(processId, gateway))) {
-                await cancelProcess(processId, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            if (!this.state.processParams.status.isCanceled) {
+                await VotingApi.setStatus(processId, ProcessStatus.CANCELED, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             }
 
             // Relist
@@ -232,7 +243,7 @@ class ProcessActiveView extends Component<undefined, State> {
             entityMetadata.votingProcesses.ended = endedProcesses
 
             const address = this.context.web3Wallet.getAddress()
-            await updateEntity(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            await EntityApi.setMetadata(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
             hideLoading()
 
@@ -274,15 +285,15 @@ class ProcessActiveView extends Component<undefined, State> {
             entityMetadata.votingProcesses.ended = endedProcesses
 
             const address = this.context.web3Wallet.getAddress()
-            await updateEntity(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            await EntityApi.setMetadata(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             hideLoading()
 
-            if (!(await isCanceled(processId, gateway))) {
-                await cancelProcess(processId, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            if (!this.state.processParams.status.isCanceled) {
+                await VotingApi.setStatus(processId, ProcessStatus.CANCELED, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             }
 
             message.success("The process has been removed successfully")
-            Router.push(`/processes/list/#/${this.context.entityId}`)
+            Router.push(`/processes/list/#/${this.context.address}`)
         }
         catch (err) {
             hideLoading()
@@ -304,40 +315,33 @@ class ProcessActiveView extends Component<undefined, State> {
         // const entityId = params[0]
         const processId = params[1]
 
-        const { process, censusSize } = this.state
+        const { process, censusSize, processParams } = this.state
 
         const startDate = moment(this.state.estimatedStartDate)
         const endDate = moment(this.state.estimatedEndDate)
 
-        let processType: string
-        switch (this.state.process.type) {
-            case "poll-vote": processType = "Standard Poll"; break
-            case "encrypted-poll": processType = "Encrypted Poll"; break
-            case "petition-sign": processType = "Petition signing"; break
-            case "snark-vote": processType = "Anonymous vote"; break
-            default: processType = ""; break
-        }
+        const processType: ProcessEnvelopeType = this.state.processParams.envelopeType
 
-        const procQuestions = this.state.process.details.questions
+        const procQuestions = this.state.process.questions
         const resultQuestions = this.state.results && this.state.results.questions && this.state.results.questions || []
-        const formURI = (this.state.process.details["formURI"]) ?  this.state.process.details["formURI"] : null
+        const formURI = (this.state.process.meta?.formURI) ?  this.state.process.meta.formURI : null
         const explorerURI = `${EXPLORER_URL}/process/${processId.replace('0x', '')}`
 
         return <div className="body-card">
             <Row justify="space-between">
                 <Col xs={24} sm={20} md={14}>
                     <Divider orientation="left">Vote details</Divider>
-                    <h3>{process.details.title.default}</h3>
-                    <div dangerouslySetInnerHTML={{__html: process.details.description.default}} />
+                    <h3>{process.title.default}</h3>
+                    <div dangerouslySetInnerHTML={{__html: process.description.default}} />
 
                     {
                         procQuestions.map((question, idx) => <div key={idx}>
                             <br />
                             <Divider orientation="left">Question {idx + 1}</Divider>
-                            <h4>{question.question.default}</h4>
+                            <h4>{question.title.default}</h4>
                             <p dangerouslySetInnerHTML={{__html: question.description.default}} />
                             <ul>
-                                {question.voteOptions.map((option, i) => <li key={i}>
+                                {question.choices.map((option, i) => <li key={i}>
                                     {option.title.default}
                                 </li>)}
                             </ul>
@@ -348,7 +352,7 @@ class ProcessActiveView extends Component<undefined, State> {
 
                     <Divider orientation="left">General</Divider>
                     <h4>Process Type</h4>
-                    <p>{processType}</p>
+                    <p>{processType.value}</p>
                     <h4>Process ID</h4>
                     <p>
                         <pre><Text copyable={{text: processId}}>{processId.substr(0, 10)}...</Text></pre>
@@ -372,7 +376,7 @@ class ProcessActiveView extends Component<undefined, State> {
                             <a
                                 target='_blank'
                                 rel='noreferrer'
-                                href={appLink(`/processes/login/#/${process.details.entityId}/${processId}/${formURI}`)}
+                                href={appLink(`/processes/login/#/${this.context.address}/${processId}/${formURI}`)}
                             >
                                 {formURI} <LinkOutlined />
                             </a>
@@ -386,19 +390,19 @@ class ProcessActiveView extends Component<undefined, State> {
                             <h4>Start date (estimated)</h4>
                             <p>{startDate.format("D/M/YYYY H:mm[h]")}</p>
                             <h4>Start block number</h4>
-                            <p>{process.startBlock}</p>
+                            <p>{processParams.startBlock}</p>
                         </Col>
                         <Col xs={24} sm={12}>
                             <h4>End date (estimated)</h4>
                             <p>{endDate.format("D/M/YYYY H:mm[h]")}</p>
                             <h4>End block</h4>
-                            <p>{process.startBlock + process.numberOfBlocks}</p>
+                            <p>{processParams.startBlock + processParams.blockCount}</p>
                         </Col>
                     </Row>
                 </Col>
                 <Col xs={24} sm={8}>
                     <Divider orientation="left">Media</Divider>
-                    <Image src={process.details.headerImage} className='header-image' />
+                    <Image src={process.media.header} className='header-image' />
                     <If condition={!this.context.isReadOnly}>
                         <Divider orientation='left'>Actions</Divider>
                         <If condition={this.context.entity.votingProcesses.active.includes(processId)}>
@@ -426,7 +430,7 @@ class ProcessActiveView extends Component<undefined, State> {
                             <Divider orientation="left">Results</Divider>
                             {
                                 this.state.results.questions.map((entry, idx) => <ul key={idx}>
-                                    <li>{entry.question.default}</li>
+                                    <li>{entry.title.default}</li>
                                     <ul style={{ paddingLeft: 10, listStyle: "none" }}>
                                         {
                                             entry.voteResults.map((result, i) => <li key={i}>
@@ -453,8 +457,8 @@ class ProcessActiveView extends Component<undefined, State> {
 
         const items: ReactNode[] = []
         if (this.state.canceled) items.push(<li key={items.length}>The process is now closed</li>)
-        else if (this.state.currentBlock < this.state.process.startBlock) items.push(<li key={items.length}>The process is not active yet</li>)
-        else if (this.state.currentBlock < (this.state.process.startBlock + this.state.process.numberOfBlocks)) items.push(<li key={items.length}>The process is active</li>)
+        else if (this.state.currentBlock < this.state.processParams.startBlock) items.push(<li key={items.length}>The process is not active yet</li>)
+        else if (this.state.currentBlock < (this.state.processParams.startBlock + this.state.processParams.blockCount)) items.push(<li key={items.length}>The process is active</li>)
         else items.push(<li key={items.length}>The process has ended</li>)
 
         if (this.state.totalVotes) items.push(<li key={items.length}>Votes received: {this.state.totalVotes}</li>)

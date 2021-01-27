@@ -1,12 +1,18 @@
 import { useContext, Component } from 'react'
 import { message, Spin, Button, Input, Form, Divider, Row, Col, Modal } from 'antd'
 import { LoadingOutlined, RocketOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { API, EntityMetadata, GatewayBootNodes, MultiLanguage } from 'dvote-js'
+import {
+    checkValidJsonFeed,
+    EntityMetadata,
+    EntityApi,
+    JsonBootnodeData,
+    JsonFeed,
+    JsonFeedPost,
+    MultiLanguage,
+    FileApi,
+} from 'dvote-js'
 import Router from 'next/router'
 import { Wallet, Signer } from 'ethers'
-import { updateEntity, getEntityId } from 'dvote-js/dist/api/entity'
-import { checkValidJsonFeed, JsonFeed, JsonFeedPost } from 'dvote-js/dist/models/json-feed'
-import { fetchFileString } from 'dvote-js/dist/api/file'
 // import { by639_1 } from 'iso-language-codes'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
@@ -16,7 +22,6 @@ import IPFSImageUpload from '../../components/ipfs-image-upload'
 import Image from '../../components/image'
 // import { main } from '../i18n'
 
-const { Entity } = API
 let Editor: any // = await import('react-draft-wysiwyg')
 let EditorState, ContentState, convertToRaw
 let draftToHtml: any // = await import('draftjs-to-html')
@@ -36,10 +41,10 @@ type State = {
     dataLoading?: boolean,
     postUpdating?: boolean,
     entity?: EntityMetadata,
-    entityId?: string,
+    address?: string,
     newsFeed?: JsonFeed,
     newsPost?: JsonFeedPost,
-    bootnodes?: GatewayBootNodes,
+    bootnodes?: JsonBootnodeData,
     editorState?: any
 }
 
@@ -52,14 +57,13 @@ class PostNew extends Component<IAppContext, State> {
 
         const { readOnly } = getNetworkState()
         const address = this.props.web3Wallet.getAddress()
-        const entityId = getEntityId(address)
 
         // if readonly, show the view page
         if (readOnly) {
-            return Router.replace("/posts#" + entityId)
+            return Router.replace(`/posts/#/${address}`)
         }
         this.props.setTitle("New post")
-        this.props.setEntityId(entityId)
+        this.props.setAddress(address)
 
         // Do the imports dynamically because `window` does not exist on SSR
 
@@ -84,17 +88,16 @@ class PostNew extends Component<IAppContext, State> {
     async refreshMetadata() {
         try {
             const address = this.props.web3Wallet.getAddress()
-            const entityId = getEntityId(address)
 
-            this.setState({ dataLoading: true, entityId })
+            this.setState({ dataLoading: true, address: address })
 
             const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, gateway)
+            const entity = await EntityApi.getMetadata(address, gateway)
             if (!entity) throw new Error()
 
             // TODO: MULTILANGUAGE
             const newsFeedOrigin = entity.newsFeed.default
-            const payload = await fetchFileString(newsFeedOrigin, gateway)
+            const payload = await FileApi.fetchString(newsFeedOrigin, gateway)
 
             let newsFeed: JsonFeed
             try {
@@ -108,6 +111,7 @@ class PostNew extends Component<IAppContext, State> {
                 throw new Error()
             }
 
+            const {host, protocol} = location
             const id = String(Date.now())
             const newsPost: JsonFeedPost = {
                 id,
@@ -115,7 +119,7 @@ class PostNew extends Component<IAppContext, State> {
                 summary: "",
                 content_text: "",
                 content_html: "<p>Your text goes here</p>",
-                url: location.protocol + "//" + location.host + "/posts#/" + entityId + "/" + id,
+                url: `${protocol}//${host}/posts/#/${address}/${id}`,
                 image: getRandomUnsplashImage(),
                 tags: [],
                 date_published: "",
@@ -132,7 +136,7 @@ class PostNew extends Component<IAppContext, State> {
                 this.setState({ editorState })
             }
 
-            this.setState({ newsPost, newsFeed, entity, entityId, dataLoading: false })
+            this.setState({ newsPost, newsFeed, entity, dataLoading: false })
             this.props.setTitle(entity.name.default)
         }
         catch (err) {
@@ -205,7 +209,7 @@ class PostNew extends Component<IAppContext, State> {
 
             // TODO: Check why for some reason addFile doesn't work without Buffer
             const feedContent = Buffer.from(JSON.stringify(newsFeed))
-            const feedContentUri = await API.File.addFile(feedContent, `feed_${this.state.newsPost.id}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            const feedContentUri = await FileApi.add(feedContent, `feed_${this.state.newsPost.id}.json`, this.props.web3Wallet.getWallet(), gateway)
 
             // message.success("The news feed was pinned on IPFS successfully");
 
@@ -227,12 +231,12 @@ class PostNew extends Component<IAppContext, State> {
                 })
             }
 
-            await updateEntity(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            await EntityApi.setMetadata(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             hideLoading()
             this.setState({ postUpdating: false })
 
             message.success("The post has been successfully updated")
-            Router.push("/posts#/" + this.state.entityId)
+            Router.push("/posts#/" + this.state.address)
         }
         catch (err) {
             hideLoading()

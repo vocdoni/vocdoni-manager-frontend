@@ -39,8 +39,8 @@ class EntityView extends Component<undefined, State> {
 
     async fetchMetadata(force = false) : Promise<void> {
         try {
-            const [entityId] = this.context.params
-            await this.context.refreshEntityMetadata(entityId, force)
+            const [address] = this.context.params
+            await this.context.refreshEntityMetadata(address, force)
 
             this.context.setTitle(this.context.entity.name.default)
         }
@@ -51,8 +51,8 @@ class EntityView extends Component<undefined, State> {
     }
 
     shouldComponentUpdate() : boolean {
-        const [entityId] = this.context.params
-        if (entityId !== this.context.entityId) {
+        const [address] = this.context.params
+        if (address !== this.context.address) {
             this.fetchMetadata()
         }
 
@@ -60,7 +60,7 @@ class EntityView extends Component<undefined, State> {
     }
 
     render() : ReactNode {
-        const { entity, entityId } = this.context
+        const { entity, address } = this.context
         const found = entity && Object.keys(entity).length > 0
         const loading = this.state.loading || this.context.loadingEntityMetadata
 
@@ -73,7 +73,7 @@ class EntityView extends Component<undefined, State> {
                     <If condition={found}>
                         <If condition={!this.state.editing}>
                             <View
-                                id={entityId}
+                                id={address}
                                 onEditClick={() => this.setState({editing: true})}
                             />
                         </If>

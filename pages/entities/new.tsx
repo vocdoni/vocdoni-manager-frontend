@@ -1,6 +1,7 @@
-import { EntityMetadata } from 'dvote-js'
-import { getEntityId } from 'dvote-js/dist/api/entity'
-import { EntityMetadataTemplate } from 'dvote-js/dist/models/entity'
+import {
+    EntityMetadata,
+    EntityMetadataTemplate,
+} from 'dvote-js'
 import Router from 'next/router'
 import React, { Component, ReactNode } from 'react'
 
@@ -11,7 +12,7 @@ import Edit from '../../components/entities/Edit'
 type State = {
     loading?: boolean,
     entity?: EntityMetadata,
-    entityId?: string,
+    address?: string,
     editing: boolean,
 }
 
@@ -31,9 +32,8 @@ class EntityNew extends Component<undefined, State> {
 
     async update() : Promise<void> {
         const address = this.context.web3Wallet.getAddress()
-        const entityId = getEntityId(address)
 
-        Router.push(`/entities/#/${entityId}`)
+        Router.push(`/entities/#/${address}`)
     }
 
     render() : ReactNode {

@@ -1,8 +1,7 @@
 import { Component, ReactNode } from 'react'
 import { message, Select, Row, Col } from 'antd'
-import { ProcessMetadata } from 'dvote-js'
+import { ProcessContractParameters, ProcessMetadata, VotingApi } from 'dvote-js'
 import Link from 'next/link'
-import { estimateDateAtBlock, getVoteMetadata, isCanceled } from 'dvote-js/dist/api/vote'
 
 import { getGatewayClients } from '../../lib/network'
 import FinishDate from '../../components/processes/FinishDate'
@@ -17,7 +16,10 @@ import Ficon from '../../components/ficon'
 
 type State = {
     loading?: boolean,
-    processes: ProcessComponentData[],
+    processes: {
+        [key: string]: ProcessComponentData,
+    },
+    keys: string[],
     startIndex: number,
     filter: string,
 }
@@ -25,8 +27,8 @@ type State = {
 type ProcessComponentData = {
     id: string,
     data: ProcessMetadata,
+    params: ProcessContractParameters,
     date: Date,
-    canceled: boolean,
 }
 
 // Stateful component
@@ -36,7 +38,8 @@ export default class ProcessListView extends Component<undefined, State> {
 
     state: State = {
         startIndex: 0,
-        processes: [],
+        processes: {},
+        keys: [],
         filter: 'all',
     }
 
@@ -59,40 +62,38 @@ export default class ProcessListView extends Component<undefined, State> {
                 ...this.context.entity.votingProcesses.active
             ] || []
 
-            const processes = [].concat(this.state.processes)
+            const processes = {...this.state.processes}
+            const keys = []
 
-            await Promise.all((processIds).map(id =>
-                getVoteMetadata(id, gateway).then(async (data) => {
-                    for (let i = 0; i < processIds.length; i++) {
-                        if (processIds[i] === id) {
-                            processes[i] = {
-                                id,
-                                data,
-                                date: await estimateDateAtBlock(data.startBlock + data.numberOfBlocks, gateway),
-                                canceled: await isCanceled(id, gateway),
-                            }
-                            break
-                        }
-                    }
-                }).catch(err => {
-                    if (err && err.message === 'Request timed out') return
-                    throw new Error('failed')
-                })
-            ))
+            await Promise.all((processIds).map(async (id) => {
+                const params = await VotingApi.getProcessParameters(id, gateway)
+                const data = await VotingApi.getProcessMetadata(id, gateway)
 
-            // Sort by start date, in descendent order
-            processes.sort((a: ProcessComponentData, b: ProcessComponentData) => {
-                if (a.date < b.date) {
+                processes[id] = {
+                    id,
+                    params,
+                    data,
+                    date: await VotingApi.estimateDateAtBlock(params.startBlock + params.blockCount, gateway),
+                }
+
+                keys.push(id)
+            }))
+
+            // Sort by end date, in descendent order
+            keys.sort((a: string, b: string) => {
+                const ap = processes[a]
+                const bp = processes[b]
+                if (ap.date < bp.date) {
                     return -1
                 }
-                if (a.date > b.date) {
+                if (ap.date > bp.date) {
                     return 1
                 }
 
                 return 0
             }).reverse()
 
-            this.setState({ processes })
+            this.setState({ processes, keys })
             this.setState({
                 loading: false,
             })
@@ -113,24 +114,24 @@ export default class ProcessListView extends Component<undefined, State> {
     }
 
     componentDidUpdate() : void {
-        if (!this.context.entityId) {
+        if (!this.context.address) {
             return
         }
 
         const [entityId] = this.context.params
-        if (entityId !== this.context.entityId && !this.context.loadingEntityMetadata && !this.state.loading) {
+        if (entityId !== this.context.address && !this.context.loadingEntityMetadata && !this.state.loading) {
             this.init()
         }
     }
 
-    filterProcesses(filter: string) : ProcessComponentData[] {
+    filterProcesses(filter: string) : string[] {
         if (filter === 'all') {
-            return this.state.processes
+            return this.state.keys
         }
 
         const processes = this.context.entity.votingProcesses
 
-        return this.state.processes.filter(({id}) => processes[filter].includes(id))
+        return this.state.keys.filter((id) => processes[filter].includes(id))
     }
 
     render() : ReactNode {
@@ -168,14 +169,16 @@ export default class ProcessListView extends Component<undefined, State> {
                         <Loading loading={this.state.loading} text={main.loadingProcesses}>
                             <div className='card-list'>
                                 {
-                                    processes.map((process) => {
+                                    processes.map((id) => {
+                                        const process : ProcessComponentData = this.state.processes[id]
+
                                         return <InlineCard
                                             key={process.id}
                                             image={(
-                                                <Link href={`/processes#/${this.context.entityId}/${process.id}`}>
+                                                <Link href={`/processes#/${this.context.address}/${process.id}`}>
                                                     <a>
                                                         <Image
-                                                            src={process.data.details.headerImage}
+                                                            src={process.data.media.header}
                                                             type='background'
                                                             style={{
                                                                 maxWidth: 200,
@@ -185,14 +188,14 @@ export default class ProcessListView extends Component<undefined, State> {
                                                 </Link>
                                             )}
                                             title={(
-                                                <Link href={`/processes/#/${this.context.entityId}/${process.id}`}>
-                                                    <a>{process.data.details.title.default}</a>
+                                                <Link href={`/processes/#/${this.context.address}/${process.id}`}>
+                                                    <a>{process.data.title.default}</a>
                                                 </Link>
                                             )}
                                         >
                                             <div className='state'>
-                                                <div className={`status ${process.canceled && 'finished'}`}>
-                                                    {process.canceled ? main.finished : main.active}
+                                                <div className={`status ${process.params.status.isCanceled && 'finished'}`}>
+                                                    {process.params.status.isCanceled ? main.finished : main.active}
                                                 </div>
                                                 <div className='date'>
                                                     <FinishDate process={process} />

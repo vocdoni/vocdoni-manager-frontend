@@ -18,16 +18,16 @@ export type LegacyVoteOption = {
 }
 export type QuestionType = 'single-choice'
 export type LegacyQuestion = {
-    type: QuestionType,
-    question?: MultiLanguage<string>,
+    title: MultiLanguage<string>,
     description: MultiLanguage<string>,
-    voteOptions: LegacyVoteOption[],
+    choices: LegacyVoteOption[],
+    value: number,
 }
 type Question = {
-    type: QuestionType,
-    question?: MultiLanguage<string>,
+    title: MultiLanguage<string>,
     description: MultiLanguage<string>,
-    voteOptions: VoteOption[],
+    choices: VoteOption[],
+    value?: number,
 }
 type Questions = Question[]
 export type LegacyQuestions = LegacyQuestion[]
@@ -41,14 +41,13 @@ type State = {
 }
 
 const qt = () : Question => ({
-    type: 'single-choice',
-    question: {
+    title: {
         default: '',
     },
     description: {
         default: '',
     },
-    voteOptions: [
+    choices: [
         {
             title: {
                 default: 'Yes',
@@ -82,8 +81,8 @@ export default class QuestionsForm extends Component<Props, State> {
     onChange(questions: Questions) : void {
         for (const q in questions) {
             const question = questions[q]
-            for (const o in question.voteOptions) {
-                questions[q].voteOptions[o].value = o as unknown as number
+            for (const o in question.choices) {
+                questions[q].choices[o].value = o as unknown as number
             }
         }
 
@@ -113,7 +112,7 @@ export default class QuestionsForm extends Component<Props, State> {
      */
     addOption(qi: number) : void {
         const questions = [...this.state.questions]
-        questions[qi].voteOptions.push({
+        questions[qi].choices.push({
             title: {
                 default: '',
             },
@@ -142,7 +141,7 @@ export default class QuestionsForm extends Component<Props, State> {
      */
     removeOption(qi: number, oi: number) : void {
         const questions = [...this.state.questions]
-        questions[qi].voteOptions.splice(oi, 1)
+        questions[qi].choices.splice(oi, 1)
 
         this.setState({questions})
         this.onChange(questions)
@@ -171,7 +170,7 @@ export default class QuestionsForm extends Component<Props, State> {
                             <li key={i}>
                                 <Form.Item>
                                     <Input
-                                        value={q.question.default}
+                                        value={q.title.default}
                                         addonAfter={(
                                             <Button
                                                 size='small'
@@ -182,7 +181,7 @@ export default class QuestionsForm extends Component<Props, State> {
                                             </Button>
                                         )}
                                         onChange={
-                                            this.onFieldChange.bind(this, `questions[${i}].question.default`)
+                                            this.onFieldChange.bind(this, `questions[${i}].title.default`)
                                         }
                                     />
                                 </Form.Item>
@@ -197,7 +196,7 @@ export default class QuestionsForm extends Component<Props, State> {
                                 </Form.Item>
                                 <ol>
                                     {
-                                        q.voteOptions.map((o, k) => (
+                                        q.choices.map((o, k) => (
                                             <li key={`${i}-${k}`}>
                                                 <Form.Item>
                                                     <Input
@@ -205,14 +204,14 @@ export default class QuestionsForm extends Component<Props, State> {
                                                         onChange={
                                                             this.onFieldChange.bind(
                                                                 this,
-                                                                `questions[${i}].voteOptions[${k}].title.default`
+                                                                `questions[${i}].choices[${k}].title.default`
                                                             )
                                                         }
                                                         addonAfter={(
                                                             <Button
                                                                 size='small'
                                                                 type='text'
-                                                                disabled={q.voteOptions.length <= 2}
+                                                                disabled={q.choices.length <= 2}
                                                                 onClick={this.removeOption.bind(this, i, k)}
                                                             >
                                                                 <Ficon icon='X' />

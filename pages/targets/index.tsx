@@ -60,7 +60,7 @@ class Targets extends Component<IAppContext, State> {
             filter: params.filter
         }
 
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({
                     loading: false,
@@ -77,7 +77,7 @@ class Targets extends Component<IAppContext, State> {
     }
 
     fetchCount() {
-        this.props.managerBackendGateway.sendMessage({ method: "countTargets" } as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest({ method: "countTargets" } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 this.setState({total: result.count})
             },
@@ -101,7 +101,7 @@ class Targets extends Component<IAppContext, State> {
     }
 
     deleteTarget(record: any) {
-        this.props.managerBackendGateway.sendMessage({ method: "deleteTarget", id: record.id } as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest({ method: "deleteTarget", id: record.id } as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not delete the target"
@@ -141,7 +141,7 @@ class Targets extends Component<IAppContext, State> {
             )},
             { title: 'Actions', key: 'action', render: (text, record) => (
                 <Space size="middle">
-                    <Link href={"/targets/view#/" + this.props.entityId + "/" + record.id}><a>View</a></Link>
+                    <Link href={"/targets/view#/" + this.props.address + "/" + record.id}><a>View</a></Link>
                     <a onClick={() => this.deleteTarget(record)}>Delete</a>
                 </Space>)},
         ]
@@ -168,7 +168,7 @@ class Targets extends Component<IAppContext, State> {
                         <Row gutter={[0,24]}>
                             <Col span={24}>
                                 <Divider orientation="left">Actions</Divider>
-                                <Link href={"/targets/view#/" + this.props.entityId}>
+                                <Link href={"/targets/view#/" + this.props.address}>
                                     <Button type="link" icon={<AimOutlined />}>Add a new target</Button>
                                 </Link>
                                 <Button type="link" onClick={() => this.removeSelected()} icon={<DeleteRowOutlined />}>Remove selected</Button>

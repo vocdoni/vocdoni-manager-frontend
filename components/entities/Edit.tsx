@@ -1,7 +1,6 @@
 import { ExclamationCircleOutlined, SaveOutlined } from '@ant-design/icons'
 import { Button, Col, Form, Input, message, Modal, Row } from 'antd'
-import { EntityMetadata } from 'dvote-js'
-import { updateEntity } from 'dvote-js/dist/api/entity'
+import { EntityApi, EntityMetadata, Gateway, GatewayPool } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 
 import { main } from '../../i18n'
@@ -65,27 +64,32 @@ export default class Edit extends Component<EditProps, EditState> {
             return
         }
 
-        const mg = await this.context.managerBackendGateway.sendMessage(
-            {method: 'getEntity'} as any,
-            this.context.web3Wallet.getWallet()
-        )
+        try {
+            const mg = await this.context.managerBackendGateway.sendRequest(
+                {method: 'getEntity'} as any,
+                this.context.web3Wallet.getWallet()
+            )
 
-        const backendValues = {}
-        for (const field of this.backendFields) {
-            if (mg.entity[field]?.length) {
-                backendValues[field] = mg.entity[field]
+            const backendValues = {}
+            for (const field of this.backendFields) {
+                if (mg.entity[field]?.length) {
+                    backendValues[field] = mg.entity[field]
+                }
             }
+
+            if (Object.values(backendValues).length > 0) {
+                this.setState({fields: {
+                    ...this.state.fields,
+                    ...backendValues,
+                }})
+            }
+
+
+            this.setInitialFieldValues()
+        } catch (error) {
+            console.error(error)
+            message.error(main.entityLoadError)
         }
-
-        if (Object.values(backendValues).length > 0) {
-            this.setState({fields: {
-                ...this.state.fields,
-                ...backendValues,
-            }})
-        }
-
-
-        this.setInitialFieldValues()
 
         this.setState({
             loaded: true,
@@ -183,11 +187,11 @@ export default class Edit extends Component<EditProps, EditState> {
                     request.entity[field] = values[field]
                 }
             }
-            await this.context.managerBackendGateway.sendMessage(request as any, wallet);
+            await this.context.managerBackendGateway.sendRequest(request as any, wallet);
 
             // Update decentralized one
             const gateway = await getGatewayClients()
-            await updateEntity(address, entity, wallet, gateway)
+            await EntityApi.setMetadata(address, entity, wallet, (gateway as GatewayPool | Gateway))
 
             message.success('The entity has been updated')
         } catch (err) {

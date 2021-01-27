@@ -1,9 +1,8 @@
 import { useContext, Component } from 'react'
 import Link from 'next/link'
-import { API, EntityMetadata } from 'dvote-js'
 import { message, Button, Spin, Divider, Input, Select, Col, Row, Card, Modal } from 'antd'
 import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { getEntityId } from 'dvote-js/dist/api/entity'
+import { EntityApi, EntityMetadata } from 'dvote-js'
 import Router from 'next/router'
 
 import { getGatewayClients } from '../lib/network'
@@ -26,7 +25,7 @@ const IndexPage = () => {
 type State = {
     entityLoading?: boolean,
     entity?: EntityMetadata,
-    entityId?: string,
+    address?: string,
 
     storedWallets?: IWallet[],
 
@@ -62,21 +61,21 @@ class IndexView extends Component<IAppContext, State> {
     }
 
     async redirectToEntityIfAvailable() {
-        let userAddr = null
+        let address = null
         if (this.props.web3Wallet.hasWallet()) {
             this.setState({ entityLoading: true })
-            userAddr = await this.props.web3Wallet.getAddress()
+            address = await this.props.web3Wallet.getAddress()
 
-            const entityId = getEntityId(userAddr)
             const gateway = await getGatewayClients()
 
             let entity: EntityMetadata
             const self = this
             try {
-                entity = await API.Entity.getEntityMetadata(entityId, gateway)
-                this.setState({ entity, entityId, entityLoading: false })
-                Router.push("/entities#/" + entityId);
+                entity = await EntityApi.getMetadata(address, gateway)
+                this.setState({ entity, address, entityLoading: false })
+                Router.push(`/entities/#/${address}`);
             } catch (e) {
+                console.error(e)
                 Modal.confirm({
                     title: "Entity not found",
                     icon: <ExclamationCircleOutlined />,
@@ -118,7 +117,7 @@ class IndexView extends Component<IAppContext, State> {
         return <>
             <h4>{this.state.entity.name.default}</h4>
             <div dangerouslySetInnerHTML={{__html: this.state.entity.description.default}} />
-            <p><Link href={`/entities/edit#/${this.state.entityId}`}><a><Button>Manage my entity</Button></a></Link></p>
+            <p><Link href={`/entities/edit#/${this.state.address}`}><a><Button>Manage my entity</Button></a></Link></p>
         </>
     }
 

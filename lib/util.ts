@@ -1,7 +1,6 @@
 import sanitize from 'sanitize-html'
-import { MultiLanguage } from 'dvote-js'
+import { MultiLanguage, CensusOffChainApi } from 'dvote-js'
 import { ethers } from 'ethers'
-import { digestHexClaim } from 'dvote-js/dist/api/census'
 
 export function isServer(): boolean {
     return typeof window === 'undefined'
@@ -92,10 +91,10 @@ export const extractDigestedPubKeyFromFormData = (data: string): {privKey: strin
     const bytes = ethers.utils.toUtf8Bytes(data)
     const hashed = ethers.utils.keccak256(bytes)
     const tempWallet = new ethers.Wallet(hashed)
-    const pubKey = tempWallet['signingKey'].publicKey
+    const pubKey = tempWallet._signingKey().publicKey
     return {
         privKey: tempWallet.privateKey,
-        digestedHexClaim: digestHexClaim(pubKey)
+        digestedHexClaim: CensusOffChainApi.digestPublicKey(pubKey),
     }
 }
 

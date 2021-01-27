@@ -65,7 +65,7 @@ class MemberView extends Component<IAppContext, State> {
             method: 'getMember',
             memberId,
         }
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then(({member, targets}) => {
                 this.setState({
                     member,
@@ -99,7 +99,7 @@ class MemberView extends Component<IAppContext, State> {
             member,
         }
 
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not save the member"
@@ -108,7 +108,7 @@ class MemberView extends Component<IAppContext, State> {
                     return false
                 }
                 message.success("Member details have been saved")
-                Router.push(`/members/#/${this.props.entityId}`)
+                Router.push(`/members/#/${this.props.address}`)
             },
             (error) => {
                 message.error("Could not save the member")
@@ -119,7 +119,7 @@ class MemberView extends Component<IAppContext, State> {
 
     removeMember() {
         const request = { method: "deleteMembers", memberIds: [this.state.memberId] }
-        this.props.managerBackendGateway.sendMessage(request as any, this.props.web3Wallet.getWallet())
+        this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
                     const error = "Could not delete the member"
@@ -158,7 +158,7 @@ class MemberView extends Component<IAppContext, State> {
     render() {
         const { member, memberId } = this.state
 
-        const entityId = this.props.entityId
+        const entityId = this.props.address
         const validated = (member && 'publicKey' in member && member['publicKey'] != null) ? true : false
         const link = (member) ? validationUrlPrefix+'/'+entityId+'/'+member.id : ''
         if (member) {

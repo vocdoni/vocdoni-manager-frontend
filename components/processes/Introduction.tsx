@@ -15,15 +15,15 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
         const { process } = this.props
 
         return <>
-            <h1>{process.details.title.default}</h1>
+            <h1>{process.title.default}</h1>
             <Divider />
             <div
                 className='process-description'
-                dangerouslySetInnerHTML={{__html: process.details.description.default}}
+                dangerouslySetInnerHTML={{__html: process.description.default}}
             />
-            <If condition={process.details['requestsURL']?.length}>
+            <If condition={process.meta?.requestsURL?.length}>
                 <Button
-                    href={process.details['requestsURL']}
+                    href={process.meta.requestsURL}
                     type='primary'
                     style={{marginTop: '2em'}}
                     target='_blank'
@@ -32,11 +32,11 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                     {main.requestsButton}
                 </Button>
             </If>
-            <If condition={process.details.streamUrl?.length}>
+            <If condition={process.media.streamUri?.length}>
                 <Divider />
                 <div className='player-wrapper'>
                     <ReactPlayer
-                        url={process.details.streamUrl}
+                        url={process.media.streamUri}
                         controls={true}
                         width='100%'
                         height='100%'

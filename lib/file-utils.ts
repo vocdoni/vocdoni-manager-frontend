@@ -55,7 +55,7 @@ export const getBufferEncoding = (buffer: Buffer): string => {
 export const FileReaderPromise = (file: RcFile) : Promise<Buffer>=> new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = (e) => {
-        const buffer = Buffer.from(e.target.result)
+        const buffer = Buffer.from(e.target.result as string)
 
         resolve(buffer)
     }

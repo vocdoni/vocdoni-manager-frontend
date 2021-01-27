@@ -1,6 +1,5 @@
 import { message } from 'antd'
-import { EntityMetadata } from 'dvote-js'
-import { getEntityMetadata } from 'dvote-js/dist/api/entity'
+import { EntityApi, EntityMetadata } from 'dvote-js'
 import { Component, ReactNode } from 'react'
 import Router from 'next/router'
 
@@ -16,7 +15,7 @@ import Edit from '../../components/entities/Edit'
 type State = {
     loading?: boolean,
     entity?: EntityMetadata,
-    entityId?: string,
+    address?: string,
     editing: boolean,
 }
 
@@ -41,25 +40,25 @@ class EntityView extends Component<undefined, State> {
             editing: false,
         })
 
-        Router.push(`/entities/#/${this.state.entityId}`)
+        Router.push(`/entities/#/${this.state.address}`)
     }
 
     async fetchMetadata() : Promise<void> {
         try {
-            const [entityId] = this.context.params
-            this.setState({ loading: true, entityId })
+            const [address] = this.context.params
+            this.setState({ loading: true, address })
 
             const gateway = await getGatewayClients()
-            const entity = await getEntityMetadata(entityId, gateway)
+            const entity = await EntityApi.getMetadata(address, gateway)
             if (!entity) throw new Error()
 
             this.setState({
                 entity,
-                entityId,
+                address,
                 loading: false,
             })
             this.context.setTitle(entity.name.default)
-            this.context.setEntityId(entityId)
+            this.context.setAddress(address)
         }
         catch (err) {
             this.setState({ loading: false })
@@ -68,8 +67,8 @@ class EntityView extends Component<undefined, State> {
     }
 
     shouldComponentUpdate() : boolean {
-        const [entityId] = this.context.params
-        if (entityId !== this.state.entityId) {
+        const [address] = this.context.params
+        if (address !== this.state.address) {
             this.fetchMetadata()
         }
 

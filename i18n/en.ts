@@ -55,4 +55,5 @@ export default ({
     processCreationCancelButton: 'Not now',
     processCreationAdvice: 'Creating the process will register it into the blockchain, wich <b>cannot be undone</b>. Do you want to continue?',
     processCreating: 'Creating process...',
+    entityLoadError: 'There was an error loading the entity data',
 })

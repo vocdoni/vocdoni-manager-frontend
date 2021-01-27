@@ -1,5 +1,5 @@
-import { Wallet, utils, providers } from "ethers"
-import { EtherUtils } from "dvote-js"
+import { Wallet, utils, providers, BigNumber } from "ethers"
+import { WalletUtil } from 'dvote-js'
 import { DataCache } from "./storage"
 import { Key } from "react"
 import { IWallet } from "./types"
@@ -47,13 +47,14 @@ export default class Web3Wallet {
 
     // Generates a wallet and stores it on IndexedDB
     public store(name: string, seed: string, passphrase: string): Promise<Key> {
-        const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, seed)
+        const wallet = WalletUtil.fromSeededPassphrase(passphrase, seed)
+        console.log(wallet)
         // tslint:disable-next-line
-        return this.db.addWallet({ name, seed, publicKey: wallet["signingKey"].publicKey });
+        return this.db.addWallet({ name, seed, publicKey: wallet._signingKey().publicKey });
     }
 
     public getPublicKey(): string {
-        return this.wallet["signingKey"].publicKey
+        return this.wallet._signingKey().publicKey
     }
 
     // Gets all the stored wallet accounts from IndexedDB
@@ -65,12 +66,12 @@ export default class Web3Wallet {
     public async load(name: string, passphrase: string): Promise<boolean> {
         const storedWallet = await this.db.getWallet(name)
 
-        const wallet = EtherUtils.Signers.walletFromSeededPassphrase(passphrase, storedWallet.seed)
+        const wallet = WalletUtil.fromSeededPassphrase(passphrase, storedWallet.seed)
         this.walletAddress = await wallet.getAddress()
 
         // We need to verify the generated wallet publicKey = stored public Key
         // tslint:disable-next-line
-        if (wallet["signingKey"].publicKey === storedWallet.publicKey) {
+        if (wallet._signingKey().publicKey === storedWallet.publicKey) {
             this.wallet = wallet
         } else {
             throw new Error('Wrong password for wallet!')
@@ -90,12 +91,12 @@ export default class Web3Wallet {
     }
 
     public async getBalance(): Promise<string> {
-        const balance: utils.BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
+        const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
         return balance.toString()
     }
 
     public async getEthBalance(): Promise<string> {
-        const balance: utils.BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
+        const balance: BigNumber = await this.provider.getBalance(await this.wallet.getAddress())
 
         return utils.formatEther(balance)
     }

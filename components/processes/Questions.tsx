@@ -54,15 +54,15 @@ export default class Questions extends Component<Props, State> {
     render() : ReactNode {
         const { process } = this.props
         const { choices } = this.state
-        const allQuestionsChosen = areAllNumbers(this.state.choices) && Object.values(choices).length === process.details.questions.length
+        const allQuestionsChosen = areAllNumbers(this.state.choices) && Object.values(choices).length === process.questions.length
 
         return <>
             <Divider />
             <h2>{main.selectQuestionsTitle}</h2>
             {
-                process.details.questions.map((question, questionIdx) => <div key={questionIdx} className='vote-questions'>
+                process.questions.map((question, questionIdx) => <div key={questionIdx} className='vote-questions'>
                     <Divider />
-                    <h4>{question.question.default}</h4>
+                    <h4>{question.title.default}</h4>
                     <div
                         className='process-question-description'
                         dangerouslySetInnerHTML={{__html: question.description.default}}
@@ -73,7 +73,7 @@ export default class Questions extends Component<Props, State> {
                         value={this.state.choices[questionIdx]}
                     >
                         {
-                            question.voteOptions.map((option, i) => (
+                            question.choices.map((option, i) => (
                                 <Radio
                                     key={i}
                                     style={radioStyle}

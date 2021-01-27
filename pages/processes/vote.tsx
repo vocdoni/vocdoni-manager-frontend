@@ -1,25 +1,19 @@
-import React, { Component, Fragment, ReactChild, ReactNode } from 'react'
+import { ReloadOutlined, LoadingOutlined } from '@ant-design/icons'
 import { message, notification, Spin, Modal, Divider, Button } from 'antd'
 import Text from 'antd/lib/typography/Text'
-import { API, EntityMetadata, ProcessMetadata } from 'dvote-js'
-import { LoadingOutlined } from '@ant-design/icons'
+import {
+    CensusOffChainApi,
+    EntityApi,
+    EntityMetadata,
+    ProcessContractParameters,
+    ProcessMetadata,
+    VotingApi,
+} from 'dvote-js'
+import { MessageType } from 'antd/lib/message'
 import { Wallet } from 'ethers'
 import moment from 'moment'
 import Router from 'next/router'
-import {
-    getVoteMetadata,
-    getBlockHeight,
-    packagePollEnvelope,
-    submitEnvelope,
-    getEnvelopeStatus,
-    getProcessKeys,
-    isCanceled,
-    getPollNullifier,
-    getProcessList,
-} from 'dvote-js/dist/api/vote'
-import { digestHexClaim, generateProof } from 'dvote-js/dist/api/census'
-import { ReloadOutlined } from '@ant-design/icons'
-import { MessageType } from 'antd/lib/message'
+import React, { Component, Fragment, ReactChild, ReactNode } from 'react'
 
 import AppContext from '../../components/app-context'
 import { getGatewayClients } from '../../lib/network'
@@ -31,8 +25,6 @@ import ViewWrapper from '../../components/processes/ViewWrapper'
 import Questions from '../../components/processes/Questions'
 import { areAllNumbers, findHexId } from '../../lib/util'
 
-const { Entity } = API
-
 const BLOCK_TIME: number = parseInt(process.env.BLOCK_TIME, 10)
 
 export type ProcessVoteViewState = {
@@ -43,7 +35,7 @@ export type ProcessVoteViewState = {
     processId?: string,
     privateKey?: string,
     process?: ProcessMetadata,
-    isCanceled: boolean,
+    processParams?: ProcessContractParameters,
     currentBlock: number,
     currentDate: moment.Moment,
     merkleProof: string,
@@ -77,7 +69,6 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
 
     state: ProcessVoteViewState = {
         currentDate: moment(),
-        isCanceled: false,
         currentBlock: null,
         merkleProof: null,
         hasVoted: false,
@@ -145,7 +136,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             currentBlock = this.state.currentBlock || 0
         try {
             gateway = await getGatewayClients()
-            currentBlock = await getBlockHeight(gateway)
+            currentBlock = await VotingApi.getBlockHeight(gateway)
         } catch (err) {
             const msg = [
                 'There was an error updating the blockchain information.',
@@ -165,20 +156,24 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             this.setState({ loadingStatus: true, entityId, processId })
 
             const gateway = await getGatewayClients()
-            const entity = await Entity.getEntityMetadata(entityId, gateway)
-            const processes = await getProcessList(entityId, gateway)
+            const entity = await EntityApi.getMetadata(entityId, gateway)
+            const processes = await VotingApi.getProcessList(entityId, gateway)
 
             const exists = processes.find(findHexId(processId))
             if (!exists) {
                 throw new Error('not-found')
             }
 
-            const voteMetadata = await getVoteMetadata(processId, gateway)
+            const processParams = await VotingApi.getProcessParameters(processId, gateway)
+            const process = await VotingApi.getProcessMetadata(processId, gateway)
 
-            const canceled = await isCanceled(processId, gateway)
-
-            this.setState({ entity, process: voteMetadata, isCanceled: canceled, loadingStatus: false })
-            this.context.setTitle(voteMetadata.details.title.default)
+            this.setState({
+                entity,
+                processParams,
+                process,
+                loadingStatus: false,
+            })
+            this.context.setTitle(process.title.default)
         }
         catch (err) {
             const notfounds = [
@@ -209,12 +204,12 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         try {
             this.setState({ refreshingVoteStatus: true })
             const gateway = await getGatewayClients()
-            const publicKeyHash = digestHexClaim(wallet['signingKey'].publicKey)
-            const merkleProof = await generateProof(this.state.process.census.merkleRoot, publicKeyHash, true, gateway)
+            const publicKeyHash = CensusOffChainApi.digestPublicKey(wallet._signingKey().publicKey)
+            const merkleProof = await CensusOffChainApi.generateProof(this.state.processParams.censusRoot, {key: publicKeyHash}, true, gateway)
             if (merkleProof) this.setState({ merkleProof })
 
-            const nullifier = await getPollNullifier(wallet.address, this.state.processId)
-            const { registered, date } = await getEnvelopeStatus(this.state.processId, nullifier, gateway)
+            const nullifier = await VotingApi.getSignedVoteNullifier(wallet.address, this.state.processId)
+            const { registered, date } = await VotingApi.getEnvelopeStatus(this.state.processId, nullifier, gateway)
 
             this.setState({
                 refreshingVoteStatus: false,
@@ -224,6 +219,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             })
         }
         catch (err) {
+            console.error(err)
             this.setState({
                 refreshingVoteStatus: false,
             })
@@ -244,7 +240,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
     onContinueClicked(votes: number[]) : MessageType {
         window.scrollTo(0, this.endOfIntroduction)
 
-        if (votes.length != this.state.process.details.questions.length)
+        if (votes.length != this.state.process.questions.length)
             return message.error(main.pleaseChooseYourVoteForAllQuestions)
 
         if (!areAllNumbers(votes))
@@ -267,28 +263,47 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         const votes = this.state.choices
         const wallet = new Wallet(this.state.privateKey)
         const gateway = await getGatewayClients()
+        const { processParams } = this.state
 
         try {
             this.setState({ isSubmitting: true })
-            const publicKeyHash = digestHexClaim(wallet['signingKey'].publicKey)
-            const merkleProof = await generateProof(this.state.process.census.merkleRoot, publicKeyHash, true, gateway)
+            const publicKeyHash = CensusOffChainApi.digestPublicKey(wallet._signingKey().publicKey)
+            const censusProof = await CensusOffChainApi.generateProof(
+                this.state.processParams.censusRoot,
+                {key: publicKeyHash},
+                true,
+                gateway
+            )
 
             // Detect encryption
-            if (this.state.process.type == 'encrypted-poll') {
-                const keys = await getProcessKeys(this.state.processId, gateway)
-                const voteEnvelope = await packagePollEnvelope({ votes, merkleProof, processId: this.state.processId, walletOrSigner: wallet, processKeys: keys })
-                await submitEnvelope(voteEnvelope, gateway)
+            if (this.state.processParams.envelopeType.hasEncryptedVotes) {
+                const keys = await VotingApi.getProcessKeys(this.state.processId, gateway)
+                const { envelope, signature } = await VotingApi.packageSignedEnvelope({
+                    votes,
+                    censusProof,
+                    censusOrigin: processParams.censusOrigin,
+                    processId: this.state.processId,
+                    walletOrSigner: wallet,
+                    processKeys: keys,
+                })
+                await VotingApi.submitEnvelope(envelope, signature, gateway)
             } else {
-                const voteEnvelope = await packagePollEnvelope({ votes, merkleProof, processId: this.state.processId, walletOrSigner: wallet })
-                await submitEnvelope(voteEnvelope, gateway)
+                const { envelope, signature } = await VotingApi.packageSignedEnvelope({
+                    votes,
+                    censusProof,
+                    censusOrigin: processParams.censusOrigin,
+                    processId: this.state.processId,
+                    walletOrSigner: wallet,
+                })
+                await VotingApi.submitEnvelope(envelope, signature, gateway)
             }
 
-            await new Promise(resolve => setTimeout(resolve, Math.floor(BLOCK_TIME * 1000)))
+            await new Promise((resolve) => setTimeout(resolve, Math.floor(BLOCK_TIME * 1000)))
 
             for (let i = 0; i < 10; i++) {
                 await this.refreshVoteState()
                 if (this.state.hasVoted) break
-                await new Promise(resolve => setTimeout(resolve, Math.floor(BLOCK_TIME * 500)))
+                await new Promise((resolve) => setTimeout(resolve, Math.floor(BLOCK_TIME * 500)))
             }
             if (!this.state.hasVoted) throw new Error('The vote has not been registered')
 
@@ -310,8 +325,8 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             loadingStatus,
             refreshingVoteStatus,
             hasVoted,
-            isSubmitting,
             isCanceled,
+            isSubmitting,
             hasStarted,
             hasEnded,
             isInCensus,
@@ -377,13 +392,13 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             <Divider />
             <p className='info-text'><MultiLine text={main.theseAreYourSelections} /></p>
             {
-                process.details.questions.map((question, idx) => <Fragment key={idx}>
+                process.questions.map((question, idx) => <Fragment key={idx}>
                     {
                         typeof choices[idx] != 'number' ? null : <>
                             <p>
-                                <strong>{question.question.default}</strong> - {
-                                    question.voteOptions.some(o => o.value == this.state.choices[idx]) ?
-                                        question.voteOptions.find(o => o.value == this.state.choices[idx]).title.default : null
+                                <strong>{question.title.default}</strong> - {
+                                    question.choices.some(o => o.value == this.state.choices[idx]) ?
+                                        question.choices.find(o => o.value == this.state.choices[idx]).title.default : null
                                 }
                             </p>
                         </>
@@ -436,26 +451,30 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
     renderProcess() : ReactNode {
         const {
             process,
+            processParams: {
+                startBlock,
+                blockCount,
+                status: {
+                    isCanceled,
+                },
+                questionCount,
+            },
             choices,
-            isCanceled,
             currentBlock,
             currentDate,
             showConfirmChoices,
         } = this.state
 
-        const allQuestionsChosen = areAllNumbers(choices) && choices.length === process.details.questions.length
-
-        const startTimestamp = currentDate.valueOf() + (process.startBlock - currentBlock) * BLOCK_TIME * 1000
+        const allQuestionsChosen = areAllNumbers(choices) && choices.length === questionCount
+        const startTimestamp = currentDate.valueOf() + (startBlock - currentBlock) * BLOCK_TIME * 1000
         const startDate = moment(startTimestamp)
-        const endDate = moment(startTimestamp + process.numberOfBlocks * BLOCK_TIME * 1000)
-
+        const endDate = moment(startTimestamp + blockCount * BLOCK_TIME * 1000)
         const { loadingStatus, refreshingVoteStatus, hasVoted, isSubmitting } = this.state
         const hasStarted = startDate.valueOf() <= Date.now()
         const hasEnded = endDate.valueOf() < Date.now()
         const isInCensus = !!this.state.merkleProof
 
         const canVote = !hasVoted && hasStarted && !hasEnded && isInCensus && !isCanceled
-
         const status = {
             loadingStatus,
             refreshingVoteStatus,
