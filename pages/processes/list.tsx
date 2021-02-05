@@ -4,6 +4,7 @@ import { ProcessContractParameters, ProcessMetadata, VotingApi } from 'dvote-js'
 import Link from 'next/link'
 
 import { getGatewayClients } from '../../lib/network'
+import { findHexId } from '../../lib/util'
 import FinishDate from '../../components/processes/FinishDate'
 import AppContext from '../../components/app-context'
 import If from '../../components/if'
@@ -19,6 +20,7 @@ type State = {
     processes: {
         [key: string]: ProcessComponentData,
     },
+    syncedProcesses: string[],
     keys: string[],
     startIndex: number,
     filter: string,
@@ -39,6 +41,7 @@ export default class ProcessListView extends Component<undefined, State> {
     state: State = {
         startIndex: 0,
         processes: {},
+        syncedProcesses: [],
         keys: [],
         filter: 'all',
     }
@@ -51,11 +54,13 @@ export default class ProcessListView extends Component<undefined, State> {
         try {
             this.context.setMenuSelected('processes')
 
-            const [entityId] = this.context.params
+            const [address, r] = this.context.params
             this.setState({ loading: true })
 
+            // An `/r` is appended when creating a process to properly refresh entity metadata
+            const refresh = r && r === 'r'
             const gateway = await getGatewayClients()
-            await this.context.refreshEntityMetadata(entityId)
+            await this.context.refreshEntityMetadata(address, refresh)
 
             const processIds = [
                 ...this.context.entity.votingProcesses.ended,
@@ -65,6 +70,7 @@ export default class ProcessListView extends Component<undefined, State> {
             const processes = {...this.state.processes}
             const keys = []
 
+            const syncedProcesses = await VotingApi.getProcessList(address, gateway)
             await Promise.all((processIds).map(async (id) => {
                 const params = await VotingApi.getProcessParameters(id, gateway)
                 const data = await VotingApi.getProcessMetadata(id, gateway)
@@ -93,7 +99,7 @@ export default class ProcessListView extends Component<undefined, State> {
                 return 0
             }).reverse()
 
-            this.setState({ processes, keys })
+            this.setState({ processes, syncedProcesses, keys })
             this.setState({
                 loading: false,
             })
@@ -171,8 +177,14 @@ export default class ProcessListView extends Component<undefined, State> {
                                 {
                                     processes.map((id) => {
                                         const process : ProcessComponentData = this.state.processes[id]
+                                        const props : {className? : string} = {}
+                                        const synced = this.state.syncedProcesses.find(findHexId(id))
+                                        if (!synced) {
+                                            props.className = 'unsync'
+                                        }
 
                                         return <InlineCard
+                                            {...props}
                                             key={process.id}
                                             image={(
                                                 <Link href={`/processes#/${this.context.address}/${process.id}`}>
@@ -196,6 +208,11 @@ export default class ProcessListView extends Component<undefined, State> {
                                             <div className='state'>
                                                 <div className={`status ${process.params.status.isCanceled && 'finished'}`}>
                                                     {process.params.status.isCanceled ? main.finished : main.active}
+                                                    <If condition={!synced}>
+                                                        <span className='unsync'>
+                                                            &nbsp; (Not in sync)
+                                                        </span>
+                                                    </If>
                                                 </div>
                                                 <div className='date'>
                                                     <FinishDate process={process} />

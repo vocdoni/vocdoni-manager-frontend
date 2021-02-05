@@ -1,6 +1,7 @@
 import React, { Component, ReactChild, ReactNode } from 'react'
 
 type InlineCardProps = {
+    className?: string,
     image?: ReactNode,
     title?: ReactChild,
     children?: ReactChild,
@@ -8,8 +9,13 @@ type InlineCardProps = {
 
 export default class InlineCard extends Component<InlineCardProps, undefined> {
     render() : ReactNode {
+        const classes = ['inline-card']
+        if (this.props.className?.length) {
+            classes.push(this.props.className)
+        }
+
         return (
-            <div className='inline-card'>
+            <div className={classes.join(' ')}>
                 <div className='inline-card-img'>
                     {this.props.image}
                 </div>

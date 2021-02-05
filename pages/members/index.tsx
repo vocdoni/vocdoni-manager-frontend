@@ -168,6 +168,7 @@ class Members extends Component<IAppContext, State> {
                     },
                 })
             }, (error) => {
+                console.error(error)
                 message.error("Could not fetch the members data")
                 this.setState({
                     loading: false,

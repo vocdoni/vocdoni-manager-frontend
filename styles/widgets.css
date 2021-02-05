@@ -125,6 +125,12 @@
     box-shadow: 0 0 20px #ddd;
     background-color: white;
 }
+.inline-card.unsync {
+    opacity: .7;
+}
+.inline-card .unsync {
+    color: lightgray;
+}
 .inline-card a {
     color: var(--main-color);
 }
@@ -182,6 +188,7 @@
     width: 100%;
     min-width: 150px;
     background-size: cover;
+    background-position: center center;
 }
 
 .note {

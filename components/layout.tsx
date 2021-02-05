@@ -5,6 +5,7 @@ import { Layout as ALayout, Button, Row, Col } from "antd"
 import SideMenu from "./side-menu"
 import AccountMenu from "./account-menu"
 import { MenuOutlined } from "@ant-design/icons"
+import Footer from "./footer"
 
 
 type Props = {

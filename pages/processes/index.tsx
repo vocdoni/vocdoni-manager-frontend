@@ -54,7 +54,7 @@ class ProcessActiveView extends Component<undefined, State> {
         results: null,
         totalVotes: 0,
         canceled: false,
-        censusSize: 0
+        censusSize: 0,
     }
 
     refreshInterval = null
@@ -64,13 +64,12 @@ class ProcessActiveView extends Component<undefined, State> {
     }
 
     init() : Promise<any> {
-        if (this.context.params.length !== 2) {
+        const [entityId, processId] = this.context.params
+        if (!entityId || !processId) {
             message.error("The requested data is not valid")
             Router.replace("/")
             return
         }
-
-        const [entityId, processId] = this.context.params
 
         this.context.setAddress(entityId)
         this.context.setProcessId(processId)
@@ -157,7 +156,7 @@ class ProcessActiveView extends Component<undefined, State> {
                 processParams,
                 censusSize,
                 estimatedStartDate,
-                estimatedEndDate
+                estimatedEndDate,
             })
         }
         catch (err) {
@@ -339,7 +338,7 @@ class ProcessActiveView extends Component<undefined, State> {
                             <br />
                             <Divider orientation="left">Question {idx + 1}</Divider>
                             <h4>{question.title.default}</h4>
-                            <p dangerouslySetInnerHTML={{__html: question.description.default}} />
+                            <div dangerouslySetInnerHTML={{__html: question.description.default}} />
                             <ul>
                                 {question.choices.map((option, i) => <li key={i}>
                                     {option.title.default}

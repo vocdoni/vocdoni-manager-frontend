@@ -42,6 +42,7 @@ import QuestionsForm, { LegacyQuestions } from '../../components/processes/Quest
 
 export type ProcessNewState = {
     loading?: boolean,
+    valid: boolean,
     creating?: boolean,
     confirmModalVisible: boolean,
     entity?: EntityMetadata,
@@ -90,7 +91,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                 autoStart: true,
                 interruptible: true,
             }),
-            envelopeType: ProcessEnvelopeType.ANONYMOUS,
+            envelopeType: ProcessEnvelopeType.ENCRYPTED_VOTES,
             censusOrigin: ProcessCensusOrigin.OFF_CHAIN_TREE,
             censusRoot: '',
             censusUri: '',
@@ -111,6 +112,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         },
         creating: false,
         confirmModalVisible: false,
+        valid: false,
         loading: true,
         startBlock: null,
         blockCount: null,
@@ -163,6 +165,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                 targets: targets || [],
                 censuses: censuses || [],
                 loading: false,
+                valid: true,
             })
         }
         catch (err) {
@@ -503,7 +506,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
             loading()
 
-            Router.push(`/processes/#/${this.context.address}/${processId}`)
+            Router.push(`/processes/#/${this.context.address}/${processId}/r`)
         } catch (error) {
             loading()
             this.setState({ creating: false })
@@ -514,7 +517,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
     }
 
     render() : ReactNode {
-        const { process, loading, creating, selectedCensus } = this.state
+        const { process, loading, creating, selectedCensus, valid } = this.state
 
         // avoid rendering if it's in read only
         if (this.context.isReadOnly) {
@@ -574,9 +577,9 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             <label><Activity /> Real-time results</label>
                             <Switch
                                 onChange={() =>
-                                    this.toggleBitFlagField('envelopeType', ProcessEnvelopeType.ANONYMOUS)
+                                    this.toggleBitFlagField('envelopeType', ProcessEnvelopeType.ENCRYPTED_VOTES)
                                 }
-                                checked={(ProcessEnvelopeType.ANONYMOUS & process.envelopeType as number) === 0}
+                                checked={(ProcessEnvelopeType.ENCRYPTED_VOTES & process.envelopeType as number) === 0}
                             />
                         </div>
                         <div>
@@ -688,7 +691,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             <label><ArrowRightCircle /> Publishing</label>
                         </div>
                         <Button
-                            disabled={loading || creating}
+                            disabled={loading || creating || !valid}
                             type='primary'
                             size='large'
                             htmlType='submit'

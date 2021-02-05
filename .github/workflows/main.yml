@@ -43,6 +43,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
+      - name: Get short commit sha
+        id: var
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Get short branch name
         id: var
         shell: bash
@@ -58,6 +61,7 @@ jobs:
           platforms: linux/amd64
           push: true
           build-args: |
+            COMMIT_SHA=${{ steps.var.outputs.sha_short }}
             ETH_NETWORK_ID=$ETH_NETWORK_ID
             BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
             BOOTNODES_URL_RW=$BOOTNODES_URL_RW
@@ -79,6 +83,7 @@ jobs:
           platforms: linux/amd64
           push: true
           build-args: |
+            COMMIT_SHA=${{ steps.var.outputs.sha_short }}
             ETH_NETWORK_ID=$ETH_NETWORK_ID
             BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
             BOOTNODES_URL_RW=$BOOTNODES_URL_RW

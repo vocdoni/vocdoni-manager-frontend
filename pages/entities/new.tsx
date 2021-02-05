@@ -20,18 +20,37 @@ class EntityNew extends Component<undefined, State> {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
     state: State = {
+        entity: JSON.parse(JSON.stringify(EntityMetadataTemplate)) as EntityMetadata,
         editing: false,
     }
 
-    componentDidMount() : void {
-        this.context.setMenuSelected('profile')
+    async componentDidMount() : Promise<void> {
+        this.context.setMenuDisabled(true)
         if (this.context.isReadOnlyNetwork) {
             Router.replace('/')
         }
+
+        // Even tho this is the create method, there may be data already stored in IPFS
+        if (!this.context.entity) {
+            try {
+                await this.context.refreshEntityMetadata()
+            } catch (e) {
+                // if entity does not really exist, just ignore it
+            }
+        }
+
+        if (!this.context.entity) {
+            return
+        }
+
+        this.setState({
+            entity: this.context.entity,
+        })
     }
 
     async update() : Promise<void> {
         const address = this.context.web3Wallet.getAddress()
+        this.context.setMenuDisabled(false)
 
         Router.push(`/entities/#/${address}`)
     }
@@ -42,7 +61,7 @@ class EntityNew extends Component<undefined, State> {
                 <Edit
                     onSave={(success) => success && this.update()}
                     method='signUp'
-                    entity={JSON.parse(JSON.stringify(EntityMetadataTemplate))}
+                    entity={this.state.entity}
                 />
             </div>
         )

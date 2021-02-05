@@ -84,7 +84,6 @@ export default class Edit extends Component<EditProps, EditState> {
                 }})
             }
 
-
             this.setInitialFieldValues()
         } catch (error) {
             console.error(error)
@@ -187,6 +186,8 @@ export default class Edit extends Component<EditProps, EditState> {
                     request.entity[field] = values[field]
                 }
             }
+
+            // Updated such centralized metadata
             await this.context.managerBackendGateway.sendRequest(request as any, wallet);
 
             // Update decentralized one
@@ -209,7 +210,7 @@ export default class Edit extends Component<EditProps, EditState> {
 
     render() : ReactNode {
         // Due to how `initialValues` works, we need to avoid rendering the form
-        // before having all the values
+        // before having all the values (TODO: use state instead)
         if (!this.state.loaded) {
             return null
         }

@@ -194,7 +194,7 @@ div#__next {
 
 footer.poweredby {
     position: absolute;
-    height: 60px;
+    height: 80px;
     background-color: var(--main-color);
     text-align: center;
     width: 100%;
@@ -202,14 +202,19 @@ footer.poweredby {
     align-items: center;
     justify-content: center;
     bottom: 0;
+    flex-direction: column;
 }
 
 footer.poweredby img {
     width: 35px;
 }
 
+footer.poweredby p,
 footer.poweredby a {
     color: var(--gray-logo);
+}
+footer.poweredby p {
+    font-size: .5em;
 }
 footer.poweredby a:hover,
 footer.poweredby a:active,

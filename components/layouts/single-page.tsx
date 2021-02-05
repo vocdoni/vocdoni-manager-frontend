@@ -1,5 +1,6 @@
 import { Col, Row } from 'antd'
 import React, { Component, ReactChild, ReactNode } from 'react'
+import Footer from '../footer'
 
 type SinglePageLayoutProps = {
     children: ReactChild,
@@ -35,12 +36,7 @@ export default class SinglePageLayout extends Component<SinglePageLayoutProps, u
                 <Col {...resp}>
                     {this.props.children}
                 </Col>
-                <footer className='poweredby'>
-                    <a href='https://vocdoni.io' target='_blank' rel='noreferrer'>
-                        Powered by Vocdoni
-                        <img src='/media/logo_square_white.png' alt='Vocdoni logo' />
-                    </a>
-                </footer>
+                <Footer />
             </Row>
         )
     }

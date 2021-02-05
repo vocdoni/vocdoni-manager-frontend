@@ -3,8 +3,10 @@
 
 const lang = 'en'
 const DEVELOPMENT = process.env.NODE_ENV !== 'production'
+const COMMIT_SHA = process.env.COMMIT_SHA || 'development'
 
 module.exports = {
+    COMMIT_SHA,
     LANG: lang,
     DEVELOPMENT,
     FALLBACK_REDIRECT_URL: 'https://vocdoni.io/',
