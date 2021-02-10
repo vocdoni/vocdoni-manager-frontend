@@ -3,6 +3,7 @@ import {
     GatewayPool,
     IEnsPublicResolverContract,
     IGatewayDiscoveryParameters,
+    VocdoniEnvironment,
 } from 'dvote-js'
 import { getWeb3Wallet } from './web3-wallet'
 import { main } from '../i18n'
@@ -10,7 +11,6 @@ import { main } from '../i18n'
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
 const BOOTNODES_URL_READ_ONLY = process.env.BOOTNODES_URL_READ_ONLY
 const BOOTNODES_URL_RW = process.env.BOOTNODES_URL_RW
-const TEST_CONTRACTS = process.env.TEST_CONTRACTS
 
 let entityResolver: IEnsPublicResolverContract = null
 // let votingProcess: IVotingProcessContract = null
@@ -41,8 +41,7 @@ export async function initNetwork() {
                 bootnodesContentUri: BOOTNODES_URL_READ_ONLY,
                 numberOfGateways: 2,
                 timeout: 900,
-                testing : (TEST_CONTRACTS) ? true : false,
-                environment: process.env.ETH_NETWORK_ENVIRONMENT,
+                environment: process.env.ETH_NETWORK_ENVIRONMENT as VocdoniEnvironment,
             }
             gateway = await GatewayPool.discover(options)
 
@@ -56,8 +55,7 @@ export async function initNetwork() {
                 bootnodesContentUri: BOOTNODES_URL_RW,
                 numberOfGateways: 2,
                 timeout: 900,
-                testing : (TEST_CONTRACTS) ? true : false,
-                environment: process.env.ETH_NETWORK_ENVIRONMENT,
+                environment: process.env.ETH_NETWORK_ENVIRONMENT as VocdoniEnvironment,
             }
             gateway = await GatewayPool.discover(options)
             web3Wallet.connect(gateway.provider)
