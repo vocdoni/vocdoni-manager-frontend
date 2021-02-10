@@ -506,7 +506,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
             loading()
 
-            Router.push(`/processes/#/${this.context.address}/${processId}/r`)
+            Router.push(`/processes/#/${this.context.address}/${processId}`)
         } catch (error) {
             loading()
             this.setState({ creating: false })

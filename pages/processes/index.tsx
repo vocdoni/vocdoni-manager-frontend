@@ -130,8 +130,7 @@ class ProcessActiveView extends Component<undefined, State> {
         try {
             this.context.setMenuSelected("processes-details")
 
-            const params = location.hash.substr(2).split("/")
-            if (params.length !== 2) {
+            if (this.context.params.length !== 2) {
                 message.error("The requested data is not valid")
                 Router.replace("/")
                 return
@@ -139,7 +138,9 @@ class ProcessActiveView extends Component<undefined, State> {
 
             this.setState({ dataLoading: true })
 
-            await this.context.refreshEntityMetadata()
+            const [entityId] = this.context.params
+
+            await this.context.refreshEntityMetadata(entityId, true)
 
             const gateway = await this.context.gatewayClients
             const process = await VotingApi.getProcessMetadata(this.context.processId, gateway)

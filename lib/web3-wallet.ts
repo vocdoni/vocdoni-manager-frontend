@@ -48,7 +48,6 @@ export default class Web3Wallet {
     // Generates a wallet and stores it on IndexedDB
     public store(name: string, seed: string, passphrase: string): Promise<Key> {
         const wallet = WalletUtil.fromSeededPassphrase(passphrase, seed)
-        console.log(wallet)
         // tslint:disable-next-line
         return this.db.addWallet({ name, seed, publicKey: wallet._signingKey().publicKey });
     }

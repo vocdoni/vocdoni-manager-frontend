@@ -116,6 +116,8 @@ export default class ProcessListView extends Component<undefined, State> {
             else {
                 message.error('The list of voting processes could not be loaded')
             }
+
+            console.error(err)
         }
     }
 

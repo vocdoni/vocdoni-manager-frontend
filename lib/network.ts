@@ -41,7 +41,8 @@ export async function initNetwork() {
                 bootnodesContentUri: BOOTNODES_URL_READ_ONLY,
                 numberOfGateways: 2,
                 timeout: 900,
-                testing : (TEST_CONTRACTS) ? true : false
+                testing : (TEST_CONTRACTS) ? true : false,
+                environment: process.env.ETH_NETWORK_ENVIRONMENT,
             }
             gateway = await GatewayPool.discover(options)
 
@@ -55,7 +56,8 @@ export async function initNetwork() {
                 bootnodesContentUri: BOOTNODES_URL_RW,
                 numberOfGateways: 2,
                 timeout: 900,
-                testing : (TEST_CONTRACTS) ? true : false
+                testing : (TEST_CONTRACTS) ? true : false,
+                environment: process.env.ETH_NETWORK_ENVIRONMENT,
             }
             gateway = await GatewayPool.discover(options)
             web3Wallet.connect(gateway.provider)
