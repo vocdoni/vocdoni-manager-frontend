@@ -4,7 +4,7 @@ const env = require("./env-config.js")
 // Where your antd-custom.less file lives
 module.exports = {
     env,
-    trailingSlash: true,
+    exportTrailingSlash: true,
     exportPathMap: () => generatePathMap(),
     webpack: (config, { isServer }) => {
         if (isServer) {
