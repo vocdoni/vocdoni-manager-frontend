@@ -11,6 +11,10 @@ if (networkEnv !== 'prod') {
     bootnodes = bootnodes.replace('.json', `.${networkEnv}.json`)
     explorer = explorer.replace('explorer.', `explorer.${networkEnv}.`)
 }
+let BOOTNODES_URL_RW = process.env.BOOTNODES_URL_RW
+if (typeof BOOTNODES_URL_RW === 'undefined') {
+    BOOTNODES_URL_RW = bootnodes
+}
 
 module.exports = {
     COMMIT_SHA,
@@ -26,7 +30,7 @@ module.exports = {
 
     // GATEWAYS
     BOOTNODES_URL_READ_ONLY: process.env.BOOTNODES_URL_READ_ONLY || bootnodes,
-    BOOTNODES_URL_RW: process.env.BOOTNODES_URL_RW || bootnodes,
+    BOOTNODES_URL_RW,
 
     // VOCHAIN
     BLOCK_TIME: 10, // 10 seconds
