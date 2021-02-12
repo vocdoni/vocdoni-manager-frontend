@@ -439,7 +439,7 @@ class ProcessActiveView extends Component<undefined, State> {
                                             entry.voteResults.map((result, i) => <li key={i}>
                                                 <Badge
                                                     overflowCount={9999999999}
-                                                    count={result.votes || "–"}
+                                                    count={result.votes.toNumber() || "–"}
                                                     style={{ backgroundColor: "#848484" }}
                                                 />
                                                 &nbsp;{result.title.default}
