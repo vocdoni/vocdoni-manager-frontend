@@ -148,7 +148,10 @@ class ProcessActiveView extends Component<undefined, State> {
             const canceled = processParams.status.isCanceled
             const estimatedStartDate = await VotingApi.estimateDateAtBlock(processParams.startBlock, gateway)
             const estimatedEndDate = await VotingApi.estimateDateAtBlock(processParams.startBlock + processParams.blockCount, gateway)
-            const censusSize = parseInt(await CensusOffChainApi.getCensusSize(processParams.censusRoot, gateway) || "0", 10)
+            let censusSize = 0
+            if (processParams.censusOrigin.isOffChain || processParams.censusOrigin.isOffChainWeighted) {
+                censusSize = parseInt(await CensusOffChainApi.getCensusSize(processParams.censusRoot, gateway) || "0", 10)
+            }
 
             this.setState({
                 dataLoading: false,
