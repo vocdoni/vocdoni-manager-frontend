@@ -35,7 +35,7 @@ import ImageAndUploader from '../../components/image-and-uploader'
 import { ICensus, VotingFormImportData } from '../../lib/types'
 import { getRandomUnsplashImage, range } from '../../lib/util'
 import { MessageType } from 'antd/lib/message'
-import ParticipantsSelector from '../../components/processes/ParticipantsSelector'
+import ParticipantsSelector, { Census } from '../../components/processes/ParticipantsSelector'
 import QuestionsForm, { LegacyQuestions } from '../../components/processes/QuestionsForm'
 import i18n from '../../i18n'
 
@@ -49,7 +49,7 @@ export type ProcessNewState = {
     entityId?: string,
     process?: Omit<Omit<IProcessCreateParams, 'metadata'>, 'questionCount'> & { metadata: ProcessMetadata },
     censuses: ICensus[],
-    censusFileData: VotingFormImportData,
+    censusData: VotingFormImportData | Census,
     selectedCensus: string,
     startBlock: number
     startDate: moment.Moment
@@ -121,7 +121,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         censuses: [],
         targets: [],
         selectedCensus: '',
-        censusFileData: {
+        censusData: {
             digestedHexClaims: [],
             title: '',
         },
@@ -339,8 +339,9 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         switch (this.state.selectedCensus) {
             // Generates an ephemeral census from the loaded file
             case 'file': {
+                const data = this.state.censusData as VotingFormImportData
                 const censusName = (this.state.process.metadata.title.default || (new Date()).toDateString()) + '_' + Math.floor(Date.now() / 1000)
-                const claims = this.state.censusFileData.digestedHexClaims.map((claim) => ({key: claim, value: ''}))
+                const claims = data.digestedHexClaims.map((claim) => ({key: claim, value: ''}))
                 const { censusId } = await CensusOffChainApi.addCensus(censusName, [wallet._signingKey().publicKey], wallet, gateway)
                 const { censusRoot, invalidClaims } = await CensusOffChainApi.addClaimBulk(censusId, claims, true, wallet, gateway)
                 if (invalidClaims.length) {
@@ -352,7 +353,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     merkleRoot: censusRoot,
                     merkleTreeUri,
                     id: censusId,
-                    formUri: Buffer.from(this.state.censusFileData.title).toString('base64'),
+                    formUri: Buffer.from(data.title).toString('base64'),
                 }
             }
 
@@ -369,6 +370,25 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     merkleRoot,
                     merkleTreeUri,
                     id: census,
+                }
+            }
+
+            // Takes manually imported census uri root and uri
+            case 'manual': {
+                const data = this.state.censusData as Census
+                if (
+                    !data.uri ||
+                    !data.root ||
+                    !data.uri?.length ||
+                    !data.root?.length
+                ) {
+                    throw new Error('invalid census data')
+                }
+
+                return {
+                    id: null,
+                    merkleRoot: data.root,
+                    merkleTreeUri: data.uri,
                 }
             }
 
@@ -433,11 +453,20 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         })
     }
 
-    toggleBitFlagField(field: string, flag: number) : void {
+    toggleProcessBitFlagField(field: string, flag: number) : void {
         this.setState({
             process: {
                 ...this.state.process,
                 [field]: flag ^= this.state.process.envelopeType as number,
+            }
+        })
+    }
+
+    setProcessBitFlagField(field: string, flag: number) : void {
+        this.setState({
+            process: {
+                ...this.state.process,
+                [field]: flag,
             }
         })
     }
@@ -488,7 +517,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             this.stepDone('create')
 
             let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
-            if (this.state.webVoting && this.state.selectedCensus !== 'file') {
+            if (this.state.webVoting && this.state.selectedCensus !== 'file' && census.id) {
                 const emailsReq : any = {
                     method: 'sendVotingLinks',
                     processId,
@@ -578,7 +607,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             <label><Activity /> Real-time results</label>
                             <Switch
                                 onChange={() =>
-                                    this.toggleBitFlagField('envelopeType', ProcessEnvelopeType.ENCRYPTED_VOTES)
+                                    this.toggleProcessBitFlagField('envelopeType', ProcessEnvelopeType.ENCRYPTED_VOTES)
                                 }
                                 checked={(ProcessEnvelopeType.ENCRYPTED_VOTES & process.envelopeType as number) === 0}
                             />
@@ -611,16 +640,24 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                         <ParticipantsSelector
                             loading={loading}
                             options={this.state.censuses.map(({id, name}) => ({label: name, value: id}))}
-                            onChange={(selectedCensus: string, censusFileData: VotingFormImportData) => {
+                            onChange={(selectedCensus: string, censusData: VotingFormImportData | Census) => {
                                 this.setState({
                                     selectedCensus,
-                                    censusFileData
+                                    censusData,
                                 })
                                 if (selectedCensus === 'file') {
                                     this.setState({
                                         webVoting: true,
                                     })
                                 }
+                                // For now it's forced to OFF_CHAIN_TREE by default,
+                                // unless manually selected and uri being an actual url
+                                if (selectedCensus === 'manual' && /^https?:\/\//.test((censusData as Census)?.uri)) {
+                                    this.setProcessBitFlagField('censusOrigin', ProcessCensusOrigin.OFF_CHAIN_CA)
+                                    return
+                                }
+
+                                this.setProcessBitFlagField('censusOrigin', ProcessCensusOrigin.OFF_CHAIN_TREE)
                             }}
                         />
                     </Form.Item>

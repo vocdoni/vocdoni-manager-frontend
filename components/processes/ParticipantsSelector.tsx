@@ -1,5 +1,6 @@
-import { message, Select, Upload } from 'antd'
+import { Form, Input, message, Select, Upload } from 'antd'
 import { RcFile } from 'antd/lib/upload'
+import { str } from 'dot-object'
 import React, { Component, ReactNode } from 'react'
 
 import AppContext from '../../components/app-context'
@@ -8,16 +9,22 @@ import { VotingFormImportData } from '../../lib/types'
 import { parseSpreadsheetData } from '../../lib/import-utils'
 import Ficon from '../ficon'
 
+export type Census = {
+    root: string,
+    uri: string,
+}
+
 export type ParticipantsSelectorState = {
     selected: string,
     fileData: VotingFormImportData,
     selectedFile: RcFile,
+    census: Census,
 }
 
 export type ParticipantsSelectorProps = {
     loading: boolean,
     options: OptionValue[],
-    onChange: (selected: string, fileData?: VotingFormImportData) => void,
+    onChange: (selected: string, data?: VotingFormImportData | Census) => void,
 }
 
 type OptionValue = {
@@ -38,6 +45,10 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         selected: 'all',
         fileData: null,
         selectedFile: null,
+        census: {
+            root: null,
+            uri: null,
+        },
     }
 
     get options() : UnderlyingOptionValue[] {
@@ -52,19 +63,29 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             this.props.options as unknown as UnderlyingOptionValue[]
         ))
 
-        options.push({
-            label: ((
-                <span>
-                    <Ficon icon='Download' /> From spreadsheet (Attribute auth.)
-                </span>
-            ) as unknown as string), // yes, seriously...
-            value: 'file',
-        })
+        options.push(
+            {
+                label: ((
+                    <span>
+                        <Ficon icon='Download' /> From spreadsheet (Attribute auth.)
+                    </span>
+                ) as unknown as string), // yes, seriously...
+                value: 'file',
+            },
+            {
+                label: ((
+                    <span>
+                        <Ficon icon='Download' /> Import census keys
+                    </span>
+                ) as unknown as string), // yes, seriously...
+                value: 'manual',
+            },
+        )
 
         return options
     }
 
-    componentDidMount() {
+    componentDidMount() : void {
         this.props.onChange(this.state.selected)
     }
 
@@ -92,6 +113,18 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
     onChange(selected: string) : void {
         this.setState({selected})
         this.props.onChange(selected)
+    }
+
+    onFieldChange(field: string, {target: {value}}: React.ChangeEvent<HTMLInputElement>) : void {
+        this.setFieldValue(field, value)
+    }
+
+    setFieldValue(field: string, value: string) : void {
+        const state = {...this.state}
+        str(field, value, state)
+        this.setState(state)
+
+        this.props.onChange(this.state.selected, state.census)
     }
 
     render() : ReactNode {
@@ -135,6 +168,28 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
                                 <Ficon icon='FilePlus' /> Drag &amp; drop ot click to browse files (csv, xls, xlsx, ods...)
                             </p>
                         </Upload.Dragger>
+                    </div>
+                </If>
+                <If condition={this.state.selected === 'manual'}>
+                    <div>
+                        <small>
+                            Manually set the census root and uri (for CA voting, won't
+                            send e-mails nor other automated processes)
+                        </small>
+                        <Form.Item label='Census Root'>
+                            <Input
+                                placeholder='0x038f1d41d1c...'
+                                onChange={this.onFieldChange.bind(this, 'census.root')}
+                                value={this.state.census.root}
+                            />
+                        </Form.Item>
+                        <Form.Item label='Census Uri'>
+                            <Input
+                                placeholder='Either a merkle tree uri or another CA endpoint url'
+                                onChange={this.onFieldChange.bind(this, 'census.uri')}
+                                value={this.state.census.uri}
+                            />
+                        </Form.Item>
                     </div>
                 </If>
             </>

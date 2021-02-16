@@ -353,9 +353,9 @@ class ProcessActiveView extends Component<undefined, State> {
                     <h4>Process Type</h4>
                     <p>{processType.value}</p>
                     <h4>Process ID</h4>
-                    <p>
-                        <pre><Text copyable={{text: processId}}>{processId.substr(0, 10)}...</Text></pre>
-                    </p>
+                    <pre>
+                        <Text copyable={{text: processId}}>{processId.substr(0, 10)}...</Text>
+                    </pre>
                     <p>
                         <Text ellipsis>
                             <a href={explorerURI} target='_blank' rel='noreferrer'>
