@@ -34,10 +34,10 @@ import If from '../../components/if'
 import ImageAndUploader from '../../components/image-and-uploader'
 import { ICensus, VotingFormImportData } from '../../lib/types'
 import { getRandomUnsplashImage, range } from '../../lib/util'
-import { main } from '../../i18n'
 import { MessageType } from 'antd/lib/message'
 import ParticipantsSelector from '../../components/processes/ParticipantsSelector'
 import QuestionsForm, { LegacyQuestions } from '../../components/processes/QuestionsForm'
+import i18n from '../../i18n'
 
 
 export type ProcessNewState = {
@@ -149,7 +149,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             Router.replace('/')
             return
         }
-        this.context.setTitle(main.newProcess)
+        this.context.setTitle(i18n.t('newProcess'))
 
         try {
             const [entityId] = this.context.params
@@ -177,7 +177,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
     modal() : ReactNode {
         const { creating } = this.state
-        let content = <span dangerouslySetInnerHTML={{__html: main.processCreationAdvice}} />
+        let content = <span dangerouslySetInnerHTML={{__html: i18n.t('processCreationAdvice')}} />
         if (creating) {
             content = (
                 <ul className='process-steps'>
@@ -199,10 +199,10 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
         return (
             <Modal
-                title={creating ? main.processCreating : main.confirm}
+                title={creating ? i18n.t('processCreating') : i18n.t('confirm')}
                 closable={false}
                 visible={this.state.confirmModalVisible}
-                okText={main.processCreationConfirmButton}
+                okText={i18n.t('processCreationConfirmButton')}
                 onOk={this.submit.bind(this)}
                 onCancel={() => this.setState({confirmModalVisible: false})}
                 okButtonProps={{

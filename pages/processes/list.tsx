@@ -12,8 +12,8 @@ import Image from '../../components/image'
 import Loading from '../../components/loading'
 import NotFound from '../../components/not-found'
 import InlineCard from '../../components/inline-card'
-import { main } from '../../i18n'
 import Ficon from '../../components/ficon'
+import i18n from '../../i18n'
 
 type State = {
     loading?: boolean,
@@ -147,7 +147,7 @@ export default class ProcessListView extends Component<undefined, State> {
 
         return (
             <div className='content-wrapper spaced-top'>
-                <Loading loading={this.context.loadingEntityMetadata} text={main.loadingEntity}>
+                <Loading loading={this.context.loadingEntityMetadata} text={i18n.t('entity.loading')}>
                     <If condition={!this.context.entity}>
                         <NotFound />
                     </If>
@@ -174,7 +174,7 @@ export default class ProcessListView extends Component<undefined, State> {
                                 </If>
                             </Col>
                         </Row>
-                        <Loading loading={this.state.loading} text={main.loadingProcesses}>
+                        <Loading loading={this.state.loading} text={i18n.t('loadingProcesses')}>
                             <div className='card-list'>
                                 {
                                     processes.map((id) => {
@@ -209,7 +209,7 @@ export default class ProcessListView extends Component<undefined, State> {
                                         >
                                             <div className='state'>
                                                 <div className={`status ${process.params.status.isCanceled && 'finished'}`}>
-                                                    {process.params.status.isCanceled ? main.finished : main.active}
+                                                    {process.params.status.isCanceled ? i18n.t('finished') : i18n.t('active')}
                                                     <If condition={!synced}>
                                                         <span className='unsync'>
                                                             &nbsp; (Not in sync)

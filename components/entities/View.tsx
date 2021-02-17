@@ -3,7 +3,7 @@ import { Button, Col, Row } from 'antd'
 import QRCode from 'qrcode.react'
 import React, { Component, ReactNode } from 'react'
 
-import { main } from '../../i18n'
+import i18n from '../../i18n'
 import AppContext from '../app-context'
 import Copy from '../copy'
 import If from '../if'
@@ -75,7 +75,7 @@ export default class View extends Component<ViewProps, undefined> {
                                     </Col>
                                     <Col span={24} className='qr-note'>
                                         <Note>
-                                            {main.qrNote}
+                                            {i18n.t('qrNote')}
                                         </Note>
                                     </Col>
                                 </Row>

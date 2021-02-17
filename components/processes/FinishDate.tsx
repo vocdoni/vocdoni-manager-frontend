@@ -2,7 +2,7 @@ import { ProcessContractParameters } from 'dvote-js'
 import moment from 'moment'
 import { Component, ReactNode } from 'react'
 
-import { main } from '../../i18n'
+import i18n from '../../i18n'
 
 type FinishDateProps = {
     process: {
@@ -20,10 +20,10 @@ export default class FinishDate extends Component<FinishDateProps, undefined> {
         }
 
         const d = moment(process.date)
-        let suffix = main.finished
+        let suffix = i18n.t('finished')
 
         if (d.isAfter(Date.now())) {
-            suffix = main.finishes
+            suffix = i18n.t('finishes')
         }
 
         return `${suffix} ${d.fromNow()}`

@@ -9,7 +9,7 @@ import fileSize from 'filesize'
 import { imageUploadMimeTypes, IMAGEUPLOAD_FILESIZE_LIMIT } from '../lib/constants'
 import { FileReaderPromise } from '../lib/file-utils'
 import { getGatewayClients } from '../lib/network'
-import { main } from '../i18n'
+import i18n from '../i18n'
 import AppContext from './app-context'
 
 type State = {
@@ -30,14 +30,14 @@ export default class IPFSImageUpload extends Component<UploadProps, State> {
 
     beforeUpload(file: RcFile) : boolean {
         if (!imageUploadMimeTypes.includes(file.type)) {
-            message.error(main.invalidImageError)
+            message.error(i18n.t('invalidImageError'))
 
             return false
         }
 
         if (file.size > IMAGEUPLOAD_FILESIZE_LIMIT) {
             message.error(
-                main.filesizeLimit.replace(
+                i18n.t('filesizeLimit').replace(
                     '%s',
                     fileSize(IMAGEUPLOAD_FILESIZE_LIMIT)
                 )
@@ -91,7 +91,7 @@ export default class IPFSImageUpload extends Component<UploadProps, State> {
     }
 
     render() : ReactNode {
-        const text = this.state.uploading ? main.btnImageUploading : main.btnImageUpload
+        const text = this.state.uploading ? i18n.t('btnImageUploading') : i18n.t('btnImageUpload')
         return (
             <Upload
                 beforeUpload={this.beforeUpload.bind(this)}

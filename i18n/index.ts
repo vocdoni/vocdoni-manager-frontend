@@ -1,12 +1,16 @@
-import en from "./en"
+import i18next from 'i18next'
+import { en, ca } from './locales'
 
-let main: { [k: string]: string }
+const i18n = i18next.createInstance()
 
-switch (process.env.LANG) {
-    default:
-        main = en as any
-        break
-}
+i18n.init({
+    debug: process.env.NODE_ENV === 'development',
+    lng: 'en',
+    fallbackLng: 'en',
+    defaultNS: 'translation',
+})
 
-export { main }
-export { en }
+i18n.addResourceBundle('en', 'translation', en)
+i18n.addResourceBundle('ca', 'translation', ca)
+
+export default i18n

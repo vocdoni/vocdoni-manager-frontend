@@ -27,7 +27,6 @@ let draftToHtml: any // = await import('draftjs-to-html')
 let htmlToDraft: any // = await import('html-to-draftjs')
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID
-// import { main } from '../i18n'
 
 // MAIN COMPONENT
 const PostEditPage = () => {

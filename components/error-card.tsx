@@ -1,10 +1,10 @@
 import { Card } from 'antd'
 import React, { FunctionComponent, ReactChild } from 'react'
 
-import { main } from '../i18n'
+import i18n from '../i18n'
 
 const ErrorCard : FunctionComponent = (props: { children?: ReactChild }) => <Card>
-    {props && props.children || main.generalErrorMessage}
+    {props && props.children || i18n.t('generalErrorMessage')}
 </Card>
 
 export default ErrorCard

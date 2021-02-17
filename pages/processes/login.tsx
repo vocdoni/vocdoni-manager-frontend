@@ -14,14 +14,13 @@ import Router from 'next/router'
 
 import AppContext from '../../components/app-context'
 import { getGatewayClients } from '../../lib/network'
-import { main } from '../../i18n'
 import { HEX_REGEX } from '../../lib/constants'
 import HeaderImage from '../../components/processes/HeaderImage'
 import If from '../../components/if'
 import { extractDigestedPubKeyFromFormData, findHexId, importedRowToString } from '../../lib/util'
 import ErrorCard from '../../components/error-card'
 import SinglePageLayout from '../../components/layouts/single-page'
-
+import i18n from '../../i18n'
 
 export type ProcessVoteLoginState = {
     address?: string,
@@ -51,7 +50,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
         try {
             const { params } = this.context
             if (params.length !== 3 || !params[0].match(HEX_REGEX) || !params[1].match(HEX_REGEX)) {
-                message.error(main.invalidRequest)
+                message.error(i18n.t('invalidRequest'))
                 Router.replace('/')
                 return
             }
@@ -91,7 +90,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             this.context.setTitle(process.title.default)
         }
         catch (err) {
-            const error = (err && err.message == 'Request timed out') ? main.processListLoadTimeout : main.notFound
+            const error = (err && err.message == 'Request timed out') ? i18n.t('processListLoadTimeout') : i18n.t('notFound')
 
             message.error(error)
             this.setState({
@@ -140,7 +139,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             console.error(error)
         }
 
-        message.error(main.errorCSVInvalidData)
+        message.error(i18n.t('errorCSVInvalidData'))
         this.setState({verifying: false})
     }
 
@@ -168,7 +167,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                         <If condition={this.state.process?.title?.default?.length}>
                             <h1>{this.state.process?.title?.default}</h1>
                         </If>
-                        <h2>{main.titleCSVLogin}</h2>
+                        <h2>{i18n.t('titleCSVLogin')}</h2>
                         {
                             this.state.fields.map((field, key) => (
                                 <Form.Item label={field} name={field} key={key}>
@@ -182,7 +181,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                             disabled={this.state.verifying}
                             loading={this.state.verifying || this.state.loading}
                         >
-                            {main.buttonCSVLogin}
+                            {i18n.t('buttonCSVLogin')}
                         </Button>
                     </Form>
                 </Card>

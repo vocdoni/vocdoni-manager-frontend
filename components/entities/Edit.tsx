@@ -3,8 +3,8 @@ import { Button, Col, Form, Input, message, Modal, Row } from 'antd'
 import { EntityApi, EntityMetadata, Gateway, GatewayPool } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 
-import { main } from '../../i18n'
 import { getGatewayClients } from '../../lib/network'
+import i18n from '../../i18n'
 import AppContext from '../app-context'
 import HTMLEditor from '../html-editor'
 import HeaderImage from './HeaderImage'
@@ -87,7 +87,7 @@ export default class Edit extends Component<EditProps, EditState> {
             this.setInitialFieldValues()
         } catch (error) {
             console.error(error)
-            message.error(main.entityLoadError)
+            message.error(i18n.t('entity.load_error'))
         }
 
         this.setState({
@@ -125,10 +125,10 @@ export default class Edit extends Component<EditProps, EditState> {
 
         if (balance.isZero()) {
             Modal.warning({
-                title: main.notEnoughBalance,
+                title: i18n.t('notEnoughBalance'),
                 icon: <ExclamationCircleOutlined />,
                 content: <span dangerouslySetInnerHTML={{
-                    __html: main.notEnoughBalanceNote.replace('{address}', address)
+                    __html: i18n.t('notEnoughBalanceNote').replace('{address}', address)
                 }} />,
                 onOk: () => {
                     this.setState({saving: false})

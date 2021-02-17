@@ -3,13 +3,13 @@ import { EntityApi, EntityMetadata } from 'dvote-js'
 import { Component, ReactNode } from 'react'
 import Router from 'next/router'
 
-import { main } from '../../i18n'
 import AppContext from '../../components/app-context'
 import Loading from '../../components/loading'
 import { getGatewayClients } from '../../lib/network'
 import If from '../../components/if'
 import NotFound from '../../components/not-found'
 import Edit from '../../components/entities/Edit'
+import i18n from '../../i18n'
 
 
 type State = {
@@ -81,7 +81,7 @@ class EntityView extends Component<undefined, State> {
 
         return (
             <div className='content-wrapper'>
-                <Loading loading={this.state.loading} text={main.loadingEntity}>
+                <Loading loading={this.state.loading} text={i18n.t('entity.loading')}>
                     <If condition={!found}>
                         <NotFound />
                     </If>

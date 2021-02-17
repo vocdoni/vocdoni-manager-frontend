@@ -20,7 +20,6 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { getRandomUnsplashImage, sanitizeHtml } from '../../lib/util'
 import IPFSImageUpload from '../../components/ipfs-image-upload'
 import Image from '../../components/image'
-// import { main } from '../i18n'
 
 let Editor: any // = await import('react-draft-wysiwyg')
 let EditorState, ContentState, convertToRaw

@@ -1,13 +1,13 @@
 import { message } from 'antd'
 import { Component, ReactNode } from 'react'
 
-import { main } from '../../i18n'
 import AppContext from '../../components/app-context'
 import Loading from '../../components/loading'
 import If from '../../components/if'
 import NotFound from '../../components/not-found'
 import View from '../../components/entities/View'
 import Edit from '../../components/entities/Edit'
+import i18n from '../../i18n'
 
 
 type State = {
@@ -66,7 +66,7 @@ class EntityView extends Component<undefined, State> {
 
         return (
             <div className='content-wrapper'>
-                <Loading loading={loading} text={main.loadingEntity}>
+                <Loading loading={loading} text={i18n.t('entity.loading')}>
                     <If condition={!found}>
                         <NotFound />
                     </If>

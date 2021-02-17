@@ -1,8 +1,8 @@
 import { Button, Divider } from 'antd'
 import React, { Component, ReactNode } from 'react'
 import ReactPlayer from 'react-player'
-import { main } from '../../i18n'
 
+import i18n from '../../i18n'
 import If from '../if'
 import { ViewWrapperProps } from './ViewWrapper'
 
@@ -29,7 +29,7 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                     target='_blank'
                     rel='noopener noreferrer nofollow'
                 >
-                    {main.requestsButton}
+                    {i18n.t('requestsButton')}
                 </Button>
             </If>
             <If condition={process.media.streamUri?.length}>

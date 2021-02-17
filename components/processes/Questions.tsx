@@ -1,9 +1,9 @@
 import { Button, Divider, message, Radio } from 'antd'
 import { ProcessMetadata } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
-// hardcoded to cat for now
-import { main } from '../../i18n'
+
 import { areAllNumbers, toArray } from '../../lib/util'
+import i18n from '../../i18n'
 
 type Props = {
     process: ProcessMetadata,
@@ -41,7 +41,7 @@ export default class Questions extends Component<Props, State> {
         }
 
         if (isNaN(choiceValue)) {
-            message.warn(main.invalidQuestionOptionValue)
+            message.warn(i18n.t('invalidQuestionOptionValue'))
             return
         }
 
@@ -58,7 +58,7 @@ export default class Questions extends Component<Props, State> {
 
         return <>
             <Divider />
-            <h2>{main.selectQuestionsTitle}</h2>
+            <h2>{i18n.t('selectQuestionsTitle')}</h2>
             {
                 process.questions.map((question, questionIdx) => <div key={questionIdx} className='vote-questions'>
                     <Divider />
@@ -96,7 +96,7 @@ export default class Questions extends Component<Props, State> {
                     disabled={!allQuestionsChosen}
                     onClick={() => this.props.onSubmitClick(toArray(choices))}
                 >
-                    {main.confirmSelection}
+                    {i18n.t('confirmSelection')}
                 </Button>
             </div>
         </>

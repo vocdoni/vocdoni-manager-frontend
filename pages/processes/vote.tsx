@@ -18,12 +18,12 @@ import React, { Component, Fragment, ReactChild, ReactNode } from 'react'
 import AppContext from '../../components/app-context'
 import { getGatewayClients } from '../../lib/network'
 import MultiLine from '../../components/multi-line-text'
-import { main } from '../../i18n'
 import { HEX_REGEX } from '../../lib/constants'
 import NotFound from '../../components/not-found'
 import ViewWrapper from '../../components/processes/ViewWrapper'
 import Questions from '../../components/processes/Questions'
 import { areAllNumbers, findHexId } from '../../lib/util'
+import i18n from '../../i18n'
 
 const BLOCK_TIME: number = parseInt(process.env.BLOCK_TIME, 10)
 
@@ -102,7 +102,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         try {
             const params = location.hash.substr(2).split('/')
             if (params.length !== 3 || !params[0].match(HEX_REGEX) || !params[1].match(HEX_REGEX) || !params[2].match(HEX_REGEX)) {
-                message.error(main.invalidRequest)
+                message.error(i18n.t('invalidRequest'))
                 Router.replace('/')
                 return
             }
@@ -186,7 +186,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                 })
             }
 
-            const str = (err && err.message == 'Request timed out') ? main.processListLoadTimeout : main.couldNotLoadVote
+            const str = (err && err.message == 'Request timed out') ? i18n.t('processListLoadTimeout') : i18n.t('couldNotLoadVote')
             message.error(str)
             this.setState({ connectionError: str, loadingStatus: false })
         }
@@ -198,7 +198,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             wallet = new Wallet(this.state.privateKey)
         }
         catch (err) {
-            return message.error(main.invalidPrivateKey)
+            return message.error(i18n.t('invalidPrivateKey'))
         }
 
         try {
@@ -225,10 +225,10 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             })
 
             if (err && err.message == 'The Merkle Proof could not be fetched') {
-                return message.warn(main.youAreNotInTheCensus)
+                return message.warn(i18n.t('youAreNotInTheCensus'))
             }
 
-            message.error(main.couldNotCheckCensus)
+            message.error(i18n.t('couldNotCheckCensus'))
         }
     }
 
@@ -241,16 +241,16 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         window.scrollTo(0, this.endOfIntroduction)
 
         if (votes.length != this.state.process.questions.length)
-            return message.error(main.pleaseChooseYourVoteForAllQuestions)
+            return message.error(i18n.t('pleaseChooseYourVoteForAllQuestions'))
 
         if (!areAllNumbers(votes))
-            return message.error(main.pleaseChooseYourVoteForAllQuestions)
+            return message.error(i18n.t('pleaseChooseYourVoteForAllQuestions'))
 
         try {
             new Wallet(this.state.privateKey)
         }
         catch (err) {
-            return message.error(main.invalidPrivateKey)
+            return message.error(i18n.t('invalidPrivateKey'))
         }
 
         this.setState({
@@ -308,14 +308,14 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             if (!this.state.hasVoted) throw new Error('The vote has not been registered')
 
             notification.success({
-                message: main.voteSubmitted,
-                description: main.yourVoteHasBeenSuccessfullyRegistered
+                message: i18n.t('voteSubmitted'),
+                description: i18n.t('yourVoteHasBeenSuccessfullyRegistered')
             })
             this.setState({ isSubmitting: false })
         }
         catch (err) {
             this.setState({ isSubmitting: false })
-            message.error(main.theVoteCouldNotBeSubmitted)
+            message.error(i18n.t('theVoteCouldNotBeSubmitted'))
         }
     }
 
@@ -335,7 +335,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         let contents : ReactNode = null
 
         if (loadingStatus || refreshingVoteStatus) {
-            contents = <>{main.loading}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
+            contents = <>{i18n.t('loading')}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
         }
         else if (hasVoted) {
             if (this.state.hasVotedOnDate) {
@@ -346,32 +346,32 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     + ':' + ('0' + this.state.hasVotedOnDate.minutes()).substr(-2)
                     + 'h'
                 contents = <>
-                    <p>{main.yourVoteHasBeenRegisteredOn} {strDate}</p>
+                    <p>{i18n.t('yourVoteHasBeenRegisteredOn')} {strDate}</p>
                     <p>
-                        {main.nullifierNotice} <Text copyable={{text: this.state.nullifier}}>
+                        {i18n.t('nullifierNotice')} <Text copyable={{text: this.state.nullifier}}>
                             {this.state.nullifier.substr(0, 10)}...
                         </Text>
                     </p>
                 </>
             }
             else {
-                contents = <>{main.yourVoteIsRegistered}</>
+                contents = <>{i18n.t('yourVoteIsRegistered')}</>
             }
         }
         else if (isSubmitting) {
-            contents = <><Divider />{main.submittingVote}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
+            contents = <><Divider />{i18n.t('submittingVote')}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
         }
         else if (!hasStarted) {
-            contents = <>{main.theProcessHasNotStarted}</>
+            contents = <>{i18n.t('theProcessHasNotStarted')}</>
         }
         else if (isCanceled || hasEnded) {
-            contents = <>{main.theProcessHasEnded}</>
+            contents = <>{i18n.t('theProcessHasEnded')}</>
         }
         else if (isInCensus) {
-            contents = <>{main.youCanVote}</>
+            contents = <>{i18n.t('youCanVote')}</>
         }
         else {
-            contents = <>{main.youAreNotInTheCensus}</>
+            contents = <>{i18n.t('youAreNotInTheCensus')}</>
         }
 
         return <div className='vote-status'>{contents}</div>
@@ -390,7 +390,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         const { process, choices } = this.state
         return <>
             <Divider />
-            <p className='info-text'><MultiLine text={main.theseAreYourSelections} /></p>
+            <p className='info-text'><MultiLine text={i18n.t('theseAreYourSelections')} /></p>
             {
                 process.questions.map((question, idx) => <Fragment key={idx}>
                     {
@@ -409,15 +409,15 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
 
             <Modal
                 visible={this.state.showSubmitConfirmation}
-                okText={main.confirm}
-                cancelText={main.goBack}
+                okText={i18n.t('confirm')}
+                cancelText={i18n.t('goBack')}
                 onOk={() => {
                     this.setState({ showSubmitConfirmation: false })
                     setTimeout(() => this.onSubmitVote(), 100) // wait a bit for the modal to dismiss
                 }}
                 onCancel={() => this.setState({ showSubmitConfirmation: false })}
             >
-                <p>{main.youAreAboutToSendYourVoteConfirmContinue}</p>
+                <p>{i18n.t('youAreAboutToSendYourVoteConfirmContinue')}</p>
             </Modal>
 
             <div className='bottom-button-wrapper'>
@@ -425,14 +425,14 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     size='large'
                     onClick={() => this.backFromConfirmSummary()}
                 >
-                    {main.goBack}
+                    {i18n.t('goBack')}
                 </Button>
                 <Button
                     type='primary'
                     size='large'
                     onClick={() => this.setState({ showSubmitConfirmation: true })}
                 >
-                    {main.castMyVote}
+                    {i18n.t('castMyVote')}
                 </Button>
             </div>
         </>
@@ -443,7 +443,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             <Divider />
             {this.renderStatus(status)}
             <p className='vote-status'>
-                <MultiLine text={main.processDescriptionStage4} />
+                <MultiLine text={i18n.t('processDescriptionStage4')} />
             </p>
         </div>
     }
@@ -520,7 +520,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             return (
                 <ViewWrapper {...this.state}>
                     <div style={{ marginTop: 24 }}>
-                        {main.loading}...  <Spin size='small' indicator={<LoadingOutlined />} />
+                        {i18n.t('loading')}...  <Spin size='small' indicator={<LoadingOutlined />} />
                     </div>
                 </ViewWrapper>
             )
@@ -544,7 +544,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                                 )
                             }
                         >
-                            <ReloadOutlined />{main.retryConnection}
+                            <ReloadOutlined />{i18n.t('retryConnection')}
                         </Button>
                     </div>
                 </ViewWrapper>

@@ -3,7 +3,7 @@ import { Spin } from 'antd'
 import { SpinIndicator } from 'antd/lib/spin'
 import React, { Component, ReactNode } from 'react'
 
-import { main } from '../i18n'
+import i18n from '../i18n'
 
 type LoadingProps = {
     loading?: boolean
@@ -15,7 +15,7 @@ type LoadingProps = {
 export default class Loading extends Component<LoadingProps,undefined> {
     render() : ReactNode {
         if (this.props.loading) {
-            const text = this.props.text || main.loading
+            const text = this.props.text || i18n.t('loading')
             const icon = this.props.icon || <LoadingOutlined />
 
             return (

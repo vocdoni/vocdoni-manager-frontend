@@ -6,7 +6,7 @@ import {
     VocdoniEnvironment,
 } from 'dvote-js'
 import { getWeb3Wallet } from './web3-wallet'
-import { main } from '../i18n'
+import i18n from '../i18n'
 
 const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID as any
 const BOOTNODES_URL_READ_ONLY = process.env.BOOTNODES_URL_READ_ONLY
@@ -31,7 +31,7 @@ export async function initNetwork() {
     }
     const web3Wallet = getWeb3Wallet()
 
-    const hideLoading = message.loading(main.connectingWait, 0)
+    const hideLoading = message.loading(i18n.t('connectingWait'), 0)
 
     try {
         if (!web3Wallet.hasWallet()) {
