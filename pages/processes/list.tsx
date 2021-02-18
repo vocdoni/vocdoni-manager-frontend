@@ -2,6 +2,7 @@ import { Component, ReactNode } from 'react'
 import { message, Select, Row, Col } from 'antd'
 import { ProcessContractParameters, ProcessMetadata, VotingApi } from 'dvote-js'
 import Link from 'next/link'
+import Router from 'next/router'
 
 import { getGatewayClients } from '../../lib/network'
 import { findHexId } from '../../lib/util'
