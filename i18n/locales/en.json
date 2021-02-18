@@ -38,7 +38,6 @@
     "btnImageUploading": "Uploading image",
     "filesizeLimit": "The image is bigger than the current filesize limit (%s)",
     "nullifierNotice": "Please, store the following code as the unique receipt of your ballot:",
-    "requestsButton": "Questions and answers",
     "connectingWait": "Connecting to the network. Please wait...",
     "connected": "Connected",
     "couldNotConnect": "Could not connect",
@@ -57,5 +56,10 @@
     "entity": {
         "loading": "Loading the details of the entity...",
         "load_error": "There was an error loading the entity data"
+    },
+    "process": {
+        "btn": {
+            "requests": "Questions and answers"
+        }
     }
 }

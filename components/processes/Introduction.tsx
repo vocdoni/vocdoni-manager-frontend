@@ -29,7 +29,7 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                     target='_blank'
                     rel='noopener noreferrer nofollow'
                 >
-                    {i18n.t('requestsButton')}
+                    {i18n.t('process.btn.requests')}
                 </Button>
             </If>
             <If condition={process.media.streamUri?.length}>

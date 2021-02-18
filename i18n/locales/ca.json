@@ -38,7 +38,6 @@
     "btnImageUploading": "Carregant imatge",
     "filesizeLimit": "La imatge és més gran que la mida màxima permesa (%s)",
     "nullifierNotice": "Si et plau, desa el codi següent com a comprovant únic de l'emissió del teu vot:",
-    "requestsButton": "Documentació",
     "connectingWait": "Connectant a la xarxa. Espera si et plau...",
     "connected": "Connectat",
     "couldNotConnect": "No s'ha pogut establir connexió",
@@ -57,5 +56,10 @@
     "entity": {
         "loading": "Carregant els detalls de l'entitat...",
         "load_error": "Hi ha hagut un error carregant les dades de l'entitat"
+    },
+    "process": {
+        "btn": {
+            "requests": "Precs i preguntes"
+        }
     }
 }
