@@ -3,6 +3,7 @@ import { WalletUtil } from 'dvote-js'
 import { DataCache } from "./storage"
 import { Key } from "react"
 import { IWallet } from "./types"
+import { makeUid } from "./util"
 
 let web3Wallet: Web3Wallet
 
@@ -49,7 +50,12 @@ export default class Web3Wallet {
     public store(name: string, seed: string, passphrase: string): Promise<Key> {
         const wallet = WalletUtil.fromSeededPassphrase(passphrase, seed)
         // tslint:disable-next-line
-        return this.db.addWallet({ name, seed, publicKey: wallet._signingKey().publicKey });
+        return this.db.addWallet({
+            name,
+            seed,
+            publicKey: wallet._signingKey().publicKey,
+            uid: makeUid(),
+        });
     }
 
     public getPublicKey(): string {
@@ -59,6 +65,10 @@ export default class Web3Wallet {
     // Gets all the stored wallet accounts from IndexedDB
     public getStored(): Promise<IWallet[]>  {
         return this.db.getAllWallets();
+    }
+
+    public getStoredWallet(publicKey: string) : Promise<IWallet> {
+        return this.db.wallets.get({publicKey})
     }
 
     // Loads a wallet form IndexedDB if the provided passphrase is correct

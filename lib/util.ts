@@ -142,3 +142,27 @@ export const range = (start: number, end: number) : number[] => {
     }
     return result
 }
+
+type BrowserProfile = {
+    userAgent: string,
+    environment: string,
+    pageId: string,
+}
+
+export const browserProfile = (currentPage?: string) : BrowserProfile => {
+    let pageId = currentPage || location.pathname
+
+    pageId = pageId.replace(/\/?#[\w\/]*/, '')
+
+    if (!pageId.length) {
+        pageId = '/'
+    }
+
+    return {
+        userAgent: navigator.userAgent,
+        environment: process.env.ETH_NETWORK_ENV || 'dev',
+        pageId,
+    }
+}
+
+export const makeUid = () : number => Math.floor(Math.random() * Math.pow(10, 8))

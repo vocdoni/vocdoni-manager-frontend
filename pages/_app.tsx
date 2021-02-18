@@ -10,6 +10,9 @@ import {
     EntityApi,
 } from 'dvote-js'
 import { ReloadOutlined } from '@ant-design/icons'
+import mixpanel from 'mixpanel-browser'
+import Router from 'next/router'
+
 
 import AppContext, { ISelected } from '../components/app-context'
 import MainLayout from '../components/layout'
@@ -17,7 +20,7 @@ import GeneralError from '../components/error'
 import { initNetwork, getNetworkState, getGatewayClients } from '../lib/network'
 import { IAppContext } from '../components/app-context'
 import { getWeb3Wallet } from '../lib/web3-wallet'
-import { isWriteEnabled } from '../lib/util'
+import { browserProfile, isWriteEnabled } from '../lib/util'
 import i18n from '../i18n'
 
 // import { } from '../lib/types'
@@ -49,7 +52,16 @@ type State = {
     urlHash?: string
     connectionError?: string
     managerBackendGateway?: DVoteGateway
+    currentPage?: string
 }
+
+try {
+    if (process.env.MIXPANEL_TOKEN) {
+        mixpanel.init(process.env.MIXPANEL_TOKEN, {
+            'api_host': 'https://api-eu.mixpanel.com',
+        }, '')
+    }
+} catch (e) {}
 
 class MainApp extends App<Props, State> {
     state: State = {
@@ -66,6 +78,10 @@ class MainApp extends App<Props, State> {
     }
 
     async componentDidMount(): Promise<void> {
+        this.track = this.track.bind(this)
+        Router.events.on('routeChangeComplete', this.track)
+        this.track(location.pathname.replace(/\/$/, ''))
+
         if (window.location.pathname == "/" && !isWriteEnabled()) {
             if (!process.env.BOOTNODES_URL_RW) window.location.href = process.env.FALLBACK_REDIRECT_URL
         }
@@ -86,6 +102,33 @@ class MainApp extends App<Props, State> {
     componentWillUnmount(): void {
         window.removeEventListener('beforeunload', this.beforeUnload)
         window.removeEventListener('hashchange', this.hashChange)
+        Router.events.off('routeChangeComplete', this.track)
+    }
+
+    async track(currentPage: string) : Promise<void> {
+        if (
+            (process.env.NODE_ENV !== 'production' && !process.env.FORCE_TELEMETRY) ||
+            !process.env.MIXPANEL_TOKEN?.length
+        ) {
+            return
+        }
+
+        if (currentPage === this.state.currentPage) {
+            return
+        }
+
+        this.setState({
+            currentPage,
+        })
+
+        try {
+            const wallet = getWeb3Wallet()
+            if (wallet && wallet.getWallet() && wallet.getPublicKey().length) {
+                const {uid} = await wallet.getStoredWallet(wallet.getPublicKey())
+                mixpanel.identify(uid.toString())
+            }
+            mixpanel.track('pageView', browserProfile(currentPage))
+        } catch (e) {console.error(e)}
     }
 
     beforeUnload(e: BeforeUnloadEvent): void {
