@@ -55,6 +55,11 @@ export default class ProcessListView extends Component<undefined, State> {
             this.context.setMenuSelected('processes')
 
             const [address, r] = this.context.params
+            if (!address?.length) {
+                Router.replace('/')
+                return
+            }
+
             this.setState({ loading: true })
 
             // An `/r` is appended when creating a process to properly refresh entity metadata
