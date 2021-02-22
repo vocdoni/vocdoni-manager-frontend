@@ -4,20 +4,6 @@ name: Main
 
 on: [push, pull_request]
 
-.buildargs: &buildargs
-  build-args: |
-    COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-    ETH_NETWORK_ID=$ETH_NETWORK_ID
-    BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
-    BOOTNODES_URL_RW=$BOOTNODES_URL_RW
-    EXPLORER_URL=$EXPLORER_URL
-    VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
-    APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
-    REGISTER_URL=$REGISTER_URL
-    ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
-    MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
-    MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
-
 jobs:
   node-tests:
     runs-on: self-hosted
@@ -74,7 +60,18 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          <<: *buildargs
+          build-args: |
+            COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
+            ETH_NETWORK_ID=$ETH_NETWORK_ID
+            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
+            BOOTNODES_URL_RW=$BOOTNODES_URL_RW
+            EXPLORER_URL=$EXPLORER_URL
+            VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
+            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
+            REGISTER_URL=$REGISTER_URL
+            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
+            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
+            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
           tags: |
             vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }},
             ghcr.io/vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }}
@@ -87,7 +84,18 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          <<: *buildargs
+          build-args: |
+            COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
+            ETH_NETWORK_ID=$ETH_NETWORK_ID
+            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
+            BOOTNODES_URL_RW=$BOOTNODES_URL_RW
+            EXPLORER_URL=$EXPLORER_URL
+            VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
+            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
+            REGISTER_URL=$REGISTER_URL
+            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
+            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
+            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
           tags: |
             vocdoni/${{ github.event.repository.name }}:latest
             ghcr.io/vocdoni/${{ github.event.repository.name }}:latest
