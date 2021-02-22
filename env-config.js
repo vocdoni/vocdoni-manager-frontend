@@ -2,34 +2,36 @@
 // The environment variabled need to be set locally on in the CI/CD console
 
 const lang = 'en'
-const DEVELOPMENT = process.env.NODE_ENV !== 'production'
 const COMMIT_SHA = process.env.COMMIT_SHA || 'development'
-const networkEnv = process.env.ETH_NETWORK_ENV || 'dev'
+const networkEnv = process.env.VOCDONI_ENVIRONMENT || 'dev'
 let bootnodes = 'https://bootnodes.vocdoni.net/gateways.json'
 let explorer = 'https://explorer.vocdoni.net'
+let linking = 'vocdoni.link'
 if (networkEnv !== 'prod') {
     bootnodes = bootnodes.replace('.json', `.${networkEnv}.json`)
     explorer = explorer.replace('explorer.', `explorer.${networkEnv}.`)
+    linking = `${networkEnv}.${linking}`
 }
 let BOOTNODES_URL_RW = process.env.BOOTNODES_URL_RW
 if (typeof BOOTNODES_URL_RW === 'undefined') {
     BOOTNODES_URL_RW = bootnodes
 }
+let BOOTNODES_URL_READ_ONLY = process.env.BOOTNODES_URL_READ_ONLY
+if (typeof BOOTNODES_URL_READ_ONLY === 'undefined') {
+    BOOTNODES_URL_READ_ONLY = bootnodes
+}
 
 module.exports = {
     COMMIT_SHA,
     LANG: lang,
-    DEVELOPMENT,
     FALLBACK_REDIRECT_URL: 'https://vocdoni.io/',
 
     // BLOCKCHAIN
     ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || 'xdai',
-    ETH_NETWORK_ENVIRONMENT: process.env.ETH_NETWORK_ENV || 'dev',
-    // USE TEST/STAGE CONTRACTS
-    TEST_CONTRACTS: process.env.TEST_CONTRACTS || '',
+    VOCDONI_ENVIRONMENT: process.env.VOCDONI_ENVIRONMENT || 'dev',
 
     // GATEWAYS
-    BOOTNODES_URL_READ_ONLY: process.env.BOOTNODES_URL_READ_ONLY || bootnodes,
+    BOOTNODES_URL_READ_ONLY,
     BOOTNODES_URL_RW,
 
     // VOCHAIN
@@ -38,7 +40,7 @@ module.exports = {
     EXPLORER_URL: process.env.EXPLORER_URL || explorer,
 
     // DOMAINS AND URL's
-    APP_LINKING_DOMAIN: process.env.APP_LINKING_DOMAIN || (DEVELOPMENT ? 'dev.vocdoni.link' : 'vocdoni.link'),
+    APP_LINKING_DOMAIN: linking,
     REGISTER_URL: process.env.REGISTER_URL || 'ws://192.168.1.100/path',  // Where registered users connect from their app
     ACTION_VISIBILITY_URL: process.env.ACTION_VISIBILITY_URL || 'ws://192.168.1.100/path',
 

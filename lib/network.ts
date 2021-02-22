@@ -41,7 +41,7 @@ export async function initNetwork() {
                 bootnodesContentUri: BOOTNODES_URL_READ_ONLY,
                 numberOfGateways: 2,
                 timeout: 900,
-                environment: process.env.ETH_NETWORK_ENVIRONMENT as VocdoniEnvironment,
+                environment: process.env.VOCDONI_ENVIRONMENT as VocdoniEnvironment,
             }
             gateway = await GatewayPool.discover(options)
 
@@ -55,7 +55,7 @@ export async function initNetwork() {
                 bootnodesContentUri: BOOTNODES_URL_RW,
                 numberOfGateways: 2,
                 timeout: 900,
-                environment: process.env.ETH_NETWORK_ENVIRONMENT as VocdoniEnvironment,
+                environment: process.env.VOCDONI_ENVIRONMENT as VocdoniEnvironment,
             }
             gateway = await GatewayPool.discover(options)
             web3Wallet.connect(gateway.provider)
