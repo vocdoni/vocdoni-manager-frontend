@@ -15,6 +15,10 @@ if (networkEnv !== 'prod') {
 let BOOTNODES_URL_RW = process.env.BOOTNODES_URL_RW
 if (typeof BOOTNODES_URL_RW === 'undefined') {
     BOOTNODES_URL_RW = bootnodes
+
+    if (networkEnv !== 'dev') {
+        BOOTNODES_URL_RW = BOOTNODES_URL_RW.replace('.json', '.priv.json')
+    }
 }
 let BOOTNODES_URL_READ_ONLY = process.env.BOOTNODES_URL_READ_ONLY
 if (typeof BOOTNODES_URL_READ_ONLY === 'undefined') {
