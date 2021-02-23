@@ -426,6 +426,9 @@ class MainApp extends App<Props, State> {
             <Layout>
                 <Component {...pageProps} />
             </Layout>
+            <div id='app-commit-sha' style={{display: 'none'}}>
+                {process.env.COMMIT_SHA}
+            </div>
         </AppContext.Provider>
     }
 }
