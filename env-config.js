@@ -13,7 +13,7 @@ if (networkEnv !== 'prod') {
     linking = `${networkEnv}.${linking}`
 }
 let BOOTNODES_URL_RW = process.env.BOOTNODES_URL_RW
-if (typeof BOOTNODES_URL_RW === 'undefined' || (BOOTNODES_URL_RW && !BOOTNODES_URL_RW.length)) {
+if (typeof BOOTNODES_URL_RW === 'undefined' || (typeof BOOTNODES_URL_RW === 'string' && !BOOTNODES_URL_RW.length)) {
     BOOTNODES_URL_RW = bootnodes
 
     if (networkEnv !== 'dev') {
@@ -21,7 +21,7 @@ if (typeof BOOTNODES_URL_RW === 'undefined' || (BOOTNODES_URL_RW && !BOOTNODES_U
     }
 }
 let BOOTNODES_URL_READ_ONLY = process.env.BOOTNODES_URL_READ_ONLY
-if (typeof BOOTNODES_URL_READ_ONLY === 'undefined' || (BOOTNODES_URL_READ_ONLY && !BOOTNODES_URL_READ_ONLY.length)) {
+if (typeof BOOTNODES_URL_READ_ONLY === 'undefined' || (typeof BOOTNODES_URL_RW === 'string' && !BOOTNODES_URL_READ_ONLY.length)) {
     BOOTNODES_URL_READ_ONLY = bootnodes
 }
 

@@ -26,16 +26,20 @@ ENV MANAGER_BACKEND_PUB_KEY=${MANAGER_BACKEND_PUB_KEY}
 ARG MIXPANEL_TOKEN="0"
 ENV MIXPANEL_TOKEN=${MIXPANEL_TOKEN}
 
+RUN mkdir /app
+WORKDIR /app
+ADD package.json /app/
+RUN npm install
+
 ADD . /app
-WORKDIR /app
-RUN npm install && npm run export
+RUN npm run export
 
-FROM node:12
 
-RUN apt update && apt install nginx -y && apt clean
+FROM nginx:1.19
 
-COPY --from=build /app /app
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
 
-WORKDIR /app
+COPY --from=build /app/build /usr/share/nginx/html
 
-ENTRYPOINT [ "/app/entrypoint.sh" ]
+WORKDIR /usr/share/nginx/html
