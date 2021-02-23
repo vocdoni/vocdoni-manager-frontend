@@ -39,6 +39,8 @@ export interface IWallet {
     name: string,
     seed: string,
     publicKey: string,
+    // A unique random identifier for this wallet (telemetry purposes)
+    uid: number,
 }
 
 export interface IMember {

@@ -2,7 +2,7 @@ import Dexie from 'dexie'
 // import fetch from "isomorphic-unfetch"
 
 import { IWallet } from './types'
-import { throwIfNotBrowser } from './util'
+import { makeUid, throwIfNotBrowser } from './util'
 import { Key } from 'react';
 
 // const CACHE_REFRESH_INTERVAL = process.env.NODE_ENV == "production" ? 1000 * 60 * 2 : 1000 * 10
@@ -20,9 +20,8 @@ export class DataCache extends Dexie {
         throwIfNotBrowser();
         // Every new version must keep the schema definition of the older ones
         this.version(1).stores({ wallets: '&name, seed, publicKey' });
+        this.version(2).stores({ wallets: '&name, seed, publicKey, uid' });
 
-        // The following lines are needed if your typescript
-        // is compiled using babel instead of tsc:
         this.wallets = this.table("wallets");
 
         // REFRESH UPON CREATION
@@ -33,7 +32,20 @@ export class DataCache extends Dexie {
         return this.wallets.toArray()
     }
 
-    getWallet(name: string): Promise<IWallet> {
+    async getWallet(name: string): Promise<IWallet> {
+        const wallet = await this.wallets.get({ name })
+
+        if (!wallet) {
+            return wallet
+        }
+
+        if (!wallet.uid) {
+            // @ts-expect-error due to dixie expecting a number, although it properly works with key strings
+            this.wallets.update(name, {
+                uid: makeUid(),
+            })
+        }
+
         return this.wallets.get({ name });
     }
 

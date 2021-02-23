@@ -50,7 +50,8 @@ module.exports = {
 
     MANAGER_BACKEND_URI: process.env.MANAGER_BACKEND_URI || 'http://127.0.0.1:8000/api/manager',  // Where the manager backend is called
     MANAGER_BACKEND_PUB_KEY: process.env.MANAGER_BACKEND_PUB_KEY || '66625f284f50fa52d53579c7873a480b351cc20f7780fa556929f5017283ad2449',
-
+    MIXPANEL_TOKEN: process.env.MIXPANEL_TOKEN || false,
+    FORCE_TELEMETRY: process.env.FORCE_TELEMETRY || false,
 }
 
 console.log('Building the frontend with ENV:', module.exports)
