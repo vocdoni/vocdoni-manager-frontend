@@ -83,7 +83,7 @@ class MainApp extends App<Props, State> {
         this.track(location.pathname.replace(/\/$/, ''))
 
         if (window.location.pathname == "/" && !isWriteEnabled()) {
-            if (!process.env.BOOTNODES_URL_RW) window.location.href = process.env.FALLBACK_REDIRECT_URL
+            window.location.href = process.env.FALLBACK_REDIRECT_URL
         }
 
         await this.connect()
