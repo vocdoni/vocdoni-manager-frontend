@@ -113,7 +113,7 @@ jobs:
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
             ETH_NETWORK_ID=$ETH_NETWORK_ID
             BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
-            BOOTNODES_URL_RW="0"
+            BOOTNODES_URL_RW=0
             EXPLORER_URL=$EXPLORER_URL
             VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
             APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
@@ -138,7 +138,7 @@ jobs:
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
             ETH_NETWORK_ID=$ETH_NETWORK_ID
             BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
-            BOOTNODES_URL_RW="0"
+            BOOTNODES_URL_RW=0
             EXPLORER_URL=$EXPLORER_URL
             VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
             APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
