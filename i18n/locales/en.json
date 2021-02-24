@@ -34,8 +34,6 @@
     "buttonCSVLogin": "Log in",
     "errorCSVInvalidData": "The entered data doesn't seem correct, please, check it.",
     "invalidImageError": "Only jpg and png files are allowed. The file you uploaded is not valid.",
-    "btnImageUpload": "Upload image",
-    "btnImageUploading": "Uploading image",
     "filesizeLimit": "The image is bigger than the current filesize limit (%s)",
     "nullifierNotice": "Please, store the following code as the unique receipt of your ballot:",
     "connectingWait": "Connecting to the network. Please wait...",
@@ -61,5 +59,13 @@
         "btn": {
             "requests": "Questions and answers"
         }
+    },
+    "image_uploader": {
+        "uploading": "Uploading image",
+        "upload": "Upload image"
+    },
+    "btn": {
+        "ok": "Ok",
+        "cancel": "Cancel"
     }
 }

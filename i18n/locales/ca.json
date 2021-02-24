@@ -34,8 +34,6 @@
     "buttonCSVLogin": "Identifica't",
     "errorCSVInvalidData": "Les dades no semblen correctes, si et plau, revísa-les.",
     "invalidImageError": "Només es poden pujar fitxers jpg i png. El fitxer que puges no és vàlid.",
-    "btnImageUpload": "Carrega imatge",
-    "btnImageUploading": "Carregant imatge",
     "filesizeLimit": "La imatge és més gran que la mida màxima permesa (%s)",
     "nullifierNotice": "Si et plau, desa el codi següent com a comprovant únic de l'emissió del teu vot:",
     "connectingWait": "Connectant a la xarxa. Espera si et plau...",
@@ -61,5 +59,13 @@
         "btn": {
             "requests": "Precs i preguntes"
         }
+    },
+    "image_uploader": {
+        "uploading": "Carregant imatge",
+        "upload": "Carrega imatge"
+    },
+    "btn": {
+        "ok": "D'acord",
+        "cancel": "Cancel·la"
     }
 }

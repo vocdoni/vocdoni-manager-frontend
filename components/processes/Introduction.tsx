@@ -21,9 +21,9 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                 className='process-description'
                 dangerouslySetInnerHTML={{__html: process.description.default}}
             />
-            <If condition={process.meta?.requestsURL?.length}>
+            <If condition={process.meta?.requestsUrl?.length}>
                 <Button
-                    href={process.meta.requestsURL}
+                    href={process.meta.requestsUrl}
                     type='primary'
                     style={{marginTop: '2em'}}
                     target='_blank'

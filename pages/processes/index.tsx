@@ -308,18 +308,14 @@ class ProcessActiveView extends Component<undefined, State> {
 
 
     renderProcessesInfo() : ReactNode {
-        const params = location.hash.substr(2).split("/")
-        if (params.length !== 2) {
+        if (this.context.params.length !== 2) {
             message.error("The requested data is not valid")
             Router.replace("/")
             return
         }
 
-        // const entityId = params[0]
-        const processId = params[1]
-
+        const [,processId] = this.context.params
         const { process, censusSize, processParams } = this.state
-
         const startDate = moment(this.state.estimatedStartDate)
         const endDate = moment(this.state.estimatedEndDate)
 
@@ -327,7 +323,7 @@ class ProcessActiveView extends Component<undefined, State> {
 
         const procQuestions = this.state.process.questions
         const resultQuestions = this.state.results && this.state.results.questions && this.state.results.questions || []
-        const formURI = (this.state.process.meta?.formURI) ?  this.state.process.meta.formURI : null
+        const formUri = (this.state.process.meta?.formUri) ?  this.state.process.meta.formUri : null
         const explorerURI = `${EXPLORER_URL}/process/${processId.replace('0x', '')}`
 
         return <div className="body-card">
@@ -373,15 +369,15 @@ class ProcessActiveView extends Component<undefined, State> {
                             <pre>{censusSize}</pre>
                         </p>
                     </If>
-                    {(formURI) ? (
+                    {(formUri) ? (
                         <>
                             <h4>Form URI</h4>
                             <a
                                 target='_blank'
                                 rel='noreferrer'
-                                href={appLink(`/processes/login/#/${this.context.address}/${processId}/${formURI}`)}
+                                href={appLink(`/processes/login/#/${this.context.address}/${processId}/${formUri}`)}
                             >
-                                {formURI} <LinkOutlined />
+                                {formUri} <LinkOutlined />
                             </a>
                         </>
                     ) : null

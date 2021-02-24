@@ -91,7 +91,7 @@ export default class IPFSImageUpload extends Component<UploadProps, State> {
     }
 
     render() : ReactNode {
-        const text = this.state.uploading ? i18n.t('btnImageUploading') : i18n.t('btnImageUpload')
+        const text = this.state.uploading ? i18n.t('image_uploader.uploading') : i18n.t('image_uploader.upload')
         return (
             <Upload
                 beforeUpload={this.beforeUpload.bind(this)}

@@ -71,7 +71,7 @@ type CensusInfo = {
     merkleRoot: string,
     merkleTreeUri: string,
     id: string,
-    formURI?: string,
+    formUri?: string,
 }
 
 const stepDescriptions = {
@@ -352,7 +352,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     merkleRoot: censusRoot,
                     merkleTreeUri,
                     id: censusId,
-                    formURI: Buffer.from(this.state.censusFileData.title).toString('base64'),
+                    formUri: Buffer.from(this.state.censusFileData.title).toString('base64'),
                 }
             }
 
@@ -460,11 +460,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             process.censusUri = census.merkleTreeUri
             process.startBlock = this.state.startBlock
             process.blockCount = this.state.blockCount
-            if (census.formURI?.length) {
-                process.metadata.meta.formURI = census.formURI
+            if (census.formUri?.length) {
+                process.metadata.meta.formUri = census.formUri
             }
         } catch (e) {
-            message.error(e)
+            message.error(typeof e === 'string' ? e : e.message)
+            console.error(e)
             this.setState({creating: false})
             loading()
 
@@ -601,6 +602,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             <If condition={this.state.streamingInputVisible}>
                                 <Input
                                     placeholder='https://youtu.be/dQw4w9WgXcQ'
+                                    onChange={this.onFieldChange.bind(this, 'media.streamUri')}
                                 />
                             </If>
                         </div>
@@ -635,7 +637,10 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                         <div>
                             <small>Will show a QnA button linking to where you want.</small>
                             <If condition={this.state.qnaInputVisible}>
-                                <Input placeholder='https://...' />
+                                <Input
+                                    placeholder='https://...'
+                                    onChange={this.onFieldChange.bind(this, 'meta.requestsUrl')}
+                                />
                             </If>
                         </div>
                     </Form.Item>

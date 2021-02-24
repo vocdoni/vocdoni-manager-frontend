@@ -1,6 +1,8 @@
 import { Input, Modal, Form } from 'antd'
 import { FormItemProps } from 'antd/lib/form'
 import React, { Component, CSSProperties, ReactNode } from 'react'
+
+import i18n from '../i18n'
 import Ficon from './ficon'
 
 import Image, { ImageProps } from './image'
@@ -77,6 +79,8 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
                 <Modal
                     visible={this.state.isModalVisible}
                     closable={false}
+                    okText={i18n.t('btn.ok')}
+                    cancelText={i18n.t('btn.cancel')}
                     onCancel={this.onCancel.bind(this)}
                     onOk={this.onConfirm.bind(this, this.state.src)}
                     okButtonProps={{
