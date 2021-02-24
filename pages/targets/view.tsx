@@ -143,7 +143,8 @@ class TargetView extends Component<IAppContext, State> {
                 const censusName = this.state.target.name + '_' + (Math.floor(Date.now() / 1000));
                 const gateway = await getGatewayClients()
                 const { censusId, censusRoot } = await CensusOffChainApi.addCensus(censusName, [wallet._signingKey().publicKey], wallet, gateway)
-                await CensusOffChainApi.addClaimBulk(censusId, result.claims, true, wallet, gateway)
+                const claims = result.claims.digestedHexClaims.map((claim) => ({key: claim, value: ''}))
+                await CensusOffChainApi.addClaimBulk(censusId, claims, true, wallet, gateway)
 
                 // TODO: Show information about found claims and invalidClaims?
                 const merkleTreeUri = await CensusOffChainApi.publishCensus(censusId, wallet, gateway)

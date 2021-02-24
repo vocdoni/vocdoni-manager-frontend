@@ -248,8 +248,8 @@ class MainApp extends App<Props, State> {
         if (!dumpCensus.claims?.length) {
             throw new Error('No claims found to export')
         }
-
-        const { censusRoot, invalidClaims } = await CensusOffChainApi.addClaimBulk(censusId, dumpCensus.claims, true, wallet, gateway)
+        const claims = dumpCensus.claims.map((claim) => ({key: claim, value: ''}))
+        const { censusRoot, invalidClaims } = await CensusOffChainApi.addClaimBulk(censusId, claims, true, wallet, gateway)
         if (invalidClaims.length) {
             message.warn(`Found ${invalidClaims.length} invalid claims`)
         }
