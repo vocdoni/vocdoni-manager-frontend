@@ -1,10 +1,8 @@
 ---
 name: Bug report
 about: Create a bug report to help us on reinventing digital voting
-title: '<add-text-here>'
 labels: bug
 assignees: ''
-
 ---
 
 ### Bug description
@@ -25,11 +23,13 @@ assignees: ''
 ### Expected behavior
 <!-- A clear and concise description of what you expected to happen. -->
 
-### System (please complete the following information):
-- Browser: [e.g. Firefox 85.0.1]
+### System:
+<!-- please complete the following information: -->
+- Browser: [i.e. Firefox 85.0.1]
 - Commit hash: [search hidden layer `#app-commit-sha`, i.e. `63d413b095`]
 
-### Screenshots (if required)
+### Screenshots
+<!-- add some screenshots here if required -->
 
 ### Additional context
 <!-- Add any other context about the problem here. -->
