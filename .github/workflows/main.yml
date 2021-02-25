@@ -4,6 +4,19 @@ name: Main
 
 on: [push, pull_request]
 
+env:
+  ETH_NETWORK_ID: ${{ secrets.ETH_NETWORK_ID }}
+  BOOTNODES_URL_READ_ONLY: ${{ secrets.BOOTNODES_URL_READ_ONLY }}
+  BOOTNODES_URL_RW: ${{ secrets.BOOTNODES_URL_RW }}
+  EXPLORER_URL: ${{ secrets.EXPLORER_URL }}
+  VOCDONI_ENVIRONMENT: ${{ secrets.VOCDONI_ENVIRONMENT }}
+  APP_LINKING_DOMAIN: ${{ secrets.APP_LINKING_DOMAIN }}
+  REGISTER_URL: ${{ secrets.REGISTER_URL }}
+  ACTION_VISIBILITY_URL: ${{ secrets.ACTION_VISIBILITY_URL }}
+  MANAGER_BACKEND_URI: ${{ secrets.MANAGER_BACKEND_URI }}
+  MANAGER_BACKEND_PUB_KEY: ${{ secrets.MANAGER_BACKEND_PUB_KEY }}
+  MIXPANEL_TOKEN: ${{ secrets.MIXPANEL_TOKEN }}
+
 jobs:
   node-tests:
     runs-on: self-hosted
@@ -62,17 +75,17 @@ jobs:
           push: true
           build-args: |
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-            ETH_NETWORK_ID=$ETH_NETWORK_ID
-            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
-            BOOTNODES_URL_RW=$BOOTNODES_URL_RW
-            EXPLORER_URL=$EXPLORER_URL
-            VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
-            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
-            REGISTER_URL=$REGISTER_URL
-            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
-            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
-            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
-            MIXPANEL_TOKEN=$MIXPANEL_TOKEN
+            ETH_NETWORK_ID=${{ env.ETH_NETWORK_ID }}
+            BOOTNODES_URL_READ_ONLY=${{ env.BOOTNODES_URL_READ_ONLY }}
+            BOOTNODES_URL_RW=${{ env.BOOTNODES_URL_RW }}
+            EXPLORER_URL=${{ env.EXPLORER_URL }}
+            VOCDONI_ENVIRONMENT=${{ env.VOCDONI_ENVIRONMENT }}
+            APP_LINKING_DOMAIN=${{ env.APP_LINKING_DOMAIN }}
+            REGISTER_URL=${{ env.REGISTER_URL }}
+            ACTION_VISIBILITY_URL=${{ env.ACTION_VISIBILITY_URL }}
+            MANAGER_BACKEND_URI=${{ env.MANAGER_BACKEND_URI }}
+            MANAGER_BACKEND_PUB_KEY=${{ env.MANAGER_BACKEND_PUB_KEY }}
+            MIXPANEL_TOKEN=${{ env.MIXPANEL_TOKEN }}
           tags: |
             vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }},
             ghcr.io/vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }}
@@ -87,17 +100,17 @@ jobs:
           push: true
           build-args: |
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-            ETH_NETWORK_ID=$ETH_NETWORK_ID
-            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
-            BOOTNODES_URL_RW=$BOOTNODES_URL_RW
-            EXPLORER_URL=$EXPLORER_URL
-            VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
-            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
-            REGISTER_URL=$REGISTER_URL
-            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
-            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
-            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
-            MIXPANEL_TOKEN=$MIXPANEL_TOKEN
+            ETH_NETWORK_ID=${{ env.ETH_NETWORK_ID }}
+            BOOTNODES_URL_READ_ONLY=${{ env.BOOTNODES_URL_READ_ONLY }}
+            BOOTNODES_URL_RW=${{ env.BOOTNODES_URL_RW }}
+            EXPLORER_URL=${{ env.EXPLORER_URL }}
+            VOCDONI_ENVIRONMENT=${{ env.VOCDONI_ENVIRONMENT }}
+            APP_LINKING_DOMAIN=${{ env.APP_LINKING_DOMAIN }}
+            REGISTER_URL=${{ env.REGISTER_URL }}
+            ACTION_VISIBILITY_URL=${{ env.ACTION_VISIBILITY_URL }}
+            MANAGER_BACKEND_URI=${{ env.MANAGER_BACKEND_URI }}
+            MANAGER_BACKEND_PUB_KEY=${{ env.MANAGER_BACKEND_PUB_KEY }}
+            MIXPANEL_TOKEN=${{ env.MIXPANEL_TOKEN }}
           tags: |
             vocdoni/${{ github.event.repository.name }}:latest
             ghcr.io/vocdoni/${{ github.event.repository.name }}:latest
@@ -111,17 +124,17 @@ jobs:
           push: true
           build-args: |
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-            ETH_NETWORK_ID=$ETH_NETWORK_ID
-            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
+            ETH_NETWORK_ID=${{ env.ETH_NETWORK_ID }}
+            BOOTNODES_URL_READ_ONLY=${{ env.BOOTNODES_URL_READ_ONLY }}
             BOOTNODES_URL_RW=0
-            EXPLORER_URL=$EXPLORER_URL
-            VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
-            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
-            REGISTER_URL=$REGISTER_URL
-            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
-            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
-            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
-            MIXPANEL_TOKEN=$MIXPANEL_TOKEN
+            EXPLORER_URL=${{ env.EXPLORER_URL }}
+            VOCDONI_ENVIRONMENT=${{ env.VOCDONI_ENVIRONMENT }}
+            APP_LINKING_DOMAIN=${{ env.APP_LINKING_DOMAIN }}
+            REGISTER_URL=${{ env.REGISTER_URL }}
+            ACTION_VISIBILITY_URL=${{ env.ACTION_VISIBILITY_URL }}
+            MANAGER_BACKEND_URI=${{ env.MANAGER_BACKEND_URI }}
+            MANAGER_BACKEND_PUB_KEY=${{ env.MANAGER_BACKEND_PUB_KEY }}
+            MIXPANEL_TOKEN=${{ env.MIXPANEL_TOKEN }}
           tags: |
             vocdoni/${{ github.event.repository.name }}:app-${{ steps.var.outputs.branch }},
             ghcr.io/vocdoni/${{ github.event.repository.name }}:app-${{ steps.var.outputs.branch }}
@@ -136,17 +149,17 @@ jobs:
           push: true
           build-args: |
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-            ETH_NETWORK_ID=$ETH_NETWORK_ID
-            BOOTNODES_URL_READ_ONLY=$BOOTNODES_URL_READ_ONLY
+            ETH_NETWORK_ID=${{ env.ETH_NETWORK_ID }}
+            BOOTNODES_URL_READ_ONLY=${{ env.BOOTNODES_URL_READ_ONLY }}
             BOOTNODES_URL_RW=0
-            EXPLORER_URL=$EXPLORER_URL
-            VOCDONI_ENVIRONMENT=$VOCDONI_ENVIRONMENT
-            APP_LINKING_DOMAIN=$APP_LINKING_DOMAIN
-            REGISTER_URL=$REGISTER_URL
-            ACTION_VISIBILITY_URL=$ACTION_VISIBILITY_URL
-            MANAGER_BACKEND_URI=$MANAGER_BACKEND_URI
-            MANAGER_BACKEND_PUB_KEY=$MANAGER_BACKEND_PUB_KEY
-            MIXPANEL_TOKEN=$MIXPANEL_TOKEN
+            EXPLORER_URL=${{ env.EXPLORER_URL }}
+            VOCDONI_ENVIRONMENT=${{ env.VOCDONI_ENVIRONMENT }}
+            APP_LINKING_DOMAIN=${{ env.APP_LINKING_DOMAIN }}
+            REGISTER_URL=${{ env.REGISTER_URL }}
+            ACTION_VISIBILITY_URL=${{ env.ACTION_VISIBILITY_URL }}
+            MANAGER_BACKEND_URI=${{ env.MANAGER_BACKEND_URI }}
+            MANAGER_BACKEND_PUB_KEY=${{ env.MANAGER_BACKEND_PUB_KEY }}
+            MIXPANEL_TOKEN=${{ env.MIXPANEL_TOKEN }}
           tags: |
             vocdoni/${{ github.event.repository.name }}:app-latest
             ghcr.io/vocdoni/${{ github.event.repository.name }}:app-latest
