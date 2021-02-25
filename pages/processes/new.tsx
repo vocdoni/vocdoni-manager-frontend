@@ -98,13 +98,13 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             metadata: JSON.parse(JSON.stringify(ProcessMetadataTemplate)) as ProcessMetadata,
             startBlock: 0,
             blockCount: 10000,
-            maxCount: 1, // forced for now
+            maxCount: 0, // auto-filled later
             maxValue: 0, // auto-filled later
             maxTotalCost: 0,
             // Defines the exponent that will be used to compute the "cost" of the options
             // voted and compare it against `maxTotalCost`.
             // totalCost = Σ (value[i] ** costExponent) <= maxTotalCost
-            costExponent: 0, // forced for now
+            costExponent: 1, // forced for now
             // How many times a vote can be replaced (only the last one counts)
             maxVoteOverwrites: 0,
             namespace: 0, // TODO: should be taken from processes contract
@@ -502,14 +502,16 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         }
         this.stepDone('census')
 
-        // Auto-fill maxValue
-        let maxValue = 0
+        // Auto-fill maxValue and maxCount
+        let maxValue = 0, maxCount = 0
         process.metadata.questions.forEach((question) => {
             if (maxValue < question.choices.length) {
                 maxValue = question.choices.length
             }
+            maxCount++
         })
         process.maxValue = maxValue
+        process.maxCount = maxCount
 
         try {
             const wallet = this.context.web3Wallet.getWallet()
