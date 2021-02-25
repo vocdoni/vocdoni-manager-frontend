@@ -222,7 +222,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         const address = this.context.web3Wallet.getAddress()
         const balance = await this.context.web3Wallet.getProvider().getBalance(address)
 
-        if (balance.lte(0)) {
+        if (balance.isZero()) {
             Modal.warning({
                 title: 'Not enough balance',
                 icon: <AlertCircle />,

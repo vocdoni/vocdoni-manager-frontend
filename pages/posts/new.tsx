@@ -16,8 +16,8 @@ import { Wallet, Signer } from 'ethers'
 // import { by639_1 } from 'iso-language-codes'
 
 import { getGatewayClients, getNetworkState } from '../../lib/network'
-import AppContext, { IAppContext } from '../../components/app-context'
 import { getRandomUnsplashImage, sanitizeHtml } from '../../lib/util'
+import AppContext, { IAppContext } from '../../components/app-context'
 import IPFSImageUpload from '../../components/ipfs-image-upload'
 import Image from '../../components/image'
 
@@ -218,7 +218,7 @@ class PostNew extends Component<IAppContext, State> {
             const address = this.props.web3Wallet.getAddress()
             const balance = await this.props.web3Wallet.getProvider().getBalance(address)
 
-            if (balance.lte(0)) {
+            if (balance.isZero()) {
                 return Modal.warning({
                     title: "Not enough balance",
                     icon: <ExclamationCircleOutlined />,
