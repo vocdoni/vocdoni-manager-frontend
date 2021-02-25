@@ -48,12 +48,15 @@ export type ProcessNewState = {
     streamingInputVisible: boolean,
     qnaInputVisible: boolean,
     webVoting: boolean,
-    steps: {
-        balance: boolean,
-        census: boolean,
-        create: boolean,
-        emails: boolean,
-    },
+    steps: Steps,
+    stepsDone: Steps,
+}
+
+type Steps = {
+    balance: boolean,
+    census: boolean,
+    create: boolean,
+    emails: boolean,
 }
 
 type CensusInfo = {
@@ -118,8 +121,14 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         qnaInputVisible: false,
         webVoting: false,
         steps: {
-            balance: false,
+            balance: true,
             census: true,
+            create: true,
+            emails: false,
+        },
+        stepsDone: {
+            balance: false,
+            census: false,
             create: false,
             emails: false,
         },
@@ -167,16 +176,17 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
     modal() : ReactNode {
         const { creating } = this.state
         let content = <span dangerouslySetInnerHTML={{__html: i18n.t('processCreationAdvice')}} />
+        const steps = Object.keys(this.state.steps).filter((step) => this.state.steps[step])
         if (creating) {
             content = (
                 <ul className='process-steps'>
                     {
-                        Object.keys(stepDescriptions).map((step) => (
+                        steps.map((step) => (
                             <li key={step}>
-                                <If condition={this.state.steps[step]}>
+                                <If condition={this.state.stepsDone[step]}>
                                     <Ficon icon='Check' color='green' />
                                 </If>
-                                <If condition={!this.state.steps[step]}>
+                                <If condition={!this.state.stepsDone[step]}>
                                     <LoadingOutlined spin />
                                 </If> {stepDescriptions[step]}
                             </li>
@@ -232,11 +242,25 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
      *
      * @param step The step object key
      */
-    stepDone(step: 'balance' | 'census' | 'create' | 'emails') : void {
+    stepDone(step: keyof Steps) : void {
+        this.setState({
+            stepsDone: {
+                ...this.state.stepsDone,
+                [step]: true,
+            }
+        })
+    }
+    /**
+     * Sets a step value.
+     *
+     * @param step The name/key of the step to change its value
+     * @param value The value to be set
+     */
+    setStep(step: keyof Steps, value: boolean) : void {
         this.setState({
             steps: {
                 ...this.state.steps,
-                [step]: true,
+                [step]: value,
             }
         })
     }
@@ -490,6 +514,8 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             return
         }
         this.stepDone('census')
+        const shouldSendEmails = this.state.webVoting && this.state.selectedCensus !== 'file' && census.id
+        shouldSendEmails && this.setStep('emails', true)
 
         // Auto-fill maxValue and maxCount
         let maxValue = 0, maxCount = 0
@@ -508,7 +534,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             this.stepDone('create')
 
             let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
-            if (this.state.webVoting && this.state.selectedCensus !== 'file' && census.id) {
+            if (shouldSendEmails) {
                 const emailsReq : any = {
                     method: 'sendVotingLinks',
                     processId,
