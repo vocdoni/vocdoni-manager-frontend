@@ -15,18 +15,6 @@ import {
 import moment from 'moment'
 import Router from 'next/router'
 import React, { Component, ReactNode } from 'react'
-import {
-    Activity,
-    AlertCircle,
-    AlignLeft,
-    ArrowRightCircle,
-    Calendar,
-    Check,
-    HelpCircle,
-    MessageSquare,
-    MousePointer,
-    Youtube,
-} from 'react-feather'
 
 import AppContext from '../../components/app-context'
 import HTMLEditor from '../../components/html-editor'
@@ -38,6 +26,7 @@ import { MessageType } from 'antd/lib/message'
 import ParticipantsSelector, { Census } from '../../components/processes/ParticipantsSelector'
 import QuestionsForm, { LegacyQuestions } from '../../components/processes/QuestionsForm'
 import i18n from '../../i18n'
+import Ficon from '../../components/ficon'
 
 
 export type ProcessNewState = {
@@ -185,7 +174,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                         Object.keys(stepDescriptions).map((step) => (
                             <li key={step}>
                                 <If condition={this.state.steps[step]}>
-                                    <Check color='green' />
+                                    <Ficon icon='Check' color='green' />
                                 </If>
                                 <If condition={!this.state.steps[step]}>
                                     <LoadingOutlined spin />
@@ -225,7 +214,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         if (balance.isZero()) {
             Modal.warning({
                 title: 'Not enough balance',
-                icon: <AlertCircle />,
+                icon: <Ficon icon='AlertCircle' />,
                 content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
                 onOk: () => {
                     this.setState({ creating: false })
@@ -578,7 +567,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><AlignLeft /> Description</label>
+                            <label><Ficon icon='AlignLeft' /> Description</label>
                         </div>
                         <HTMLEditor
                             value={process.metadata.description.default}
@@ -587,7 +576,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Calendar /> Period</label>
+                            <label><Ficon icon='Calendar' /> Period</label>
                         </div>
                         <div>
                             <DatePicker.RangePicker
@@ -606,7 +595,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Activity /> Real-time results</label>
+                            <label><Ficon icon='Activity' /> Real-time results</label>
                             <Switch
                                 onChange={() =>
                                     this.toggleProcessBitFlagField('envelopeType', ProcessEnvelopeType.ENCRYPTED_VOTES)
@@ -620,7 +609,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Youtube /> Live streaming</label>
+                            <label><Ficon icon='Youtube' /> Live streaming</label>
                             <Switch
                                 onChange={(streamingInputVisible: boolean) =>
                                     this.setState({streamingInputVisible})
@@ -665,7 +654,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><MessageSquare /> Questions and answers button</label>
+                            <label><Ficon icon='MessageSquare' /> Questions and answers button</label>
                             <Switch
                                 onChange={(qnaInputVisible: boolean) =>
                                     this.setState({qnaInputVisible})
@@ -685,7 +674,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><HelpCircle /> Questions</label>
+                            <label><Ficon icon='HelpCircle' /> Questions</label>
                         </div>
                         <QuestionsForm
                             onChange={this.setQuestions.bind(this)}
@@ -693,7 +682,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><MousePointer /> Voting channels</label>
+                            <label><Ficon icon='MousePointer' /> Voting channels</label>
                         </div>
                         <div>
                             <small>
@@ -732,7 +721,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><ArrowRightCircle /> Publishing</label>
+                            <label><Ficon icon='ArrowRightCircle' /> Publishing</label>
                         </div>
                         <Button
                             disabled={loading || creating || !valid}
