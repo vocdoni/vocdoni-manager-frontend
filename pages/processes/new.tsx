@@ -47,6 +47,7 @@ export type ProcessNewState = {
     targets: any[],
     streamingInputVisible: boolean,
     qnaInputVisible: boolean,
+    docInputVisible: boolean,
     webVoting: boolean,
     steps: Steps,
     stepsDone: Steps,
@@ -119,6 +120,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         },
         streamingInputVisible: false,
         qnaInputVisible: false,
+        docInputVisible: false,
         webVoting: false,
         steps: {
             balance: true,
@@ -694,6 +696,26 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                                 <Input
                                     placeholder='https://...'
                                     onChange={this.onFieldChange.bind(this, 'meta.requestsUrl')}
+                                />
+                            </If>
+                        </div>
+                    </Form.Item>
+                    <Form.Item>
+                        <div className='label-wrapper'>
+                            <label><Ficon icon='Info' /> Documentation button</label>
+                            <Switch
+                                onChange={(docInputVisible: boolean) =>
+                                    this.setState({docInputVisible})
+                                }
+                                checked={this.state.docInputVisible}
+                            />
+                        </div>
+                        <div>
+                            <small>Will show a Documentation button linking to where you want.</small>
+                            <If condition={this.state.docInputVisible}>
+                                <Input
+                                    placeholder='https://...'
+                                    onChange={this.onFieldChange.bind(this, 'meta.documentationUrl')}
                                 />
                             </If>
                         </div>

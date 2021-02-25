@@ -21,16 +21,31 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                 className='process-description'
                 dangerouslySetInnerHTML={{__html: process.description.default}}
             />
-            <If condition={process.meta?.requestsUrl?.length}>
-                <Button
-                    href={process.meta.requestsUrl}
-                    type='primary'
-                    style={{marginTop: '2em'}}
-                    target='_blank'
-                    rel='noopener noreferrer nofollow'
-                >
-                    {i18n.t('process.btn.requests')}
-                </Button>
+            <If condition={process.meta?.requestsUrl?.length || process.meta?.documentationUrl?.length}>
+                <div className='process-actions'>
+                    <If condition={process.meta?.requestsUrl?.length}>
+                        <Button
+                            href={process.meta.requestsUrl}
+                            type='primary'
+                            style={{marginTop: '2em'}}
+                            target='_blank'
+                            rel='noopener noreferrer nofollow'
+                        >
+                            {i18n.t('process.btn.requests')}
+                        </Button>
+                    </If>
+                    <If condition={process.meta?.documentationUrl?.length}>
+                        <Button
+                            href={process.meta.documentationUrl}
+                            type='primary'
+                            style={{marginTop: '2em'}}
+                            target='_blank'
+                            rel='noopener noreferrer nofollow'
+                        >
+                            {i18n.t('process.btn.documentation')}
+                        </Button>
+                    </If>
+                </div>
             </If>
             <If condition={process.media.streamUri?.length}>
                 <Divider />

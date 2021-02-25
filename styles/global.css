@@ -227,3 +227,7 @@ footer.poweredby a:focus {
     height: 1em;
     vertical-align: -0.1em;
 }
+
+.process-actions .ant-btn + .ant-btn {
+    margin-left: 1em;
+}

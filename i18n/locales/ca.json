@@ -57,7 +57,8 @@
     },
     "process": {
         "btn": {
-            "requests": "Precs i preguntes"
+            "requests": "Precs i preguntes",
+            "documentation": "Documentació"
         }
     },
     "image_uploader": {

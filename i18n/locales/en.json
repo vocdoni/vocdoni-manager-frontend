@@ -57,7 +57,8 @@
     },
     "process": {
         "btn": {
-            "requests": "Questions and answers"
+            "requests": "Questions and answers",
+            "documentation": "Docs"
         }
     },
     "image_uploader": {
