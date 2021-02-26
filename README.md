@@ -55,7 +55,28 @@ If you only plan on serving the project, we create a set of images from this Doc
 docker run --rm -it -p 8000:80 vocdoni/vocdoni-manager-frontend:app-latest
 ```
 
-## Translations
+## Development
+
+Git clone the project, taking in mind there are submodules:
+
+~~~bash
+git clone --recursive git@github.com:vocdoni/vocdoni-manager-frontend.git
+cd vocdoni-manager-frontend
+~~~
+
+Use npx to start the dev server:
+
+~~~bash
+npx next dev
+~~~
+
+You can prefix any environment variable defined in [`env-config.js`][env-config.js]:
+
+~~~bash
+VOCDONI_ENVIRONMENT=stg ETH_NETWORK_ID=xdai npx next dev
+~~~
+
+### Translations
 [![i18n status][i18n badge]][weblate project]
 
 This project translations are mantained using weblate, you can help us translate the project to any language from our [weblate project][].

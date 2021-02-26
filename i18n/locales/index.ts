@@ -3,7 +3,7 @@ import en from './en.json'
 import eo from './eo.json'
 import es from './es.json'
 
-export {
+export default {
     ca,
     en,
     eo,

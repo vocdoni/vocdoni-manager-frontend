@@ -29,7 +29,7 @@ export default function MainLayout({ children, ...props }: Props) {
                     </Col>
                 }
                 <Col xs={12} md={14}>
-                    <h1 id='logo'><Link href='/'><a>{title || ' '}</a></Link></h1>
+                    <h1 id='logo' className='text-white'>{title || ' '}</h1>
                 </Col>
                 <Col xs={10} style={{textAlign: 'right'}}>
                     <div className='vocdoni-logo'>

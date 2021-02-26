@@ -41,6 +41,8 @@ export interface IWallet {
     publicKey: string,
     // A unique random identifier for this wallet (telemetry purposes)
     uid: number,
+    longName?: string,
+    avatar?: string,
 }
 
 export interface IMember {

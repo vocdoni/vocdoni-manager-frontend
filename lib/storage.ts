@@ -33,19 +33,6 @@ export class DataCache extends Dexie {
     }
 
     async getWallet(name: string): Promise<IWallet> {
-        const wallet = await this.wallets.get({ name })
-
-        if (!wallet) {
-            return wallet
-        }
-
-        if (!wallet.uid) {
-            // @ts-expect-error due to dixie expecting a number, although it properly works with key strings
-            this.wallets.update(name, {
-                uid: makeUid(),
-            })
-        }
-
         return this.wallets.get({ name });
     }
 

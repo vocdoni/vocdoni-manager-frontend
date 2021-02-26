@@ -69,7 +69,7 @@ class MainApp extends App<Props, State> {
     state: State = {
         isConnected: false,
         loadingEntityMetadata: false,
-        title: " ",
+        title: 'Vocdoni',
         menuVisible: true,
         menuSelected: "profile",
         menuCollapsed: false,
@@ -184,6 +184,10 @@ class MainApp extends App<Props, State> {
         return EntityApi.getMetadata(id, await getGatewayClients())
     }
 
+    get isEntityLoaded () : boolean {
+        return this.state.address?.length > 0 && this.state.entity?.name?.default?.length > 0
+    }
+
     get isReadOnlyNetwork() : boolean {
         const { readOnly } = getNetworkState()
 
@@ -289,7 +293,7 @@ class MainApp extends App<Props, State> {
         )
     }
 
-    async refreshEntityMetadata(address?: string, force?: boolean) : Promise<void> {
+    async refreshEntityMetadata(address?: string, force?: boolean) : Promise<EntityMetadata> {
         if (!address && !this.state.address) {
             address = getWeb3Wallet().getAddress()
         } else if (
@@ -298,19 +302,23 @@ class MainApp extends App<Props, State> {
             this.state.entity && !force
         ) {
             // We already have the info stored in state and should not be changed
-            return
+            return this.state.entity
         }
 
+        console.log('dbg not cached')
         address = address ? address : this.state.address
 
         this.setState({ loadingEntityMetadata: true })
-        let entity = null
+        let entity : EntityMetadata = null
         try {
             entity = await this.getEntityMetadata(address)
         } catch (err) {
-            console.error(err)
+            console.warn('could not get entity metadata', err)
         }
-        if (!entity) throw new Error('Entity not found')
+        if (!entity) {
+            this.setState({loadingEntityMetadata: false})
+            throw new Error('Entity not found')
+        }
 
         this.setState({
             address,
@@ -318,6 +326,8 @@ class MainApp extends App<Props, State> {
             loadingEntityMetadata: false,
             title: entity.name.default,
         })
+
+        return entity
     }
 
     async refreshWeb3Status() {
@@ -390,6 +400,7 @@ class MainApp extends App<Props, State> {
         const injectedGlobalContext: IAppContext = {
             gatewayClients: getGatewayClients(),
             getEntityMetadata: this.getEntityMetadata.bind(this),
+            isEntityLoaded: this.isEntityLoaded,
             isWriteEnabled: isWriteEnabled(),
             isReadOnly: this.isReadOnly,
             isReadOnlyNetwork: this.isReadOnlyNetwork,

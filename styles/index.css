@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./global.css";
+@import "./layout.css";
+@import "./widgets.css";
+@import "./pages.css";
+
 @layer base {
     h1, h2, h3, h4, h5, h6 {
         @apply font-semibold mb-2;
@@ -23,36 +28,15 @@ body {
     font-size: 14px;
     font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
     background-color: #F3F0ED !important;
-}
-
-:root {
-    --clear: #FFFFFF;
-    /*--clear-95: #F7F7F7;*/
-    --clear-95: #f0f2f5;
-    --clear-99: #fefefe;
-
-    --dark: #222;
-    --dark-90: #4b4040;
-
-    --gray-logo: #f2f0ed;
-    --gray-50: #f2f2f2;
-    --gray-80: #bbb;
-    --gray-90: #888;
-
-    --border-radius-small: 4px;
-    --border-radius-large: 10px;
-
-    --cyan: #99CCEE;
-
-    --inputs-bg: #E7E4E1;
-    --input-group-btn-hover-bg: var(--clear-95);
-
-    /* --main-color: #25658a; */
-    --main-color: #444444;
+    @apply text-gray-600;
 }
 
 #logo {
     @apply text-2xl font-bold mt-3 invisible sm:visible;
+}
+
+.spaced-content > * {
+    @apply mb-6;
 }
 
 .vocdoni-logo {
@@ -61,6 +45,27 @@ body {
     img {
         @apply inline-block ml-3;
         height: 40px;
+    }
+}
+
+.account-avatar {
+    @apply mr-2 w-10 h-10;
+
+    .ficon svg {
+        @apply w-full h-full;
+        stroke-width: 1;
+    }
+}
+
+.login-form {
+    @apply flex flex-col;
+
+    .selected-account {
+        @apply my-16 items-center flex flex-col;
+    }
+
+    .account-avatar {
+        @apply block mr-0 mb-2 w-16 h-16;
     }
 }
 
@@ -81,6 +86,60 @@ body {
 .process-steps li span {
     @apply mr-3;
 }
+
+.account-selection ul {
+    @apply mt-8;
+}
+
+.account-selection ul li {
+    @apply mb-3;
+}
+
+.form-group {
+    @apply mb-5;
+}
+
+.form-control {
+    @apply rounded-lg p-2.5 py-3 w-full;
+    background-color: #E7E4E1;
+    outline: none;
+    transition: box-shadow 0.25s ease-out;
+
+    &.form-sm {
+        @apply text-xs py-2.5;
+    }
+}
+
+.btn {
+    transition: all 0.5s ease;
+    @apply py-2 px-4 rounded-md bg-gray-200 font-semibold;
+
+    &[disabled] {
+        @apply cursor-not-allowed;
+    }
+
+    &.primary {
+        @apply bg-blue-400 text-white;
+
+        &[disabled] {
+            @apply bg-blue-300;
+        }
+    }
+
+    &.dark {
+        background-color: #646464;
+        @apply text-white;
+
+        &[disabled] {
+            background-color: #6464644F;
+        }
+    }
+}
+
+.form-control:focus {
+    box-shadow: 0 0 20px white;
+}
+
 
 /* note that most of these styles were imported from old css, instead than porting them to proper tailwing styling */
 .card-list {
@@ -169,8 +228,6 @@ body {
     font-size: .9em;
 }
 
-
-@import "./global.css";
-@import "./layout.css";
-@import "./widgets.css";
-@import "./pages.css";
+.ant-layout {
+    background-color: #F3F0ED;
+}

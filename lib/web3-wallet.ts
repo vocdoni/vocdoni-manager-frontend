@@ -71,6 +71,11 @@ export default class Web3Wallet {
         return this.db.wallets.get({publicKey})
     }
 
+    public updateStored(name: string, data: any) : Promise<number> {
+        // @ts-expect-error due to dixie expecting a number, although it properly works with key strings
+        return this.db.wallets.update(name, data)
+    }
+
     // Loads a wallet form IndexedDB if the provided passphrase is correct
     public async load(name: string, passphrase: string): Promise<boolean> {
         const storedWallet = await this.db.getWallet(name)

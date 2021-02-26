@@ -4,11 +4,14 @@
         "address": "Address",
         "balance": "Balance",
         "btn": {
+            "backup_create": "Create backup",
+            "create": "Create organization",
             "details_already_copied": "I have copied my Entity details",
             "download_backup": "Download backup file",
             "import": "Import and login"
         },
         "created": "Done creating account!",
+        "created_notice": "<b>{{name}}</b> looks like a good name",
         "creating": "Creating account, please wait...",
         "drag_to_import": "Click or drag your backup file here for easy import",
         "error": {
@@ -17,6 +20,7 @@
             "missing_name": "You need to specify an account name",
             "missing_password": "The password is required to decrypt everything!",
             "missing_seed": "The seed is mandatory",
+            "missing_terms": "You must accept the terms and conditions",
             "not_found_description": "It looks like your account is not linked to an existing entity. Do you want to create it now?",
             "password_missmatch": "The two passwords that you entered do not match!"
         },
@@ -25,35 +29,58 @@
         "import_title": "Import account",
         "manually_set": "Or manually set your details below:",
         "name": "Name",
+        "placeholder": {
+            "name": "Your organization name"
+        },
         "please_copy_details": "Please, make a copy of the following details before you continue",
         "private_key": "Private key",
         "public_key": "Public key",
+        "recover": "Recover organization account",
         "seed": "Account seed",
-        "title": "Account"
+        "set_password": "Set your password",
+        "set_password_description": "Set a password to protect the keys stored in the browser",
+        "title": "Account",
+        "welcome": "Welcome {{ name }}, redirecting you to the manager..."
     },
     "action_in_progress": "Action in progress...",
+    "agree": "I agree with the <tos>{{ tos }}</tos> and <privacy>{{ privacy }}</privacy>",
+    "avatar_alt": "{{ name }}'s avatar",
+    "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
+    "backup": {
+        "encrypt_with_password": "Together with your password these questions will be used to encrypt your backup.",
+        "select_question": "Select question",
+        "select_questions": "Select 2 questions that are not public information and that you will remember in the future.",
+        "store_location": "Where do you want to store your backup?",
+        "title": "Backup"
+    },
     "btn": {
         "back": "Go back",
         "cancel": "Cancel",
         "copy_link": "Copy link",
         "create": "Create",
+        "download": "Download",
         "edit": "Edit",
+        "login": "Log in",
+        "new_organization": "New organization",
         "ok": "Ok",
         "remove": "Remove",
         "retry": "Retry",
         "save": "Save",
-        "saving": "Saving"
+        "saving": "Saving",
+        "send_to_email": "Send to e-mail",
+        "switch_account": "Switch account"
     },
     "cannot_import": "Cannot import members {{ error }}",
     "confirm": "Confirm",
+    "confirm_create_backup": "Do you want to create the backup now?",
     "confirm_delete": "Are you sure you want to remove {{ name }}?",
     "connected": "Connected",
     "connecting": "Connecting to the network. Please wait...",
     "duplicate_email": "Duplicate email",
+    "do_it_later": "I'll do it later",
     "entity": {
         "btn": {
-            "create": "Create entity",
-            "manage": "Manage my entity"
+            "create": "Create entity"
         },
         "error": {
             "loading": "There was an error loading the entity data",
@@ -95,6 +122,7 @@
         "retry": "Try again",
         "timeout": "The request took too long",
         "update": "There was an error updating the blockchain information. Refresh the page if you don't see changes in a while.",
+        "weak_password": "The password is not strong enough",
         "wrong_password": "Could not unlock the wallet. Please, check your password."
     },
     "field": {
@@ -115,12 +143,6 @@
     },
     "loading": "Loading...",
     "login": {
-        "btn": {
-            "create": "Create an entity",
-            "import": "Import an entity",
-            "sign_in": "Sign in"
-        },
-        "description": "From this page you can create and manage your entity, publish news, manage censuses and create voting processes.",
         "password": "Password"
     },
     "members": {
@@ -179,10 +201,10 @@
             "new": "New post"
         }
     },
-    "or": "or",
+    "next": "Next",
     "password": "Password",
     "password_confirm": "Confirm password",
-    "policy": "the privacy policy",
+    "policy": "Privacy Policy",
     "powered_by": "Powered by Vocdoni",
     "process": {
         "actions": "Actions",
@@ -192,7 +214,6 @@
             "create": "Create process",
             "documentation": "Docs",
             "goto_vote": "Vote",
-            "login": "Log in",
             "mark_ended": "Mark as ended",
             "new": "New",
             "option_add": "+ Add option",
@@ -321,7 +342,9 @@
         "voting": "Voting",
         "your_selections": "These are your selections:"
     },
-    "tos": "the terms of service",
+    "select_account": "Select account",
+    "tos": "Terms of Service",
+    "uninstall_browser_notice": "If you ever uninstall the browser <b>you will loose your organization</b>.",
     "uploader": {
         "spreadsheets_note": "Drag & drop or click to browse files"
     }

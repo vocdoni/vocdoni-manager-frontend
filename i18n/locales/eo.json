@@ -1,1 +1,350 @@
-{}
+{
+    "accept": "",
+    "account": {
+        "address": "",
+        "balance": "",
+        "btn": {
+            "backup_create": "Create backup",
+            "create": "",
+            "details_already_copied": "",
+            "download_backup": "",
+            "import": ""
+        },
+        "created": "",
+        "created_notice": "",
+        "creating": "",
+        "drag_to_import": "",
+        "error": {
+            "cannot_create": "",
+            "cannot_import": "",
+            "missing_name": "",
+            "missing_password": "",
+            "missing_seed": "",
+            "missing_terms": "",
+            "not_found_description": "",
+            "password_missmatch": ""
+        },
+        "import_file_restriction": "",
+        "import_finish": "",
+        "import_title": "",
+        "manually_set": "",
+        "name": "",
+        "placeholder": {
+            "name": ""
+        },
+        "please_copy_details": "",
+        "private_key": "",
+        "public_key": "",
+        "recover": "",
+        "seed": "",
+        "set_password": "",
+        "set_password_description": "",
+        "title": "",
+        "welcome": "Welcome {{ name }}, redirecting you to the manager..."
+    },
+    "action_in_progress": "",
+    "agree": "I agree with the <tos>{{ tos }}</tos> and <privacy>{{ privacy }}</privacy>",
+    "avatar_alt": "",
+    "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
+    "backup": {
+        "encrypt_with_password": "Together with your password these questions will be used to encrypt your backup.",
+        "select_question": "",
+        "select_questions": "Select 2 questions that are not public information and that you will remember in the future.",
+        "store_location": "",
+        "title": ""
+    },
+    "btn": {
+        "back": "",
+        "cancel": "",
+        "copy_link": "",
+        "create": "",
+        "download": "",
+        "edit": "",
+        "login": "",
+        "new_organization": "",
+        "ok": "",
+        "remove": "",
+        "retry": "",
+        "save": "",
+        "saving": "",
+        "send_to_email": "",
+        "switch_account": ""
+    },
+    "confirm": "",
+    "confirm_create_backup": "Do you want to create the backup now?",
+    "confirm_delete": "",
+    "connected": "",
+    "connecting": "",
+    "do_it_later": "I'll do it later",
+    "entity": {
+        "btn": {
+            "create": ""
+        },
+        "error": {
+            "loading": "",
+            "not_found": "",
+            "not_found_description": ""
+        },
+        "field": {
+            "callback_secret": "",
+            "callback_url": "",
+            "org_email": "",
+            "org_name": ""
+        },
+        "heads-up": "",
+        "loading": "",
+        "qr_note": "",
+        "title": {
+            "create": "",
+            "new": "",
+            "share": ""
+        },
+        "welcome": ""
+    },
+    "error": {
+        "cannot_connect": "",
+        "cannot_read_entity_metadata": "",
+        "connection": "",
+        "file_format_unknown": "",
+        "general": "",
+        "insufficient_funds": "",
+        "insufficient_funds_note": "",
+        "invalid_claims_found": "",
+        "invalid_email": "",
+        "invalid_format_contents": "",
+        "invalid_request": "",
+        "invalid_spreadsheet_data": "",
+        "invalid_uri": "",
+        "not_found": "",
+        "oops": "",
+        "retry": "",
+        "timeout": "",
+        "update": "",
+        "weak_password": "The password is not strong enough",
+        "wrong_password": ""
+    },
+    "field": {
+        "actions": "",
+        "email": "",
+        "last_name": "",
+        "name": "",
+        "tags": "",
+        "validated": ""
+    },
+    "image_uploader": {
+        "error": {
+            "filesize": "",
+            "mime": ""
+        },
+        "upload": "",
+        "uploading": ""
+    },
+    "loading": "",
+    "login": {
+        "password": ""
+    },
+    "members": {
+        "btn": {
+            "create_census": "",
+            "download_template": "",
+            "download_validation_links": "",
+            "import": "",
+            "row_add": "",
+            "row_delete": ""
+        },
+        "census_name": "",
+        "import": {
+            "confirm": "",
+            "confirm_note": "",
+            "description": "",
+            "manual": "",
+            "preview": "",
+            "select_file_first": "",
+            "template": "",
+            "title": ""
+        },
+        "list": {
+            "census_note": "",
+            "description": "",
+            "title": "",
+            "tools": "",
+            "tools_note": ""
+        }
+    },
+    "menu": {
+        "censuses": "",
+        "communication": "",
+        "create_post": "",
+        "details": "",
+        "import": "",
+        "members": "",
+        "news": "",
+        "participation": "",
+        "settings": "",
+        "users": ""
+    },
+    "news": {
+        "confirm_delete": "",
+        "delete_error": "",
+        "deleted_successfuly": "",
+        "field": {
+            "content": "",
+            "header_image": "",
+            "header_image_note": "",
+            "title": ""
+        },
+        "title": {
+            "feed": "",
+            "header": "",
+            "new": ""
+        }
+    },
+    "next": "",
+    "password": "",
+    "password_confirm": "",
+    "policy": "",
+    "powered_by": "",
+    "process": {
+        "actions": "",
+        "btn": {
+            "cast_vote": "",
+            "confirm": "",
+            "create": "",
+            "documentation": "",
+            "goto_vote": "",
+            "mark_ended": "",
+            "new": "",
+            "option_add": "",
+            "publish": "",
+            "question_add": "",
+            "remove": "",
+            "requests": ""
+        },
+        "census_size": "",
+        "channels": {
+            "intro": "",
+            "list": "",
+            "list_items": ""
+        },
+        "confirm_mark_ended": "",
+        "confirm_vote": "",
+        "create_note": "",
+        "created": "",
+        "creating": "",
+        "detailed_info": "",
+        "details": "",
+        "end_block": "",
+        "end_date": "",
+        "error": {
+            "cannot_create": "",
+            "cannot_load": "",
+            "cannot_vote": "",
+            "census": "",
+            "census_invalid": "",
+            "census_undefined": "",
+            "emails": "",
+            "ends_soon": "",
+            "generic": "",
+            "invalid_dates": "",
+            "invalid_frame": "",
+            "invalid_private_key": "",
+            "missing_title": "",
+            "not_found": "",
+            "not_found_description": "",
+            "not_in_census": "",
+            "select_all": "",
+            "starts_soon": "",
+            "status": "",
+            "timeout": "",
+            "wrong_value": ""
+        },
+        "field": {
+            "app_unavailable": "",
+            "census_root": "",
+            "census_uri": "",
+            "census_uri_note": "",
+            "description": "",
+            "docs_button": "",
+            "docs_button_note": "",
+            "end": "",
+            "import_census": "",
+            "import_census_note": "",
+            "import_spreadsheet": "",
+            "import_spreadsheet_note": "",
+            "live_streaming": "",
+            "participants": "",
+            "participants_all": "",
+            "period": "",
+            "publishing": "",
+            "qna_button": "",
+            "qna_button_note": "",
+            "questions": {
+                "blank": "",
+                "no": "",
+                "title": "",
+                "yes": ""
+            },
+            "real_time_results": "",
+            "real_time_results_note": "",
+            "start": "",
+            "title": "",
+            "voting_channels": "",
+            "web_voting": "",
+            "web_voting_note": ""
+        },
+        "filter": {
+            "active": "",
+            "all": "",
+            "ended": ""
+        },
+        "general": "",
+        "id": "",
+        "loading": "",
+        "loading_results": "",
+        "login_title": "",
+        "login_uri": "",
+        "media": "",
+        "new": "",
+        "nullifier_note": "",
+        "question_number": "",
+        "results": "",
+        "start_block": "",
+        "start_date": "",
+        "status": {
+            "active": "",
+            "can_vote": "",
+            "closed": "",
+            "ended": "",
+            "finished": "",
+            "finishes": "",
+            "inactive": "",
+            "not_started": "",
+            "submitting": "",
+            "title": "",
+            "unsynced": "",
+            "vote_registered": ""
+        },
+        "step": {
+            "balance": "",
+            "census": "",
+            "create": "",
+            "emails": ""
+        },
+        "submitted": "",
+        "submitted_note": "",
+        "thanks": "",
+        "time_frame": "",
+        "type": "",
+        "vote_registered_on": "",
+        "votes_received": "",
+        "voting": "",
+        "your_selections": ""
+    },
+    "select_account": "",
+    "tos": "",
+    "uninstall_browser_notice": "An account backup is also necessary to later import it to a different browser or computer",
+    "uploader": {
+        "spreadsheets_note": ""
+    },
+    "password_repeat": ""
+}

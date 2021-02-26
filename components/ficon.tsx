@@ -5,7 +5,6 @@ export interface FiconProps extends Feather.IconProps {
     icon: string,
 }
 
-
 export default class Ficon extends Component<FiconProps, undefined> {
     render() : ReactNode {
         const props = {...(this.props as any) as FiconProps}

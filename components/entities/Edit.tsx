@@ -3,6 +3,7 @@ import { EntityApi, EntityMetadata, Gateway, GatewayPool } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 
 import { getGatewayClients } from '../../lib/network'
+import { IWallet } from '../../lib/types'
 import i18n from '../../i18n'
 import AppContext from '../app-context'
 import HTMLEditor from '../html-editor'
@@ -179,7 +180,7 @@ export default class Edit extends Component<EditProps, EditState> {
                 }
             }
 
-            // Updated such centralized metadata
+            // Update such centralized metadata
             await this.context.managerBackendGateway.sendRequest(request as any, wallet);
 
             const hasGas = (request.method === 'signUp') ? (await this.context.web3Wallet.waitForGas()) :  (+(await wallet.getBalance()) > 0)
@@ -210,6 +211,20 @@ export default class Edit extends Component<EditProps, EditState> {
             success = false;
             console.error(err)
             message.error('The entity could not be updated')
+        }
+
+        // update cache fields (login)
+        try {
+            const stored = await this.context.web3Wallet.getStoredWallet(
+                this.context.web3Wallet.getPublicKey()
+            )
+
+            this.context.web3Wallet.updateStored(stored.name, {
+                avatar: entity.media.avatar,
+                longName: entity.name.default,
+            } as IWallet)
+        } catch (e) {
+            console.error('there was an error updating the stored wallet cache:', e)
         }
 
         this.setState({saving: false})

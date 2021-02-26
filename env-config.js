@@ -1,7 +1,7 @@
 // This file is evaluated when exporting the frontend application
 // The environment variabled need to be set locally on in the CI/CD console
 
-const lang = 'en'
+const lang = process.env.MANAGER_LANG || 'en'
 const COMMIT_SHA = process.env.COMMIT_SHA || 'development'
 const networkEnv = process.env.VOCDONI_ENVIRONMENT || 'dev'
 let bootnodes = 'https://bootnodes.vocdoni.net/gateways.json'
@@ -31,6 +31,8 @@ module.exports = {
     COMMIT_SHA,
     LANG: lang,
     FALLBACK_REDIRECT_URL: 'https://vocdoni.io/',
+    IPFS_GATEWAY: process.env.IPFS_GATEWAY || 'https://10.via0.com/ipfs/',
+    BACKUP_LINK_VERSION: process.env.BACKUP_LINK_VERSION || '1',
 
     // BLOCKCHAIN
     ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || 'xdai',

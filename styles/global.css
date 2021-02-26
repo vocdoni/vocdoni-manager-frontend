@@ -1,5 +1,27 @@
-.ant-layout {
-    background-color: #F3F0ED;
+:root {
+    --clear: #FFFFFF;
+    /*--clear-95: #F7F7F7;*/
+    --clear-95: #f0f2f5;
+    --clear-99: #fefefe;
+
+    --dark: #222;
+    --dark-90: #4b4040;
+
+    --gray-logo: #f2f0ed;
+    --gray-50: #f2f2f2;
+    --gray-80: #bbb;
+    --gray-90: #888;
+
+    --border-radius-small: 4px;
+    --border-radius-large: 10px;
+
+    --cyan: #99CCEE;
+
+    --inputs-bg: #E7E4E1;
+    --input-group-btn-hover-bg: var(--clear-95);
+
+    /* --main-color: #25658a; */
+    --main-color: #444444;
 }
 
 /* FONTS */
@@ -31,6 +53,15 @@
     font-display: swap;
     src: local('Open Sans SemiBold'), local('OpenSans-SemiBold'), url(/fonts/OpenSans-SemiBold.woff2) format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+pre {
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    word-break: break-all;
 }
 
 /* GLOBAL VIEWS */
@@ -96,15 +127,6 @@
 .body-card label {
     margin-bottom: 5px;
     display: inline-block;
-}
-
-pre {
-    white-space: pre-wrap;       /* css-3 */
-    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-    white-space: -pre-wrap;      /* Opera 4-6 */
-    white-space: -o-pre-wrap;    /* Opera 7 */
-    word-wrap: break-word;       /* Internet Explorer 5.5+ */
-    word-break: break-all;
 }
 
 .ant-descriptions-item-content{
