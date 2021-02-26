@@ -52,7 +52,7 @@ class EntityView extends Component<undefined, State> {
 
     shouldComponentUpdate() : boolean {
         const [address] = this.context.params
-        if (address !== this.context.address) {
+        if (this.context.address.length && address !== this.context.address) {
             this.fetchMetadata()
         }
 
@@ -62,11 +62,9 @@ class EntityView extends Component<undefined, State> {
     render() : ReactNode {
         const { entity, address } = this.context
         const found = entity && Object.keys(entity).length > 0
-        const loading = this.state.loading || this.context.loadingEntityMetadata
-
         return (
             <div className='content-wrapper'>
-                <Loading loading={loading} text={i18n.t('entity.loading')}>
+                <Loading loading={this.state.loading} text={i18n.t('entity.loading')}>
                     <If condition={!found}>
                         <NotFound />
                     </If>

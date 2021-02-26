@@ -31,6 +31,7 @@ module.exports = {
     COMMIT_SHA,
     LANG: lang,
     FALLBACK_REDIRECT_URL: 'https://vocdoni.io/',
+    IPFS_GATEWAY: process.env.IPFS_GATEWAY || 'https://10.via0.com/ipfs/',
 
     // BLOCKCHAIN
     ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || 'xdai',

@@ -180,7 +180,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                             disabled={this.state.verifying}
                             loading={this.state.verifying || this.state.loading}
                         >
-                            {i18n.t('process.btn.login')}
+                            {i18n.t('btn.login')}
                         </Button>
                     </Form>
                 </Card>

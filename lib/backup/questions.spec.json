@@ -1,0 +1,20 @@
+{
+    "versions": {
+        "1": {
+            "linkFormat": "recovery/{alias}/{date}/{encoded-link}",
+            "auth": {
+                "0": "6pin",
+                "1": "pass",
+                "2": "pattern"
+            },
+            "questions": {
+                "-1": "Empty",
+                "0": "nameOfYourFirstDog",
+                "1": "yourFavoriteAnimationMovie",
+                "2": "nameOfYourFirstBoss",
+                "3": "nameOfTheStreetYouLivedOnAsAChild"
+            }
+        },
+        "2": {}
+    }
+}

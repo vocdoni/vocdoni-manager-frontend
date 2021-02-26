@@ -22,6 +22,7 @@ export type ISelected = 'profile'
 export interface IAppContext {
     getEntityMetadata: (id: string) => Promise<EntityMetadata>
     gatewayClients: Promise<GatewayPool>,
+    isEntityLoaded: boolean,
     isWriteEnabled: boolean,
     isReadOnly: boolean,
     isReadOnlyNetwork: boolean,
@@ -40,7 +41,7 @@ export interface IAppContext {
     params: string[],
     setTitle: (title: string) => void
     onGatewayError: (type: 'private' | 'public') => void
-    refreshEntityMetadata: (address?: string, force?: boolean) => Promise<void>,
+    refreshEntityMetadata: (address?: string, force?: boolean) => Promise<EntityMetadata>,
     setMenuVisible: (menuVisible: boolean) => void
     setMenuSelected: (menuSelected: ISelected) => void
     setMenuCollapsed: (menuCollapsed: boolean) => void

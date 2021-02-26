@@ -1,5 +1,27 @@
-.ant-layout {
-    background-color: #F3F0ED;
+:root {
+    --clear: #FFFFFF;
+    /*--clear-95: #F7F7F7;*/
+    --clear-95: #f0f2f5;
+    --clear-99: #fefefe;
+
+    --dark: #222;
+    --dark-90: #4b4040;
+
+    --gray-logo: #f2f0ed;
+    --gray-50: #f2f2f2;
+    --gray-80: #bbb;
+    --gray-90: #888;
+
+    --border-radius-small: 4px;
+    --border-radius-large: 10px;
+
+    --cyan: #99CCEE;
+
+    --inputs-bg: #E7E4E1;
+    --input-group-btn-hover-bg: var(--clear-95);
+
+    /* --main-color: #25658a; */
+    --main-color: #444444;
 }
 
 /* FONTS */

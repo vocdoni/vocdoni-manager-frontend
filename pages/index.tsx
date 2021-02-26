@@ -1,195 +1,69 @@
-import { useContext, Component } from 'react'
-import Link from 'next/link'
-import { message, Button, Spin, Divider, Input, Select, Col, Row, Card, Modal } from 'antd'
-import { LoadingOutlined, ExclamationCircleOutlined } from '@ant-design/icons'
-import { EntityApi, EntityMetadata } from 'dvote-js'
-import Router from 'next/router'
+import React, { Component, ReactNode } from 'react'
+import { If, Else, Then } from 'react-if'
 
-import { getGatewayClients } from '../lib/network'
+import EntityLogin from '../components/account/Login'
+import EntityInfo from '../components/account/Info'
+import AppContext from '../components/app-context'
+import Loading from '../components/loading'
+import LoginContext, { ILoginContext } from '../components/contexts/LoginContext'
 import { IWallet } from '../lib/types'
-import AppContext, { IAppContext } from '../components/app-context'
-import i18n from '../i18n'
-
-// import MainLayout from "../components/layout"
-// import { main } from "../i18n"
-// import MultiLine from '../components/multi-line-text'
-// import { } from '../lib/types'
-
-// MAIN COMPONENT
-const IndexPage = () => {
-    // Get the global context and pass it to our stateful component
-    const context = useContext(AppContext)
-
-    return <IndexView {...context} />
-}
 
 type State = {
-    entityLoading?: boolean,
-    entity?: EntityMetadata,
-    address?: string,
-
-    storedWallets?: IWallet[],
-
-    selectedWallet?: string,
-    passphrase?: string,
+    accountSelected: IWallet,
+    accountSelect?(account: string): void,
 }
 
-// Stateful component
-class IndexView extends Component<IAppContext, State> {
-    state: State = {}
+class IndexView extends Component<undefined, State> {
+    static contextType = AppContext
+    context!: React.ContextType<typeof AppContext>
 
-    async componentDidMount() {
-        // this.props.setTitle("Vocdoni")
-        this.props.setMenuVisible(false)
-
-        try {
-            this.redirectToEntityIfAvailable();
-
-            const storedWallets = await this.props.web3Wallet.getStored();
-            this.setState({ storedWallets });
-            if (storedWallets.length > 0) {
-                this.setState({ selectedWallet: storedWallets[0].name });
-            }
-        }
-        catch (err) {
-            this.setState({ entityLoading: false })
-            if (err && err.message === "The given entity has no metadata defined yet") {
-                return // nothing to show
-            }
-            console.error(err)
-            message.error("Could not connect to the network")
-        }
+    state: State = {
+        accountSelected: null,
     }
 
-    async redirectToEntityIfAvailable() {
-        let address = null
-        if (this.props.web3Wallet.hasWallet()) {
-            this.setState({ entityLoading: true })
-            address = await this.props.web3Wallet.getAddress()
-
-            const gateway = await getGatewayClients()
-
-            let entity: EntityMetadata
-            const self = this
+    async accountSelect(pkey: string): Promise<void> {
+        localStorage.setItem('account.selected', pkey)
+        let accountSelected : IWallet = null
+        if (pkey) {
             try {
-                entity = await EntityApi.getMetadata(address, gateway)
-                this.setState({ entity, address, entityLoading: false })
-                Router.push(`/entities/#/${address}`);
-            } catch (e) {
-                console.error(e)
-                Modal.confirm({
-                    title: "Entity not found",
-                    icon: <ExclamationCircleOutlined />,
-                    content: "It looks like your account is not linked to an existing entity. Do you want to create it now?",
-                    okText: "Create Entity",
-                    okType: "primary",
-                    cancelText: "Not now",
-                    onOk() {
-                        Router.push("/entities/new")
-                    },
-                    onCancel() {
-                        // Router.reload()
-                        self.setState({ entityLoading: false })
-                    },
-                })
+                accountSelected = await this.context.web3Wallet.getStoredWallet(pkey)
+            } catch (err) {
+                console.error(err)
             }
+        }
+
+        this.context.setTitle(accountSelected?.longName || accountSelected?.name || 'Vocdoni')
+        this.setState({accountSelected})
+    }
+
+    async componentDidMount() : Promise<void> {
+        this.context.setMenuVisible(false)
+    }
+
+    get loginContext () : ILoginContext {
+        return {
+            ...this.context,
+            ...this.state,
+            accountSelect: this.accountSelect.bind(this),
         }
     }
 
-    onWalletSelectChange = (name: string) => {
-        this.setState({ selectedWallet: name });
-    }
-
-    onPassphraseChange = (passphrase: string) => {
-        this.setState({ passphrase });
-    }
-
-    unlockWallet() {
-        return this.props.web3Wallet.load(this.state.selectedWallet, this.state.passphrase)
-            .then(() => {
-                this.props.onNewWallet(this.props.web3Wallet.getWallet())
-                this.setState({ passphrase: "" })
-                return this.redirectToEntityIfAvailable()
-            })
-            .catch(() => message.error(i18n.t('error.wrong_password')))
-    }
-
-    renderEntityInfo() {
-        return <>
-            <h4>{this.state.entity.name.default}</h4>
-            <div dangerouslySetInnerHTML={{__html: this.state.entity.description.default}} />
-            <p><Link href={`/entities/edit#/${this.state.address}`}><a><Button>{i18n.t('entity.btn.manage')}</Button></a></Link></p>
-        </>
-    }
-
-    renderGetStarted() {
-        const showStored = (this.state.storedWallets && this.state.storedWallets.length > 0);
-        return <>
-            {showStored &&
-                <>
-                    <p>{i18n.t('login.description')}</p>
-                    <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom: 10 }}>
-                        {this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>)}
-                    </Select>
-
-                    <Input.Group compact>
-                        <Input
-                            onChange={val => this.onPassphraseChange(val.target.value)}
-                            onPressEnter={() => this.unlockWallet()}
-                            type="password"
-                            placeholder={i18n.t('login.password')}
-                            style={{ width: "75%" }}
-                        />
-                        <Button type='primary' onClick={() => this.unlockWallet() } style={{ width: "25%" }}>{i18n.t('login.btn.sign_in')}</Button>
-                    </Input.Group>
-
-                    <Divider>{i18n.t('or')}</Divider>
-
-                    <div style={{ textAlign: "center" }}>
-                        <Link href="/account/import"><Button>{i18n.t('login.btn.import')}</Button></Link>
-                    </div>
-                    <Divider>{i18n.t('or')}</Divider>
-                </>
-            }
-
-            <div style={{ textAlign: "center" }}>
-                <Link href="/account/new"><Button type="primary">{i18n.t('login.btn.create')}</Button></Link>
+    render() : ReactNode {
+        return (
+            <div className='mx-auto w-4/5 sm:w-1/3 lg:w-1/4 xl:w-1/5 mt-10'>
+                <LoginContext.Provider value={this.loginContext}>
+                    <If condition={this.context.isEntityLoaded}>
+                        <Then>
+                            <EntityInfo />
+                        </Then>
+                        <Else>
+                            <EntityLogin />
+                        </Else>
+                    </If>
+                </LoginContext.Provider>
             </div>
-
-            {!showStored &&
-                <>
-                    <Divider>or</Divider>
-                    <div style={{ textAlign: "center" }}>
-                        <Link href="/account/import"><Button>Import an Entity</Button></Link>
-                    </div>
-                </>
-            }
-        </>;
-    }
-
-    renderLoading() {
-        return <div>Please, wait... <Spin indicator={<LoadingOutlined />} /></div>
-    }
-
-    render() {
-        return <div id="index">
-            <Row justify="center" align="middle">
-                <Col xs={24} sm={18} md={10}>
-                    <Card title="Vocdoni Manager" className="card">
-                        {
-                            this.state.entityLoading ? this.renderLoading() :
-                                (this.state.entity ? this.renderEntityInfo() : this.renderGetStarted())
-                        }
-                    </Card>
-                </Col>
-            </Row>
-        </div>
+        )
     }
 }
 
-// // Custom layout example
-// IndexPage.Layout = props => <MainLayout>
-//   {props.children}
-// </MainLayout>
-
-export default IndexPage
+export default IndexView
