@@ -334,16 +334,3 @@ form .ant-alert {
 form .ant-alert.ant-alert-info .ant-alert-message {
     color: #2e3592;
 }
-
-.process-steps {
-    padding: 0;
-}
-
-.process-steps li {
-    list-style: none;
-}
-
-.process-steps li svg {
-    margin-right: 10px;
-}
-

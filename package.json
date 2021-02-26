@@ -27,7 +27,7 @@
     "@types/node": "^14.14.22",
     "@types/react": "^17.0.0",
     "@types/ws": "^7.2.4",
-    "antd": "^4.2.0",
+    "antd": "^4.12.3",
     "buffer": "^5.6.0",
     "charset-detector": "0.0.2",
     "classnames": "^2.2.6",
@@ -69,9 +69,12 @@
     "@types/mixpanel-browser": "^2.35.5",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
+    "autoprefixer": "^10.2.4",
     "eslint": "^7.4.0",
     "eslint-plugin-react": "^7.20.3",
     "jest": "^26.4.2",
+    "postcss": "^8.2.6",
+    "tailwindcss": "^2.0.3",
     "ts-jest": "^26.3.0"
   },
   "jest": {

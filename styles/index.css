@@ -1,5 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-semibold mb-2;
+    }
+    h1 {
+        @apply text-2xl;
+    }
+    h2 {
+        @apply text-xl;
+    }
+    h3 {
+        @apply text-lg;
+    }
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
+    background-color: #F3F0ED !important;
+}
+
+:root {
+    --clear: #FFFFFF;
+    /*--clear-95: #F7F7F7;*/
+    --clear-95: #f0f2f5;
+    --clear-99: #fefefe;
+
+    --dark: #222;
+    --dark-90: #4b4040;
+
+    --gray-logo: #f2f0ed;
+    --gray-50: #f2f2f2;
+    --gray-80: #bbb;
+    --gray-90: #888;
+
+    --border-radius-small: 4px;
+    --border-radius-large: 10px;
+
+    --cyan: #99CCEE;
+
+    --inputs-bg: #E7E4E1;
+    --input-group-btn-hover-bg: var(--clear-95);
+
+    /* --main-color: #25658a; */
+    --main-color: #444444;
+}
+
+#logo {
+    @apply text-2xl font-bold mt-3;
+}
+
+.vocdoni-logo {
+    @apply text-right h-1/2;
+}
+
+.vocdoni-logo img {
+    @apply inline-block h-full;
+}
+
+.anticon,
+.ant-message .anticon,
+.ficon svg {
+    @apply inline-block w-4 h-4 relative -top-0.5;
+}
+
+.process-steps .anticon-loading {
+    @apply -top-1;
+}
+
+.process-steps li {
+    @apply mb-1;
+}
+
+.process-steps li span {
+    @apply mr-3;
+}
+
+/* note that most of these styles were imported from old css, instead than porting them to proper tailwing styling */
+.card-list {
+    margin-top: 2em;
+}
+
+.inline-card {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px #ddd;
+    background-color: white;
+}
+.inline-card.unsync {
+    opacity: .7;
+}
+.inline-card .unsync {
+    color: lightgray;
+}
+.inline-card a {
+    color: var(--main-color);
+}
+.inline-card a:focus,
+.inline-card a:active,
+.inline-card a:hover {
+    color: black;
+}
+
+.inline-card-contents,
+.inline-card-contents .state {
+    display: flex;
+    justify-content: space-between;
+}
+
+.inline-card-contents .state {
+    flex-direction: column;
+    font-size: smaller;
+}
+
+@media (min-width: 640px) {
+    .inline-card-contents .state {
+        flex-direction: row;
+    }
+}
+
+.state .status {
+    color: orange;
+    font-weight: bold;
+}
+
+.state .status.finished {
+    color: var(--cyan);
+}
+
+.inline-card-contents {
+    flex-direction: column;
+    padding: 10px 10px 10px 0;
+    width: 100%;
+}
+
+.inline-card-img {
+    margin-right: 15px;
+    min-height: 80px;
+}
+
+.inline-card-img a {
+    display: block;
+    height: 100%;
+}
+
+.background-cover-image {
+    display: block;
+    height: 100%;
+    width: 100%;
+    min-width: 150px;
+    background-size: cover;
+    background-position: center center;
+}
+
+.note {
+    background-color: var(--clear-95);
+    padding: 1em;
+    color: var(--gray-90);
+    font-size: .9em;
+}
+
+
 @import "./global.css";
 @import "./layout.css";
 @import "./widgets.css";
-
 @import "./pages.css";

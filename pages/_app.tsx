@@ -14,8 +14,8 @@ import mixpanel from 'mixpanel-browser'
 import Router from 'next/router'
 
 
+import MainLayout from '../components/layouts/main'
 import AppContext, { ISelected } from '../components/app-context'
-import MainLayout from '../components/layout'
 import GeneralError from '../components/error'
 import { initNetwork, getNetworkState, getGatewayClients } from '../lib/network'
 import { IAppContext } from '../components/app-context'
@@ -28,7 +28,9 @@ import i18n from '../i18n'
 
 import 'antd/dist/antd.css'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+
 import '../styles/index.css'
+
 // import IndexPage from '.'
 
 // const ETH_NETWORK_ID = process.env.ETH_NETWORK_ID

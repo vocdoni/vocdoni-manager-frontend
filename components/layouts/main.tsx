@@ -1,27 +1,25 @@
-import Link from "next/link"
-import AppContext from './app-context'
-import { useContext } from "react"
-import { Layout as ALayout, Button, Row, Col } from "antd"
-import SideMenu from "./side-menu"
-import AccountMenu from "./account-menu"
-import { MenuOutlined } from "@ant-design/icons"
-import Footer from "./footer"
+import Link from 'next/link'
+import { useContext } from 'react'
+import { Layout as ALayout, Button, Row, Col } from 'antd'
+import { MenuOutlined } from '@ant-design/icons'
 
+import SideMenu from '../side-menu'
+import AppContext from '../app-context'
 
 type Props = {
     children: any,
     title?: string
 }
 
-export default function Layout({ children, ...props }: Props) {
+export default function MainLayout({ children, ...props }: Props) {
     let title = props && props.title
     const context = useContext(AppContext)
     if (!title) {
         if (context) title = context.title
     }
 
-    return <ALayout id="layout">
-        <ALayout.Header className="top-bar">
+    return <ALayout id='layout'>
+        <ALayout.Header className='top-bar'>
             <Row>
                 { context.menuVisible &&
                     <Col xs={2} md={0}>
@@ -31,10 +29,12 @@ export default function Layout({ children, ...props }: Props) {
                     </Col>
                 }
                 <Col xs={12} md={14}>
-                    <h1 style={{marginLeft:20}}><Link href="/"><a id="logo">{title || " "}</a></Link></h1>
+                    <h1 id='logo'><Link href='/'><a>{title || ' '}</a></Link></h1>
                 </Col>
-                <Col xs={10} style={{textAlign: "right"}}>
-                    <AccountMenu />
+                <Col xs={10} style={{textAlign: 'right'}}>
+                    <div className='vocdoni-logo'>
+                        <img src='/media/logo_white.png' />
+                    </div>
                 </Col>
             </Row>
         </ALayout.Header>
@@ -42,7 +42,7 @@ export default function Layout({ children, ...props }: Props) {
             {context.menuVisible && <ALayout.Sider style={{minHeight: '100vh'}}
                 width={220}
                 collapsible
-                breakpoint="md"
+                breakpoint='md'
                 collapsedWidth={0}
                 trigger={null}
                 collapsed={context.menuCollapsed}
@@ -50,7 +50,7 @@ export default function Layout({ children, ...props }: Props) {
             >
                 <SideMenu />
             </ALayout.Sider>}
-            <ALayout.Content className="content">
+            <ALayout.Content className='content'>
                 {children}
             </ALayout.Content>
         </ALayout>
