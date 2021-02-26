@@ -45,7 +45,7 @@
     "json-beautify": "^1.1.1",
     "mixpanel-browser": "^2.41.0",
     "moment": "^2.29.0",
-    "next": "^9.4.4",
+    "next": "^10.0.7",
     "null-loader": "^3.0.0",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.0",
