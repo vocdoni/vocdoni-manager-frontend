@@ -75,7 +75,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             {
                 label: ((
                     <span>
-                        <Ficon icon='Download' /> Import census keys
+                        <Ficon icon='Download' /> Import census
                     </span>
                 ) as unknown as string), // yes, seriously...
                 value: 'manual',
