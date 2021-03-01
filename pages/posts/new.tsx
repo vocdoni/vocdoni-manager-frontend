@@ -234,6 +234,8 @@ class PostNew extends Component<IAppContext, State> {
             hideLoading()
             this.setState({ postUpdating: false })
 
+            await this.props.refreshEntityMetadata(address, true)
+
             message.success("The post has been successfully updated")
             Router.push("/posts#/" + this.state.address)
         }
