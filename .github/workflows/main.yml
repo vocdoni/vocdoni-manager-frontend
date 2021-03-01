@@ -114,7 +114,7 @@ jobs:
           push: true
           build-args: |
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-            ETH_NETWORK_ID=goerli
+            ETH_NETWORK_ID=xdai
             VOCDONI_ENVIRONMENT=stg
             REGISTER_URL=https://manager.stg.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.stg.vocdoni.net/api/registry
@@ -133,7 +133,7 @@ jobs:
           push: true
           build-args: |
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
-            ETH_NETWORK_ID=goerli
+            ETH_NETWORK_ID=xdai
             BOOTNODES_URL_RW=0
             VOCDONI_ENVIRONMENT=stg
             REGISTER_URL=https://manager.stg.vocdoni.net/api/registry
