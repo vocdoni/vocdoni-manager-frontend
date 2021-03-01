@@ -230,9 +230,9 @@ class ProcessActiveView extends Component<undefined, State> {
         try {
             const gateway = await this.context.gatewayClients
 
-            // Cancel if still needed
-            if (!this.state.processParams.status.isCanceled) {
-                await VotingApi.setStatus(processId, ProcessStatus.CANCELED, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            // End if still needed
+            if (!this.state.processParams.status.isEnded) {
+                await VotingApi.setStatus(processId, ProcessStatus.ENDED, this.context.web3Wallet.getWallet(), gateway)
             }
 
             // Relist
@@ -246,7 +246,7 @@ class ProcessActiveView extends Component<undefined, State> {
             entityMetadata.votingProcesses.ended = endedProcesses
 
             const address = this.context.web3Wallet.getAddress()
-            await EntityApi.setMetadata(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            await EntityApi.setMetadata(address, entityMetadata, this.context.web3Wallet.getWallet(), gateway)
 
             hideLoading()
 
@@ -288,11 +288,11 @@ class ProcessActiveView extends Component<undefined, State> {
             entityMetadata.votingProcesses.ended = endedProcesses
 
             const address = this.context.web3Wallet.getAddress()
-            await EntityApi.setMetadata(address, entityMetadata, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+            await EntityApi.setMetadata(address, entityMetadata, this.context.web3Wallet.getWallet(), gateway)
             hideLoading()
 
             if (!this.state.processParams.status.isCanceled) {
-                await VotingApi.setStatus(processId, ProcessStatus.CANCELED, this.context.web3Wallet.getWallet() as (Wallet | Signer), gateway)
+                await VotingApi.setStatus(processId, ProcessStatus.CANCELED, this.context.web3Wallet.getWallet(), gateway)
             }
 
             message.success("The process has been removed successfully")
