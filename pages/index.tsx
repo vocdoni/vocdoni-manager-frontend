@@ -8,6 +8,7 @@ import Router from 'next/router'
 import { getGatewayClients } from '../lib/network'
 import { IWallet } from '../lib/types'
 import AppContext, { IAppContext } from '../components/app-context'
+import i18n from '../i18n'
 
 // import MainLayout from "../components/layout"
 // import { main } from "../i18n"
@@ -117,7 +118,7 @@ class IndexView extends Component<IAppContext, State> {
         return <>
             <h4>{this.state.entity.name.default}</h4>
             <div dangerouslySetInnerHTML={{__html: this.state.entity.description.default}} />
-            <p><Link href={`/entities/edit#/${this.state.address}`}><a><Button>Manage my entity</Button></a></Link></p>
+            <p><Link href={`/entities/edit#/${this.state.address}`}><a><Button>{i18n.t('entity.btn.manage')}</Button></a></Link></p>
         </>
     }
 
@@ -126,27 +127,33 @@ class IndexView extends Component<IAppContext, State> {
         return <>
             {showStored &&
                 <>
-                    <p>From this page you can create and manage your entity, publish news, manage censuses and create voting processes.</p>
+                    <p>{i18n.t('login.description')}</p>
                     <Select onChange={this.onWalletSelectChange} defaultValue={this.state.storedWallets[0].name} style={{ width: '100%', marginBottom: 10 }}>
                         {this.state.storedWallets.map((w) => <Select.Option key={w.name} value={w.name}>{w.name}</Select.Option>)}
                     </Select>
 
                     <Input.Group compact>
-                        <Input onChange={val => this.onPassphraseChange(val.target.value)} onPressEnter={() => this.unlockWallet()} type="password" placeholder="Password" style={{ width: "75%" }} />
-                        <Button type='primary' onClick={() => this.unlockWallet() } style={{ width: "25%" }}>Sign in</Button>
+                        <Input
+                            onChange={val => this.onPassphraseChange(val.target.value)}
+                            onPressEnter={() => this.unlockWallet()}
+                            type="password"
+                            placeholder={i18n.t('login.password')}
+                            style={{ width: "75%" }}
+                        />
+                        <Button type='primary' onClick={() => this.unlockWallet() } style={{ width: "25%" }}>{i18n.t('login.btn.sign_in')}</Button>
                     </Input.Group>
 
-                    <Divider>or</Divider>
+                    <Divider>{i18n.t('or')}</Divider>
 
                     <div style={{ textAlign: "center" }}>
-                        <Link href="/account/import"><Button>Import an Entity</Button></Link>
+                        <Link href="/account/import"><Button>{i18n.t('login.btn.import')}</Button></Link>
                     </div>
-                    <Divider>or</Divider>
+                    <Divider>{i18n.t('or')}</Divider>
                 </>
             }
 
             <div style={{ textAlign: "center" }}>
-                <Link href="/account/new"><Button type="primary">Create an Entity</Button></Link>
+                <Link href="/account/new"><Button type="primary">{i18n.t('login.btn.create')}</Button></Link>
             </div>
 
             {!showStored &&

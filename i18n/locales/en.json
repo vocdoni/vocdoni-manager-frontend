@@ -51,10 +51,17 @@
     "processCreating": "Creating process...",
     "entity": {
         "loading": "Loading the details of the entity...",
-        "load_error": "There was an error loading the entity data"
+        "load_error": "There was an error loading the entity data",
+        "btn": {
+            "manage": "Manage my entity"
+        }
     },
     "process": {
+        "all": "All processes",
+        "active": "Only active",
+        "ended": "Only ended",
         "btn": {
+            "new": "New",
             "requests": "Questions and answers",
             "documentation": "Docs",
             "goto_vote": "Vote",
@@ -65,10 +72,20 @@
         "uploading": "Uploading image",
         "upload": "Upload image"
     },
+    "login": {
+        "btn": {
+            "create": "Create an entity",
+            "import": "Import an entity",
+            "sign_in": "Sign in"
+        },
+        "description": "From this page you can create and manage your entity, publish news, manage censuses and create voting processes.",
+        "password": "Password"
+    },
     "btn": {
         "ok": "Ok",
         "cancel": "Cancel",
         "back": "Go back"
     },
-    "powered_by": "Powered by Vocdoni"
+    "powered_by": "Powered by Vocdoni",
+    "or": "or"
 }
