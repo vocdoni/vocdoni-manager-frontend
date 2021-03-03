@@ -6,7 +6,11 @@ import i18n from '../../i18n'
 import If from '../if'
 import { ViewWrapperProps } from './ViewWrapper'
 
-export default class Introduction extends Component<ViewWrapperProps, undefined> {
+type IntroductionProps = ViewWrapperProps & {
+    onGoToVoteClick: () => void
+}
+
+export default class Introduction extends Component<IntroductionProps, undefined> {
     render() : ReactNode {
         if (!this.props.process) {
             return null
@@ -21,32 +25,37 @@ export default class Introduction extends Component<ViewWrapperProps, undefined>
                 className='process-description'
                 dangerouslySetInnerHTML={{__html: process.description.default}}
             />
-            <If condition={process.meta?.requestsUrl?.length || process.meta?.documentationUrl?.length}>
-                <div className='process-actions'>
-                    <If condition={process.meta?.requestsUrl?.length}>
-                        <Button
-                            href={process.meta.requestsUrl}
-                            type='primary'
-                            style={{marginTop: '2em'}}
-                            target='_blank'
-                            rel='noopener noreferrer nofollow'
-                        >
-                            {i18n.t('process.btn.requests')}
-                        </Button>
-                    </If>
-                    <If condition={process.meta?.documentationUrl?.length}>
-                        <Button
-                            href={process.meta.documentationUrl}
-                            type='primary'
-                            style={{marginTop: '2em'}}
-                            target='_blank'
-                            rel='noopener noreferrer nofollow'
-                        >
-                            {i18n.t('process.btn.documentation')}
-                        </Button>
-                    </If>
-                </div>
-            </If>
+            <div className='process-actions'>
+                <If condition={process.meta?.requestsUrl?.length}>
+                    <Button
+                        href={process.meta.requestsUrl}
+                        type='primary'
+                        style={{marginTop: '2em'}}
+                        target='_blank'
+                        rel='noopener noreferrer nofollow'
+                    >
+                        {i18n.t('process.btn.requests')}
+                    </Button>
+                </If>
+                <If condition={process.meta?.documentationUrl?.length}>
+                    <Button
+                        href={process.meta.documentationUrl}
+                        type='primary'
+                        style={{marginTop: '2em'}}
+                        target='_blank'
+                        rel='noopener noreferrer nofollow'
+                    >
+                        {i18n.t('process.btn.documentation')}
+                    </Button>
+                </If>
+                <Button
+                    type='primary'
+                    style={{marginTop: '2em', marginLeft: 15}}
+                    onClick={this.props.onGoToVoteClick.bind(this)}
+                >
+                    {i18n.t('process.btn.goto_vote')}
+                </Button>
+            </div>
             <If condition={process.media.streamUri?.length}>
                 <Divider />
                 <div className='player-wrapper'>

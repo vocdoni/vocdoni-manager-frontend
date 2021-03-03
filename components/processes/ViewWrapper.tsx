@@ -21,6 +21,15 @@ type CardProps = {
 export default class ViewWrapper extends Component<ViewWrapperProps, undefined> {
     endIntroRef: React.RefObject<HTMLDivElement>
 
+    get endOfIntroduction() : number {
+        let top = 0
+        if (this.endIntroRef?.current?.offsetTop) {
+            top = this.endIntroRef.current.offsetTop
+        }
+
+        return top
+    }
+
     constructor(props: ViewWrapperProps) {
         super(props)
 
@@ -57,7 +66,7 @@ export default class ViewWrapper extends Component<ViewWrapperProps, undefined> 
         return (
             <SinglePageLayout responsive={resp}>
                 <Card {...card}>
-                    <Introduction {...this.props} />
+                    <Introduction {...this.props} onGoToVoteClick={() => window.scrollTo(0, this.endOfIntroduction)} />
                     <div ref={this.endIntroRef} />
                     {this.props.children}
                 </Card>

@@ -58,7 +58,8 @@
     "process": {
         "btn": {
             "requests": "Precs i preguntes",
-            "documentation": "Documentació"
+            "documentation": "Documentació",
+            "goto_vote": "Vota"
         }
     },
     "image_uploader": {

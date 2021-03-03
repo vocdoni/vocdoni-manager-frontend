@@ -58,7 +58,8 @@
     "process": {
         "btn": {
             "requests": "Questions and answers",
-            "documentation": "Docs"
+            "documentation": "Docs",
+            "goto_vote": "Vote"
         }
     },
     "image_uploader": {
