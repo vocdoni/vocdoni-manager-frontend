@@ -24,7 +24,6 @@
     "theseAreYourSelections": "Aquestes són les teves seleccions:",
     "youAreAboutToSendYourVoteConfirmContinue": "Estàs a punt votar. Aquesta acció no es pot desfer. Vols continuar?",
     "goBack": "Torna enrere",
-    "castMyVote": "Envia el meu vot",
     "processDescriptionStage4": "Moltes gràcies per votar!",
     "retryConnection": "Intenta-ho de nou",
     "yourVoteHasBeenRegisteredOn": "El teu vot ha quedat registrat el ",
@@ -59,7 +58,8 @@
         "btn": {
             "requests": "Precs i preguntes",
             "documentation": "Documentació",
-            "goto_vote": "Vota"
+            "goto_vote": "Vota",
+            "cast_vote": "Envia el meu vot"
         }
     },
     "image_uploader": {
@@ -68,6 +68,7 @@
     },
     "btn": {
         "ok": "D'acord",
-        "cancel": "Cancel·la"
+        "cancel": "Cancel·la",
+        "back": "Torna enrere"
     }
 }

@@ -410,7 +410,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             <Modal
                 visible={this.state.showSubmitConfirmation}
                 okText={i18n.t('confirm')}
-                cancelText={i18n.t('goBack')}
+                cancelText={i18n.t('btn.back')}
                 onOk={() => {
                     this.setState({ showSubmitConfirmation: false })
                     setTimeout(() => this.onSubmitVote(), 100) // wait a bit for the modal to dismiss
@@ -425,14 +425,14 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     size='large'
                     onClick={() => this.backFromConfirmSummary()}
                 >
-                    {i18n.t('goBack')}
+                    {i18n.t('btn.back')}
                 </Button>
                 <Button
                     type='primary'
                     size='large'
                     onClick={() => this.setState({ showSubmitConfirmation: true })}
                 >
-                    {i18n.t('castMyVote')}
+                    {i18n.t('process.btn.cast_vote')}
                 </Button>
             </div>
         </>

@@ -23,8 +23,6 @@
     "youCanVote": "You can vote",
     "theseAreYourSelections": "These are your selections:",
     "youAreAboutToSendYourVoteConfirmContinue": "You're about to vote. This action cannot be undone! Do you want to continue?",
-    "goBack": "Go back",
-    "castMyVote": "Cast my vote",
     "processDescriptionStage4": "Thank you for voting!",
     "retryConnection": "Try again",
     "yourVoteHasBeenRegisteredOn": "Your vote has been registered on ",
@@ -59,7 +57,8 @@
         "btn": {
             "requests": "Questions and answers",
             "documentation": "Docs",
-            "goto_vote": "Vote"
+            "goto_vote": "Vote",
+            "cast_vote": "Cast my vote"
         }
     },
     "image_uploader": {
@@ -68,6 +67,7 @@
     },
     "btn": {
         "ok": "Ok",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "back": "Go back"
     }
 }
