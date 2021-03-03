@@ -116,6 +116,7 @@ jobs:
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
             ETH_NETWORK_ID=xdai
             VOCDONI_ENVIRONMENT=stg
+            EXPLORER_URL=https://explorer-stg.vocdoni.net
             REGISTER_URL=https://manager.stg.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.stg.vocdoni.net/api/registry
             MANAGER_BACKEND_URI=https://manager.stg.vocdoni.net/api/manager
@@ -136,6 +137,7 @@ jobs:
             ETH_NETWORK_ID=xdai
             BOOTNODES_URL_RW=0
             VOCDONI_ENVIRONMENT=stg
+            EXPLORER_URL=https://explorer-stg.vocdoni.net
             REGISTER_URL=https://manager.stg.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.stg.vocdoni.net/api/registry
             MIXPANEL_TOKEN=3e46daca80e0263f0fc5a5e5e9bc76ea
