@@ -57,10 +57,10 @@ body {
 
 .vocdoni-logo {
     @apply text-right h-1/2;
-}
 
-.vocdoni-logo img {
-    @apply inline-block h-full;
+    img {
+        @apply inline-block h-full;
+    }
 }
 
 .anticon,

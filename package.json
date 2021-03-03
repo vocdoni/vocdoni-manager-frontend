@@ -74,6 +74,7 @@
     "eslint-plugin-react": "^7.20.3",
     "jest": "^26.4.2",
     "postcss": "^8.2.6",
+    "postcss-nested": "^5.0.4",
     "tailwindcss": "^2.0.3",
     "ts-jest": "^26.3.0"
   },
