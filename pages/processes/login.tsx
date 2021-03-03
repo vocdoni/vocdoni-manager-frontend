@@ -37,7 +37,6 @@ export type ProcessVoteLoginState = {
 class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
     static contextType = AppContext
     context!: React.ContextType<typeof AppContext>
-    wrapperRef: React.RefObject<any>
     static Layout: React.FunctionComponent
 
     state: ProcessVoteLoginState = {
