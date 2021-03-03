@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-
+import i18n from '../i18n'
 
 export default class Footer extends Component {
     render() : React.ReactNode {
         return (
             <footer className='poweredby'>
                 <a href='https://vocdoni.io' target='_blank' rel='noreferrer'>
-                    Powered by Vocdoni
-                    <img src='/media/logo_square_white.png' alt='Vocdoni logo' />
+                    {i18n.t('powered_by')}
+                    <img src='/media/logo_squared.png' alt='Vocdoni logo' />
                 </a>
             </footer>
         )

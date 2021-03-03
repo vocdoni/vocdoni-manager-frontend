@@ -69,5 +69,6 @@
         "ok": "Ok",
         "cancel": "Cancel",
         "back": "Go back"
-    }
+    },
+    "powered_by": "Powered by Vocdoni"
 }

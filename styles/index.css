@@ -52,14 +52,15 @@ body {
 }
 
 #logo {
-    @apply text-2xl font-bold mt-3;
+    @apply text-2xl font-bold mt-3 invisible sm:visible;
 }
 
 .vocdoni-logo {
-    @apply text-right h-1/2;
+    @apply text-right h-full text-2xl font-light flex items-center justify-end;
 
     img {
-        @apply inline-block h-full;
+        @apply inline-block ml-3;
+        height: 40px;
     }
 }
 
