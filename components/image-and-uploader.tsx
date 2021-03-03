@@ -19,9 +19,17 @@ type ImageAndUploaderState = {
 }
 
 export default class ImageAndUploader extends Component<ImageAndUploaderProps, ImageAndUploaderState> {
+    uploaderRef: React.RefObject<IPFSImageUpload>
+
     state : ImageAndUploaderState = {
         isModalVisible: false,
         src: null,
+    }
+
+    constructor(props) {
+        super(props)
+
+        this.uploaderRef = React.createRef<IPFSImageUpload>()
     }
 
     componentDidMount() : void {
@@ -69,7 +77,7 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
 
         const isValid = isImageSet && /^(https?|ipfs):\/\//.test(this.state.src)
         const inputAttrs : FormItemProps = {}
-        if (!isValid) {
+        if (!isValid && !this.uploaderRef?.current?.state?.uploading) {
             inputAttrs.validateStatus = 'error'
             inputAttrs.help = 'Must be either an http or an ipfs link'
         }
@@ -95,6 +103,7 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
                             onChange={(e) => this.setState({src: e.target.value})}
                             addonAfter={
                                 <IPFSImageUpload
+                                    ref={this.uploaderRef}
                                     onChange={({file}) => {
                                         let image = ''
                                         if (file.status === 'done') {
