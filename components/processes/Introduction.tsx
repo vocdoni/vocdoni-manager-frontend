@@ -22,7 +22,7 @@ export default class Introduction extends Component<IntroductionProps, undefined
             <h1>{process.title.default}</h1>
             <Divider />
             <div
-                className='process-description'
+                className='process-description styled-content'
                 dangerouslySetInnerHTML={{__html: process.description.default}}
             />
             <div className='process-actions'>

@@ -64,7 +64,7 @@ export default class Questions extends Component<Props, State> {
                     <Divider />
                     <h4>{question.title.default}</h4>
                     <div
-                        className='process-question-description'
+                        className='process-question-description styled-content'
                         dangerouslySetInnerHTML={{__html: question.description.default}}
                     />
                     <Radio.Group

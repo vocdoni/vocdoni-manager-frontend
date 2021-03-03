@@ -186,9 +186,41 @@ footer.poweredby a:focus {
 }
 
 .process-actions .ant-btn + .ant-btn {
-    @apply mr-4;
+    @apply ml-4;
 }
 
 .rdw-editor-main a {
+    color: #40a9ff;
+}
+
+.styled-content ul,
+.styled-content ol {
+    @apply pl-4 my-2 list-disc;
+}
+
+.styled-content ol {
+    @apply list-decimal;
+}
+
+.styled-content * + h1,
+.styled-content * + h2,
+.styled-content * + h3,
+.styled-content * + h4,
+.styled-content * + h5,
+.styled-content * + h6 {
+    @apply mt-4;
+}
+
+.styled-content p {
+    @apply mb-1;
+}
+
+.styled-content a {
+    color: #2883ce;
+}
+
+.styled-content a:hover,
+.styled-content a:focus,
+.styled-content a:active {
     color: #40a9ff;
 }
