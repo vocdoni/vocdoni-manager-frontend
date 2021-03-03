@@ -331,14 +331,14 @@ class ProcessActiveView extends Component<undefined, State> {
                 <Col xs={24} sm={20} md={14}>
                     <Divider orientation="left">Vote details</Divider>
                     <h3>{process.title.default}</h3>
-                    <div dangerouslySetInnerHTML={{__html: process.description.default}} />
+                    <div className='styled-content' dangerouslySetInnerHTML={{__html: process.description.default}} />
 
                     {
                         procQuestions.map((question, idx) => <div key={idx}>
                             <br />
                             <Divider orientation="left">Question {idx + 1}</Divider>
                             <h4>{question.title.default}</h4>
-                            <div dangerouslySetInnerHTML={{__html: question.description.default}} />
+                            <div className='styled-content' dangerouslySetInnerHTML={{__html: question.description.default}} />
                             <ul>
                                 {question.choices.map((option, i) => <li key={i}>
                                     {option.title.default}

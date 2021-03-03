@@ -20,7 +20,7 @@ export default function MainLayout({ children, ...props }: Props) {
 
     return <ALayout id='layout'>
         <ALayout.Header className='top-bar'>
-            <Row>
+            <Row className='h-full'>
                 { context.menuVisible &&
                     <Col xs={2} md={0}>
                         <Button ghost={true} onClick={() => context.setMenuCollapsed(!context.menuCollapsed)}>
@@ -33,7 +33,8 @@ export default function MainLayout({ children, ...props }: Props) {
                 </Col>
                 <Col xs={10} style={{textAlign: 'right'}}>
                     <div className='vocdoni-logo'>
-                        <img src='/media/logo_white.png' />
+                        Vocdoni
+                        <img src='/media/logo.png' />
                     </div>
                 </Col>
             </Row>

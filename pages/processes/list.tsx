@@ -165,16 +165,16 @@ export default class ProcessListView extends Component<undefined, State> {
                                     onChange={(filter) => this.setState({filter})}
                                     size='large'
                                 >
-                                    <Select.Option value='all'>All processes</Select.Option>
-                                    <Select.Option value='active'>Only active</Select.Option>
-                                    <Select.Option value='ended'>Only ended</Select.Option>
+                                    <Select.Option value='all'>{i18n.t('process.all')}</Select.Option>
+                                    <Select.Option value='active'>{i18n.t('process.active')}</Select.Option>
+                                    <Select.Option value='ended'>{i18n.t('process.ended')}</Select.Option>
                                 </Select>
                             </Col>
                             <Col>
                                 <If condition={!this.context.isReadOnly}>
                                     <Link href={'/processes/new'}>
                                         <a style={{marginLeft: 10}}>
-                                            <Ficon icon='Plus' /> New
+                                            <Ficon icon='Plus' /> {i18n.t('process.btn.new')}
                                         </a>
                                     </Link>
                                 </If>

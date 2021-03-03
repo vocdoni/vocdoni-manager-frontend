@@ -60,7 +60,7 @@ jobs:
             ACTION_VISIBILITY_URL=https://manager.dev.vocdoni.net/api/registry
             MANAGER_BACKEND_URI=https://manager.dev.vocdoni.net/api/manager
             MANAGER_BACKEND_PUB_KEY=028b1d1380c37d114ac5a2b056d11cec76439664d00b076f9ace97adbe03da6fe1
-            MIXPANEL_TOKEN=3e46daca80e0263f0fc5a5e5e9bc76ea
+            MIXPANEL_TOKEN=af47deba87bff4b5c92ee9989b662c4e
           tags: |
             vocdoni/${{ github.event.repository.name }}:latest,vocdoni/${{ github.event.repository.name }}:master,
             ghcr.io/vocdoni/${{ github.event.repository.name }}:latest,ghcr.io/vocdoni/${{ github.event.repository.name }}:master
@@ -78,7 +78,7 @@ jobs:
             VOCDONI_ENVIRONMENT=dev
             REGISTER_URL=https://manager.dev.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.dev.vocdoni.net/api/registry
-            MIXPANEL_TOKEN=3e46daca80e0263f0fc5a5e5e9bc76ea
+            MIXPANEL_TOKEN=af47deba87bff4b5c92ee9989b662c4e
           tags: |
             vocdoni/${{ github.event.repository.name }}:app-latest,vocdoni/${{ github.event.repository.name }}:app-master,
             ghcr.io/vocdoni/${{ github.event.repository.name }}:app-latest,ghcr.io/vocdoni/${{ github.event.repository.name }}:app-master
@@ -121,7 +121,7 @@ jobs:
             ACTION_VISIBILITY_URL=https://manager.stg.vocdoni.net/api/registry
             MANAGER_BACKEND_URI=https://manager.stg.vocdoni.net/api/manager
             MANAGER_BACKEND_PUB_KEY=028b1d1380c37d114ac5a2b056d11cec76439664d00b076f9ace97adbe03da6fe1
-            MIXPANEL_TOKEN=3e46daca80e0263f0fc5a5e5e9bc76ea
+            MIXPANEL_TOKEN=af47deba87bff4b5c92ee9989b662c4e
           tags: |
             vocdoni/${{ github.event.repository.name }}:stage,
             ghcr.io/vocdoni/${{ github.event.repository.name }}:stage
@@ -140,7 +140,7 @@ jobs:
             EXPLORER_URL=https://explorer-stg.vocdoni.net
             REGISTER_URL=https://manager.stg.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.stg.vocdoni.net/api/registry
-            MIXPANEL_TOKEN=3e46daca80e0263f0fc5a5e5e9bc76ea
+            MIXPANEL_TOKEN=af47deba87bff4b5c92ee9989b662c4e
           tags: |
             vocdoni/${{ github.event.repository.name }}:app-stage,
             ghcr.io/vocdoni/${{ github.event.repository.name }}:app-stage
@@ -187,7 +187,7 @@ jobs:
             ACTION_VISIBILITY_URL=https://manager.vocdoni.net/api/registry
             MANAGER_BACKEND_URI=https://manager.vocdoni.net/api/manager
             MANAGER_BACKEND_PUB_KEY=03cd13285ea116b9093a47364b29ddb09eccf50aa2f0112b6084a0b10943964d4e
-            MIXPANEL_TOKEN=3e46daca80e0263f0fc5a5e5e9bc76ea
+            MIXPANEL_TOKEN=af47deba87bff4b5c92ee9989b662c4e
           tags: |
             vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }},
             ghcr.io/vocdoni/${{ github.event.repository.name }}:${{ steps.var.outputs.branch }}
@@ -205,7 +205,7 @@ jobs:
             VOCDONI_ENVIRONMENT=prod
             REGISTER_URL=https://manager.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.stg.vocdoni.net/api/registry
-            MIXPANEL_TOKEN=3e46daca80e0263f0fc5a5e5e9bc76ea
+            MIXPANEL_TOKEN=af47deba87bff4b5c92ee9989b662c4e
           tags: |
             vocdoni/${{ github.event.repository.name }}:app-${{ steps.var.outputs.branch }},
             ghcr.io/vocdoni/${{ github.event.repository.name }}:app-${{ steps.var.outputs.branch }}

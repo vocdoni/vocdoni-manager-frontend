@@ -52,10 +52,17 @@
     "processCreating": "Creant procés...",
     "entity": {
         "loading": "Carregant els detalls de l'entitat...",
-        "load_error": "Hi ha hagut un error carregant les dades de l'entitat"
+        "load_error": "Hi ha hagut un error carregant les dades de l'entitat",
+        "btn": {
+            "manage": "Gestiona la meva entitat"
+        }
     },
     "process": {
+        "all": "Tots els processos",
+        "active": "Només els actius",
+        "ended": "Només els finalitzats",
         "btn": {
+            "new": "Nou",
             "requests": "Precs i preguntes",
             "documentation": "Documentació",
             "goto_vote": "Vota",
@@ -66,9 +73,20 @@
         "uploading": "Carregant imatge",
         "upload": "Carrega imatge"
     },
+    "login": {
+        "btn": {
+            "create": "Crea una entitat",
+            "import": "Importa una entitat",
+            "sign_in": "Inicia sessió"
+        },
+        "description": "Des d'aquesta pàgina pots crear i gestionar la teva entitat, publicar articles, gestionar cens i crear procesos de votació.",
+        "password": "Contrasenya"
+    },
     "btn": {
         "ok": "D'acord",
         "cancel": "Cancel·la",
         "back": "Torna enrere"
-    }
+    },
+    "powered_by": "Gràcies a la tecnologia de Vocdoni",
+    "or": "o"
 }
