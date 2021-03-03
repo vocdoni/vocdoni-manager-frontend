@@ -5,7 +5,7 @@ const i18n = i18next.createInstance()
 
 i18n.init({
     debug: process.env.NODE_ENV === 'development',
-    lng: 'en',
+    lng: process.env.LANG,
     fallbackLng: 'en',
     defaultNS: 'translation',
 })
