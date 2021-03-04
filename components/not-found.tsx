@@ -4,7 +4,7 @@ import i18n from '../i18n'
 const NotFound = () => <div id="page-body">
     <div className="not-found body-card">
         <h4>Oops, this is an error.</h4>
-        <p>{i18n.t('notFound')}</p>
+        <p>{i18n.t('error.not_found')}</p>
     </div>
 </div>
 

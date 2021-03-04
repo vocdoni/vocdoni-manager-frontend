@@ -89,7 +89,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             this.context.setTitle(process.title.default)
         }
         catch (err) {
-            const error = (err && err.message == 'Request timed out') ? i18n.t('processListLoadTimeout') : i18n.t('notFound')
+            const error = (err && err.message == 'Request timed out') ? i18n.t('processListLoadTimeout') : i18n.t('error.not_found')
 
             message.error(error)
             this.setState({

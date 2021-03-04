@@ -9,7 +9,8 @@
     "start": "next start",
     "export": "next build && next export -o build",
     "test": "npm run lint && jest",
-    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet ."
+    "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet .",
+    "i18n-extract": "i18next"
   },
   "repository": {
     "type": "git",
@@ -72,6 +73,7 @@
     "autoprefixer": "^10.2.4",
     "eslint": "^7.4.0",
     "eslint-plugin-react": "^7.20.3",
+    "i18next-parser": "^3.7.0",
     "jest": "^26.4.2",
     "postcss": "^8.2.6",
     "postcss-nested": "^5.0.4",
