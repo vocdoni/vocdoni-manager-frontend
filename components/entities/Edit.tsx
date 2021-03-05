@@ -1,4 +1,3 @@
-import { ExclamationCircleOutlined, SaveOutlined } from '@ant-design/icons'
 import { Button, Col, Form, Input, message, Modal, Row } from 'antd'
 import { EntityApi, EntityMetadata, Gateway, GatewayPool } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
@@ -8,6 +7,7 @@ import i18n from '../../i18n'
 import AppContext from '../app-context'
 import HTMLEditor from '../html-editor'
 import HeaderImage from './HeaderImage'
+import Ficon from '../ficon'
 
 const MethodSignup = 'signUp'
 const MethodUpdate = 'updateEntity'
@@ -126,7 +126,7 @@ export default class Edit extends Component<EditProps, EditState> {
         if (balance.isZero()) {
             Modal.warning({
                 title: i18n.t('notEnoughBalance'),
-                icon: <ExclamationCircleOutlined />,
+                icon: <Ficon icon='AlertCircle' />,
                 content: <span dangerouslySetInnerHTML={{
                     __html: i18n.t('notEnoughBalanceNote').replace('{address}', address)
                 }} />,
@@ -298,7 +298,7 @@ const SaveButton = (props: {saving?: boolean} = {}) => {
 
     return (
         <Button type='primary' htmlType='submit' disabled={props.saving} loading={props.saving}>
-            <SaveOutlined /> {text}
+            <Ficon icon='Save'/> {text}
         </Button>
     )
 }
