@@ -87,7 +87,7 @@ export default class Edit extends Component<EditProps, EditState> {
             this.setInitialFieldValues()
         } catch (error) {
             console.error(error)
-            message.error(i18n.t('entity.load_error'))
+            message.error(i18n.t('entity.error.loading'))
         }
 
         this.setState({
@@ -125,10 +125,10 @@ export default class Edit extends Component<EditProps, EditState> {
 
         if (balance.isZero()) {
             Modal.warning({
-                title: i18n.t('notEnoughBalance'),
+                title: i18n.t('error.insufficient_funds'),
                 icon: <Ficon icon='AlertCircle' />,
                 content: <span dangerouslySetInnerHTML={{
-                    __html: i18n.t('notEnoughBalanceNote').replace('{address}', address)
+                    __html: i18n.t('error.insufficient_funds_note', {address})
                 }} />,
                 onOk: () => {
                     this.setState({saving: false})
@@ -240,7 +240,7 @@ export default class Edit extends Component<EditProps, EditState> {
                         <Col span={24}>
                             <Form.Item>
                                 <Input
-                                    placeholder='Organization name'
+                                    placeholder={i18n.t('entity.field.org_name')}
                                     size='large'
                                     value={values.name}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -250,7 +250,7 @@ export default class Edit extends Component<EditProps, EditState> {
                             </Form.Item>
                             <Form.Item>
                                 <Input
-                                    placeholder='Organization e-mail'
+                                    placeholder={i18n.t('entity.field.org_email')}
                                     value={values.email}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         this.setFieldValue('email', e.target.value)
@@ -263,7 +263,7 @@ export default class Edit extends Component<EditProps, EditState> {
                                     this.setFieldValue('description', description)
                                 }
                             />
-                            <Form.Item label='Callback URL'>
+                            <Form.Item label={i18n.t('entity.field.callback_url')}>
                                 <Input
                                     placeholder='https://...'
                                     value={values.callbackUrl}
@@ -272,7 +272,7 @@ export default class Edit extends Component<EditProps, EditState> {
                                     }
                                 />
                             </Form.Item>
-                            <Form.Item label='Callback Secret'>
+                            <Form.Item label={i18n.t('entity.field.callback_secret')}>
                                 <Input
                                     type='password'
                                     value={values.callbackSecret}
@@ -291,9 +291,9 @@ export default class Edit extends Component<EditProps, EditState> {
 }
 
 const SaveButton = (props: {saving?: boolean} = {}) => {
-    let text = 'Save'
+    let text = i18n.t('btn.save')
     if (props.saving) {
-        text = 'Saving'
+        text = i18n.t('btn.saving')
     }
 
     return (

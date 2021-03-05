@@ -4,3 +4,5 @@ node_modules
 .vscode
 
 report.*
+
+i18n/locales/*_old.json

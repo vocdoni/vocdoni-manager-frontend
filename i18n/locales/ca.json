@@ -1,43 +1,118 @@
 {
-    "active": "Actiu",
+    "accept": "Accepto <l>{{ what }}</l>",
+    "account": {
+        "address": "Adreça",
+        "balance": "Saldo",
+        "btn": {
+            "details_already_copied": "He copiat els detalls de la meva entitat",
+            "download_backup": "Descarrega còpia de seguretat",
+            "import": "Importa i inicia sessió"
+        },
+        "created": "Compte creat!",
+        "creating": "Creant compte, espera si et plau...",
+        "drag_to_import": "Fes clic aquí o arrossega-hi la teva còpia de seguretat per a una fàcil importació",
+        "error": {
+            "cannot_create": "Hi ha hagut un error creant el compte. Torna-ho a intentar si et plau",
+            "cannot_import": "Hi ha hagut un error important el compte. Torna-ho a intentar si et plau",
+            "missing_name": "Cal que indiquis el nom",
+            "missing_password": "La contrasenya cal per desxifrar-ho tot!",
+            "missing_seed": "La llavor és obligatòria",
+            "not_found_description": "Sembla que el teu compte no està vinculat a cap entitat. Vols crear-la ara?",
+            "password_missmatch": "The two passwords that you entered do not match!"
+        },
+        "import_file_restriction": "Només es permeten fitxers .json",
+        "import_finish": "Ara finalitza el procés indicant un nom per a l'entitat i la contrasenya del teu joc de claus",
+        "import_title": "Importa un compte",
+        "manually_set": "O introdueix manualment els teus detalls a continuació:",
+        "name": "Nom",
+        "please_copy_details": "Si et plau, fes una còpia dels següents detalls abans de continuar",
+        "private_key": "Clau privada",
+        "public_key": "Clau pública",
+        "seed": "Llavor del compte",
+        "title": "Compte",
+        "wait_for_balance": "Per a activar el teu compte necessitem que ens enviïs el nom del teu entitat junt amb el següent identificador: <code>{{ address }}</code> a <mailto>info@vocdoni.io</mailto>"
+    },
+    "action_in_progress": "Duent a terme...",
     "btn": {
         "back": "Torna enrere",
         "cancel": "Cancel·la",
-        "ok": "D'acord"
+        "copy_link": "Copia l'enllaç",
+        "create": "",
+        "edit": "Edita",
+        "ok": "D'acord",
+        "remove": "Elimina",
+        "retry": "",
+        "save": "Desa",
+        "saving": "Desant"
     },
-    "buttonCSVLogin": "Identifica't",
     "confirm": "Confirma",
-    "confirmSelection": "Confirma el vot",
+    "confirm_delete": "",
     "connected": "Connectat",
-    "connectingWait": "Connectant a la xarxa. Espera si et plau...",
-    "couldNotCheckCensus": "No es pot comprovar el cens. Intenta-ho de nou.",
-    "couldNotConnect": "No s'ha pogut establir connexió",
-    "couldNotLoadVote": "S'ha trobat un error en carregar les votacions",
+    "connecting": "Connectant a la xarxa. Espera si et plau...",
     "entity": {
         "btn": {
+            "create": "Crea entitat",
             "manage": "Gestiona la meva entitat"
         },
-        "load_error": "Hi ha hagut un error carregant les dades de l'entitat",
-        "loading": "Carregant els detalls de l'entitat..."
+        "error": {
+            "loading": "Hi ha hagut un error carregant les dades de l'entitat",
+            "not_found": "No s'ha trobat l'entitat",
+            "not_found_description": "The entity you are looking for cannot be found"
+        },
+        "field": {
+            "callback_secret": "Callback secret",
+            "callback_url": "Callback URL",
+            "org_email": "E-mail de la organització",
+            "org_name": "Nom de la organització"
+        },
+        "heads-up": "Tingues en compte que tota la informació es xifra al teu navegador. Si el teu dispositiu es trenca, es perd o se li corrompen les dades, Vocdoni no té manera de recuperar la teva entitat.",
+        "loading": "Carregant els detalls de l'entitat...",
+        "qr_note": "Escanejant aquest codi QR amb l'app de Vocdoni, un usuari es pot suscriure a la teva organització.",
+        "title": {
+            "create": "Crear la teva entitat",
+            "new": "Nova entitat",
+            "share": "Comparteix"
+        },
+        "welcome": "Benvingut! En les següents passes crearàs una entitat a Vocdoni. <br /> És important que desis la contrasenya, així com la resta de la informació d'aquesta pàgina en un lloc segur, és la única manera d'accedir a la teva entitat."
     },
     "error": {
+        "cannot_connect": "No s'ha pogut establir connexió",
+        "cannot_read_entity_metadata": "No s'han pogut llegir les metadades de l'entitat",
+        "connection": "",
+        "file_format_unknown": "El fitxer pujat no té el format esperat",
         "general": "S'ha trobat un error inesperat",
-        "not_found": "No s'ha trobat"
+        "insufficient_funds": "No hi ha prou saldo",
+        "insufficient_funds_note": "Per poder continuar amb la transacció necessites tenir tokens xDAI.<br /> Posa't en contacte amb nosaltres indicant-nos l'adreça següent: <code>{{address}}</code>",
+        "invalid_claims_found": "S'han trobat un total de {{ total }} reclams invàlids",
+        "invalid_email": "Ha de ser un e-mail vàlid",
+        "invalid_format_contents": "Les dades no semblen tenir un format vàlid",
+        "invalid_request": "Les dades de la petició no són vàlides",
+        "invalid_spreadsheet_data": "Les dades no semblen correctes, si et plau, revisa-les.",
+        "invalid_uri": "Ha de ser un enllaç http o ipfs",
+        "not_found": "No s'ha trobat",
+        "oops": "Apa, això és un error.",
+        "retry": "Intenta-ho de nou",
+        "timeout": "La petició ha trigat massa",
+        "update": "Hi ha hagut un error actualitzant les dades de la blockchain. Refresca la pàgina si no veus que les seves dades no canvien.",
+        "wrong_password": "No s'ha pogut desblocar la cartera. Si et plau, revisa la teva contrasenya."
     },
-    "errorCSVInvalidData": "Les dades no semblen correctes, si et plau, revisa-les.",
-    "filesizeLimit": "La imatge és més gran que la mida màxima permesa (%s)",
-    "finished": "Ha finalitzat",
-    "finishes": "Finalitza",
+    "field": {
+        "actions": "",
+        "email": "Email",
+        "last_name": "Cognom",
+        "name": "Nom",
+        "tags": "",
+        "validated": ""
+    },
     "image_uploader": {
+        "error": {
+            "filesize": "La imatge és més gran que la mida màxima permesa ({{ limit }})",
+            "mime": "Només es poden pujar fitxers jpg i png. El fitxer que puges no és vàlid."
+        },
         "upload": "Carrega imatge",
         "uploading": "Carregant imatge"
     },
-    "invalidImageError": "Només es poden pujar fitxers jpg i png. El fitxer que puges no és vàlid.",
-    "invalidPrivateKey": "L'enllaç conté una clau invàlida",
-    "invalidQuestionOptionValue": "El valor per aquesta resposta no representa una opció vàlida",
-    "invalidRequest": "La petició no és vàlida",
     "loading": "S'està carregant",
-    "loadingProcesses": "Carregant processos de l'entitat...",
     "login": {
         "btn": {
             "create": "Crea una entitat",
@@ -47,44 +122,206 @@
         "description": "Des d'aquesta pàgina pots crear i gestionar la teva entitat, publicar articles, gestionar cens i crear procesos de votació.",
         "password": "Contrasenya"
     },
-    "newProcess": "Nou procés",
-    "notEnoughBalance": "No hi ha prou saldo",
-    "notEnoughBalanceNote": "Per poder continuar amb la transacció necessites tenir tokens xDAI.<br /> Posa't en contacte amb nosaltres indicant-nos l'adreça següent: <code>{address}</code>",
-    "nullifierNotice": "Si et plau, desa el codi següent com a comprovant únic de l'emissió del teu vot:",
+    "members": {
+        "btn": {
+            "create_census": "Create voting census",
+            "download_template": "Descarrega la plantilla",
+            "download_validation_links": "Descarrega els enllaços de validació",
+            "import": "Importa les dades",
+            "row_add": "+ Afegeix una filera",
+            "row_delete": "- Esborra una filera"
+        },
+        "census_name": "",
+        "import": {
+            "confirm": "Confirma la importació",
+            "confirm_note": "Si els continguts de la vista prèvia es veuen bé, fes clic al botó per a continuar.",
+            "description": "En aquesta secció podràs afegir membres a la base de dades de la teva organització. Un cop hagis pujat la taula amb les dades de cada usuari, es generarà un enllaç de validador per a cadascun d'ells que hauràs d'enviar-los-hi per a que puguin registrar-se amb l'entitat.",
+            "manual": "Importació manual",
+            "preview": "Vista prèvia de les dades",
+            "select_file_first": "Primer has de seleccionar un fitxer",
+            "template": "Fes servir la plantilla següent per a pujar una llista amb nous membres.",
+            "title": "Importar membres"
+        },
+        "list": {
+            "census_note": "Pots crear censos per a donar dret de vot als usuaris que hagin validat prèviament el seu compte.",
+            "description": "Aquest és el llistat de membres de la teva entitat. Des d'aquí pots generar enllaços de validació per a que es puguin registrar i donar-los-hi dret de vot. Podràs crear censos per als procesos de votació amb aquells membres que s'hagin registrat.",
+            "title": "Llista de membres",
+            "tools": "Eines",
+            "tools_note": "Els enllaços de validació s'empren per a registrar membres a la teva entitat. Descarrega la llista d'enllaços i envia'ls-hi l'enllaç corresponent a cadascun d'ells per a que es puguin registrar"
+        }
+    },
+    "menu": {
+        "censuses": "Censos",
+        "communication": "Comunicació",
+        "create_post": "Nova notícia",
+        "details": "Detalls",
+        "import": "Importar membres",
+        "members": "Membres",
+        "news": "Notícies",
+        "participation": "Participació",
+        "settings": "Configuració",
+        "users": "Gestió d'usuaris"
+    },
+    "news": {
+        "confirm_delete": "La notícia seleccionada ja no serà pas accessible. Aquesta acció no es pot desfer. Vols continuar?",
+        "delete_error": "No s'ha pogut eliminar la notícia",
+        "deleted_successfuly": "La notícia ha estat eliminada correctament",
+        "field": {
+            "content": "Contingut",
+            "header_image": "Imatge de capçalera",
+            "header_image_note": "Si no tens imatges, prova a cercar-ne una a unsplash.com.",
+            "title": "Títol"
+        },
+        "title": {
+            "feed": "Notícies",
+            "header": "Capçalera",
+            "new": "Nova notícia"
+        }
+    },
     "or": "o",
-    "pleaseChooseYourVoteForAllQuestions": "Indica el teu vot per a totes les preguntes",
+    "password": "Contrasenya",
+    "password_confirm": "Confirma la contrasenya",
+    "policy": "la política de privacitat",
     "powered_by": "Gràcies a la tecnologia de Vocdoni",
     "process": {
-        "active": "Només els actius",
-        "all": "Tots els processos",
+        "actions": "Accions",
         "btn": {
             "cast_vote": "Envia el meu vot",
+            "confirm": "Confirma el vot",
+            "create": "Crea procés",
             "documentation": "Documentació",
             "goto_vote": "Vota",
+            "login": "Identifica't",
+            "mark_ended": "Finalitza el procés",
             "new": "Nou",
+            "option_add": "+ Afegeix opció",
+            "publish": "Publica el procés definitiu",
+            "question_add": "+ Afegeix pregunta",
+            "remove": "Elimina el procés de l'entitat",
             "requests": "Precs i preguntes"
         },
-        "ended": "Només els finalitzats"
+        "census_size": "Mida del cens",
+        "channels": {
+            "intro": "Votar mitjançant l’aplicació de Vocdoni és l’única manera que actualment garanteix l’anonimat total així com la màxima seguretat. ",
+            "list": "La votació web s'ofereix com a alternativa addicional quan:",
+            "list_items": "S'habilita el live streaming;Cal garantir l'accés a usuaris no registrats;L'autenticació via atributs ha estat seleccionada per a definir els participants."
+        },
+        "confirm_mark_ended": "El procés es marcarà com a finalitzat i es llençarà l'escrutini de vots (si escau). Vols continuar?",
+        "confirm_vote": "Estàs a punt votar. Aquesta acció no es pot desfer. Vols continuar?",
+        "create_note": "Quan creïs el procés es registrarà a la blockchain, cosa que <b>no es pot desfer</b>. Vols continuar?",
+        "created": "El procés amb ID {{ id }} ha estat creat. {{ warn }}",
+        "creating": "Creant procés...",
+        "detailed_info": "Informació detallada (explorer)",
+        "details": "Detalls del procés",
+        "end_block": "Bloc final",
+        "end_date": "Data de finalització (estimada)",
+        "error": {
+            "cannot_create": "No s'ha pogut crear el procés de votació",
+            "cannot_load": "S'ha trobat un error en carregar les votacions",
+            "cannot_vote": "No s'ha pogut registrar el teu vot",
+            "census": "No es pot comprovar el cens. Intenta-ho de nou.",
+            "census_invalid": "Les dades del cens no són vàlides",
+            "census_undefined": "Error identificant el cens escollit",
+            "emails": "Hi ha hagut un error enviant els e-mails, però.",
+            "ends_soon": "",
+            "generic": "No s'han pogut carregar un o més processos",
+            "invalid_dates": "",
+            "invalid_frame": "",
+            "invalid_private_key": "L'enllaç conté una clau invàlida",
+            "missing_title": "",
+            "not_found": "No s'ha trobat l'entitat o el procés",
+            "not_found_description": "O bé l'entitat o bé el procés als que intentes accedir no s'han pogut trobar",
+            "not_in_census": "No formes part del cens",
+            "select_all": "Indica el teu vot per a totes les preguntes",
+            "starts_soon": "",
+            "status": "No s'ha pogut carregar l'estat del procés",
+            "timeout": "La informació dels processos ha trigat massa en carregar",
+            "wrong_value": "El valor per aquesta resposta no representa una opció vàlida"
+        },
+        "field": {
+            "app_unavailable": "No disponible a l'app.",
+            "census_root": "Arrel del cens",
+            "census_uri": "URI del cens",
+            "census_uri_note": "O bé una URI d'un arbre merkel, o una URI d'alguna altra CA",
+            "description": "Descripció",
+            "docs_button": "Botó de documentació",
+            "docs_button_note": "",
+            "end": "",
+            "import_census": "",
+            "import_census_note": "",
+            "import_spreadsheet": "",
+            "import_spreadsheet_note": "",
+            "live_streaming": "",
+            "participants": "Participants",
+            "participants_all": "Tots els membres",
+            "period": "Període",
+            "publishing": "Publicació",
+            "qna_button": "Botó de precs i preguntes",
+            "qna_button_note": "Mostrarà un botó de precs i preguntes enllaçant on vulguis",
+            "questions": {
+                "blank": "",
+                "no": "",
+                "title": "Preguntes",
+                "yes": ""
+            },
+            "real_time_results": "Resultats en temps real",
+            "real_time_results_note": "",
+            "start": "",
+            "title": "Títol del procés",
+            "voting_channels": "",
+            "web_voting": "",
+            "web_voting_note": ""
+        },
+        "filter": {
+            "active": "Només els actius",
+            "all": "Tots els processos",
+            "ended": "Només els finalitzats"
+        },
+        "general": "General",
+        "id": "Identificador del procés",
+        "loading": "Carregant detalls del procés...",
+        "loading_results": "Carregant resultats...",
+        "login_title": "Introdueix les teves dades",
+        "login_uri": "URI d'accés",
+        "media": "Mitjans",
+        "new": "Nou procés",
+        "nullifier_note": "Si et plau, desa el codi següent com a comprovant únic de l'emissió del teu vot:",
+        "question_number": "Pregunta {{ num }}",
+        "results": "Resultats",
+        "start_block": "Bloc inicial",
+        "start_date": "Data d'inici (estimada)",
+        "status": {
+            "active": "Actiu",
+            "can_vote": "Pots emetre el teu vot",
+            "closed": "Tancat",
+            "ended": "La votació ha acabat",
+            "finished": "Ha finalitzat {{ date }}",
+            "finishes": "Finalitza {{ date }}",
+            "inactive": "Encara no és actiu",
+            "not_started": "La votació encara no ha començat",
+            "submitting": "S'està enviant el teu vot",
+            "title": "Estat",
+            "unsynced": "No sincronitzat",
+            "vote_registered": "El teu vot ha estat registrat"
+        },
+        "step": {
+            "balance": "",
+            "census": "",
+            "create": "",
+            "emails": ""
+        },
+        "submitted": "El teu vot ha estat registrat",
+        "submitted_note": "El teu vot s'ha rebut i ha estat registrat correctament",
+        "thanks": "Moltes gràcies per votar!",
+        "time_frame": "Període de temps",
+        "type": "Tipus de procés",
+        "vote_registered_on": "El teu vot ha quedat registrat el {{ date }}",
+        "votes_received": "Vots rebuts: {{ total }}",
+        "voting": "Votació",
+        "your_selections": "Aquestes són les teves seleccions:"
     },
-    "processCreating": "Creant procés...",
-    "processCreationAdvice": "Quan creïs el procés es registrarà a la blockchain, cosa que <b>no es pot desfer</b>. Vols continuar?",
-    "processCreationConfirmButton": "Crear procés",
-    "processDescriptionStage4": "Moltes gràcies per votar!",
-    "processListLoadTimeout": "No s'han pogut carregar la les votacions. Intenta-ho de nou.",
-    "qrNote": "Escanejant aquest codi QR amb l'app de Vocdoni, un usuari es pot suscriure a la teva organització.",
-    "retryConnection": "Intenta-ho de nou",
-    "selectQuestionsTitle": "Votació",
-    "submittingVote": "S'està enviant el teu vot",
-    "theProcessHasEnded": "La votació ha acabat",
-    "theProcessHasNotStarted": "La votació encara no ha començat",
-    "theseAreYourSelections": "Aquestes són les teves seleccions:",
-    "theVoteCouldNotBeSubmitted": "No s'ha pogut registrar el teu vot",
-    "titleCSVLogin": "Introdueix les teves dades",
-    "voteSubmitted": "El teu vot ha estat registrat",
-    "youAreAboutToSendYourVoteConfirmContinue": "Estàs a punt votar. Aquesta acció no es pot desfer. Vols continuar?",
-    "youAreNotInTheCensus": "No formes part del cens",
-    "youCanVote": "Pots emetre el teu vot",
-    "yourVoteHasBeenRegisteredOn": "El teu vot ha quedat registrat el ",
-    "yourVoteHasBeenSuccessfullyRegistered": "El teu vot s'ha rebut i ha estat registrat correctament",
-    "yourVoteIsRegistered": "El teu vot ha estat registrat"
+    "tos": "les condicions del servei",
+    "uploader": {
+        "spreadsheets_note": "Arrossega o fes clic aquí per explorar fitxers"
+    }
 }

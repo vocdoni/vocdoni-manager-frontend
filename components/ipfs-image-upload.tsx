@@ -30,17 +30,16 @@ export default class IPFSImageUpload extends Component<UploadProps, State> {
 
     beforeUpload(file: RcFile) : boolean {
         if (!imageUploadMimeTypes.includes(file.type)) {
-            message.error(i18n.t('invalidImageError'))
+            message.error(i18n.t('image_uploader.error.mime'))
 
             return false
         }
 
         if (file.size > IMAGEUPLOAD_FILESIZE_LIMIT) {
             message.error(
-                i18n.t('filesizeLimit').replace(
-                    '%s',
-                    fileSize(IMAGEUPLOAD_FILESIZE_LIMIT)
-                )
+                i18n.t('image_uploader.error.filesize', {
+                    limit: fileSize(IMAGEUPLOAD_FILESIZE_LIMIT),
+                })
             )
 
             return false

@@ -1,7 +1,7 @@
 import React, { useContext, Component, ReactNode } from 'react'
 import { Row, Col, Divider, Table, Button, message } from 'antd'
 import Router from 'next/router'
-import { InboxOutlined, DownloadOutlined } from '@ant-design/icons'
+import { DownloadOutlined } from '@ant-design/icons'
 import Dragger from 'antd/lib/upload/Dragger'
 import { RcFile } from 'antd/lib/upload'
 
@@ -11,6 +11,8 @@ import { getSpreadsheetReaderForFile } from '../../lib/import-utils'
 import AppContext, { IAppContext } from '../../components/app-context'
 import DisabledLayer from '../../components/disabled-layer'
 import MembersAddForm from '../../components/members-add-form'
+import i18n from '../../i18n'
+import Ficon from '../../components/ficon'
 
 const MemberImportPage = () : ReactNode => {
     const context = useContext(AppContext)
@@ -95,7 +97,7 @@ class MemberImport extends Component<IAppContext, State> {
                 file: null,
             })
 
-            return message.error("Unknown file format uploaded")
+            return message.error(i18n.t('error.file_format_unknown'))
         }
 
         this.setState({ data })
@@ -137,7 +139,7 @@ class MemberImport extends Component<IAppContext, State> {
             }
             return result
         } catch (err) {
-            throw new Error("The Excel file can't be processed")
+            throw new Error("The spreadsheet file can't be processed")
         }
     }
 
@@ -215,9 +217,9 @@ class MemberImport extends Component<IAppContext, State> {
 
     render() {
         const columns = [
-            { title: 'Name', dataIndex: 'firstName', key: 'firstName' },
-            { title: 'Last Name', dataIndex: 'lastName', key: 'lastName' },
-            { title: 'Email', dataIndex: 'email', key: 'email' }
+            { title: i18n.t('field.name'), dataIndex: 'firstName', key: 'firstName' },
+            { title: i18n.t('field.last_name'), dataIndex: 'lastName', key: 'lastName' },
+            { title: i18n.t('field.email'), dataIndex: 'email', key: 'email' }
         ]
 
         const layout = {
@@ -255,11 +257,17 @@ class MemberImport extends Component<IAppContext, State> {
                         <Row>
                             <Col {...columnLayout}>
                                 <section>
-                                    <Divider orientation="left">Upload data</Divider>
-                                    <p>In this section you can add new members to your organization's database. Once you upload the CSV file with the attributes of each user, an individual validation link will be generated which you will have to send to each user so that they can register in the entity. </p>
+                                    <Divider orientation="left">{i18n.t('members.import.title')}</Divider>
+                                    <p>{i18n.t('members.import.description')}</p>
                                     {/* <p>You can add new members by creating a new CSV or updating the existing one (The system will skip the existing members and only add the new ones).</p> */}
-                                    <p>Use the following CSV template to upload a list with new members <br/> (Existing members will be duplicated)</p>
-                                    <Button  onClick={() => this.downloadTemplateCsv()} type="ghost" icon={<DownloadOutlined />}>Download CSV Template</Button>
+                                    <p>{i18n.t('members.import.template')}</p>
+                                    <Button
+                                        onClick={() => this.downloadTemplateCsv()}
+                                        type="ghost"
+                                        icon={<DownloadOutlined />}
+                                    >
+                                        {i18n.t('members.btn.download_template')}
+                                    </Button>
                                     <br /><br />
                                     <Dragger
                                         beforeUpload={(file) => this.beforeUpload(file)}
@@ -267,17 +275,18 @@ class MemberImport extends Component<IAppContext, State> {
                                         multiple={false}
                                         fileList={files}
                                     >
-                                        <p className="ant-upload-drag-icon">
-                                            <InboxOutlined />
+                                        <p className="ant-upload-text">
+                                            <Ficon icon='FilePlus' /> {i18n.t('uploader.spreadsheets_note')}
                                         </p>
-                                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                                        <p className="ant-upload-hint">You can upload most spreadsheet formats (csv, xls, xlsx, ods...)</p>
+                                        <p className="ant-upload-hint">
+                                            (csv, xls, xlsx, ods...)
+                                        </p>
                                     </Dragger>
                                 </section>
                             </Col>
                         </Row>
 
-                        <DisabledLayer disabled={!(this.state.data && this.state.data.length)} text="Select a file to upload first">
+                        <DisabledLayer disabled={!(this.state.data && this.state.data.length)} text={i18n.t('members.import.select_file_first')}>
                             {/*   <Row>
                                 <Col {...columnLayout}>
                                     <Divider orientation="left">Column selection</Divider>
@@ -320,17 +329,17 @@ class MemberImport extends Component<IAppContext, State> {
 
                             <Row>
                                 <Col {...columnLayout}>
-                                    <Divider orientation='left'>Confirm import</Divider>
-                                    <p>If the content in the preview is correct, click on the button to continue.</p>
+                                    <Divider orientation='left'>{i18n.t('members.import.confirm')}</Divider>
+                                    <p>{i18n.t('members.import.confirm_note')}</p>
                                     <Button type='primary' size='large' onClick={() => this.handleUpload(this.state.data)}>
-                                        Import data
+                                        {i18n.t('members.btn.import')}
                                     </Button>
                                 </Col>
                             </Row>
                         </DisabledLayer>
                     </Col>
                     <Col {...layout}>
-                        <Divider orientation='left'>Data preview</Divider>
+                        <Divider orientation='left'>{i18n.t('members.import.preview')}</Divider>
                         <Table
                             rowKey={(member: MemberImportData) => {
                                 return `${member.email}-${member.lastName}`
@@ -340,7 +349,7 @@ class MemberImport extends Component<IAppContext, State> {
                             loading={this.state.loading}
                         />
                         <DisabledLayer disabled={this.state.data?.length > 0}>
-                            <Divider orientation='left'>Manual import</Divider>
+                            <Divider orientation='left'>{i18n.t('members.import.manual')}</Divider>
                             <MembersAddForm
                                 {...this.props}
                                 onSave={this.handleUpload.bind(this)}

@@ -6,9 +6,11 @@ import { Random } from 'dvote-js'
 import { LoadingOutlined } from '@ant-design/icons'
 import beautify from 'json-beautify'
 import moment from 'moment'
+import { Trans } from 'react-i18next'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import { downloadFileWithContents } from '../../lib/util'
+import i18n from '../../i18n'
 
 
 // MAIN COMPONENT
@@ -40,7 +42,7 @@ class AccountNew extends Component<IAppContext, State> {
     }
 
     async componentDidMount() {
-        this.props.setTitle(this.state.name || "New Entity")
+        this.props.setTitle(this.state.name || i18n.t('entity.title.new'))
         this.props.setMenuVisible(false);
     }
 
@@ -58,13 +60,13 @@ class AccountNew extends Component<IAppContext, State> {
 
         const key = 'creatingWallet'
         try {
-            message.loading({ content: 'Creating account, Please wait...', duration: 0, key })
+            message.loading({ content: i18n.t('account.creating'), duration: 0, key })
             await this.createWebWallet(values.name, values.passphrase)
-            message.success({ content: 'Done creating account!', key })
+            message.success({ content: i18n.t('account.created'), key })
             this.setState({ creatingAccount: false })
         } catch (e) {
             console.error(e)
-            message.error({ content: 'An error ocurred trying to create the account. Please, try it again', key })
+            message.error({ content: i18n.t('account.error.cannot_create'), key })
             this.setState({ creatingAccount: false })
             return false
         }
@@ -120,19 +122,22 @@ class AccountNew extends Component<IAppContext, State> {
         return <div id="index">
             <Row justify="center" align="middle">
                 <Col xs={24} sm={18} md={10} >
-                    <Card title="Create your Entity" className="card" >
+                    <Card title={i18n.t('entity.title.create')} className="card" >
                         {!this.state.address && !this.state.accountConfirmedBackup && !this.state.accountWaitingForGas &&
                 <Form {...layout} onFinish={this.onFinish} labelAlign="left">
-                    <p> Welcome! In the next steps you're about to create an entity in Vocdoni.<br /> It's important to keep the password and all the information of the next page in a safe place, it is the only way to access your entity. <br /> <br />Keep in mind that everything is encrypted on your browser. If your device breaks, is lost, stolen, or has data corruption, there is no way for Vocdoni to recover your entity.</p>
-                    <Form.Item label="Entity Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
+                    <div className='styled-content'>
+                        <p dangerouslySetInnerHTML={{__html: i18n.t('entity.welcome')}} />
+                        <p dangerouslySetInnerHTML={{__html: i18n.t('entity.heads-up')}} />
+                    </div>
+                    <Form.Item label={i18n.t('account.name')} name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
                         <Input />
                     </Form.Item>
 
                     <Form.Item
-                        label="Password"
+                        label={i18n.t('password')}
                         name="passphrase"
                         rules={[
-                            { required: true, message: 'Please input a Password' },
+                            { required: true, message: i18n.t('account.error.missing_password') },
                             { pattern: RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$"), message: 'Minimum eight characters, one upper case, one lower case and one number' }
                         ]}
                         validateTrigger="onBlur">
@@ -140,20 +145,20 @@ class AccountNew extends Component<IAppContext, State> {
                     </Form.Item>
 
                     <Form.Item
-                        label="Confirm Password"
+                        label={i18n.t('password_confirm')}
                         name="passphraseConfirm"
                         dependencies={['passphrase']}
                         rules={[
                             {
                                 required: true,
-                                message: 'Please confirm your Password',
+                                message: i18n.t('account.error.missing_password'),
                             },
                             ({ getFieldValue }) => ({
                                 validator(rule, value) {
                                     if (!value || getFieldValue('passphrase') === value) {
                                         return Promise.resolve()
                                     }
-                                    return Promise.reject('The two passwords that you entered do not match!')
+                                    return Promise.reject(i18n.t('account.error.password_missmatch'))
                                 },
                             }),
                         ]}
@@ -165,14 +170,48 @@ class AccountNew extends Component<IAppContext, State> {
                     <Checkbox
                         checked = {acceptedPolicy}
                         onChange = {(e)=>{this.acceptPolicy(e)}}
-                    >I accept the <a href="https://vocdoni.io/privacy-policy/">Privacy Policy</a></Checkbox>
+                    >
+                        <Trans
+                            i18n={i18n}
+                            i18nKey='accept'
+                            values={{what: i18n.t('policy')}}
+                            components={{
+                                l: (
+                                    <a
+                                        href='https://vocdoni.io/privacy-policy'
+                                        target='_blank'
+                                        rel='noreferrer'
+                                    />
+                                ),
+                            }}
+                        >
+                            Accept (template)
+                        </Trans>
+                    </Checkbox>
                     <br />
                     {/* </Form.Item> */}
                     {/* <Form.Item> */}
                     <Checkbox
                         checked = {acceptedTerms}
                         onChange = {(e)=>{this.acceptTerms(e)}}
-                    >I accept the <a href="https://vocdoni.io/terms-of-service/">Terms of Service</a> </Checkbox>
+                    >
+                        <Trans
+                            i18n={i18n}
+                            i18nKey='accept'
+                            values={{what: i18n.t('tos')}}
+                            components={{
+                                l: (
+                                    <a
+                                        href='https://vocdoni.io/terms-of-service'
+                                        target='_blank'
+                                        rel='noreferrer'
+                                    />
+                                ),
+                            }}
+                        >
+                            Accept (template)
+                        </Trans>
+                    </Checkbox>
                     {/* </Form.Item> */}
                     <Form.Item {...tailLayout}>
                         {this.state.creatingAccount ?
@@ -185,14 +224,12 @@ class AccountNew extends Component<IAppContext, State> {
 
                         {this.state.address && !this.state.accountConfirmedBackup &&
                 <>
-                    <p>Please, make a copy of the following details before you continue</p>
+                    <p>{i18n.t('account.please_copy_details')}</p>
 
-                    <h4>Entity Name:</h4>
+                    <h4>{i18n.t('account.name')}</h4>
                     <pre>{this.state.name}</pre>
-                    <h4>Account Backup Code:</h4>
+                    <h4>{i18n.t('account.seed')}</h4>
                     <pre>{this.state.seed}</pre>
-                    {/* <h4>Address:</h4> */}
-                    {/* <pre>{this.state.address}</pre> */}
 
                     <Divider />
                     <div className='form-bottom flex-column'>
@@ -200,14 +237,14 @@ class AccountNew extends Component<IAppContext, State> {
                             type="primary"
                             onClick={this.downloadBackupFile.bind(this)}
                         >
-                            Download backup file
+                            {i18n.t('account.btn.download_backup')}
                         </Button>
                         <Button
                             type="primary"
                             onClick={this.onConfirmBackup}
                             disabled={!this.state.backupDownloaded}
                         >
-                            I have copied my Entity details
+                            {i18n.t('account.btn.details_already_copied')}
                         </Button>
                     </div>
                 </>
@@ -215,12 +252,18 @@ class AccountNew extends Component<IAppContext, State> {
 
                         {this.state.accountWaitingForGas &&
                 <>
-                    {/* <h3>Activate your account</h3> */}
-                    <span>
-                        {/* To continue with the transaction you need to get some xDAI tokens. <br /> */}
-                        To activate your account we need you to send us the name of your Entity and this identifier: <code>{this.state.address}</code> to <a href="mailto:info@vocdoni.io">info@vocdoni.io</a><br /></span>
+                    <p>
+                        <Trans
+                            i18n={i18n}
+                            i18nKey='account.wait_for_balance'
+                            values={{address: this.state.address}}
+                            components={{mailto: <a href='mailto:info@vocdoni.io' />, code: <code />}}
+                        >
+                            To activate your account we need you to send us the name of your Entity and this identifier:
+                            <code>{this.state.address}</code> to <a href="mailto:info@vocdoni.io">info@vocdoni.io</a>
+                        </Trans>
+                    </p>
                     <br />
-                    {/* <Spin indicator={<LoadingOutlined style={{ fontSize: 22 }} />} /> */}
                 </>
                         }
 

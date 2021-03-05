@@ -33,6 +33,7 @@ import InviteTokens from '../../components/invite-tokens'
 import InviteMember from '../../components/invite-member'
 import BulkActions from '../../components/bulk-actions'
 import TagsManagement from '../../components/tags-management'
+import i18n from '../../i18n'
 
 const { Paragraph } = Typography;
 const defaultPageSize = 50
@@ -333,13 +334,13 @@ class Members extends Component<IAppContext, State> {
                 </Menu.Item>,
                 <Menu.Item danger key='remove'>
                     <Popconfirm
-                        title={`Are you sure you want to delete ${record.firstName} ${record.lastName}?`}
-                        okText='Delete'
+                        title={i18n.t('confirm_delete', {name: `${record.firstName} ${record.lastName}`})}
+                        okText={i18n.t('btn.remove')}
                         okType='primary'
-                        cancelText='Cancel'
+                        cancelText={i18n.t('btn.cancel')}
                         onConfirm={this.deleteMember.bind(this, record.id)}
                     >
-                        <a>Delete</a>
+                        <a>{i18n.t('btn.remove')}</a>
                     </Popconfirm>
                 </Menu.Item>
             ]
@@ -359,10 +360,10 @@ class Members extends Component<IAppContext, State> {
 
         const censusNameModalvisible = this.state.censusNameModalvisible
         const columns = [
-            { title: 'First Name', dataIndex: 'firstName', sorter: true },
-            { title: 'Last Name', dataIndex: 'lastName', sorter: true },
-            { title: 'Email', dataIndex: 'email', sorter: true },
-            { title: 'Validated', dataIndex: 'validated', render: (text, record) => {
+            { title: i18n.t('field.name'), dataIndex: 'firstName', sorter: true },
+            { title: i18n.t('field.last_name'), dataIndex: 'lastName', sorter: true },
+            { title: i18n.t('field.email'), dataIndex: 'email', sorter: true },
+            { title: i18n.t('field.validated'), dataIndex: 'validated', render: (text, record) => {
                 if (record?.publicKey?.length) {
                     return <span>Yes</span>
                 }
@@ -374,7 +375,7 @@ class Members extends Component<IAppContext, State> {
                     <>{moment().diff(dateOfBirth, 'years', false) }</>
             )},
             */
-            { title: 'Tags', dataIndex: 'tags', render: (tags: any) => (
+            { title: i18n.t('field.tags'), dataIndex: 'tags', render: (tags: any) => (
                 <>
                     { tags && tags.map((item) => {
                         if (!this.state.tags.length) {
@@ -387,7 +388,7 @@ class Members extends Component<IAppContext, State> {
             )},
 
             {
-                title: 'Actions', key: 'action', render: (text, record) => (
+                title: i18n.t('field.actions'), key: 'action', render: (text, record) => (
                     <Dropdown
                         overlay={actionsMenu(record)}
                         visible={this.state.actionsMenuOpen[record.id]}
@@ -437,15 +438,11 @@ class Members extends Component<IAppContext, State> {
             <div className="body-card">
                 <Row gutter={40} justify="start">
                     <Col xs={{ span: 24, order: 2 }} lg={{ span: 18, order: 1 }}>
-                        <Divider orientation="left">Member list</Divider>
+                        <Divider orientation="left">
+                            {i18n.t('members.list.title')}
+                        </Divider>
                         <Paragraph>
-                            This is the list of members of your entity. From here
-                            you can generate validation links so that they can
-                            register and give them the right to vote.
-                        </Paragraph>
-                        <Paragraph>
-                            You will be able to create censuses for voting
-                            processes with those members who are registered.
+                            {i18n.t('members.list.description')}
                         </Paragraph>
                         <Row>
                             <Col {...tagsCol}>
@@ -530,23 +527,36 @@ class Members extends Component<IAppContext, State> {
                                 }
                             </Col>
                             <Col span={24}>
-                                <Divider orientation="left">Tools</Divider>
+                                <Divider orientation="left">{i18n.t('members.list.tools')}</Divider>
                                 {/*
                                 <Paragraph>explainer...</Paragraph>
                                 <Button onClick={() => this.setState({inviteTokensModalVisibility: true})} block type="ghost" icon={<DownloadOutlined />}>Generate Invite Tokens</Button>
                                 <br /> <br />
                                 */}
-                                <Paragraph>Validation links are used to register members in your organization.
-                                    Download the list of links and send each member their link so they can register.</Paragraph>
-                                <Button onClick={() => this.exportTokens()} block type="ghost" icon={<DownloadOutlined />}>Download Validation Links</Button>
+                                <Paragraph>{i18n.t('members.list.tools_note')}</Paragraph>
+                                <Button
+                                    onClick={() => this.exportTokens()}
+                                    block
+                                    type="ghost"
+                                    icon={<DownloadOutlined />}
+                                >
+                                    {i18n.t('members.btn.download_validation_links')}
+                                </Button>
                                 <br /> <br />
-                                <Paragraph>You can create censuses to give voting rights to users who have been previously validated.</Paragraph>
+                                <Paragraph>{i18n.t('members.list.census_note')}</Paragraph>
                                 {/*
                                 <Button onClick={() => this.createCensus()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
                                 */}
-                                <Button onClick={() => this.showCensusNameModal()} block type="primary" icon={<ExportOutlined />}>Create Voting Census</Button>
+                                <Button
+                                    onClick={() => this.showCensusNameModal()}
+                                    block
+                                    type="primary"
+                                    icon={<ExportOutlined />}
+                                >
+                                    {i18n.t('members.btn.create_census')}
+                                </Button>
                                 <Modal
-                                    title="Enter Census Name"
+                                    title={i18n.t('members.census_name')}
                                     visible={censusNameModalvisible}
                                     confirmLoading={false}
                                     closable={false}
@@ -568,10 +578,10 @@ class Members extends Component<IAppContext, State> {
                                                 onClick={() => this.setState({censusNameModalvisible: false})}
                                                 disabled={this.state.censusLoading}
                                             >
-                                                Cancel
+                                                {i18n.t('btn.cancel')}
                                             </Button>
                                             <Button type='primary' htmlType='submit' disabled={this.state.censusLoading}>
-                                                Create
+                                                {i18n.t('btn.create')}
                                             </Button>
                                         </Form.Item>
                                     </Form>

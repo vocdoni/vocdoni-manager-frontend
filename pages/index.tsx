@@ -111,7 +111,7 @@ class IndexView extends Component<IAppContext, State> {
                 this.setState({ passphrase: "" })
                 return this.redirectToEntityIfAvailable()
             })
-            .catch(() => message.error("Could not unlock the wallet. Please, check your password."))
+            .catch(() => message.error(i18n.t('error.wrong_password')))
     }
 
     renderEntityInfo() {

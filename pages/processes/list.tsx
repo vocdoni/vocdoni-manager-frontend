@@ -114,13 +114,10 @@ export default class ProcessListView extends Component<undefined, State> {
             this.setState({ loading: false })
 
             if (err && err.message === 'Request timed out') {
-                message.error('The list of voting processes took too long to load')
-            }
-            else if (err && err.message === 'failed') {
-                message.error('One of the processes could not be loaded')
+                message.error(i18n.t('process.error.timeout'))
             }
             else {
-                message.error('The list of voting processes could not be loaded')
+                message.error(i18n.t('process.error.generic'))
             }
 
             console.error(err)
@@ -165,9 +162,9 @@ export default class ProcessListView extends Component<undefined, State> {
                                     onChange={(filter) => this.setState({filter})}
                                     size='large'
                                 >
-                                    <Select.Option value='all'>{i18n.t('process.all')}</Select.Option>
-                                    <Select.Option value='active'>{i18n.t('process.active')}</Select.Option>
-                                    <Select.Option value='ended'>{i18n.t('process.ended')}</Select.Option>
+                                    <Select.Option value='all'>{i18n.t('process.filter.all')}</Select.Option>
+                                    <Select.Option value='active'>{i18n.t('process.filter.active')}</Select.Option>
+                                    <Select.Option value='ended'>{i18n.t('process.filter.ended')}</Select.Option>
                                 </Select>
                             </Col>
                             <Col>
@@ -180,7 +177,7 @@ export default class ProcessListView extends Component<undefined, State> {
                                 </If>
                             </Col>
                         </Row>
-                        <Loading loading={this.state.loading} text={i18n.t('loadingProcesses')}>
+                        <Loading loading={this.state.loading} text={i18n.t('process.loading')}>
                             <div className='card-list'>
                                 {
                                     processes.map((id) => {
@@ -215,10 +212,10 @@ export default class ProcessListView extends Component<undefined, State> {
                                         >
                                             <div className='state'>
                                                 <div className={`status ${process.params.status.isCanceled && 'finished'}`}>
-                                                    {process.params.status.isCanceled ? i18n.t('finished') : i18n.t('active')}
+                                                    {process.params.status.isCanceled ? i18n.t('process.status.finished') : i18n.t('process.status.active')}
                                                     <If condition={!synced}>
                                                         <span className='unsync'>
-                                                            &nbsp; (Not in sync)
+                                                            &nbsp; ({i18n.t('process.status.unsynced')})
                                                         </span>
                                                     </If>
                                                 </div>

@@ -1,43 +1,118 @@
 {
-    "active": "Active",
+    "accept": "I accept <l>{{ what }}</l>",
+    "account": {
+        "address": "Address",
+        "balance": "Balance",
+        "btn": {
+            "details_already_copied": "I have copied my Entity details",
+            "download_backup": "Download backup file",
+            "import": "Import and login"
+        },
+        "created": "Done creating account!",
+        "creating": "Creating account, please wait...",
+        "drag_to_import": "Click or drag your backup file here for easy import",
+        "error": {
+            "cannot_create": "An error ocurred trying to create the account. Please, try it again",
+            "cannot_import": "An error ocurred trying import the account. Please, try it again",
+            "missing_name": "You need to specify an account name",
+            "missing_password": "The password is required to decrypt everything!",
+            "missing_seed": "The seed is mandatory",
+            "not_found_description": "It looks like your account is not linked to an existing entity. Do you want to create it now?",
+            "password_missmatch": "The two passwords that you entered do not match!"
+        },
+        "import_file_restriction": "Only .json files are supported",
+        "import_finish": "Now finish the process by setting an entity name and the expected password for the key pair.",
+        "import_title": "Import account",
+        "manually_set": "Or manually set your details below:",
+        "name": "Name",
+        "please_copy_details": "Please, make a copy of the following details before you continue",
+        "private_key": "Private key",
+        "public_key": "Public key",
+        "seed": "Account seed",
+        "title": "Account",
+        "wait_for_balance": "To activate your account we need you to send us the name of your Entity and this identifier: <code>{{ address }}</code> to <mailto>info@vocdoni.io</mailto>"
+    },
+    "action_in_progress": "Action in progress...",
     "btn": {
         "back": "Go back",
         "cancel": "Cancel",
-        "ok": "Ok"
+        "copy_link": "Copy link",
+        "create": "Create",
+        "edit": "Edit",
+        "ok": "Ok",
+        "remove": "Remove",
+        "retry": "Retry",
+        "save": "Save",
+        "saving": "Saving"
     },
-    "buttonCSVLogin": "Log in",
     "confirm": "Confirm",
-    "confirmSelection": "Confirm your vote",
+    "confirm_delete": "Are you sure you want to remove {{ name }}?",
     "connected": "Connected",
-    "connectingWait": "Connecting to the network. Please wait...",
-    "couldNotCheckCensus": "Could not check census. Try again.",
-    "couldNotConnect": "Could not connect",
-    "couldNotLoadVote": "There was an error loading the votes",
+    "connecting": "Connecting to the network. Please wait...",
     "entity": {
         "btn": {
+            "create": "Create entity",
             "manage": "Manage my entity"
         },
-        "load_error": "There was an error loading the entity data",
-        "loading": "Loading the details of the entity..."
+        "error": {
+            "loading": "There was an error loading the entity data",
+            "not_found": "Entity not found",
+            "not_found_description": "The entity you are looking for cannot be found"
+        },
+        "field": {
+            "callback_secret": "Callback secret",
+            "callback_url": "Callback URL",
+            "org_email": "Organization e-mail",
+            "org_name": "Organization name"
+        },
+        "heads-up": "Keep in mind that everything is encrypted on your browser. If your device breaks, is lost, stolen, or has data corruption, there is no way for Vocdoni to recover your entity.",
+        "loading": "Loading the details of the entity...",
+        "qr_note": "By scanning this QR code with Vocdoni's App a user can subscribe to the activity of your organization.",
+        "title": {
+            "create": "Create your entity",
+            "new": "New entity",
+            "share": "Share"
+        },
+        "welcome": "Welcome! In the next steps you're about to create an entity in Vocdoni. <br /> It's important to keep the password and all the information of the next page in a safe place, it is the only way to access your entity."
     },
     "error": {
+        "cannot_connect": "Could not connect",
+        "cannot_read_entity_metadata": "Could not read the entity metadata",
+        "connection": "Oops! There has been a problem while connecting to our services.",
+        "file_format_unknown": "Unknown file format uploaded",
         "general": "The web encountered a general error",
-        "not_found": "Not found"
+        "insufficient_funds": "Not enough balance",
+        "insufficient_funds_note": "To continue with the transaction you need to get some xDAI tokens.<br /> Copy the following address and get in touch with us: <code>{{address}}</code>",
+        "invalid_claims_found": "Found {{ total }} invalid claims",
+        "invalid_email": "",
+        "invalid_format_contents": "The data does not seem to have a correct format",
+        "invalid_request": "The requested data is not valid",
+        "invalid_spreadsheet_data": "The entered data doesn't seem correct, please, check it.",
+        "invalid_uri": "Must be either an http or an ipfs link",
+        "not_found": "Not found",
+        "oops": "Oops, this is an error.",
+        "retry": "Try again",
+        "timeout": "The request took too long",
+        "update": "There was an error updating the blockchain information. Refresh the page if you don't see changes in a while.",
+        "wrong_password": "Could not unlock the wallet. Please, check your password."
     },
-    "errorCSVInvalidData": "The entered data doesn't seem correct, please, check it.",
-    "filesizeLimit": "The image is bigger than the current filesize limit (%s)",
-    "finished": "Finished",
-    "finishes": "Finishes",
+    "field": {
+        "actions": "Actions",
+        "email": "Email",
+        "last_name": "Last name",
+        "name": "Name",
+        "tags": "Tags",
+        "validated": "Validated"
+    },
     "image_uploader": {
+        "error": {
+            "filesize": "The image is bigger than the current filesize limit ({{ limit }})",
+            "mime": "Only jpg and png files are allowed. The file you uploaded is not valid."
+        },
         "upload": "Upload image",
         "uploading": "Uploading image"
     },
-    "invalidImageError": "Only jpg and png files are allowed. The file you uploaded is not valid.",
-    "invalidPrivateKey": "The private key is not valid",
-    "invalidQuestionOptionValue": "The chosen value for this option has an invalid value",
-    "invalidRequest": "Invalid request",
     "loading": "Loading...",
-    "loadingProcesses": "Loading entity processes...",
     "login": {
         "btn": {
             "create": "Create an entity",
@@ -47,44 +122,206 @@
         "description": "From this page you can create and manage your entity, publish news, manage censuses and create voting processes.",
         "password": "Password"
     },
-    "newProcess": "New process",
-    "notEnoughBalance": "Not enough balance",
-    "notEnoughBalanceNote": "To continue with the transaction you need to get some xDAI tokens.<br /> Copy the following address and get in touch with us: <code>{address}</code>",
-    "nullifierNotice": "Please, store the following code as the unique receipt of your ballot:",
+    "members": {
+        "btn": {
+            "create_census": "Create voting census",
+            "download_template": "Download template",
+            "download_validation_links": "Download validation links",
+            "import": "Import data",
+            "row_add": "+ Add a row",
+            "row_delete": "- Delete row"
+        },
+        "census_name": "Enter census name",
+        "import": {
+            "confirm": "Confirm import",
+            "confirm_note": "If the content in the preview is correct, click on the button to continue.",
+            "description": "In this section you can add new members to your organization's database. Once you upload the spreadsheet file with the attributes of each user, an individual validation link will be generated which you will have to send to each user so that they can register in the entity.",
+            "manual": "Manual import",
+            "preview": "Data preview",
+            "select_file_first": "Select a file to upload first",
+            "template": "Use the following spreadsheet template to upload a list with new members",
+            "title": "Members import"
+        },
+        "list": {
+            "census_note": "You can create censuses to give voting rights to users who have been previously validated.",
+            "description": "This is the list of members of your entity. From here you can generate validation links so that they can register and give them the right to vote. You will be able to create censuses for voting processes with those members who are registered.",
+            "title": "Members list",
+            "tools": "Tools",
+            "tools_note": "Validation links are used to register members in your organization. Download the list of links and send each member their link so they can register."
+        }
+    },
+    "menu": {
+        "censuses": "Censuses",
+        "communication": "Communication",
+        "create_post": "Create post",
+        "details": "Details",
+        "import": "Import members",
+        "members": "Members",
+        "news": "News",
+        "participation": "Participation",
+        "settings": "Settings",
+        "users": "Users management"
+    },
+    "news": {
+        "confirm_delete": "The selected post will be no longer accessible and this action cannot be undone. Do you want to continue?",
+        "delete_error": "The post could not be deleted",
+        "deleted_successfuly": "The post has been deleted successfully",
+        "field": {
+            "content": "Content",
+            "header_image": "Header image",
+            "header_image_note": "If you don't have images, try to find one at unsplash.com.",
+            "title": "Title"
+        },
+        "title": {
+            "feed": "News feed",
+            "header": "Header",
+            "new": "New post"
+        }
+    },
     "or": "or",
-    "pleaseChooseYourVoteForAllQuestions": "Please, choose your vote for all questions.",
+    "password": "Password",
+    "password_confirm": "Confirm password",
+    "policy": "the privacy policy",
     "powered_by": "Powered by Vocdoni",
     "process": {
-        "active": "Only active",
-        "all": "All processes",
+        "actions": "Actions",
         "btn": {
             "cast_vote": "Cast my vote",
+            "confirm": "Confirm your vote",
+            "create": "Create process",
             "documentation": "Docs",
             "goto_vote": "Vote",
+            "login": "Log in",
+            "mark_ended": "Mark as ended",
             "new": "New",
+            "option_add": "+ Add option",
+            "publish": "Publish final process",
+            "question_add": "+ Add question",
+            "remove": "Remove process from entity",
             "requests": "Questions and answers"
         },
-        "ended": "Only ended"
+        "census_size": "Census size",
+        "channels": {
+            "intro": "Voting using the Vocdoni App is the only method that currently guarantees full anonimity and maximum security.",
+            "list": "Web voting is offered as an additional alternative when:",
+            "list_items": "Live streaming is enabled;Access to non-registered users must be guaranteed;Attribute authentication is selected to define participants."
+        },
+        "confirm_mark_ended": "The process will be marked as ended and the vote scrutiny will be triggered (if necessary). Do you want to continue?",
+        "confirm_vote": "You're about to vote. This action cannot be undone! Do you want to continue?",
+        "create_note": "Creating the process will register it into the blockchain, wich <b>cannot be undone</b>. Do you want to continue?",
+        "created": "The voting process with ID {{ id }} has been created. {{ warn }}",
+        "creating": "Creating process...",
+        "detailed_info": "Detailed info (explorer)",
+        "details": "Process details",
+        "end_block": "End block",
+        "end_date": "End date (estimated)",
+        "error": {
+            "cannot_create": "The voting process could not be created",
+            "cannot_load": "There was an error loading the votes",
+            "cannot_vote": "Could not register your vote",
+            "census": "Could not check census. Try again.",
+            "census_invalid": "Invalid census data",
+            "census_undefined": "Error grabbing proper census for selection",
+            "emails": "There was an error sending the emails though.",
+            "ends_soon": "The end date needs to be after the start date",
+            "generic": "One or more processes could not be loaded",
+            "invalid_dates": "The dates are not valid",
+            "invalid_frame": "The start date needs to be before the end one",
+            "invalid_private_key": "The private key is not valid",
+            "missing_title": "The process must have a title",
+            "not_found": "Entity or process not found",
+            "not_found_description": "Either the entity or the process you are looking for cannot be found",
+            "not_in_census": "You are not in the census",
+            "select_all": "Please, choose your vote for all questions.",
+            "starts_soon": "The start date needs to be at least a few minutes in the future",
+            "status": "Could not load the process status",
+            "timeout": "The list of voting processes took too long to load",
+            "wrong_value": "The chosen value for this option has an invalid value"
+        },
+        "field": {
+            "app_unavailable": "Not available within the app.",
+            "census_root": "Census Root",
+            "census_uri": "Census URI",
+            "census_uri_note": "Either a merkle tree URI or a CA endpoint url",
+            "description": "Description",
+            "docs_button": "Documentation button",
+            "docs_button_note": "Will show a Documentation button linking to where you want.",
+            "end": "Vote end",
+            "import_census": "Import census",
+            "import_census_note": "Manually set the census root and uri (for CA voting, won't send e-mails nor other automated processes)",
+            "import_spreadsheet": "From spreadsheet (Attribute auth.)",
+            "import_spreadsheet_note": "Voters will be authenticated completing a form with the attributes of the spreadsheet. This method does not allow to use the App to vote. The spreadsheet file is never uploaded and only a fingerprint of the user attributes is used for the authentication.",
+            "live_streaming": "Live streaming",
+            "participants": "Participants",
+            "participants_all": "All members",
+            "period": "Period",
+            "publishing": "Publishing",
+            "qna_button": "Questions and answers button",
+            "qna_button_note": "Will show a QnA button linking to where you want.",
+            "questions": {
+                "blank": "Blank",
+                "no": "No",
+                "title": "Questions",
+                "yes": "Yes"
+            },
+            "real_time_results": "Real-time results",
+            "real_time_results_note": "Vote results can be seen before the process has ended.",
+            "start": "Vote start",
+            "title": "Process title",
+            "voting_channels": "Voting channels",
+            "web_voting": "Web voting",
+            "web_voting_note": "Allows non-registered members to vote on a web page via a voting link that will be sent via e-mail. Registered members must vote using Vocdoni App anyway."
+        },
+        "filter": {
+            "active": "Only active",
+            "all": "All processes",
+            "ended": "Only ended"
+        },
+        "general": "General",
+        "id": "Process ID",
+        "loading": "Loading process details...",
+        "loading_results": "Loading results...",
+        "login_title": "Enter your data",
+        "login_uri": "Login URI",
+        "media": "Media",
+        "new": "New process",
+        "nullifier_note": "Please, store the following code as the unique receipt of your ballot:",
+        "question_number": "Question {{ num }}",
+        "results": "Results",
+        "start_block": "Start block",
+        "start_date": "Start date (estimated)",
+        "status": {
+            "active": "Active",
+            "can_vote": "You can vote",
+            "closed": "Closed",
+            "ended": "The voting process has ended",
+            "finished": "Finished {{ date }}",
+            "finishes": "Finishes {{ date }}",
+            "inactive": "Not yet active",
+            "not_started": "Voting hasn't started yet",
+            "submitting": "Sending your vote",
+            "title": "Status",
+            "unsynced": "Not in sync",
+            "vote_registered": "Your vote has been registered"
+        },
+        "step": {
+            "balance": "Check balance",
+            "census": "Create census",
+            "create": "Create process",
+            "emails": "Send emails"
+        },
+        "submitted": "Your vote has been submitted",
+        "submitted_note": "Your vote has been received and processed successfully",
+        "thanks": "Thank you for voting!",
+        "time_frame": "Time frame",
+        "type": "Process type",
+        "vote_registered_on": "Your vote has been registered on {{ date }}",
+        "votes_received": "Votes received: {{ total }}",
+        "voting": "Voting",
+        "your_selections": "These are your selections:"
     },
-    "processCreating": "Creating process...",
-    "processCreationAdvice": "Creating the process will register it into the blockchain, wich <b>cannot be undone</b>. Do you want to continue?",
-    "processCreationConfirmButton": "Create process",
-    "processDescriptionStage4": "Thank you for voting!",
-    "processListLoadTimeout": "Your votes could not be loaded. Try again.",
-    "qrNote": "By scanning this QR code with Vocdoni's App a user can subscribe to the activity of your organization",
-    "retryConnection": "Try again",
-    "selectQuestionsTitle": "Voting",
-    "submittingVote": "Sending your vote",
-    "theProcessHasEnded": "The voting process has ended",
-    "theProcessHasNotStarted": "Voting hasn't started yet",
-    "theseAreYourSelections": "These are your selections:",
-    "theVoteCouldNotBeSubmitted": "Could not register your vote",
-    "titleCSVLogin": "Enter your data",
-    "voteSubmitted": "Your vote has been submitted",
-    "youAreAboutToSendYourVoteConfirmContinue": "You're about to vote. This action cannot be undone! Do you want to continue?",
-    "youAreNotInTheCensus": "You are not in the census",
-    "youCanVote": "You can vote",
-    "yourVoteHasBeenRegisteredOn": "Your vote has been registered on ",
-    "yourVoteHasBeenSuccessfullyRegistered": "Your vote has been received and processed successfully",
-    "yourVoteIsRegistered": "Your vote has been registered"
+    "tos": "the terms of service",
+    "uploader": {
+        "spreadsheets_note": "Drag & drop or click to browse files"
+    }
 }

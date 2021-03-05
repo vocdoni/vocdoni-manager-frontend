@@ -49,7 +49,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
         try {
             const { params } = this.context
             if (params.length !== 3 || !params[0].match(HEX_REGEX) || !params[1].match(HEX_REGEX)) {
-                message.error(i18n.t('invalidRequest'))
+                message.error(i18n.t('error.invalid_request'))
                 Router.replace('/')
                 return
             }
@@ -89,7 +89,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             this.context.setTitle(process.title.default)
         }
         catch (err) {
-            const error = (err && err.message == 'Request timed out') ? i18n.t('processListLoadTimeout') : i18n.t('error.not_found')
+            const error = (err && err.message == 'Request timed out') ? i18n.t('process.error.timeout') : i18n.t('error.not_found')
 
             message.error(error)
             this.setState({
@@ -138,7 +138,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             console.error(error)
         }
 
-        message.error(i18n.t('errorCSVInvalidData'))
+        message.error(i18n.t('error.invalid_spreadsheet_data'))
         this.setState({verifying: false})
     }
 
@@ -166,7 +166,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                         <If condition={this.state.process?.title?.default?.length}>
                             <h1>{this.state.process?.title?.default}</h1>
                         </If>
-                        <h2>{i18n.t('titleCSVLogin')}</h2>
+                        <h2>{i18n.t('process.login_title')}</h2>
                         {
                             this.state.fields.map((field, key) => (
                                 <Form.Item label={field} name={field} key={key}>
@@ -180,7 +180,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                             disabled={this.state.verifying}
                             loading={this.state.verifying || this.state.loading}
                         >
-                            {i18n.t('buttonCSVLogin')}
+                            {i18n.t('process.btn.login')}
                         </Button>
                     </Form>
                 </Card>

@@ -71,11 +71,11 @@ export default class View extends Component<ViewProps, undefined> {
                             <Col {...columns.right} className='description'>
                                 <Row justify='space-around' style={{height: '100%'}}>
                                     <Col span={24} className='copy-link'>
-                                        <Copy text={link}>Copy link</Copy>
+                                        <Copy text={link}>{i18n.t('btn.copy_link') as string}</Copy>
                                     </Col>
                                     <Col span={24} className='qr-note'>
                                         <Note>
-                                            {i18n.t('qrNote')}
+                                            {i18n.t('entity.qr_note')}
                                         </Note>
                                     </Col>
                                 </Row>

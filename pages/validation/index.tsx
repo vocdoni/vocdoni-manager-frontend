@@ -11,6 +11,7 @@ import QRCode from 'qrcode.react'
 import { getGatewayClients } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 import Image from '../../components/image'
+import i18n from '../../i18n'
 
 const APP_LINKING_DOMAIN = process.env.APP_LINKING_DOMAIN
 
@@ -56,7 +57,7 @@ class ValidationView extends Component<IAppContext, State> {
         }
         catch (err) {
             this.setState({ entityLoading: false })
-            message.error("Could not read the entity metadata")
+            message.error(i18n.t('error.cannot_read_entity_metadata'))
         }
     }
 

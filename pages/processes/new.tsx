@@ -68,10 +68,10 @@ type CensusInfo = {
 }
 
 const stepDescriptions = {
-    balance: 'Check balance',
-    census: 'Create census',
-    create: 'Create process',
-    emails: 'Send emails'
+    balance: i18n.t('process.step.balance'),
+    census: i18n.t('process.step.census'),
+    create: i18n.t('process.step.create'),
+    emails: i18n.t('process.step.emails'),
 }
 
 class ProcessNew extends Component<undefined, ProcessNewState> {
@@ -149,7 +149,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             Router.replace('/')
             return
         }
-        this.context.setTitle(i18n.t('newProcess'))
+        this.context.setTitle(i18n.t('process.new'))
 
         try {
             const [entityId] = this.context.params
@@ -177,7 +177,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
     modal() : ReactNode {
         const { creating } = this.state
-        let content = <span dangerouslySetInnerHTML={{__html: i18n.t('processCreationAdvice')}} />
+        let content = <span dangerouslySetInnerHTML={{__html: i18n.t('process.create_note')}} />
         const steps = Object.keys(this.state.steps).filter((step) => this.state.steps[step])
         if (creating) {
             content = (
@@ -200,10 +200,10 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
         return (
             <Modal
-                title={creating ? i18n.t('processCreating') : i18n.t('confirm')}
+                title={creating ? i18n.t('process.creating') : i18n.t('confirm')}
                 closable={false}
                 visible={this.state.confirmModalVisible}
-                okText={i18n.t('processCreationConfirmButton')}
+                okText={i18n.t('process.btn.create')}
                 onOk={this.submit.bind(this)}
                 onCancel={() => this.setState({confirmModalVisible: false})}
                 okButtonProps={{
@@ -225,9 +225,11 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
         if (balance.isZero()) {
             Modal.warning({
-                title: 'Not enough balance',
+                title: i18n.t('error.insufficient_funds'),
                 icon: <Ficon icon='AlertCircle' />,
-                content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
+                content: <span dangerouslySetInnerHTML={{
+                    __html: i18n.t('error.insufficient_funds_note', {address})
+                }} />,
                 onOk: () => {
                     this.setState({ creating: false })
                     loading()
@@ -276,22 +278,22 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
         const errors = []
 
         if (!process.metadata.title.default.length) {
-            errors.push('The process must have a title')
+            errors.push(i18n.t('process.error.missing_title'))
         }
 
         if (isNaN(this.state.startBlock) || isNaN(this.state.blockCount)) {
-            errors.push('The dates are not valid')
+            errors.push(i18n.t('process.error.invalid_dates'))
         }
 
         const threshold = moment().add(8, 'minutes')
         if (this.state.blockCount <= 0) {
-            errors.push('The start date needs to be before the end one')
+            errors.push(i18n.t('process.error.invalid_frame'))
         }
         if (this.state.startDate.isSameOrBefore(threshold, 'minute')) {
-            errors.push('The start date needs to be at least a few minutes in the future')
+            errors.push(i18n.t('process.error.starts_soon'))
         }
         if (this.state.endDate.isSameOrBefore(this.state.startDate, 'minute')) {
-            errors.push('The end date needs to be after the start date')
+            errors.push(i18n.t('process.error.ends_soon'))
         }
 
         if (errors.length) {
@@ -360,7 +362,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                 const { censusId } = await CensusOffChainApi.addCensus(censusName, [wallet._signingKey().publicKey], wallet, gateway)
                 const { censusRoot, invalidClaims } = await CensusOffChainApi.addClaimBulk(censusId, claims, true, wallet, gateway)
                 if (invalidClaims.length) {
-                    message.warn(`Found ${invalidClaims.length} invalid claims`)
+                    message.warn(i18n.t('error.invalid_claims_found', {total: invalidClaims.length}))
                 }
                 const merkleTreeUri = await CensusOffChainApi.publishCensus(censusId, wallet, gateway)
 
@@ -397,7 +399,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     !data.uri?.length ||
                     !data.root?.length
                 ) {
-                    throw new Error('invalid census data')
+                    throw new Error(i18n.t('process.error.census_invalid'))
                 }
 
                 return {
@@ -423,7 +425,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             }
         }
 
-        throw new Error('Error grabbing proper census')
+        throw new Error(i18n.t('process.error.census_undefined'))
     }
 
     isDisabledDate(queryDate: moment.Moment) : boolean {
@@ -488,7 +490,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
 
     async submit() : Promise<void> {
         const { process } = this.state
-        const loading = message.loading('Action in progress...', 0)
+        const loading = message.loading(i18n.t('action_in_progress'), 0)
         this.setState({ creating: true })
 
         if (!await this.hasBalance(loading)) {
@@ -535,7 +537,9 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             const processId = await VotingApi.newProcess(process, wallet, await this.context.gatewayClients)
             this.stepDone('create')
 
-            let msg = `The voting process with ID ${processId.substr(0, 8)} has been created.`
+            const i18ni11n : {id: string, warn?: string} = {
+                id: processId.substr(0, 8),
+            }
             if (shouldSendEmails) {
                 const emailsReq : any = {
                     method: 'sendVotingLinks',
@@ -546,12 +550,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                 try {
                     await this.context.managerBackendGateway.sendRequest(emailsReq, wallet)
                 } catch (e) {
-                    msg += ' There was an error sending e-mails tho.'
+                    i18ni11n.warn = i18n.t('process.error.emails')
                 }
                 this.stepDone('emails')
             }
 
-            message.success(msg)
+            message.success(i18n.t('process.created', i18ni11n))
 
             loading()
 
@@ -560,8 +564,8 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             loading()
             this.setState({ creating: false })
 
-            console.error('The voting process could not be created', error)
-            message.error('The voting process could not be created')
+            console.error(i18n.t('process.error.cannot_create'), error)
+            message.error(i18n.t('process.error.cannot_create'))
         }
     }
 
@@ -588,14 +592,14 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     <Form.Item>
                         <Input
                             size='large'
-                            placeholder='Process title'
+                            placeholder={i18n.t('process.field.title')}
                             value={process.metadata.title.default}
                             onChange={this.onFieldChange.bind(this, 'title.default')}
                         />
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='AlignLeft' /> Description</label>
+                            <label><Ficon icon='AlignLeft' /> {i18n.t('process.field.description')}</label>
                         </div>
                         <HTMLEditor
                             value={process.metadata.description.default}
@@ -604,12 +608,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='Calendar' /> Period</label>
+                            <label><Ficon icon='Calendar' /> {i18n.t('process.field.period')}</label>
                         </div>
                         <div>
                             <DatePicker.RangePicker
                                 format='YYYY/MM/DD HH:mm'
-                                placeholder={['Vote start', 'Vote end']}
+                                placeholder={[i18n.t('process.field.start'), i18n.t('process.field.end')]}
                                 disabledDate={(current) => this.isDisabledDate(current)}
                                 disabledTime={(current) => this.getDisabledTimes(current)}
                                 defaultValue={[moment().add(30, 'minutes'), moment().add(3, 'days').add(30, 'minutes')]}
@@ -623,7 +627,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='Activity' /> Real-time results</label>
+                            <label><Ficon icon='Activity' /> {i18n.t('process.field.real_time_results')}</label>
                             <Switch
                                 onChange={() =>
                                     this.toggleProcessBitFlagField('envelopeType', ProcessEnvelopeType.ENCRYPTED_VOTES)
@@ -632,12 +636,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             />
                         </div>
                         <div>
-                            <small>Vote results can be seen before the process has ended.</small>
+                            <small>{i18n.t('process.field.real_time_results_note')}</small>
                         </div>
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='Youtube' /> Live streaming</label>
+                            <label><Ficon icon='Youtube' /> {i18n.t('process.field.live_streaming')}</label>
                             <Switch
                                 onChange={(streamingInputVisible: boolean) =>
                                     this.setState({streamingInputVisible})
@@ -646,7 +650,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             />
                         </div>
                         <div>
-                            <small>Not available within the app.</small>
+                            <small>{i18n.t('process.field.app_unavailable')}</small>
                             <If condition={this.state.streamingInputVisible}>
                                 <Input
                                     placeholder='https://youtu.be/dQw4w9WgXcQ'
@@ -682,7 +686,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='MessageSquare' /> Questions and answers button</label>
+                            <label><Ficon icon='MessageSquare' /> {i18n.t('process.field.qna_button')}</label>
                             <Switch
                                 onChange={(qnaInputVisible: boolean) =>
                                     this.setState({qnaInputVisible})
@@ -691,7 +695,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             />
                         </div>
                         <div>
-                            <small>Will show a QnA button linking to where you want.</small>
+                            <small>{i18n.t('process.field.qna_button_note')}</small>
                             <If condition={this.state.qnaInputVisible}>
                                 <Input
                                     placeholder='https://...'
@@ -702,7 +706,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='Info' /> Documentation button</label>
+                            <label><Ficon icon='Info' /> {i18n.t('process.field.docs_button')}</label>
                             <Switch
                                 onChange={(docInputVisible: boolean) =>
                                     this.setState({docInputVisible})
@@ -711,7 +715,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             />
                         </div>
                         <div>
-                            <small>Will show a Documentation button linking to where you want.</small>
+                            <small>{i18n.t('process.field.docs_button_note')}</small>
                             <If condition={this.state.docInputVisible}>
                                 <Input
                                     placeholder='https://...'
@@ -722,7 +726,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='HelpCircle' /> Questions</label>
+                            <label><Ficon icon='HelpCircle' /> {i18n.t('process.field.questions.title')}</label>
                         </div>
                         <QuestionsForm
                             onChange={this.setQuestions.bind(this)}
@@ -730,31 +734,27 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='MousePointer' /> Voting channels</label>
+                            <label><Ficon icon='MousePointer' /> {i18n.t('process.field.voting_channels')}</label>
                         </div>
                         <div>
                             <small>
-                                Voting using the Vocdoni App is the only method
-                                that currently guarantees full anonimity and
-                                maximum security.<br />
+                                {i18n.t('process.channels.intro')}<br />
                             </small>
                             <small>
-                                Web voting is offered as an additional alternative when:
-                                <ul>
-                                    <li>
-                                        Live streaming is enabled
-                                    </li>
-                                    <li>
-                                        Access to non-registered users must be guaranteed
-                                    </li>
-                                    <li>
-                                        Attribute authentication is selected to define participants.
-                                    </li>
+                                {i18n.t('process.channels.list')}
+                                <ul className='list-disc'>
+                                    {
+                                        i18n.t('process.channels.list_items')
+                                            .split(';')
+                                            .map((litem: string, k: number) => (
+                                                <li key={k}>{litem}</li>
+                                            ))
+                                    }
                                 </ul>
                             </small>
                         </div>
                         <div className='label-wrapper no-icon'>
-                            <label>Web voting</label>
+                            <label>{i18n.t('process.field.web_voting')}</label>
                             <Switch
                                 checked={this.state.webVoting}
                                 disabled={selectedCensus === 'file'}
@@ -762,14 +762,12 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             />
                         </div>
                         <div><small>
-                            Allows non-registered members to vote on a web page
-                            via a voting link that will be sent via e-mail.
-                            Registered members must vote using Vocdoni App anyway.
+                            {i18n.t('process.field.web_voting_note')}
                         </small></div>
                     </Form.Item>
                     <Form.Item>
                         <div className='label-wrapper'>
-                            <label><Ficon icon='ArrowRightCircle' /> Publishing</label>
+                            <label><Ficon icon='ArrowRightCircle' /> {i18n.t('process.field.publishing')}</label>
                         </div>
                         <Button
                             disabled={loading || creating || !valid}
@@ -777,7 +775,7 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
                             size='large'
                             htmlType='submit'
                         >
-                            Publish final process
+                            {i18n.t('process.btn.publish')}
                         </Button>
                     </Form.Item>
                 </Form>

@@ -1,11 +1,20 @@
+import React, { ReactElement, ReactNode } from 'react'
 import i18n from '../i18n'
 
+type Props = {
+    title?: string,
+    description?: string,
+    children?: ReactNode,
+}
+
 // import Link from "next/link"
-const NotFound = () => <div id="page-body">
-    <div className="not-found body-card">
-        <h4>Oops, this is an error.</h4>
-        <p>{i18n.t('error.not_found')}</p>
+const NotFound : React.FC = ({title, description} : Props) : ReactElement => (
+    <div id="page-body">
+        <div className="not-found body-card">
+            <h4>{ title || i18n.t('error.oops')}</h4>
+            <p>{ description || i18n.t('error.not_found')}</p>
+        </div>
     </div>
-</div>
+)
 
 export default NotFound

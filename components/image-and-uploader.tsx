@@ -4,7 +4,6 @@ import React, { Component, CSSProperties, ReactNode } from 'react'
 
 import i18n from '../i18n'
 import Ficon from './ficon'
-
 import Image, { ImageProps } from './image'
 import IPFSImageUpload from './ipfs-image-upload'
 
@@ -79,7 +78,7 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
         const inputAttrs : FormItemProps = {}
         if (!isValid && !this.uploaderRef?.current?.state?.uploading) {
             inputAttrs.validateStatus = 'error'
-            inputAttrs.help = 'Must be either an http or an ipfs link'
+            inputAttrs.help = i18n.t('error.invalid_uri')
         }
         return (
             <div className={classes.join(' ')} style={style}>

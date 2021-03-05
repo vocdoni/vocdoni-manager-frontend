@@ -31,7 +31,7 @@ export async function initNetwork() {
     }
     const web3Wallet = getWeb3Wallet()
 
-    const hideLoading = message.loading(i18n.t('connectingWait'), 0)
+    const hideLoading = message.loading(i18n.t('connecting'), 0)
 
     try {
         if (!web3Wallet.hasWallet()) {

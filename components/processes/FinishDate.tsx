@@ -20,12 +20,11 @@ export default class FinishDate extends Component<FinishDateProps, undefined> {
         }
 
         const d = moment(process.date)
-        let suffix = i18n.t('finished')
-
+        const vars = {date: d.fromNow()}
         if (d.isAfter(Date.now())) {
-            suffix = i18n.t('finishes')
+            return i18n.t('process.status.finishes', vars)
         }
 
-        return `${suffix} ${d.fromNow()}`
+        return i18n.t('process.status.finished', vars)
     }
 }
