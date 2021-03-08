@@ -19,38 +19,15 @@ A few management workflows need the signature of multiple transactions and paylo
 
 To mitigate this, the frontend creates a Standalone Web3 Wallet that is present in memory only. For it to be restored, users need the seed and the passphrase to unlock it.
 
-## Deep linking
-
-- `public/.well-known` needs to contain the latest versions of the files contained on the repo `client-mobile > linking > *`
-
 ## Environment variables
 
-At build time, the following env vars are read:
-
-- `NODE_ENV`
-    - When set to `production`, disabled the development mode
-- `ETH_NETWORK_ID`
-    - By default set to `xdai`
-- `BOOTNODES_URL_READ_ONLY`
-    - The bootnode URL used for regular user requests
-- `BOOTNODES_URL_RW`
-    - The bootnode URL used for entity related requests
-    - App is set in **read only mode** when this field's empty
-- `APP_LINKING_DOMAIN`
-    - The domain used for universal links triggering the app (if available)
-    - Set to `vocdoni.link` by default
-- `REGISTER_URL`
-    - The endpoint where new organizations will point app users to register to
-- `ACTION_VISIBILITY_URL`
-    - The endpoint where new organizations will tell app users to check their registration status
-
-Check the file [`env-config.js`][env-config.js] for a full featured list of the environment vars.
+Check the file [`env-config.js`][env-config.js] for a full featured list of the environment vars used when exporting the project.
 
 ## Dockerfile
 
-A Dockerfile is provided for convenience. The image it creates is not meant to serve the frontend, but to **export** it.
+The dockerfile provided builds and serves the static files of the manager.
 
-Exportation allows to pass environment variables, which would not be available if the site was already exported.
+With this dockerfile you can manually change any of the defined values to build your own manager, pointing wherever you want it to point:
 
 ```sh
 # Pull the image
@@ -62,6 +39,13 @@ docker run --rm -it -e "REGISTER_URL=https://localhost:12345/registry" -v manage
 # Serve it
 docker run --rm -it -v manager-frontend:/usr/share/nginx/html:ro -p 8000:80 nginx
 ```
+
+If you only plan on serving the project, we create a set of images from this Dockerfile:
+
+- `latest` and `master`: These images are created from `master` branch and have the latest development updates. They point to our development environment and use goerli for the ethereum transactions.
+- `stage`: these are created from `stage` and have a more stable version than `master`, but still not production ready. They point to our stage environment and use `xdai` for the ethereum transactions
+- `release-*`: the most stable ones, used specifically for production environments. They point to our production infrastructure and use xdai for the ethereum transactions.
+- All of the previous images have an `app-` alias, which is the same build but without the bootnodes RW url set, meaning you can't use those images for things that require writing things to the blockchain (so they're only for viewing data)
 
 
 [next.config.js]: ./next.config.js
