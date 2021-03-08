@@ -84,7 +84,7 @@
         "insufficient_funds": "Not enough balance",
         "insufficient_funds_note": "To continue with the transaction you need to get some xDAI tokens.<br /> Copy the following address and get in touch with us: <code>{{address}}</code>",
         "invalid_claims_found": "Found {{ total }} invalid claims",
-        "invalid_email": "",
+        "invalid_email": "It must be a valid email",
         "invalid_format_contents": "The data does not seem to have a correct format",
         "invalid_request": "The requested data is not valid",
         "invalid_spreadsheet_data": "The entered data doesn't seem correct, please, check it.",
