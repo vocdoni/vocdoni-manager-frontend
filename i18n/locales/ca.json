@@ -37,16 +37,16 @@
         "back": "Torna enrere",
         "cancel": "Cancel·la",
         "copy_link": "Copia l'enllaç",
-        "create": "",
+        "create": "Crea",
         "edit": "Edita",
         "ok": "D'acord",
         "remove": "Elimina",
-        "retry": "",
+        "retry": "Reintenta",
         "save": "Desa",
         "saving": "Desant"
     },
     "confirm": "Confirma",
-    "confirm_delete": "",
+    "confirm_delete": "Segur que vols eliminar {{ name }}?",
     "connected": "Connectat",
     "connecting": "Connectant a la xarxa. Espera si et plau...",
     "entity": {
@@ -97,12 +97,12 @@
         "wrong_password": "No s'ha pogut desblocar la cartera. Si et plau, revisa la teva contrasenya."
     },
     "field": {
-        "actions": "",
+        "actions": "Accions",
         "email": "Email",
         "last_name": "Cognom",
         "name": "Nom",
-        "tags": "",
-        "validated": ""
+        "tags": "Etiquetes",
+        "validated": "Validat"
     },
     "image_uploader": {
         "error": {
@@ -131,7 +131,7 @@
             "row_add": "+ Afegeix una filera",
             "row_delete": "- Esborra una filera"
         },
-        "census_name": "",
+        "census_name": "Indica el nom del cens",
         "import": {
             "confirm": "Confirma la importació",
             "confirm_note": "Si els continguts de la vista prèvia es veuen bé, fes clic al botó per a continuar.",
@@ -225,7 +225,7 @@
             "emails": "Hi ha hagut un error enviant els e-mails, però.",
             "ends_soon": "",
             "generic": "No s'han pogut carregar un o més processos",
-            "invalid_dates": "",
+            "invalid_dates": "Les dates no són vàlides",
             "invalid_frame": "",
             "invalid_private_key": "L'enllaç conté una clau invàlida",
             "missing_title": "",
