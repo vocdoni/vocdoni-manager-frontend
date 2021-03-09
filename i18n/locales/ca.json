@@ -87,12 +87,12 @@
         "invalid_email": "Ha de ser un e-mail vàlid",
         "invalid_format_contents": "Les dades no semblen tenir un format vàlid",
         "invalid_request": "Les dades de la petició no són vàlides",
-        "invalid_spreadsheet_data": "Les dades no semblen correctes, si et plau, revisa-les.",
+        "invalid_spreadsheet_data": "Les dades no semblen correctes, si us plau, revisa-les.",
         "invalid_uri": "Ha de ser un enllaç http o ipfs",
         "not_found": "No s'ha trobat",
         "oops": "Apa, això és un error.",
         "retry": "Intenta-ho de nou",
-        "timeout": "La petició ha trigat massa",
+        "timeout": "La petició ha tardat massa",
         "update": "Hi ha hagut un error actualitzant les dades de la blockchain. Refresca la pàgina si no veus que les seves dades no canvien.",
         "wrong_password": "No s'ha pogut desblocar la cartera. Si et plau, revisa la teva contrasenya."
     },
@@ -235,7 +235,7 @@
             "select_all": "Indica el teu vot per a totes les preguntes",
             "starts_soon": "La data d'inici ha de ser d'aquí a uns minuts",
             "status": "No s'ha pogut carregar l'estat del procés",
-            "timeout": "La informació dels processos ha trigat massa en carregar",
+            "timeout": "La informació dels processos ha trigat massa a carregar",
             "wrong_value": "El valor per aquesta resposta no representa una opció vàlida"
         },
         "field": {
@@ -285,7 +285,7 @@
         "login_uri": "URI d'accés",
         "media": "Mitjans",
         "new": "Nou procés",
-        "nullifier_note": "Si et plau, desa el codi següent com a comprovant únic de l'emissió del teu vot:",
+        "nullifier_note": "Si us plau, desa el codi següent com a comprovant únic de l'emissió del teu vot:",
         "question_number": "Pregunta {{ num }}",
         "results": "Resultats",
         "start_block": "Bloc inicial",
