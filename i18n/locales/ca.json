@@ -18,10 +18,10 @@
             "missing_password": "La contrasenya cal per desxifrar-ho tot!",
             "missing_seed": "La llavor és obligatòria",
             "not_found_description": "Sembla que el teu compte no està vinculat a cap entitat. Vols crear-la ara?",
-            "password_missmatch": "The two passwords that you entered do not match!"
+            "password_missmatch": "Les contrasenyes que has introduït no coincideixen!"
         },
         "import_file_restriction": "Només es permeten fitxers .json",
-        "import_finish": "Ara finalitza el procés indicant un nom per a l'entitat i la contrasenya del teu joc de claus",
+        "import_finish": "Finalitza el procés indicant un nom per a l'entitat i la contrasenya del teu joc de claus.",
         "import_title": "Importa un compte",
         "manually_set": "O introdueix manualment els teus detalls a continuació:",
         "name": "Nom",
@@ -57,7 +57,7 @@
         "error": {
             "loading": "Hi ha hagut un error carregant les dades de l'entitat",
             "not_found": "No s'ha trobat l'entitat",
-            "not_found_description": "The entity you are looking for cannot be found"
+            "not_found_description": "No s'ha pogut trobar l'entitat a la que intentaves accedir"
         },
         "field": {
             "callback_secret": "Callback secret",
@@ -78,7 +78,7 @@
     "error": {
         "cannot_connect": "No s'ha pogut establir connexió",
         "cannot_read_entity_metadata": "No s'han pogut llegir les metadades de l'entitat",
-        "connection": "",
+        "connection": "Ui! Hi ha hagut un problema mentre connectàvem als nostres serveis.",
         "file_format_unknown": "El fitxer pujat no té el format esperat",
         "general": "S'ha trobat un error inesperat",
         "insufficient_funds": "No hi ha prou saldo",
@@ -223,17 +223,17 @@
             "census_invalid": "Les dades del cens no són vàlides",
             "census_undefined": "Error identificant el cens escollit",
             "emails": "Hi ha hagut un error enviant els e-mails, però.",
-            "ends_soon": "",
+            "ends_soon": "La data de fi ha de ser posterior a la d'inici",
             "generic": "No s'han pogut carregar un o més processos",
             "invalid_dates": "Les dates no són vàlides",
-            "invalid_frame": "",
+            "invalid_frame": "La data d'inici ha de ser anterior a la de fi",
             "invalid_private_key": "L'enllaç conté una clau invàlida",
-            "missing_title": "",
+            "missing_title": "El procés ha de tenir un títol",
             "not_found": "No s'ha trobat l'entitat o el procés",
             "not_found_description": "O bé l'entitat o bé el procés als que intentes accedir no s'han pogut trobar",
             "not_in_census": "No formes part del cens",
             "select_all": "Indica el teu vot per a totes les preguntes",
-            "starts_soon": "",
+            "starts_soon": "La data d'inici ha de ser d'aquí a uns minuts",
             "status": "No s'ha pogut carregar l'estat del procés",
             "timeout": "La informació dels processos ha trigat massa en carregar",
             "wrong_value": "El valor per aquesta resposta no representa una opció vàlida"
@@ -245,13 +245,13 @@
             "census_uri_note": "O bé una URI d'un arbre merkel, o una URI d'alguna altra CA",
             "description": "Descripció",
             "docs_button": "Botó de documentació",
-            "docs_button_note": "",
-            "end": "",
-            "import_census": "",
-            "import_census_note": "",
-            "import_spreadsheet": "",
-            "import_spreadsheet_note": "",
-            "live_streaming": "",
+            "docs_button_note": "Mostrarà un botó de Documentació enllaçant on vulguis.",
+            "end": "Fi del procés",
+            "import_census": "Importar cens",
+            "import_census_note": "Indica manualment l'arrel i la URI del cens (per a votació de CA; no s'enviaran correus ni altres processos automatitzats)",
+            "import_spreadsheet": "Full de càlcul (Autent. per atributs)",
+            "import_spreadsheet_note": "Els votants s'autenticaran completant un formulari creat a partir de les columnes de la taula/full de càlcul. Aquest mètode no permet emprar l'App per votar. El full de càlcul no arriba a carregar-se mai, només es fa servir una empremta dels seus atributs per a l'autenticació.",
+            "live_streaming": "Retransmissió en directe",
             "participants": "Participants",
             "participants_all": "Tots els membres",
             "period": "Període",
@@ -259,18 +259,18 @@
             "qna_button": "Botó de precs i preguntes",
             "qna_button_note": "Mostrarà un botó de precs i preguntes enllaçant on vulguis",
             "questions": {
-                "blank": "",
-                "no": "",
+                "blank": "En blanc",
+                "no": "No",
                 "title": "Preguntes",
-                "yes": ""
+                "yes": "Sí"
             },
             "real_time_results": "Resultats en temps real",
-            "real_time_results_note": "",
-            "start": "",
+            "real_time_results_note": "Els resultats de la votació es podran veure abans que finalitzi el procés.",
+            "start": "Inici del procés",
             "title": "Títol del procés",
-            "voting_channels": "",
-            "web_voting": "",
-            "web_voting_note": ""
+            "voting_channels": "Canals de votació",
+            "web_voting": "Votació via web",
+            "web_voting_note": "Permet votar des del web a usuaris no registrats mitjançant un enllaç de votació que rebran al seu e-mail. Els usuaris registrats hauran de votar mitjançant l'App de totes maneres."
         },
         "filter": {
             "active": "Només els actius",
@@ -305,10 +305,10 @@
             "vote_registered": "El teu vot ha estat registrat"
         },
         "step": {
-            "balance": "",
-            "census": "",
-            "create": "",
-            "emails": ""
+            "balance": "Verificar balanç",
+            "census": "Crear cens",
+            "create": "Crear procés",
+            "emails": "Enviar e-mails"
         },
         "submitted": "El teu vot ha estat registrat",
         "submitted_note": "El teu vot s'ha rebut i ha estat registrat correctament",
