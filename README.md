@@ -1,8 +1,9 @@
 # Vocdoni Manager
 
-[![GitHub stars](https://img.shields.io/github/stars/vocdoni/vocdoni-manager-frontend)][stargazers]
-[![GitHub issues](https://img.shields.io/github/issues/vocdoni/vocdoni-manager-frontend)][issues]
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/vocdoni/vocdoni-manager-frontend/Main)][actions]
+[![GitHub stars][stargazers badge]][stargazers]
+[![GitHub issues][issues badge]][issues]
+[![GitHub Workflow Status][actions badge]][actions]
+[![i18n status][i18n badge]][weblate project]
 
 Static web site project to manage Vocdoni entities and explore their contents. It also defines the mobile app settings for deep link handling and allows voting via web.
 
@@ -30,14 +31,14 @@ The dockerfile provided builds and serves the static files of the manager.
 With this dockerfile you can manually change any of the defined values to build your own manager, pointing wherever you want it to point:
 
 ```sh
-# Pull the image
-docker volume create manager-frontend
-# Create a volume to hold the frontend files
-docker pull vocdoni/manager-frontend:release
-# Compile the frontend with your own settings
-docker run --rm -it -e "REGISTER_URL=https://localhost:12345/registry" -v manager-frontend:/app/build vocdoni/manager-frontend:release
-# Serve it
-docker run --rm -it -v manager-frontend:/usr/share/nginx/html:ro -p 8000:80 nginx
+docker build \
+    --build-arg=VOCDONI_ENVIRONMENT=dev \
+    --build-arg=ETH_NETWORK_ID=goerli \
+    --build-arg=REGISTER_URL=https://manager.dev.vocdoni.net/api/registry \
+    --build-arg=ACTION_VISIBILITY_URL=https://manager.dev.vocdoni.net/api/registry
+    -t custom-manager-build
+# serve it!
+docker run --rm -it -p 8000:80 custom-manager-build
 ```
 
 If you only plan on serving the project, we create a set of images from this Dockerfile:
@@ -47,6 +48,15 @@ If you only plan on serving the project, we create a set of images from this Doc
 - `release-*`: the most stable ones, used specifically for production environments. They point to our production infrastructure and use xdai for the ethereum transactions.
 - All of the previous images have an `app-` alias, which is the same build but without the bootnodes RW url set, meaning you can't use those images for things that require writing things to the blockchain (so they're only for viewing data)
 
+```sh
+# Serve any of the alread built images with a single line
+docker run --rm -it -p 8000:80 vocdoni/vocdoni-manager-frontend:app-latest
+```
+
+[actions badge]: https://img.shields.io/github/workflow/status/vocdoni/vocdoni-manager-frontend/Main.svg
+[i18n badge]: https://hosted.weblate.org/widgets/vocdoni/-/manager-frontend/svg-badge.svg
+[issues badge]: https://img.shields.io/github/issues/vocdoni/vocdoni-manager-frontend.svg
+[stargazers badge]: https://img.shields.io/github/stars/vocdoni/vocdoni-manager-frontend.svg
 
 [next.config.js]: ./next.config.js
 [env-config.js]: ./env-config.js
@@ -54,3 +64,4 @@ If you only plan on serving the project, we create a set of images from this Doc
 [issues]: https://github.com/vocdoni/vocdoni-manager-frontend/issues
 [stargazers]: https://github.com/vocdoni/vocdoni-manager-frontend/stargazers
 [actions]: https://github.com/vocdoni/vocdoni-manager-frontend/actions
+[weblate project]: https://hosted.weblate.org/projects/vocdoni/manager-frontend/
