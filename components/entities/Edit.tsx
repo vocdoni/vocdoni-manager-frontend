@@ -32,6 +32,7 @@ type EditState = {
     loaded: boolean,
     saving: boolean,
     fields: EditFields,
+    password: string,
 }
 
 export default class Edit extends Component<EditProps, EditState> {
@@ -52,6 +53,7 @@ export default class Edit extends Component<EditProps, EditState> {
             callbackUrl: '',
             callbackSecret: '',
         },
+        password: '',
     }
 
     async componentDidMount() : Promise<void> {
@@ -113,29 +115,19 @@ export default class Edit extends Component<EditProps, EditState> {
                 avatar: this.props.entity.media.avatar,
                 header: this.props.entity.media.header,
             },
+            password: '',
         })
     }
 
     async submit() : Promise<void> {
         this.setState({saving: true})
 
+        if  (this.state.password.length) {
+            throw new Error(i18n.t('error.general'))
+        }
+
         const values = this.state.fields
         const address = this.context.web3Wallet.getAddress()
-        const balance = await this.context.web3Wallet.getProvider().getBalance(address)
-
-        if (balance.isZero()) {
-            Modal.warning({
-                title: i18n.t('error.insufficient_funds'),
-                icon: <Ficon icon='AlertCircle' />,
-                content: <span dangerouslySetInnerHTML={{
-                    __html: i18n.t('error.insufficient_funds_note', {address})
-                }} />,
-                onOk: () => {
-                    this.setState({saving: false})
-                },
-            })
-            return
-        }
 
         const entity : EntityMetadata = {
             ...this.props.entity,
@@ -189,6 +181,22 @@ export default class Edit extends Component<EditProps, EditState> {
 
             // Updated such centralized metadata
             await this.context.managerBackendGateway.sendRequest(request as any, wallet);
+            
+            const hasGas = await this.context.web3Wallet.waitForGas()
+
+            if (!hasGas) {
+                Modal.warning({
+                    title: i18n.t('error.insufficient_funds'),
+                    icon: <Ficon icon='AlertCircle' />,
+                    content: <span dangerouslySetInnerHTML={{
+                        __html: i18n.t('error.insufficient_funds_note', {address})
+                    }} />,
+                    onOk: () => {
+                        this.setState({saving: false})
+                    },
+                })
+                return
+            }
 
             // Update decentralized one
             const gateway = await getGatewayClients()
@@ -279,6 +287,13 @@ export default class Edit extends Component<EditProps, EditState> {
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         this.setFieldValue('callbackSecret', e.target.value)
                                     }
+                                />
+                            </Form.Item> 
+                            <Form.Item label='password' style={{ display: 'none'}}>
+                                <Input 
+                                    type='text'
+                                    tabIndex={-1}
+                                    autoComplete='new-password'
                                 />
                             </Form.Item>
                             <SaveButton saving={this.state.saving} />

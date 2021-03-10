@@ -115,13 +115,9 @@ export default class Web3Wallet {
 
         console.log('Waiting to get some gas to: ', await this.wallet.getAddress())
 
-        //
-        // TODO: Sends some ETH to the active wallet
-        //
-
         let counter = 1
         while (true) {
-            if (counter > 50) throw new Error('Timeout waiting for user to get gas')
+            if (counter > 50) return false
 
             if (+(await this.getBalance()) > 0) {
                 return true
