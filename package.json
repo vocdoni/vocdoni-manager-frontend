@@ -59,7 +59,6 @@
     "react-i18next": "^11.8.8",
     "react-markdown": "^4.3.1",
     "react-player": "^2.7.0",
-    "react-svg-spinner": "^1.0.4",
     "react-truncate-html": "^0.1.7",
     "sanitize-html": "^1.27.1",
     "typescript": "^4.1.3",

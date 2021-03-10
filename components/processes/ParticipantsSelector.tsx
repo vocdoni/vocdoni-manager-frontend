@@ -9,7 +9,7 @@ import { VotingFormImportData } from '../../lib/types'
 import { parseSpreadsheetData } from '../../lib/import-utils'
 import i18n from '../../i18n'
 import Ficon from '../ficon'
-import Spinner from "react-svg-spinner"
+import Loading from '../loading'
 
 export type Census = {
     root: string,
@@ -21,7 +21,7 @@ export type ParticipantsSelectorState = {
     fileData: VotingFormImportData,
     selectedFile: RcFile,
     census: Census,
-    processingFile: boolean
+    processingFile: boolean,
 }
 
 export type ParticipantsSelectorProps = {
@@ -52,7 +52,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             root: null,
             uri: null,
         },
-        processingFile: false
+        processingFile: false,
     }
 
     get options(): UnderlyingOptionValue[] {
@@ -93,28 +93,29 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         this.props.onChange(this.state.selected)
     }
 
-    beforeUpload(file: RcFile): boolean {
+    async beforeUpload(file: RcFile): Promise<boolean> {
         this.setState({ processingFile: true })
-        this.processImport(file).then(() => {
-            this.setState({ processingFile: false })
-        })
 
-        this.setState({ selectedFile: file })
+        await this.processImport(file)
+
+        this.setState({
+            selectedFile: file,
+            processingFile: false,
+        })
 
         return false
     }
 
-    processImport(file: RcFile): Promise<void> {
-        return parseSpreadsheetData(this.context.address, file).then(fileData => {
-            if (!fileData) {
-                message.error(i18n.t('error.file_format_unknown'))
-                return
-            }
+    async processImport(file: RcFile): Promise<void> {
+        const fileData = await parseSpreadsheetData(this.context.address, file)
+        if (!fileData) {
+            message.error(i18n.t('error.file_format_unknown'))
+            return
+        }
 
-            this.setState({ fileData })
+        this.setState({ fileData })
 
-            this.props.onChange(this.state.selected, fileData)
-        })
+        this.props.onChange(this.state.selected, fileData)
     }
 
     onChange(selected: string): void {
@@ -132,12 +133,6 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         this.setState(state)
 
         this.props.onChange(this.state.selected, state.census)
-    }
-
-    renderLoading() {
-        return <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-            {i18n.t('loading')} &nbsp;<Spinner />
-        </div>
     }
 
     render(): ReactNode {
@@ -164,10 +159,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
                         <small>
                             {i18n.t('process.field.import_spreadsheet_note')}
                         </small>
-                        <If condition={this.state.processingFile}>
-                            {this.renderLoading()}
-                        </If>
-                        <If condition={!this.state.processingFile}>
+                        <Loading loading={this.state.processingFile}>
                             <Upload.Dragger
                                 className='inline-uploader'
                                 beforeUpload={this.beforeUpload.bind(this)}
@@ -182,9 +174,9 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
                                 </p>
                                 <p className="ant-upload-hint">
                                     (csv, xls, xlsx, ods...)
-                            </p>
+                                </p>
                             </Upload.Dragger>
-                        </If>
+                        </Loading>
                     </div>
                 </If>
                 <If condition={this.state.selected === 'manual'}>
