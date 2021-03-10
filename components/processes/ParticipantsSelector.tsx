@@ -9,6 +9,7 @@ import { VotingFormImportData } from '../../lib/types'
 import { parseSpreadsheetData } from '../../lib/import-utils'
 import i18n from '../../i18n'
 import Ficon from '../ficon'
+import Spinner from "react-svg-spinner"
 
 export type Census = {
     root: string,
@@ -20,6 +21,7 @@ export type ParticipantsSelectorState = {
     fileData: VotingFormImportData,
     selectedFile: RcFile,
     census: Census,
+    processingFile: boolean
 }
 
 export type ParticipantsSelectorProps = {
@@ -50,9 +52,10 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             root: null,
             uri: null,
         },
+        processingFile: false
     }
 
-    get options() : UnderlyingOptionValue[] {
+    get options(): UnderlyingOptionValue[] {
         const options = [
             {
                 label: i18n.t('process.field.participants_all'),
@@ -86,49 +89,58 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         return options
     }
 
-    componentDidMount() : void {
+    componentDidMount(): void {
         this.props.onChange(this.state.selected)
     }
 
-    beforeUpload(file: RcFile) : boolean {
-        this.processImport(file)
+    beforeUpload(file: RcFile): boolean {
+        this.setState({ processingFile: true })
+        this.processImport(file).then(() => {
+            this.setState({ processingFile: false })
+        })
 
-        this.setState({selectedFile: file})
+        this.setState({ selectedFile: file })
 
         return false
     }
 
-    async processImport(file: RcFile) : Promise<void> {
-        const fileData : VotingFormImportData = await parseSpreadsheetData(this.context.address, file)
+    processImport(file: RcFile): Promise<void> {
+        return parseSpreadsheetData(this.context.address, file).then(fileData => {
+            if (!fileData) {
+                message.error(i18n.t('error.file_format_unknown'))
+                return
+            }
 
-        if (!fileData) {
-            message.error(i18n.t('error.file_format_unknown'))
-            return
-        }
+            this.setState({ fileData })
 
-        this.setState({fileData})
-
-        this.props.onChange(this.state.selected, fileData)
+            this.props.onChange(this.state.selected, fileData)
+        })
     }
 
-    onChange(selected: string) : void {
-        this.setState({selected})
+    onChange(selected: string): void {
+        this.setState({ selected })
         this.props.onChange(selected)
     }
 
-    onFieldChange(field: string, {target: {value}}: React.ChangeEvent<HTMLInputElement>) : void {
+    onFieldChange(field: string, { target: { value } }: React.ChangeEvent<HTMLInputElement>): void {
         this.setFieldValue(field, value)
     }
 
-    setFieldValue(field: string, value: string) : void {
-        const state = {...this.state}
+    setFieldValue(field: string, value: string): void {
+        const state = { ...this.state }
         str(field, value, state)
         this.setState(state)
 
         this.props.onChange(this.state.selected, state.census)
     }
 
-    render() : ReactNode {
+    renderLoading() {
+        return <div style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+            {i18n.t('loading')} &nbsp;<Spinner />
+        </div>
+    }
+
+    render(): ReactNode {
         const files = []
         if (this.state.selectedFile) {
             files.push(this.state.selectedFile)
@@ -152,22 +164,27 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
                         <small>
                             {i18n.t('process.field.import_spreadsheet_note')}
                         </small>
-                        <Upload.Dragger
-                            className='inline-uploader'
-                            beforeUpload={this.beforeUpload.bind(this)}
-                            fileList={files}
-                            onRemove={() => this.setState({
-                                selectedFile: null,
-                                fileData: null,
-                            })}
-                        >
-                            <p className="ant-upload-text">
-                                <Ficon icon='FilePlus' /> {i18n.t('uploader.spreadsheets_note')}
+                        <If condition={this.state.processingFile}>
+                            {this.renderLoading()}
+                        </If>
+                        <If condition={!this.state.processingFile}>
+                            <Upload.Dragger
+                                className='inline-uploader'
+                                beforeUpload={this.beforeUpload.bind(this)}
+                                fileList={files}
+                                onRemove={() => this.setState({
+                                    selectedFile: null,
+                                    fileData: null,
+                                })}
+                            >
+                                <p className="ant-upload-text">
+                                    <Ficon icon='FilePlus' /> {i18n.t('uploader.spreadsheets_note')}
+                                </p>
+                                <p className="ant-upload-hint">
+                                    (csv, xls, xlsx, ods...)
                             </p>
-                            <p className="ant-upload-hint">
-                                (csv, xls, xlsx, ods...)
-                            </p>
-                        </Upload.Dragger>
+                            </Upload.Dragger>
+                        </If>
                     </div>
                 </If>
                 <If condition={this.state.selected === 'manual'}>
