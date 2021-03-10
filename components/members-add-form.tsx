@@ -4,6 +4,7 @@ import { Rule } from 'antd/lib/form'
 import { object as toObject } from 'dot-object'
 
 import { MemberImportData } from '../lib/types'
+import i18n from '../i18n'
 import { IAppContext } from './app-context'
 
 type MembersAddFormState = {
@@ -20,7 +21,7 @@ const MemberAddRow = (props: any) : JSX.Element => {
             <Col span={7}>
                 <Form.Item
                     name={`members[${props.index}].firstName`}
-                    label='Name'
+                    label={i18n.t('field.name')}
                     required
                     rules={[required]}
                 >
@@ -30,7 +31,7 @@ const MemberAddRow = (props: any) : JSX.Element => {
             <Col span={8}>
                 <Form.Item
                     name={`members[${props.index}].lastName`}
-                    label='Last name'
+                    label={i18n.t('field.last_name')}
                     required
                     rules={[required]}
                 >
@@ -40,10 +41,10 @@ const MemberAddRow = (props: any) : JSX.Element => {
             <Col span={9}>
                 <Form.Item
                     name={`members[${props.index}].email`}
-                    label='Email'
+                    label={i18n.t('field.email')}
                     required
                     rules={[
-                        {type: 'email', message: 'Must be a valid e-mail'},
+                        {type: 'email', message: i18n.t('error.invalid_email')},
                         required,
                     ]}
                 >
@@ -112,14 +113,20 @@ class MembersAddForm extends Component<MembersAddFormProps, MembersAddFormState>
                 <Row style={{marginTop: '1em', width: '100%'}} justify='space-between'>
                     <Col span={12}>
                         <Button type='text' onClick={this.onAdd.bind(this)}>
-                            + Add a row
+                            {i18n.t('members.btn.row_add')}
                         </Button>
-                        <Button type='text' onClick={this.onDelete.bind(this)} disabled={this.state.members.length <= 1}>
-                            - Delete row
+                        <Button
+                            type='text'
+                            onClick={this.onDelete.bind(this)}
+                            disabled={this.state.members.length <= 1}
+                        >
+                            {i18n.t('members.btn.row_delete')}
                         </Button>
                     </Col>
                     <Col span={12} style={{textAlign: 'right'}}>
-                        <Button type='primary' htmlType='submit'>Save</Button>
+                        <Button type='primary' htmlType='submit'>
+                            {i18n.t('btn.save')}
+                        </Button>
                     </Col>
                 </Row>
             </Form>

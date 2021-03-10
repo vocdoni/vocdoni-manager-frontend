@@ -7,7 +7,9 @@ import AppContext from '../../components/app-context'
 import If from '../../components/if'
 import { VotingFormImportData } from '../../lib/types'
 import { parseSpreadsheetData } from '../../lib/import-utils'
+import i18n from '../../i18n'
 import Ficon from '../ficon'
+import Loading from '../loading'
 
 export type Census = {
     root: string,
@@ -19,6 +21,7 @@ export type ParticipantsSelectorState = {
     fileData: VotingFormImportData,
     selectedFile: RcFile,
     census: Census,
+    processingFile: boolean,
 }
 
 export type ParticipantsSelectorProps = {
@@ -49,12 +52,13 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             root: null,
             uri: null,
         },
+        processingFile: false,
     }
 
-    get options() : UnderlyingOptionValue[] {
+    get options(): UnderlyingOptionValue[] {
         const options = [
             {
-                label: 'All members',
+                label: i18n.t('process.field.participants_all'),
                 value: 'all',
             }
         ]
@@ -67,7 +71,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             {
                 label: ((
                     <span>
-                        <Ficon icon='Download' /> From spreadsheet (Attribute auth.)
+                        <Ficon icon='Download' /> {i18n.t('process.field.import_spreadsheet')}
                     </span>
                 ) as unknown as string), // yes, seriously...
                 value: 'file',
@@ -75,7 +79,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             {
                 label: ((
                     <span>
-                        <Ficon icon='Download' /> Import census
+                        <Ficon icon='Download' /> {i18n.t('process.field.import_census')}
                     </span>
                 ) as unknown as string), // yes, seriously...
                 value: 'manual',
@@ -85,49 +89,53 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         return options
     }
 
-    componentDidMount() : void {
+    componentDidMount(): void {
         this.props.onChange(this.state.selected)
     }
 
-    beforeUpload(file: RcFile) : boolean {
-        this.processImport(file)
+    async beforeUpload(file: RcFile): Promise<boolean> {
+        this.setState({ processingFile: true })
 
-        this.setState({selectedFile: file})
+        await this.processImport(file)
+
+        this.setState({
+            selectedFile: file,
+            processingFile: false,
+        })
 
         return false
     }
 
-    async processImport(file: RcFile) : Promise<void> {
-        const fileData : VotingFormImportData = await parseSpreadsheetData(this.context.address, file)
-
+    async processImport(file: RcFile): Promise<void> {
+        const fileData = await parseSpreadsheetData(this.context.address, file)
         if (!fileData) {
-            message.error('Unknown file format uploaded')
+            message.error(i18n.t('error.file_format_unknown'))
             return
         }
 
-        this.setState({fileData})
+        this.setState({ fileData })
 
         this.props.onChange(this.state.selected, fileData)
     }
 
-    onChange(selected: string) : void {
-        this.setState({selected})
+    onChange(selected: string): void {
+        this.setState({ selected })
         this.props.onChange(selected)
     }
 
-    onFieldChange(field: string, {target: {value}}: React.ChangeEvent<HTMLInputElement>) : void {
+    onFieldChange(field: string, { target: { value } }: React.ChangeEvent<HTMLInputElement>): void {
         this.setFieldValue(field, value)
     }
 
-    setFieldValue(field: string, value: string) : void {
-        const state = {...this.state}
+    setFieldValue(field: string, value: string): void {
+        const state = { ...this.state }
         str(field, value, state)
         this.setState(state)
 
         this.props.onChange(this.state.selected, state.census)
     }
 
-    render() : ReactNode {
+    render(): ReactNode {
         const files = []
         if (this.state.selectedFile) {
             files.push(this.state.selectedFile)
@@ -136,7 +144,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
         return (
             <>
                 <div className='label-wrapper'>
-                    <label><Ficon icon='Users' /> Participants</label>
+                    <label><Ficon icon='Users' /> {i18n.t('process.field.participants')}</label>
                     <Select
                         dropdownClassName='reduced-select'
                         value={this.state.selected}
@@ -149,43 +157,43 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
                 <If condition={this.state.selected === 'file'}>
                     <div>
                         <small>
-                            Voters will be authenticated completing a form with the
-                            attributes of the spreadsheet. This method does not allow
-                            to use the App to vote. The spreadsheet file is never
-                            uploaded and only a fingerprint of the user attributes is
-                            used for the authentication.
+                            {i18n.t('process.field.import_spreadsheet_note')}
                         </small>
-                        <Upload.Dragger
-                            className='inline-uploader'
-                            beforeUpload={this.beforeUpload.bind(this)}
-                            fileList={files}
-                            onRemove={() => this.setState({
-                                selectedFile: null,
-                                fileData: null,
-                            })}
-                        >
-                            <p>
-                                <Ficon icon='FilePlus' /> Drag &amp; drop ot click to browse files (csv, xls, xlsx, ods...)
-                            </p>
-                        </Upload.Dragger>
+                        <Loading loading={this.state.processingFile}>
+                            <Upload.Dragger
+                                className='inline-uploader'
+                                beforeUpload={this.beforeUpload.bind(this)}
+                                fileList={files}
+                                onRemove={() => this.setState({
+                                    selectedFile: null,
+                                    fileData: null,
+                                })}
+                            >
+                                <p className="ant-upload-text">
+                                    <Ficon icon='FilePlus' /> {i18n.t('uploader.spreadsheets_note')}
+                                </p>
+                                <p className="ant-upload-hint">
+                                    (csv, xls, xlsx, ods...)
+                                </p>
+                            </Upload.Dragger>
+                        </Loading>
                     </div>
                 </If>
                 <If condition={this.state.selected === 'manual'}>
                     <div>
                         <small>
-                            Manually set the census root and uri (for CA voting, won't
-                            send e-mails nor other automated processes)
+                            {i18n.t('process.field.import_census_note')}
                         </small>
-                        <Form.Item label='Census Root'>
+                        <Form.Item label={i18n.t('process.field.census_root')}>
                             <Input
                                 placeholder='0x038f1d41d1c...'
                                 onChange={this.onFieldChange.bind(this, 'census.root')}
                                 value={this.state.census.root}
                             />
                         </Form.Item>
-                        <Form.Item label='Census Uri'>
+                        <Form.Item label={i18n.t('process.field.census_uri')}>
                             <Input
-                                placeholder='Either a merkle tree uri or another CA endpoint url'
+                                placeholder={i18n.t('process.field.census_uri_note')}
                                 onChange={this.onFieldChange.bind(this, 'census.uri')}
                                 value={this.state.census.uri}
                             />

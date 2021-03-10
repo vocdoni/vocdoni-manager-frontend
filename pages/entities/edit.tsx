@@ -62,7 +62,7 @@ class EntityView extends Component<undefined, State> {
         }
         catch (err) {
             this.setState({ loading: false })
-            message.error('Could not read the entity metadata')
+            message.error(i18n.t('error.cannot_read_entity_metadata'))
         }
     }
 

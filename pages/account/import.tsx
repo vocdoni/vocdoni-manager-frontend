@@ -11,6 +11,7 @@ import { FileReaderPromise } from '../../lib/file-utils'
 import { getGatewayClients } from '../../lib/network'
 import AppContext, { IAppContext } from '../../components/app-context'
 import If from '../../components/if'
+import i18n from '../../i18n'
 
 const AccountImportPage = () => {
     // Get the global context and pass it to our stateful component
@@ -33,23 +34,29 @@ const ImportFormFields = (props: ImportFormProps) => {
 
     return <>
         <If condition={!hasBackup.seed}>
-            <p>Or manually set your details below:</p>
+            <p>{i18n.t('account.manually_set')}</p>
         </If>
         <If condition={hasBackup.seed}>
-            <p>Now finish the process by setting an entity name and the expected password for the key pair.</p>
+            <p>{i18n.t('account.import_finish')}</p>
         </If>
 
-        <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input an account name!' }]}>
+        <Form.Item label={i18n.t('account.name')} name='name' rules={[
+            { required: true, message: i18n.t('account.error.missing_name') }
+        ]}>
             <Input />
         </Form.Item>
 
         <If condition={!hasBackup.seed}>
-            <Form.Item label="Account seed" name="seed" rules={[{ required: true, message: 'Please input the seed!' }]}>
+            <Form.Item label={i18n.t('account.seed')} name='seed' rules={[
+                { required: true, message: i18n.t('account.error.missing_seed') }
+            ]}>
                 <Input.Password />
             </Form.Item>
         </If>
 
-        <Form.Item label="Password" name="passphrase" rules={[{ required: true, message: 'Please input the Password!' }]}>
+        <Form.Item label={i18n.t('login.password')} name='passphrase' rules={[
+            { required: true, message: i18n.t('account.error.missing_password') }
+        ]}>
             <Input.Password />
         </Form.Item>
     </>
@@ -59,8 +66,8 @@ class AccountImport extends Component<IAppContext> {
     state = {
         seed: '',
     }
+
     async componentDidMount() {
-        // this.props.setTitle("Vocdoni")
         this.props.setMenuVisible(false)
     }
 
@@ -72,7 +79,7 @@ class AccountImport extends Component<IAppContext> {
             await this.props.web3Wallet.load(vals.name, vals.passphrase)
             this.props.onNewWallet(this.props.web3Wallet.getWallet())
         } catch (e) {
-            message.error('An error ocurred trying import the account. Please, try it again', 3)
+            message.error(i18n.t('account.error.cannot_import'), 3)
             return false
         }
 
@@ -85,17 +92,16 @@ class AccountImport extends Component<IAppContext> {
             Router.push(`/entities/edit/#/${address}`)
         } catch (e) {
             Modal.confirm({
-                title: "Entity not found",
+                title: i18n.t('entity.error.not_found'),
                 icon: <ExclamationCircleOutlined />,
-                content: "It looks like your account is not linked to an existing entity. Do you want to create it now?",
-                okText: "Create Entity",
-                okType: "primary",
-                cancelText: "Not now",
+                content: i18n.t('account.error.not_found_description'),
+                okText: i18n.t('entity.btn.create'),
+                okType: 'primary',
+                cancelText: 'Not now',
                 onOk() {
-                    Router.push("/entities/new")
+                    Router.push('/entities/new')
                 },
                 onCancel() {
-                    // Router.reload()
                     self.setState({ entityLoading: false })
                 },
             })
@@ -120,29 +126,35 @@ class AccountImport extends Component<IAppContext> {
             wrapperCol: { offset: 8, span: 10 },
         }
 
-        return <div id="index">
-            <Row justify="center" align="middle">
+        return <div id='index'>
+            <Row justify='center' align='middle'>
                 <Col xs={24} sm={18} md={10}>
-                    <Card title="Import and unlock an account" className="card">
+                    <Card title={i18n.t('account.import_title')} className='card'>
                         <Form {...layout} onFinish={values => this.onFinish(values)}>
                             <If condition={!this.state.seed.length}>
                                 <Dragger
                                     beforeUpload={this.beforeUpload.bind(this)}
-                                    accept={"application/json"}
+                                    accept={'application/json'}
                                     multiple={false}
                                 >
-                                    <p className="ant-upload-drag-icon">
+                                    <p className='ant-upload-drag-icon'>
                                         <InboxOutlined />
                                     </p>
-                                    <p className="ant-upload-text">Click or drag your backup file here for easy import</p>
-                                    <p className="ant-upload-hint">Only .json files are supported</p>
+                                    <p className='ant-upload-text'>
+                                        {i18n.t('account.drag_to_import')}
+                                    </p>
+                                    <p className='ant-upload-hint'>
+                                        {i18n.t('account.import_file_restriction')}
+                                    </p>
                                 </Dragger>
                                 <hr style={{margin: '20px 0'}} />
                             </If>
                             <ImportFormFields {...this.props} values={this.state} />
 
                             <Form.Item {...tailLayout}>
-                                <Button type="primary" htmlType="submit">Import and log in</Button>
+                                <Button type='primary' htmlType='submit'>
+                                    {i18n.t('account.btn.import')}
+                                </Button>
                             </Form.Item>
                         </Form>
                     </Card>

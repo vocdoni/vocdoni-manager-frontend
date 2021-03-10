@@ -4,7 +4,6 @@ import React, { Component, CSSProperties, ReactNode } from 'react'
 
 import i18n from '../i18n'
 import Ficon from './ficon'
-
 import Image, { ImageProps } from './image'
 import IPFSImageUpload from './ipfs-image-upload'
 
@@ -19,9 +18,17 @@ type ImageAndUploaderState = {
 }
 
 export default class ImageAndUploader extends Component<ImageAndUploaderProps, ImageAndUploaderState> {
+    uploaderRef: React.RefObject<IPFSImageUpload>
+
     state : ImageAndUploaderState = {
         isModalVisible: false,
         src: null,
+    }
+
+    constructor(props) {
+        super(props)
+
+        this.uploaderRef = React.createRef<IPFSImageUpload>()
     }
 
     componentDidMount() : void {
@@ -69,9 +76,9 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
 
         const isValid = isImageSet && /^(https?|ipfs):\/\//.test(this.state.src)
         const inputAttrs : FormItemProps = {}
-        if (!isValid) {
+        if (!isValid && !this.uploaderRef?.current?.state?.uploading) {
             inputAttrs.validateStatus = 'error'
-            inputAttrs.help = 'Must be either an http or an ipfs link'
+            inputAttrs.help = i18n.t('error.invalid_uri')
         }
         return (
             <div className={classes.join(' ')} style={style}>
@@ -95,6 +102,7 @@ export default class ImageAndUploader extends Component<ImageAndUploaderProps, I
                             onChange={(e) => this.setState({src: e.target.value})}
                             addonAfter={
                                 <IPFSImageUpload
+                                    ref={this.uploaderRef}
                                     onChange={({file}) => {
                                         let image = ''
                                         if (file.status === 'done') {

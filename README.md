@@ -1,8 +1,10 @@
 # Vocdoni Manager
 
-[![GitHub stars](https://img.shields.io/github/stars/vocdoni/vocdoni-manager-frontend)][stargazers]
-[![GitHub issues](https://img.shields.io/github/issues/vocdoni/vocdoni-manager-frontend)][issues]
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/vocdoni/vocdoni-manager-frontend/Main)][actions]
+[![GitHub stars][stargazers badge]][stargazers]
+[![GitHub issues][issues badge]][issues]
+[![GitHub Workflow Status][actions badge]][actions]
+[![Docker Image Size][docker size badge]][docker hub]
+[![i18n status][i18n badge]][weblate project]
 
 Static web site project to manage Vocdoni entities and explore their contents. It also defines the mobile app settings for deep link handling and allows voting via web.
 
@@ -19,54 +21,60 @@ A few management workflows need the signature of multiple transactions and paylo
 
 To mitigate this, the frontend creates a Standalone Web3 Wallet that is present in memory only. For it to be restored, users need the seed and the passphrase to unlock it.
 
-## Deep linking
-
-- `public/.well-known` needs to contain the latest versions of the files contained on the repo `client-mobile > linking > *`
-
 ## Environment variables
 
-At build time, the following env vars are read:
-
-- `NODE_ENV`
-    - When set to `production`, disabled the development mode
-- `ETH_NETWORK_ID`
-    - By default set to `xdai`
-- `BOOTNODES_URL_READ_ONLY`
-    - The bootnode URL used for regular user requests
-- `BOOTNODES_URL_RW`
-    - The bootnode URL used for entity related requests
-    - App is set in **read only mode** when this field's empty
-- `APP_LINKING_DOMAIN`
-    - The domain used for universal links triggering the app (if available)
-    - Set to `vocdoni.link` by default
-- `REGISTER_URL`
-    - The endpoint where new organizations will point app users to register to
-- `ACTION_VISIBILITY_URL`
-    - The endpoint where new organizations will tell app users to check their registration status
-
-Check the file [`env-config.js`][env-config.js] for a full featured list of the environment vars.
+Check the file [`env-config.js`][env-config.js] for a full featured list of the environment vars used when exporting the project.
 
 ## Dockerfile
+[![Docker Image Size][docker size badge]][docker hub]
 
-A Dockerfile is provided for convenience. The image it creates is not meant to serve the frontend, but to **export** it.
+The dockerfile provided builds and serves the static files of the manager.
 
-Exportation allows to pass environment variables, which would not be available if the site was already exported.
+With this dockerfile you can manually change any of the defined values to build your own manager, pointing wherever you want it to point:
 
 ```sh
-# Pull the image
-docker volume create manager-frontend
-# Create a volume to hold the frontend files
-docker pull vocdoni/manager-frontend:release
-# Compile the frontend with your own settings
-docker run --rm -it -e "REGISTER_URL=https://localhost:12345/registry" -v manager-frontend:/app/build vocdoni/manager-frontend:release
-# Serve it
-docker run --rm -it -v manager-frontend:/usr/share/nginx/html:ro -p 8000:80 nginx
+docker build \
+    --build-arg=VOCDONI_ENVIRONMENT=dev \
+    --build-arg=ETH_NETWORK_ID=goerli \
+    --build-arg=REGISTER_URL=https://manager.dev.vocdoni.net/api/registry \
+    --build-arg=ACTION_VISIBILITY_URL=https://manager.dev.vocdoni.net/api/registry
+    -t custom-manager-build .
+# serve it!
+docker run --rm -it -p 8000:80 custom-manager-build
 ```
 
+If you only plan on serving the project, we create a set of images from this Dockerfile:
+
+- `latest` and `master`: These images are created from `master` branch and have the latest development updates. They point to our development environment and use goerli for the ethereum transactions.
+- `stage`: these are created from `stage` and have a more stable version than `master`, but still not production ready. They point to our stage environment and use `xdai` for the ethereum transactions
+- `release-*`: the most stable ones, used specifically for production environments. They point to our production infrastructure and use xdai for the ethereum transactions.
+- All of the previous images have an `app-` alias, which is the same build but without the bootnodes RW url set, meaning you can't use those images for things that require writing things to the blockchain (so they're only for viewing data)
+
+```sh
+# Serve any of the alread built images with a single line
+docker run --rm -it -p 8000:80 vocdoni/vocdoni-manager-frontend:app-latest
+```
+
+## Translations
+[![i18n status][i18n badge]][weblate project]
+
+This project translations are mantained using weblate, you can help us translate the project to any language from our [weblate project][].
+
+When developing, you need to use `i18n.t('key.subkey.subsubkey')` for the messages to be translated, and then you can extract those to the json files by using `npm run i18n-extract`.
+
+The extractor generates `_old.json` files when it removes translations from the existing files, but these files should not be commited (they're actually ignored).
+
+[actions badge]: https://img.shields.io/github/workflow/status/vocdoni/vocdoni-manager-frontend/Main.svg
+[i18n badge]: https://hosted.weblate.org/widgets/vocdoni/-/manager-frontend/svg-badge.svg
+[issues badge]: https://img.shields.io/github/issues/vocdoni/vocdoni-manager-frontend.svg
+[stargazers badge]: https://img.shields.io/github/stars/vocdoni/vocdoni-manager-frontend.svg
+[docker size badge]: https://img.shields.io/docker/image-size/vocdoni/vocdoni-manager-frontend.svg?sort=date
 
 [next.config.js]: ./next.config.js
 [env-config.js]: ./env-config.js
 
+[docker hub]: https://hub.docker.com/r/vocdoni/vocdoni-manager-frontend
 [issues]: https://github.com/vocdoni/vocdoni-manager-frontend/issues
 [stargazers]: https://github.com/vocdoni/vocdoni-manager-frontend/stargazers
 [actions]: https://github.com/vocdoni/vocdoni-manager-frontend/actions
+[weblate project]: https://hosted.weblate.org/projects/vocdoni/manager-frontend/

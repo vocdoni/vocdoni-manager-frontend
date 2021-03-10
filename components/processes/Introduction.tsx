@@ -30,7 +30,6 @@ export default class Introduction extends Component<IntroductionProps, undefined
                     <Button
                         href={process.meta.requestsUrl}
                         type='primary'
-                        style={{marginTop: '2em'}}
                         target='_blank'
                         rel='noopener noreferrer nofollow'
                     >
@@ -41,7 +40,6 @@ export default class Introduction extends Component<IntroductionProps, undefined
                     <Button
                         href={process.meta.documentationUrl}
                         type='primary'
-                        style={{marginTop: '2em'}}
                         target='_blank'
                         rel='noopener noreferrer nofollow'
                     >
@@ -50,7 +48,6 @@ export default class Introduction extends Component<IntroductionProps, undefined
                 </If>
                 <Button
                     type='primary'
-                    style={{marginTop: '2em', marginLeft: 15}}
                     onClick={this.props.onGoToVoteClick.bind(this)}
                 >
                     {i18n.t('process.btn.goto_vote')}

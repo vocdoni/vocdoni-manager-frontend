@@ -40,12 +40,12 @@ export const downloadFileWithContents = (contents: string, settings?: FileDownlo
     element.remove()
 }
 
-export const sanitizeHtml = (html: MultiLanguage<string> | string) : string =>
-    sanitize(html, {allowedTags: sanitize.defaults.allowedTags.concat(['img', 'h1', 'h2'])})
+export const sanitizeHtml = (html: MultiLanguage<string> | string): string =>
+    sanitize(html, { allowedTags: sanitize.defaults.allowedTags.concat(['img', 'h1', 'h2']) })
 
 export const getRandomInt = (max = 10) => Math.floor(Math.random() * Math.floor(max))
 
-export const getRandomUnsplashImage = (size = '800x600') : string => {
+export const getRandomUnsplashImage = (size = '800x600'): string => {
     const categories = ['nature', 'architecture', 'pattern']
     const base = `https://source.unsplash.com/${size}/?`
 
@@ -86,24 +86,23 @@ export const toArray = (slice: any) => {
 }
 
 export const importedRowToString = (row: string[], entityId: string): string => {
-    return row.reduce((i, j) => { return i + j })  + entityId
+    return row.reduce((i, j) => { return i + j }) + entityId
 }
 
-export const extractDigestedPubKeyFromFormData = (data: string): {privKey: string, digestedHexClaim: string} => {
+export const extractDigestedPubKeyFromFormData = (data: string): { privKey: string, digestedHexClaim: string } => {
     // TODO implement spaces/accents/capitals conversion ?
     const bytes = ethers.utils.toUtf8Bytes(data)
     const hashed = ethers.utils.keccak256(bytes)
     const tempWallet = new ethers.Wallet(hashed)
-    const pubKey = tempWallet._signingKey().publicKey
     return {
         privKey: tempWallet.privateKey,
-        digestedHexClaim: CensusOffChainApi.digestPublicKey(pubKey),
+        digestedHexClaim: CensusOffChainApi.digestPublicKey(tempWallet.publicKey),
     }
 }
 
-export const isHex = (hex: string) : boolean => /^0x[0-9a-f]/i.test(hex)
+export const isHex = (hex: string): boolean => /^0x[0-9a-f]/i.test(hex)
 
-export const findHexId = (id: string) => (sid: string) : boolean => {
+export const findHexId = (id: string) => (sid: string): boolean => {
     const idIsHex = isHex(id)
     const sidIsHex = isHex(sid)
 
@@ -122,7 +121,7 @@ export const findHexId = (id: string) => (sid: string) : boolean => {
  *
  * @param path The path to be appended
  */
-export const appLink = (path: string) : string => {
+export const appLink = (path: string): string => {
     const { location } = window
 
     if (/^manager/.test(location.hostname)) {
@@ -138,7 +137,7 @@ export const appLink = (path: string) : string => {
  * @param start Begining range number
  * @param end End range number
  */
-export const range = (start: number, end: number) : number[] => {
+export const range = (start: number, end: number): number[] => {
     const result: number[] = []
     for (let i = start; i < end; i++) {
         result.push(i)
@@ -152,7 +151,7 @@ type BrowserProfile = {
     pageId: string,
 }
 
-export const browserProfile = (currentPage?: string) : BrowserProfile => {
+export const browserProfile = (currentPage?: string): BrowserProfile => {
     let pageId = currentPage || location.pathname
 
     pageId = pageId.replace(/\/?#[\w\/]*/, '')
@@ -168,4 +167,4 @@ export const browserProfile = (currentPage?: string) : BrowserProfile => {
     }
 }
 
-export const makeUid = () : number => Math.floor(Math.random() * Math.pow(10, 8))
+export const makeUid = (): number => Math.floor(Math.random() * Math.pow(10, 8))

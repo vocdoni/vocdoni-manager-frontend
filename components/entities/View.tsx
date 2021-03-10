@@ -1,4 +1,3 @@
-import { EditOutlined, ShareAltOutlined } from '@ant-design/icons'
 import { Button, Col, Row } from 'antd'
 import QRCode from 'qrcode.react'
 import React, { Component, ReactNode } from 'react'
@@ -6,6 +5,7 @@ import React, { Component, ReactNode } from 'react'
 import i18n from '../../i18n'
 import AppContext from '../app-context'
 import Copy from '../copy'
+import Ficon from '../ficon'
 import If from '../if'
 import Note from '../note'
 import HeaderImage from './HeaderImage'
@@ -49,7 +49,7 @@ export default class View extends Component<ViewProps, undefined> {
                     <If condition={!this.context.isReadOnlyNetwork}>
                         <Col>
                             <Button type='link' onClick={this.props.onEditClick}>
-                                <EditOutlined /> Edit
+                                <Ficon icon='Edit' /> {i18n.t('btn.edit')}
                             </Button>
                         </Col>
                     </If>
@@ -59,7 +59,7 @@ export default class View extends Component<ViewProps, undefined> {
                         }} />
                     </Col>
                     <Col span={24} className='entity-share'>
-                        <h4><ShareAltOutlined /> Share</h4>
+                        <h4><Ficon icon='Share2' /> {i18n.t('entity.title.share')}</h4>
                         <Row>
                             <Col {...columns.left} className='qr'>
                                 <div className='canvas-wrapper grayed rounded'>
@@ -71,11 +71,11 @@ export default class View extends Component<ViewProps, undefined> {
                             <Col {...columns.right} className='description'>
                                 <Row justify='space-around' style={{height: '100%'}}>
                                     <Col span={24} className='copy-link'>
-                                        <Copy text={link}>Copy link</Copy>
+                                        <Copy text={link}>{i18n.t('btn.copy_link') as string}</Copy>
                                     </Col>
                                     <Col span={24} className='qr-note'>
                                         <Note>
-                                            {i18n.t('qrNote')}
+                                            {i18n.t('entity.qr_note')}
                                         </Note>
                                     </Col>
                                 </Row>

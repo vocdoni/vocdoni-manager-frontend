@@ -20,6 +20,7 @@ import AppContext, { IAppContext } from '../../components/app-context'
 import { getGatewayClients, getNetworkState } from '../../lib/network'
 import { IFeedPost, INewsFeed } from '../../lib/types'
 import Image from '../../components/image'
+import i18n from '../../i18n'
 
 const PAGE_SIZE = 6
 
@@ -66,10 +67,9 @@ class PostView extends Component<IAppContext, State> {
             try {
                 newsFeed = JSON.parse(payload)
                 checkValidJsonFeed(newsFeed)
-                // newsFeed = checkValidJsonFeed(newsFeed)
             }
             catch (err) {
-                message.warn("The current News Feed does not seem to have a correct format")
+                message.warn(i18n.t('error.invalid_format_contents'))
                 console.log(err)
                 throw new Error()
             }
@@ -80,7 +80,7 @@ class PostView extends Component<IAppContext, State> {
         }
         catch (err) {
             this.setState({ dataLoading: false })
-            message.error("Could not read the entity metadata")
+            message.error(i18n.t('error.cannot_read_entity_metadata'))
         }
     }
 
@@ -93,16 +93,15 @@ class PostView extends Component<IAppContext, State> {
     }
 
     confirmDeletePost(index: number) {
-        const that = this
         Modal.confirm({
-            title: "Confirm",
+            title: i18n.t('confirm'),
             icon: <ExclamationCircleOutlined />,
-            content: "The selected post will be no longer accessible and this action cannot be undone. Do you want to continue?",
-            okText: "Delete Post",
+            content: i18n.t('news.confirm_delete'),
+            okText: i18n.t('btn.remove'),
             okType: "primary",
-            cancelText: "Not now",
-            onOk() {
-                that.deletePost(index)
+            cancelText: i18n.t('btn.cancel'),
+            onOk: () => {
+                this.deletePost(index)
             },
         })
     }
@@ -111,7 +110,7 @@ class PostView extends Component<IAppContext, State> {
         const feed = JSON.parse(JSON.stringify(this.state.newsFeed))
         feed.items.splice(index, 1)
 
-        const hideLoading = message.loading('Action in progress...', 0)
+        const hideLoading = message.loading(i18n.t('action_in_progress'), 0)
 
         try {
             const gateway = await getGatewayClients()
@@ -121,8 +120,6 @@ class PostView extends Component<IAppContext, State> {
             const feedContent = Buffer.from(JSON.stringify(feed))
             const feedContentUri = await FileApi.add(feedContent, `feed_${Date.now()}.json`, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
 
-            // message.success("The news feed was pinned on IPFS successfully")
-
             const entityMetadata = this.state.entity
             entityMetadata.newsFeed = { default: feedContentUri } as MultiLanguage<string>
 
@@ -130,13 +127,13 @@ class PostView extends Component<IAppContext, State> {
             await EntityApi.setMetadata(address, entityMetadata, this.props.web3Wallet.getWallet() as (Wallet | Signer), gateway)
             hideLoading()
 
-            message.success("The post has been deleted successfully")
+            message.success(i18n.t('news.deleted_successfuly'))
             this.componentDidMount()
         }
         catch (err) {
             hideLoading()
-            console.error("The post could not be deleted", err)
-            message.error("The post could not be deleted")
+            console.error(i18n.t('news.delete_error'), err)
+            message.error(i18n.t('news.delete_error'))
         }
     }
 
@@ -150,7 +147,7 @@ class PostView extends Component<IAppContext, State> {
         const that = this
 
         return <div className="body-card">
-            <Divider orientation="left">News feed</Divider>
+            <Divider orientation="left">{i18n.t('news.title.feed')}</Divider>
 
             <List
                 itemLayout="vertical"
@@ -207,8 +204,8 @@ class PostView extends Component<IAppContext, State> {
 
     renderNotFound() {
         return <div className="not-found">
-            <h4>Entity not found</h4>
-            <p>The entity you are looking for cannot be found</p>
+            <h4>{i18n.t('entity.error.not_found')}</h4>
+            <p>{i18n.t('entity.error.not_found_description')}</p>
         </div>
     }
 
@@ -263,13 +260,13 @@ const PostListActions = (props: any) => {
                 entityId,
                 post,
             }}>
-                <a><IconText icon={EditOutlined} text='Edit post' key='edit' /></a>
+                <a><IconText icon={EditOutlined} text={i18n.t('btn.edit')} key='edit' /></a>
             </PostLink>
         )
         actions.push(
             <IconText
                 icon={CloseCircleOutlined}
-                text="Remove"
+                text={i18n.t('btn.remove')}
                 onClick={ () => that.confirmDeletePost(that.state.startIndex + idx)
                 } key="remove"
             />

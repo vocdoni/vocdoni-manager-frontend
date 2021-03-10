@@ -4,6 +4,7 @@ import Title from 'antd/lib/typography/Title'
 
 import AppContext, { IAppContext } from '../../components/app-context'
 import ButtonShowPrivateKey from '../../components/button-show-private-key'
+import i18n from '../../i18n'
 
 // MAIN COMPONENT
 const AccountEditPage = () => {
@@ -39,20 +40,20 @@ class AccountEdit extends Component<IAppContext, State> {
                     <Row>
                         <Col span={24}>
                             <section>
-                                <Divider orientation='left'>Wallet</Divider>
-                                <Title level={4}>Address</Title>
+                                <Divider orientation='left'>{i18n.t('account.title')}</Divider>
+                                <Title level={4}>{i18n.t('account.address')}</Title>
                                 <Typography.Text ellipsis={true}>
                                     { this.props.web3Wallet.getAddress() }
                                 </Typography.Text>
-                                <Title level={4}>Public key</Title>
+                                <Title level={4}>{i18n.t('account.public_key')}</Title>
                                 <Typography.Text ellipsis={true}>
                                     { this.props.web3Wallet.getPublicKey() }
                                 </Typography.Text>
-                                <Title level={4}>Private key</Title>
+                                <Title level={4}>{i18n.t('account.private_key')}</Title>
                                 <Typography.Text>
                                     <ButtonShowPrivateKey {...this.props} />
                                 </Typography.Text>
-                                <Title level={4}>Balance</Title>
+                                <Title level={4}>{i18n.t('account.balance')}</Title>
                                 <Typography.Text>
                                     { this.state.balance }
                                 </Typography.Text>

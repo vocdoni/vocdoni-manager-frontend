@@ -148,7 +148,7 @@ class MainApp extends App<Props, State> {
             this.setState({ connectionError: null })
             this.refreshWeb3Status()
         }).catch(err => {
-            message.error("Could not connect")
+            message.error(i18n.t('error.cannot_connect'))
             this.setState({ connectionError: err && err.message || err })
             this.refreshWeb3Status()
         })
@@ -175,7 +175,7 @@ class MainApp extends App<Props, State> {
             this.setState({})
         }).catch(err => {
             this.refreshWeb3Status()
-            message.error(i18n.t('couldNotConnect'))
+            message.error(i18n.t('error.cannot_connect'))
             this.setState({ connectionError: err.message })
         })
     }
@@ -253,7 +253,7 @@ class MainApp extends App<Props, State> {
         const claims = dumpCensus.claims.map((claim) => ({key: claim, value: ''}))
         const { censusRoot, invalidClaims } = await CensusOffChainApi.addClaimBulk(censusId, claims, true, wallet, gateway)
         if (invalidClaims.length) {
-            message.warn(`Found ${invalidClaims.length} invalid claims`)
+            message.warn(i18n.t('error.invalid_claims_found', {total: invalidClaims.length}))
         }
         const merkleTreeUri = await CensusOffChainApi.publishCensus(censusId, wallet, gateway)
         const census = {
@@ -329,11 +329,10 @@ class MainApp extends App<Props, State> {
         // TODO: reconnect or shift
         new Promise(resolve => setTimeout(resolve, 1000 * 3))
             .then(() => initNetwork()).then(() => {
-                // message.success(i18n.t('connected'))
                 this.refreshWeb3Status()
             }).catch(() => {
                 this.refreshWeb3Status()
-                message.error(i18n.t('couldNotConnect'))
+                message.error(i18n.t('error.cannot_connect'))
             })
     }
 
@@ -359,9 +358,14 @@ class MainApp extends App<Props, State> {
             <Row justify="center" align="middle">
                 <Col xs={24} sm={18} md={10}>
                     <Card title="Connection Error" className="card">
-                        <p>Oops! There has been a problem while connecting to our services.</p>
+                        <p>{i18n.t('error.connection')}</p>
                         <div style={{ textAlign: "center" }}>
-                            <Button type="primary" onClick={() => this.setState({ connectionError: false }, () => this.connect())}><ReloadOutlined />Retry</Button>
+                            <Button
+                                type="primary"
+                                onClick={() => this.setState({ connectionError: false }, () => this.connect())}
+                            >
+                                <ReloadOutlined /> {i18n.t('btn.retry')}
+                            </Button>
                         </div>
                     </Card>
                 </Col>

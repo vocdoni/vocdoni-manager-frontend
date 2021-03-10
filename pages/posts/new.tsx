@@ -20,6 +20,7 @@ import { getRandomUnsplashImage, sanitizeHtml } from '../../lib/util'
 import AppContext, { IAppContext } from '../../components/app-context'
 import IPFSImageUpload from '../../components/ipfs-image-upload'
 import Image from '../../components/image'
+import i18n from '../../i18n'
 
 let Editor: any // = await import('react-draft-wysiwyg')
 let EditorState, ContentState, convertToRaw
@@ -80,7 +81,7 @@ class PostNew extends Component<IAppContext, State> {
             await this.refreshMetadata()
         }
         catch (err) {
-            message.error("Could not read the entity metadata")
+            message.error(i18n.t('error.cannot_read_entity_metadata'))
         }
     }
 
@@ -220,9 +221,11 @@ class PostNew extends Component<IAppContext, State> {
 
             if (balance.isZero()) {
                 return Modal.warning({
-                    title: "Not enough balance",
+                    title: i18n.t('error.insufficient_funds'),
                     icon: <ExclamationCircleOutlined />,
-                    content: <span>To continue with the transaction you need to get some xDAI tokens. <br />Get in touch with us and copy the following address: <code>{address}</code></span>,
+                    content: <span dangerouslySetInnerHTML={{
+                        __html: i18n.t('error.insufficient_funds_note', {address})
+                    }} />,
                     onOk: () => {
                         this.setState({ postUpdating: false })
                         hideLoading()
@@ -277,11 +280,11 @@ class PostNew extends Component<IAppContext, State> {
         return <div className="body-card">
             <Row justify="start">
                 <Col xs={24} sm={20} md={14}>
-                    <Divider orientation="left">New post</Divider>
+                    <Divider orientation="left">{i18n.t('news.title.new')}</Divider>
 
                     <Form>
                         <Form.Item>
-                            <label>Post title</label>
+                            <label>{i18n.t('news.field.title')}</label>
                             <Input
                                 size="large"
                                 placeholder="The title"
@@ -291,7 +294,7 @@ class PostNew extends Component<IAppContext, State> {
                         </Form.Item>
 
                         <Form.Item>
-                            <label>Header image</label>
+                            <label>{i18n.t('news.field.header_image')}</label>
                             <Input
                                 type='text'
                                 value={this.state.newsPost.image}
@@ -311,13 +314,13 @@ class PostNew extends Component<IAppContext, State> {
                             />
                             <p style={{ marginBottom: 0 }}>
                                 <a href="https://unsplash.com" target="_blank" rel="noreferrer"><small>
-                                    If you don't have images, try to find one at unsplash.com.
+                                    {i18n.t('news.field.header_image_note')}
                                 </small></a>
                             </p>
                         </Form.Item>
 
                         <Form.Item>
-                            <label>Content</label>
+                            <label>{i18n.t('news.field.content')}</label>
                             {
                                 Editor ? <Editor
                                     editorState={this.state.editorState}
@@ -350,7 +353,7 @@ class PostNew extends Component<IAppContext, State> {
                     </div>
                 </Col>
                 <Col xs={0} md={10} className="right-col">
-                    <Divider orientation="left">Header</Divider>
+                    <Divider orientation="left">{i18n.t('news.title.header')}</Divider>
                     <Image
                         className='preview'
                         src={this.state.newsPost.image}

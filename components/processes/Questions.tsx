@@ -41,7 +41,7 @@ export default class Questions extends Component<Props, State> {
         }
 
         if (isNaN(choiceValue)) {
-            message.warn(i18n.t('invalidQuestionOptionValue'))
+            message.warn(i18n.t('process.error.wrong_value'))
             return
         }
 
@@ -58,7 +58,7 @@ export default class Questions extends Component<Props, State> {
 
         return <>
             <Divider />
-            <h2>{i18n.t('selectQuestionsTitle')}</h2>
+            <h2>{i18n.t('process.voting')}</h2>
             {
                 process.questions.map((question, questionIdx) => <div key={questionIdx} className='vote-questions'>
                     <Divider />
@@ -96,7 +96,7 @@ export default class Questions extends Component<Props, State> {
                     disabled={!allQuestionsChosen}
                     onClick={() => this.props.onSubmitClick(toArray(choices))}
                 >
-                    {i18n.t('confirmSelection')}
+                    {i18n.t('process.btn.confirm')}
                 </Button>
             </div>
         </>

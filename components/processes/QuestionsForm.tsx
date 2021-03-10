@@ -3,6 +3,7 @@ import { str } from 'dot-object'
 import { MultiLanguage } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 
+import i18n from '../../i18n'
 import Ficon from '../ficon'
 import HTMLEditor from '../html-editor'
 
@@ -50,17 +51,17 @@ const qt = () : Question => ({
     choices: [
         {
             title: {
-                default: 'Yes',
+                default: i18n.t('process.field.questions.yes'),
             },
         },
         {
             title: {
-                default: 'No',
+                default: i18n.t('process.field.questions.no'),
             },
         },
         {
             title: {
-                default: 'Blank',
+                default: i18n.t('process.field.questions.blank'),
             },
         }
     ]
@@ -224,14 +225,14 @@ export default class QuestionsForm extends Component<Props, State> {
                                     }
                                 </ol>
                                 <Button type='link' onClick={this.addOption.bind(this, i)}>
-                                    + Add option
+                                    {i18n.t('process.btn.option_add')}
                                 </Button>
                             </li>
                         ))
                     }
                 </ol>
                 <Button type='link' onClick={this.addQuestion.bind(this)}>
-                    + Add question
+                    {i18n.t('process.btn.question_add')}
                 </Button>
             </div>
         )

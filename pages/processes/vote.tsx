@@ -102,7 +102,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         try {
             const params = location.hash.substr(2).split('/')
             if (params.length !== 3 || !params[0].match(HEX_REGEX) || !params[1].match(HEX_REGEX) || !params[2].match(HEX_REGEX)) {
-                message.error(i18n.t('invalidRequest'))
+                message.error(i18n.t('error.invalid_request'))
                 Router.replace('/')
                 return
             }
@@ -138,12 +138,8 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             gateway = await getGatewayClients()
             currentBlock = await VotingApi.getBlockHeight(gateway)
         } catch (err) {
-            const msg = [
-                'There was an error updating the blockchain information.',
-                'Refresh the page if you don\'t see changes in a while.',
-            ]
             console.error(err)
-            return message.error(msg.join(' '))
+            return message.error(i18n.t('error.update'))
         }
 
         this.setState({ currentBlock, currentDate: moment() })
@@ -176,6 +172,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             this.context.setTitle(process.title.default)
         }
         catch (err) {
+            console.error(err)
             const notfounds = [
                 'not-found',
                 'The given entity has no metadata defined yet',
@@ -186,7 +183,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                 })
             }
 
-            const str = (err && err.message == 'Request timed out') ? i18n.t('processListLoadTimeout') : i18n.t('couldNotLoadVote')
+            const str = (err && err.message == 'Request timed out') ? i18n.t('error.timeout') : i18n.t('process.error.cannot_load')
             message.error(str)
             this.setState({ connectionError: str, loadingStatus: false })
         }
@@ -198,7 +195,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             wallet = new Wallet(this.state.privateKey)
         }
         catch (err) {
-            return message.error(i18n.t('invalidPrivateKey'))
+            return message.error(i18n.t('process.error.invalid_private_key'))
         }
 
         try {
@@ -225,10 +222,10 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             })
 
             if (err && err.message == 'The Merkle Proof could not be fetched') {
-                return message.warn(i18n.t('youAreNotInTheCensus'))
+                return message.warn(i18n.t('process.error.not_in_census'))
             }
 
-            message.error(i18n.t('couldNotCheckCensus'))
+            message.error(i18n.t('process.error.census'))
         }
     }
 
@@ -241,16 +238,16 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         window.scrollTo(0, this.endOfIntroduction)
 
         if (votes.length != this.state.process.questions.length)
-            return message.error(i18n.t('pleaseChooseYourVoteForAllQuestions'))
+            return message.error(i18n.t('process.error.select_all'))
 
         if (!areAllNumbers(votes))
-            return message.error(i18n.t('pleaseChooseYourVoteForAllQuestions'))
+            return message.error(i18n.t('process.error.select_all'))
 
         try {
             new Wallet(this.state.privateKey)
         }
         catch (err) {
-            return message.error(i18n.t('invalidPrivateKey'))
+            return message.error(i18n.t('process.error.invalid_private_key'))
         }
 
         this.setState({
@@ -308,14 +305,15 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             if (!this.state.hasVoted) throw new Error('The vote has not been registered')
 
             notification.success({
-                message: i18n.t('voteSubmitted'),
-                description: i18n.t('yourVoteHasBeenSuccessfullyRegistered')
+                message: i18n.t('process.submitted'),
+                description: i18n.t('process.submitted_note')
             })
             this.setState({ isSubmitting: false })
         }
         catch (err) {
+            console.error('cannot vote', err)
             this.setState({ isSubmitting: false })
-            message.error(i18n.t('theVoteCouldNotBeSubmitted'))
+            message.error(i18n.t('process.error.cannot_vote'))
         }
     }
 
@@ -346,32 +344,32 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     + ':' + ('0' + this.state.hasVotedOnDate.minutes()).substr(-2)
                     + 'h'
                 contents = <>
-                    <p>{i18n.t('yourVoteHasBeenRegisteredOn')} {strDate}</p>
+                    <p>{i18n.t('process.vote_registered_on', {date: strDate})}</p>
                     <p>
-                        {i18n.t('nullifierNotice')} <Text copyable={{text: this.state.nullifier}}>
+                        {i18n.t('process.nullifier_note')} <Text copyable={{text: this.state.nullifier}}>
                             {this.state.nullifier.substr(0, 10)}...
                         </Text>
                     </p>
                 </>
             }
             else {
-                contents = <>{i18n.t('yourVoteIsRegistered')}</>
+                contents = <>{i18n.t('process.status.vote_registered')}</>
             }
         }
         else if (isSubmitting) {
-            contents = <><Divider />{i18n.t('submittingVote')}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
+            contents = <><Divider />{i18n.t('process.status.submitting')}... &nbsp; <Spin indicator={<LoadingOutlined />} /></>
         }
         else if (!hasStarted) {
-            contents = <>{i18n.t('theProcessHasNotStarted')}</>
+            contents = <>{i18n.t('process.status.not_started')}</>
         }
         else if (isCanceled || hasEnded) {
-            contents = <>{i18n.t('theProcessHasEnded')}</>
+            contents = <>{i18n.t('process.status.ended')}</>
         }
         else if (isInCensus) {
-            contents = <>{i18n.t('youCanVote')}</>
+            contents = <>{i18n.t('process.status.can_vote')}</>
         }
         else {
-            contents = <>{i18n.t('youAreNotInTheCensus')}</>
+            contents = <>{i18n.t('process.error.not_in_census')}</>
         }
 
         return <div className='vote-status'>{contents}</div>
@@ -390,7 +388,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
         const { process, choices } = this.state
         return <>
             <Divider />
-            <p className='info-text'><MultiLine text={i18n.t('theseAreYourSelections')} /></p>
+            <p className='info-text'><MultiLine text={i18n.t('process.your_selections')} /></p>
             {
                 process.questions.map((question, idx) => <Fragment key={idx}>
                     {
@@ -417,7 +415,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                 }}
                 onCancel={() => this.setState({ showSubmitConfirmation: false })}
             >
-                <p>{i18n.t('youAreAboutToSendYourVoteConfirmContinue')}</p>
+                <p>{i18n.t('process.confirm_vote')}</p>
             </Modal>
 
             <div className='bottom-button-wrapper'>
@@ -443,7 +441,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             <Divider />
             {this.renderStatus(status)}
             <p className='vote-status'>
-                <MultiLine text={i18n.t('processDescriptionStage4')} />
+                <MultiLine text={i18n.t('process.thanks')} />
             </p>
         </div>
     }
@@ -544,7 +542,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                                 )
                             }
                         >
-                            <ReloadOutlined />{i18n.t('retryConnection')}
+                            <ReloadOutlined />{i18n.t('error.retry')}
                         </Button>
                     </div>
                 </ViewWrapper>

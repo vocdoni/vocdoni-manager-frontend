@@ -20,6 +20,7 @@ import { sanitizeHtml } from '../../lib/util'
 import AppContext, { IAppContext } from '../../components/app-context'
 import IPFSImageUpload from '../../components/ipfs-image-upload'
 import Image from '../../components/image'
+import i18n from '../../i18n'
 
 let Editor: any // = await import('react-draft-wysiwyg')
 let EditorState, ContentState, convertToRaw
@@ -86,7 +87,7 @@ class PostEdit extends Component<IAppContext, State> {
             await this.refreshMetadata()
         }
         catch (err) {
-            message.error("Could not read the entity metadata")
+            message.error(i18n.t('error.cannot_read_entity_metadata'))
         }
     }
 
