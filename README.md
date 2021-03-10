@@ -3,6 +3,7 @@
 [![GitHub stars][stargazers badge]][stargazers]
 [![GitHub issues][issues badge]][issues]
 [![GitHub Workflow Status][actions badge]][actions]
+[![Docker Image Size][docker size badge]][docker hub]
 [![i18n status][i18n badge]][weblate project]
 
 Static web site project to manage Vocdoni entities and explore their contents. It also defines the mobile app settings for deep link handling and allows voting via web.
@@ -25,6 +26,7 @@ To mitigate this, the frontend creates a Standalone Web3 Wallet that is present 
 Check the file [`env-config.js`][env-config.js] for a full featured list of the environment vars used when exporting the project.
 
 ## Dockerfile
+[![Docker Image Size][docker size badge]][docker hub]
 
 The dockerfile provided builds and serves the static files of the manager.
 
@@ -36,7 +38,7 @@ docker build \
     --build-arg=ETH_NETWORK_ID=goerli \
     --build-arg=REGISTER_URL=https://manager.dev.vocdoni.net/api/registry \
     --build-arg=ACTION_VISIBILITY_URL=https://manager.dev.vocdoni.net/api/registry
-    -t custom-manager-build
+    -t custom-manager-build .
 # serve it!
 docker run --rm -it -p 8000:80 custom-manager-build
 ```
@@ -53,14 +55,25 @@ If you only plan on serving the project, we create a set of images from this Doc
 docker run --rm -it -p 8000:80 vocdoni/vocdoni-manager-frontend:app-latest
 ```
 
+## Translations
+[![i18n status][i18n badge]][weblate project]
+
+This project translations are mantained using weblate, you can help us translate the project to any language from our [weblate project][].
+
+When developing, you need to use `i18n.t('key.subkey.subsubkey')` for the messages to be translated, and then you can extract those to the json files by using `npm run i18n-extract`.
+
+The extractor generates `_old.json` files when it removes translations from the existing files, but these files should not be commited (they're actually ignored).
+
 [actions badge]: https://img.shields.io/github/workflow/status/vocdoni/vocdoni-manager-frontend/Main.svg
 [i18n badge]: https://hosted.weblate.org/widgets/vocdoni/-/manager-frontend/svg-badge.svg
 [issues badge]: https://img.shields.io/github/issues/vocdoni/vocdoni-manager-frontend.svg
 [stargazers badge]: https://img.shields.io/github/stars/vocdoni/vocdoni-manager-frontend.svg
+[docker size badge]: https://img.shields.io/docker/image-size/vocdoni/vocdoni-manager-frontend.svg?sort=date
 
 [next.config.js]: ./next.config.js
 [env-config.js]: ./env-config.js
 
+[docker hub]: https://hub.docker.com/r/vocdoni/vocdoni-manager-frontend
 [issues]: https://github.com/vocdoni/vocdoni-manager-frontend/issues
 [stargazers]: https://github.com/vocdoni/vocdoni-manager-frontend/stargazers
 [actions]: https://github.com/vocdoni/vocdoni-manager-frontend/actions
