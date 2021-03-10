@@ -311,6 +311,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             this.setState({ isSubmitting: false })
         }
         catch (err) {
+            console.error('cannot vote', err)
             this.setState({ isSubmitting: false })
             message.error(i18n.t('process.error.cannot_vote'))
         }

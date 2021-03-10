@@ -36,7 +36,7 @@ type State = {
     estimatedEndDate?: Date,
     results: DigestedProcessResults,
     totalVotes: number,
-    canceled: boolean,
+    ended: boolean,
     censusSize: number,
     error?: string,
 }
@@ -53,7 +53,7 @@ class ProcessActiveView extends Component<undefined, State> {
         currentDate: moment(),
         results: null,
         totalVotes: 0,
-        canceled: false,
+        ended: false,
         censusSize: 0,
     }
 
@@ -141,7 +141,7 @@ class ProcessActiveView extends Component<undefined, State> {
             const gateway = await this.context.gatewayClients
             const process = await VotingApi.getProcessMetadata(this.context.processId, gateway)
             const processParams = await VotingApi.getProcessParameters(this.context.processId, gateway)
-            const canceled = processParams.status.isCanceled
+            const ended = processParams.status.isEnded
             const estimatedStartDate = await VotingApi.estimateDateAtBlock(processParams.startBlock, gateway)
             const estimatedEndDate = await VotingApi.estimateDateAtBlock(processParams.startBlock + processParams.blockCount, gateway)
             let censusSize = 0
@@ -151,7 +151,7 @@ class ProcessActiveView extends Component<undefined, State> {
 
             this.setState({
                 dataLoading: false,
-                canceled,
+                ended,
                 process,
                 processParams,
                 censusSize,
@@ -450,7 +450,7 @@ class ProcessActiveView extends Component<undefined, State> {
         if (!this.state.currentBlock || !this.state.process) return null
 
         const items: ReactNode[] = []
-        if (this.state.canceled) items.push(<li key={items.length}>{i18n.t('process.status.closed')}</li>)
+        if (this.state.ended) items.push(<li key={items.length}>{i18n.t('process.status.closed')}</li>)
         else if (this.state.currentBlock < this.state.processParams.startBlock) items.push(<li key={items.length}>{i18n.t('process.status.inactive')}</li>)
         else if (this.state.currentBlock < (this.state.processParams.startBlock + this.state.processParams.blockCount)) items.push(<li key={items.length}>{i18n.t('process.status.active')}</li>)
         else items.push(<li key={items.length}>{i18n.t('process.status.finished')}</li>)
