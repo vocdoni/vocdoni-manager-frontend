@@ -1,4 +1,4 @@
-import { Form, Input, message, Select, Upload } from 'antd'
+import { Form, Input, message, Progress, Select, Upload } from 'antd'
 import { RcFile } from 'antd/lib/upload'
 import { str } from 'dot-object'
 import React, { Component, ReactNode } from 'react'
@@ -22,6 +22,7 @@ export type ParticipantsSelectorState = {
     selectedFile: RcFile,
     census: Census,
     processingFile: boolean,
+    progress: number,
 }
 
 export type ParticipantsSelectorProps = {
@@ -53,6 +54,7 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
             uri: null,
         },
         processingFile: false,
+        progress: 0,
     }
 
     get options(): UnderlyingOptionValue[] {
@@ -107,7 +109,9 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
     }
 
     async processImport(file: RcFile): Promise<void> {
-        const fileData = await parseSpreadsheetData(this.context.address, file)
+        const fileData = await parseSpreadsheetData(this.context.address, file, (status) => {
+            this.setState({progress: Math.round(status.current / status.total * 100)})
+        })
         if (!fileData) {
             message.error(i18n.t('error.file_format_unknown'))
             return
@@ -177,6 +181,9 @@ export default class ParticipantsSelector extends Component<ParticipantsSelector
                                 </p>
                             </Upload.Dragger>
                         </Loading>
+                        <If condition={this.state.processingFile}>
+                            <Progress percent={this.state.progress} />
+                        </If>
                     </div>
                 </If>
                 <If condition={this.state.selected === 'manual'}>

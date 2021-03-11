@@ -33,7 +33,12 @@ export const getJSONFromWorksheet = (ws: xlsx.WorkSheet): string[][] => {
     return xlsx.utils.sheet_to_json(ws, { header: 1, raw: false });
 }
 
-export function parseSpreadsheetData(entityId: string, file: RcFile): Promise<VotingFormImportData> {
+type ParseStatus = {
+    total: number
+    current: number
+}
+
+export function parseSpreadsheetData(entityId: string, file: RcFile, cb?: (status: ParseStatus) => void): Promise<VotingFormImportData> {
     let result: VotingFormImportData
 
     return getSpreadsheetReaderForFile(file).then(workbook => {
@@ -52,6 +57,12 @@ export function parseSpreadsheetData(entityId: string, file: RcFile): Promise<Vo
 
         // Remove empty rows
         parsedRows = parsedRows.filter((row) => row.length > 0)
+        if (typeof cb === 'function') {
+            cb({
+                current: 0,
+                total: parsedRows.length,
+            })
+        }
 
         // Throw if mismatch in number of columns between title and any row
         parsedRows.every((row) => {
@@ -61,10 +72,17 @@ export function parseSpreadsheetData(entityId: string, file: RcFile): Promise<Vo
         })
 
         // Limit / space the crypto operations
+        let count = 0
         return Bluebird.map(parsedRows, row => new Bluebird<string>(resolve => {
             setTimeout(() => {
                 const strRow = importedRowToString(row, entityId)
                 const digestedRow = extractDigestedPubKeyFromFormData(strRow)
+                if (typeof cb === 'function') {
+                    cb({
+                        total: parsedRows.length,
+                        current: ++count,
+                    })
+                }
                 resolve(digestedRow.digestedHexClaim)
             }, 50)
         }), { concurrency: 75 })
