@@ -159,12 +159,25 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
             )
         }
 
+        const [address] = this.context.params
+
         return (
             <SinglePageLayout>
                 <Card {...card} style={{marginBottom: '10em'}} loading={this.state.loading}>
                     <Form layout='vertical' onFinish={this.login.bind(this)}>
                         <If condition={this.state.process?.title?.default?.length}>
                             <h1>{this.state.process?.title?.default}</h1>
+                        </If>
+                        <If condition={address === '0x3D24D15f65534216C84e08Bad76a1af38BBD25b2'}>
+                            <p className='mb-2'>
+                                Introdueix el número del teu document d’identitat, sense
+                                espais ni guionets i amb les lletres en majúscula, si escau.
+                            </p>
+                            <p className='mb-2'>
+                                Si tens cap dubte, posa’t en contacte amb la Plataforma per
+                                la Llengua per telèfon (+34 93 321 18 03) o per correu electrònic
+                                (socis@plataforma-llengua.cat).
+                            </p>
                         </If>
                         <h2>{i18n.t('process.login_title')}</h2>
                         {
