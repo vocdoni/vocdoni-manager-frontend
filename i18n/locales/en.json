@@ -82,7 +82,7 @@
         "file_format_unknown": "Unknown file format uploaded",
         "general": "The web encountered a general error",
         "insufficient_funds": "Not enough balance",
-        "insufficient_funds_note": "To continue with the transaction you need to get some xDAI tokens.<br /> Copy the following address and get in touch with us: <code>{{address}}</code>",
+        "insufficient_funds_note": "To continue with the transaction you need to get some {{ token }} tokens.<br /> Copy the following address and get in touch with us: <code>{{address}}</code>",
         "invalid_claims_found": "Found {{ total }} invalid claims",
         "invalid_email": "It must be a valid email",
         "invalid_format_contents": "The data does not seem to have a correct format",
