@@ -171,22 +171,22 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                         <h2>{i18n.t('process.login_title')}</h2>
                         {
                             this.state.fields.map((field, key) => (
-                                <Form.Item label={field} name={field} key={key}>
+                                <Form.Item label={field} name={field} key={key} className='mb-0'>
                                     <Input />
-                                    <If condition={address === '0x3D24D15f65534216C84e08Bad76a1af38BBD25b2'}>
-                                        <p className='mb-2 text-xs'>
-                                            Introdueix el número del teu document d’identitat, sense
-                                            espais ni guionets i amb les lletres en majúscula, si escau.
-                                        </p>
-                                        <p className='mb-2 text-xs'>
-                                            Si tens cap dubte, posa’t en contacte amb la Plataforma per
-                                            la Llengua per telèfon (+34 93 321 18 03) o per correu electrònic
-                                            (socis@plataforma-llengua.cat).
-                                        </p>
-                                    </If>
                                 </Form.Item>
                             ))
                         }
+                        <If condition={address === '0x3D24D15f65534216C84e08Bad76a1af38BBD25b2'}>
+                            <p className='mb-2 text-xs'>
+                                Introdueix el número del teu document d’identitat, sense
+                                espais ni guionets i amb les lletres en majúscula, si escau.
+                            </p>
+                            <p className='mb-2 text-xs'>
+                                Si tens cap dubte, posa’t en contacte amb la Plataforma per
+                                la Llengua per telèfon (+34 93 321 18 03) o per correu electrònic
+                                (socis@plataforma-llengua.cat).
+                            </p>
+                        </If>
                         <Button
                             htmlType='submit'
                             type='primary'
