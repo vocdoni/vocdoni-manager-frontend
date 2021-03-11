@@ -82,7 +82,7 @@
         "file_format_unknown": "El fitxer pujat no té el format esperat",
         "general": "S'ha trobat un error inesperat",
         "insufficient_funds": "No hi ha prou saldo",
-        "insufficient_funds_note": "Per poder continuar amb la transacció necessites tenir tokens xDAI.<br /> Posa't en contacte amb nosaltres indicant-nos l'adreça següent: <code>{{address}}</code>",
+        "insufficient_funds_note": "Per poder continuar amb la transacció necessites tenir tokens {{token}}.<br /> Posa't en contacte amb nosaltres indicant-nos l'adreça següent: <code>{{address}}</code>",
         "invalid_claims_found": "S'han trobat un total de {{ total }} reclams invàlids",
         "invalid_email": "Ha de ser un e-mail vàlid",
         "invalid_format_contents": "Les dades no semblen tenir un format vàlid",

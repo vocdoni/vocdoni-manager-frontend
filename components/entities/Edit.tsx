@@ -181,7 +181,7 @@ export default class Edit extends Component<EditProps, EditState> {
 
             // Updated such centralized metadata
             await this.context.managerBackendGateway.sendRequest(request as any, wallet);
-            
+
             const hasGas = await this.context.web3Wallet.waitForGas()
 
             if (!hasGas) {
@@ -189,7 +189,10 @@ export default class Edit extends Component<EditProps, EditState> {
                     title: i18n.t('error.insufficient_funds'),
                     icon: <Ficon icon='AlertCircle' />,
                     content: <span dangerouslySetInnerHTML={{
-                        __html: i18n.t('error.insufficient_funds_note', {address})
+                        __html: i18n.t('error.insufficient_funds_note', {
+                            address,
+                            token: process.env.ETH_NETWORK_ID,
+                        })
                     }} />,
                     onOk: () => {
                         this.setState({saving: false})
@@ -288,9 +291,9 @@ export default class Edit extends Component<EditProps, EditState> {
                                         this.setFieldValue('callbackSecret', e.target.value)
                                     }
                                 />
-                            </Form.Item> 
+                            </Form.Item>
                             <Form.Item label='password' style={{ display: 'none'}}>
-                                <Input 
+                                <Input
                                     type='text'
                                     tabIndex={-1}
                                     autoComplete='new-password'
