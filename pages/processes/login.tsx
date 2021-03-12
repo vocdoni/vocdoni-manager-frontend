@@ -178,7 +178,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
                         }
                         <If condition={address === '0x3D24D15f65534216C84e08Bad76a1af38BBD25b2'}>
                             <p className='mb-2 text-xs'>
-                                Introdueix el número del teu document d’identitat, sense
+                                *Introdueix el número del teu document d’identitat, sense
                                 espais ni guionets i amb les lletres en majúscula, si escau.
                             </p>
                             <p className='mb-2 text-xs'>
