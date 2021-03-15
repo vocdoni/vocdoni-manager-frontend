@@ -153,7 +153,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
 
             const gateway = await getGatewayClients()
             const entity = await EntityApi.getMetadata(entityId, gateway)
-            const processes = await VotingApi.getProcessList(entityId, gateway)
+            const processes = await VotingApi.getProcessList({ entityId }, gateway)
 
             const exists = processes.find(findHexId(processId))
             if (!exists) {
@@ -275,7 +275,7 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
             // Detect encryption
             if (this.state.processParams.envelopeType.hasEncryptedVotes) {
                 const keys = await VotingApi.getProcessKeys(this.state.processId, gateway)
-                const { envelope, signature } = await VotingApi.packageSignedEnvelope({
+                const envelope = await VotingApi.packageSignedEnvelope({
                     votes,
                     censusProof,
                     censusOrigin: processParams.censusOrigin,
@@ -283,16 +283,16 @@ class ProcessVoteView extends Component<undefined, ProcessVoteViewState> {
                     walletOrSigner: wallet,
                     processKeys: keys,
                 })
-                await VotingApi.submitEnvelope(envelope, signature, gateway)
+                await VotingApi.submitEnvelope(envelope, wallet, gateway)
             } else {
-                const { envelope, signature } = await VotingApi.packageSignedEnvelope({
+                const envelope = await VotingApi.packageSignedEnvelope({
                     votes,
                     censusProof,
                     censusOrigin: processParams.censusOrigin,
                     processId: this.state.processId,
                     walletOrSigner: wallet,
                 })
-                await VotingApi.submitEnvelope(envelope, signature, gateway)
+                await VotingApi.submitEnvelope(envelope, wallet, gateway)
             }
 
             await new Promise((resolve) => setTimeout(resolve, Math.floor(BLOCK_TIME * 1000)))
