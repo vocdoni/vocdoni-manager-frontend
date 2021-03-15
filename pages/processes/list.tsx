@@ -76,7 +76,7 @@ export default class ProcessListView extends Component<undefined, State> {
             const processes = {...this.state.processes}
             const keys = []
 
-            const syncedProcesses = await VotingApi.getProcessList(address, gateway)
+            const syncedProcesses = await VotingApi.getProcessList({ entityId: address }, gateway)
             await Promise.all((processIds).map(async (id) => {
                 const params = await VotingApi.getProcessParameters(id, gateway)
                 const data = await VotingApi.getProcessMetadata(id, gateway)

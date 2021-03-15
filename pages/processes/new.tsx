@@ -100,7 +100,6 @@ class ProcessNew extends Component<undefined, ProcessNewState> {
             costExponent: 1, // forced for now
             // How many times a vote can be replaced (only the last one counts)
             maxVoteOverwrites: 0,
-            namespace: 0, // TODO: should be taken from processes contract
             paramsSignature: '0x1111111111111111111111111111111111111111111111111111111111111111',
         },
         creating: false,

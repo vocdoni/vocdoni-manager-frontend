@@ -75,7 +75,7 @@ class ProcessVoteLogin extends Component<undefined, ProcessVoteLoginState> {
 
             const gateway = await getGatewayClients()
             const entity = await EntityApi.getMetadata(address, gateway)
-            const processes = await VotingApi.getProcessList(address, gateway)
+            const processes = await VotingApi.getProcessList({ entityId: address }, gateway)
 
             const exists = processes.find(findHexId(processId))
             if (!exists) {
