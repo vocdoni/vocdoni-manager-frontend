@@ -182,7 +182,7 @@ export default class Edit extends Component<EditProps, EditState> {
             // Updated such centralized metadata
             await this.context.managerBackendGateway.sendRequest(request as any, wallet);
 
-            const hasGas = await this.context.web3Wallet.waitForGas()
+            const hasGas = (request.method === 'signUp') ? (await this.context.web3Wallet.waitForGas()) :  (+(await wallet.getBalance()) > 0)
 
             if (!hasGas) {
                 Modal.warning({
