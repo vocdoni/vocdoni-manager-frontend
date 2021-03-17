@@ -138,11 +138,15 @@ class PostView extends Component<IAppContext, State> {
     }
 
     renderPostsList() {
-        const address = this.props.web3Wallet.getAddress()
+        let address = this.props.web3Wallet.getAddress()
         const { readOnly } = getNetworkState()
         let hideEditControls = readOnly || !address
         if (!hideEditControls) {
             hideEditControls = this.state.address !== address
+        }
+        // If read-only recover the address form the state which comes form the url
+        if (hideEditControls) {
+            address = this.state.address
         }
         const that = this
 
@@ -250,15 +254,15 @@ const PostLink = ({hideEditControls, post, address, children} : any) => {
 }
 
 const PostListActions = (props: any) => {
-    const {that, hideEditControls, entityId, post, idx} = props
+    const {that, hideEditControls, address, post, idx} = props
 
     const actions = []
     if (!hideEditControls) {
         actions.push(
             <PostLink {...{
                 hideEditControls,
-                entityId,
                 post,
+                address,
             }}>
                 <a><IconText icon={EditOutlined} text={i18n.t('btn.edit')} key='edit' /></a>
             </PostLink>
