@@ -11,50 +11,43 @@ type OptionValue = {
     value: string,
 }
 
-type QuestionAnswer = {
-    question: string,
-    answer: string,
-}
-
 type QuestionsState = {
     questions: OptionValue[],
-    selections: QuestionState[],
 }
 
 type QuestionProps = {
     questions: OptionValue[],
-    onChange(question: string, answer: string) : void,
+    id: number,
 }
 
-type QuestionState = {
-    question: string | null,
-    answer: string,
-}
-
-class Question extends Component<QuestionState, QuestionProps> {
-    state : QuestionState = {
-        question: null,
-        answer: '',
-    }
+class Question extends Component<QuestionProps, undefined> {
+    static contextType = CreateAccountContext
+    context !: React.ContextType<typeof CreateAccountContext>
 
     onChange(e: React.ChangeEvent<HTMLInputElement>) {
         const answer = e.target.value
-        this.setState({answer})
-        this.props.onChange(this.state.question, answer)
+        this.context.setBackupAnswers(this.props.id, {
+            question: this.context.backupAnswers[this.props.id]?.question,
+            answer,
+        })
     }
 
     onSelect(question: any) : void {
-        this.setState({question})
-        this.props.onChange(question, this.state.answer)
+        this.setState({question} as {question: string})
+        this.context.setBackupAnswers(this.props.id, {
+            question,
+            answer: this.context.backupAnswers[this.props.id]?.answer,
+        })
     }
 
     render() : ReactNode {
+        const qna = this.context.backupAnswers[this.props.id]
         return (
             <div className='form-group'>
                 <Select
                     className='w-full small'
                     dropdownClassName='reduced-select'
-                    value={this.state.question}
+                    value={qna?.question}
                     onChange={this.onSelect.bind(this)}
                     placeholder={i18n.t('backup.select_question')}
                     options={this.props.questions}
@@ -65,41 +58,31 @@ class Question extends Component<QuestionState, QuestionProps> {
                     className='form-control form-sm'
                     type='text'
                     onChange={this.onChange.bind(this)}
-                    value={this.state.answer}
+                    value={qna?.answer || ''}
                 />
             </div>
         )
     }
 }
 
-export default class Questions extends Component<undefined, undefined> {
+export default class Questions extends Component<undefined, QuestionsState> {
     static contextType = CreateAccountContext
     context !: React.ContextType<typeof CreateAccountContext>
 
     state : QuestionsState = {
         questions: [],
-        selections: [],
-    }
-
-    setSelection(num: number, question: string, answer: string) : void {
-        const state : QuestionState = {
-            question,
-            answer,
-        }
-
-        const selections = [...this.state.selections]
-        selections[num] = state
-
-        this.setState({selections})
     }
 
     componentDidMount() : void {
+        const spec = qfile.versions[process.env.BACKUP_LINK_VERSION]
         const questions : OptionValue[] = []
-        const keys = Object.values(qfile.versions[process.env.BACKUP_LINK_VERSION].questions)
-        for (const question of keys) {
+        const active : number[] = spec.active
+        const keys = Object.values(spec.questions)
+
+        for (const id of active) {
             questions.push({
-                label: i18n.t(`backup:${question}`),
-                value: question,
+                label: i18n.t(`backup:${keys[id]}`),
+                value: id.toString(),
             })
         }
         this.setState({questions})
@@ -107,7 +90,7 @@ export default class Questions extends Component<undefined, undefined> {
 
     render() : ReactNode {
         let selected : string = null
-        const valid = this.state.selections.every(({question, answer}) => {
+        const valid = this.context.backupAnswers.every(({question, answer}) => {
             if (!selected) {
                 // caution: this code will fail with more than two questions
                 selected = question
@@ -115,12 +98,12 @@ export default class Questions extends Component<undefined, undefined> {
                 return false
             }
 
-            if (!question.length || !answer.length) {
+            if (!question?.length || !answer?.length) {
                 return false
             }
 
             return true
-        }) && this.state.selections.length > 1
+        }) && this.context.backupAnswers.length > 1
 
         return <>
             <div className='flex justify-between items-center'>
@@ -134,22 +117,31 @@ export default class Questions extends Component<undefined, undefined> {
             <div className='spaced-content'>
                 <p>{i18n.t('backup.select_questions')}</p>
                 <p>{i18n.t('backup.encrypt_with_password')}</p>
-                <Question
-                    questions={this.state.questions}
-                    onChange={this.setSelection.bind(this, 0)}
-                />
-                <Question
-                    questions={this.state.questions}
-                    onChange={this.setSelection.bind(this, 1)}
-                />
+                {
+                    [0, 1].map((id) => (
+                        <Question
+                            id={id}
+                            key={id}
+                            questions={this.state.questions}
+                        />
+                    ))
+                }
                 <p className='text-xs'>
                     {i18n.t('backup.store_location')}
                 </p>
                 <div className='flex flex-row justify-between'>
-                    <button className='btn dark' disabled={!valid}>
+                    <button
+                        className='btn dark'
+                        disabled={!valid}
+                        onClick={() => this.context.setStep('Email')}
+                    >
                         {i18n.t('btn.send_to_email')}
                     </button>
-                    <button className='btn dark' disabled={!valid}>
+                    <button
+                        className='btn dark'
+                        disabled={!valid}
+                        onClick={() => this.context.setStep('Download')}
+                    >
                         {i18n.t('btn.download')}
                     </button>
                 </div>

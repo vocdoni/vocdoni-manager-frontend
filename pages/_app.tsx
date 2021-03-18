@@ -90,19 +90,13 @@ class MainApp extends App<Props, State> {
 
         await this.connect()
 
-        const [address] = this.params
-        if (address) {
-            await this.refreshEntityMetadata(address)
-        }
-
-        window.addEventListener('beforeunload', this.beforeUnload)
-
+        this.toggleUnloadCheck(true)
         this.hashChange = this.hashChange.bind(this)
         window.addEventListener('hashchange', this.hashChange)
     }
 
     componentWillUnmount(): void {
-        window.removeEventListener('beforeunload', this.beforeUnload)
+        this.toggleUnloadCheck(false)
         window.removeEventListener('hashchange', this.hashChange)
         Router.events.off('routeChangeComplete', this.track)
     }
@@ -131,6 +125,15 @@ class MainApp extends App<Props, State> {
             }
             mixpanel.track('pageView', browserProfile(currentPage))
         } catch (e) {console.error(e)}
+    }
+
+    toggleUnloadCheck(toggle: boolean) : void {
+        if (toggle) {
+            window.addEventListener('beforeunload', this.beforeUnload)
+            return
+        }
+
+        window.removeEventListener('beforeunload', this.beforeUnload)
     }
 
     beforeUnload(e: BeforeUnloadEvent): void {
@@ -305,7 +308,6 @@ class MainApp extends App<Props, State> {
             return this.state.entity
         }
 
-        console.log('dbg not cached')
         address = address ? address : this.state.address
 
         this.setState({ loadingEntityMetadata: true })
@@ -360,7 +362,7 @@ class MainApp extends App<Props, State> {
     }
 
     get params() : string[] {
-        return window.location.hash.substr(2).split('/')
+        return window.location.hash.replace(/^#\/?/, '').split('/')
     }
 
     renderRetry() {
@@ -398,39 +400,40 @@ class MainApp extends App<Props, State> {
         const { Component, pageProps } = this.props
 
         const injectedGlobalContext: IAppContext = {
+            address: this.state.address,
+            createCensusForTarget: (name, target, ephemeral) => this.createCensusForTarget(name, target, ephemeral),
+            entity: this.state.entity,
+            fetchCensuses: () => this.fetchCensuses(),
+            fetchTargets: () => this.fetchTargets(),
             gatewayClients: getGatewayClients(),
             getEntityMetadata: this.getEntityMetadata.bind(this),
             isEntityLoaded: this.isEntityLoaded,
-            isWriteEnabled: isWriteEnabled(),
             isReadOnly: this.isReadOnly,
             isReadOnlyNetwork: this.isReadOnlyNetwork,
+            isWriteEnabled: isWriteEnabled(),
             loadingEntityMetadata: this.state.loadingEntityMetadata,
-            title: this.state.title,
-            setTitle: (title) => this.setTitle(title),
-            web3Wallet: getWeb3Wallet(),
-            onNewWallet: (wallet: Wallet) => this.useNewWallet(wallet),
-            onGatewayError: this.onGatewayError,
-            setAddress: (id) => this.setAddress(id),
-            setProcessId: (id) => this.setProcessId(id),
-            menuVisible: this.state.menuVisible,
-            menuSelected: this.state.menuSelected,
+            managerBackendGateway: this.state.managerBackendGateway,
             menuCollapsed: this.state.menuCollapsed,
             menuDisabled: this.state.menuDisabled,
-            entity: this.state.entity,
-            address: this.state.address,
+            menuSelected: this.state.menuSelected,
+            menuVisible: this.state.menuVisible,
+            onGatewayError: this.onGatewayError,
+            onNewWallet: (wallet: Wallet) => this.useNewWallet(wallet),
+            params: this.params,
             processId: this.state.processId,
-            urlHash: this.state.urlHash,
             refreshEntityMetadata: this.refreshEntityMetadata.bind(this),
-            setMenuVisible: (visible) => this.setMenuVisible(visible),
-            setMenuSelected: (selected) => this.setMenuSelected(selected),
+            setAddress: (id) => this.setAddress(id),
             setMenuCollapsed: (collapsed) => this.setMenuCollapsed(collapsed),
             setMenuDisabled: (disabled) => this.setMenuDisabled(disabled),
+            setMenuSelected: (selected) => this.setMenuSelected(selected),
+            setMenuVisible: (visible) => this.setMenuVisible(visible),
+            setProcessId: (id) => this.setProcessId(id),
+            setTitle: (title) => this.setTitle(title),
             setUrlHash: (hash) => this.setUrlHash(hash),
-            params: this.params,
-            managerBackendGateway: this.state.managerBackendGateway,
-            createCensusForTarget: (name, target, ephemeral) => this.createCensusForTarget(name, target, ephemeral),
-            fetchTargets: () => this.fetchTargets(),
-            fetchCensuses: () => this.fetchCensuses(),
+            title: this.state.title,
+            toggleUnloadCheck: this.toggleUnloadCheck.bind(this),
+            urlHash: this.state.urlHash,
+            web3Wallet: getWeb3Wallet(),
         }
 
         // Does the current component want its own layout?

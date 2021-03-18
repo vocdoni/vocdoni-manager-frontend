@@ -50,8 +50,9 @@ export interface IAppContext {
     setProcessId: (processId: string) => void,
     managerBackendGateway: DVoteGateway,
     setUrlHash: (urlHash: string) => void,
-    createCensusForTarget: (name: string, target: {id: string, name: string}, ephemeral: boolean) =>
-        Promise<{census: string, merkleRoot: string, merkleTreeUri: string}>,
+    toggleUnloadCheck: (toggle: boolean) => void,
+    createCensusForTarget: (name: string, target: { id: string, name: string }, ephemeral: boolean) =>
+        Promise<{ census: string, merkleRoot: string, merkleTreeUri: string }>,
     fetchTargets: () => Promise<any>,
     fetchCensuses: () => Promise<any>,
 }

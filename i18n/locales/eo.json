@@ -1,21 +1,15 @@
 {
-    "accept": "",
     "account": {
         "address": "",
         "balance": "",
         "btn": {
             "backup_create": "Create backup",
             "create": "",
-            "details_already_copied": "",
-            "download_backup": "",
             "import": ""
         },
-        "created": "",
         "created_notice": "",
-        "creating": "",
         "drag_to_import": "",
         "error": {
-            "cannot_create": "",
             "cannot_import": "",
             "missing_name": "",
             "missing_password": "",
@@ -32,7 +26,6 @@
         "placeholder": {
             "name": ""
         },
-        "please_copy_details": "",
         "private_key": "",
         "public_key": "",
         "recover": "",
@@ -47,6 +40,7 @@
     "avatar_alt": "",
     "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
     "backup": {
+        "email": "",
         "encrypt_with_password": "Together with your password these questions will be used to encrypt your backup.",
         "select_question": "",
         "select_questions": "Select 2 questions that are not public information and that you will remember in the future.",
@@ -91,15 +85,12 @@
             "org_email": "",
             "org_name": ""
         },
-        "heads-up": "",
         "loading": "",
         "qr_note": "",
         "title": {
-            "create": "",
             "new": "",
             "share": ""
-        },
-        "welcome": ""
+        }
     },
     "error": {
         "cannot_connect": "",

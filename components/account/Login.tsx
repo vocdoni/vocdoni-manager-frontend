@@ -6,7 +6,6 @@ import { Else, If, Then } from 'react-if'
 import i18n from '../../i18n'
 import { makeUid } from '../../lib/util'
 import LoginContext from '../contexts/LoginContext'
-import Ficon from '../ficon'
 import Loading from '../loading'
 import { entityNotFoundModal } from '../utils'
 import AccountAvatar from './Avatar'
@@ -41,6 +40,13 @@ export default class EntityLogin extends Component<Record<string, unknown>, Stat
         if (e.key === 'Enter') {
             await this.onSubmit()
         }
+    }
+
+    gotoAccountSelect() : void {
+        this.setState({
+            password: '',
+        })
+        this.context.accountSelect(null)
     }
 
     async onSubmit() : Promise<void> {
@@ -130,8 +136,8 @@ export default class EntityLogin extends Component<Record<string, unknown>, Stat
                                     </div>
                                     <div className='flex flex-col sm:flex-row justify-between w-full mt-6'>
                                         <a
-                                            className='btn mt-5 sm:mt-0 order-1 sm:order-none'
-                                            onClick={this.context.accountSelect.bind(this, null)}
+                                            className='btn mt-5 sm:mt-0 order-1 sm:order-none text-center'
+                                            onClick={this.gotoAccountSelect.bind(this)}
                                         >
                                             {i18n.t('btn.switch_account')}
                                         </a>
@@ -139,7 +145,6 @@ export default class EntityLogin extends Component<Record<string, unknown>, Stat
                                             className='btn primary'
                                             onClick={this.onSubmit.bind(this)}
                                         >
-                                            <Ficon icon='ArrowRight' className='mr-3' />
                                             {i18n.t('btn.login')}
                                         </button>
                                     </div>

@@ -35,7 +35,7 @@ module.exports = {
     BACKUP_LINK_VERSION: process.env.BACKUP_LINK_VERSION || '1',
 
     // BLOCKCHAIN
-    ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || 'xdai',
+    ETH_NETWORK_ID: process.env.ETH_NETWORK_ID || 'goerli',
     VOCDONI_ENVIRONMENT: process.env.VOCDONI_ENVIRONMENT || 'dev',
 
     // GATEWAYS

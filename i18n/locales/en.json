@@ -1,21 +1,16 @@
 {
-    "accept": "I accept <l>{{ what }}</l>",
     "account": {
         "address": "Address",
         "balance": "Balance",
         "btn": {
             "backup_create": "Create backup",
             "create": "Create organization",
-            "details_already_copied": "I have copied my Entity details",
-            "download_backup": "Download backup file",
-            "import": "Import and login"
+            "import": "Import and login",
+            "recover": "Recover account"
         },
-        "created": "Done creating account!",
         "created_notice": "<b>{{name}}</b> looks like a good name",
-        "creating": "Creating account, please wait...",
         "drag_to_import": "Click or drag your backup file here for easy import",
         "error": {
-            "cannot_create": "An error ocurred trying to create the account. Please, try it again",
             "cannot_import": "An error ocurred trying import the account. Please, try it again",
             "missing_name": "You need to specify an account name",
             "missing_password": "The password is required to decrypt everything!",
@@ -32,10 +27,14 @@
         "placeholder": {
             "name": "Your organization name"
         },
-        "please_copy_details": "Please, make a copy of the following details before you continue",
         "private_key": "Private key",
         "public_key": "Public key",
-        "recover": "Recover organization account",
+        "recovery": {
+            "title": "Recover account",
+            "option_1": "<b>Option 1:</b> If you have a backup email, click on its link and follow the steps.",
+            "option_2": "<b>Option 2:</b> Upload a backup file.",
+            "option_3": "<b>Option 3:</b> Introduce the mnemonic seed."
+        },
         "seed": "Account seed",
         "set_password": "Set your password",
         "set_password_description": "Set a password to protect the keys stored in the browser",
@@ -47,11 +46,17 @@
     "avatar_alt": "{{ name }}'s avatar",
     "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
     "backup": {
+        "email": "Your e-mail",
+        "email_description": "Send yourself an e-mail with a recovery link to get back to your organization account at any time.",
+        "email_subject": "Vocdoni backup link",
+        "download_description": "A file is being downloaded. Save it in a secure place where only you have access.",
         "encrypt_with_password": "Together with your password these questions will be used to encrypt your backup.",
         "select_question": "Select question",
         "select_questions": "Select 2 questions that are not public information and that you will remember in the future.",
         "store_location": "Where do you want to store your backup?",
-        "title": "Backup"
+        "title": "Backup",
+        "verify": "Verify backup",
+        "verify_description": "To verify that the backup works correctly, check yor e-mail and click the recovery link."
     },
     "btn": {
         "back": "Go back",
@@ -65,6 +70,7 @@
         "ok": "Ok",
         "remove": "Remove",
         "retry": "Retry",
+        "retry_download": "Retry download",
         "save": "Save",
         "saving": "Saving",
         "send_to_email": "Send to e-mail",
@@ -93,15 +99,12 @@
             "org_email": "Organization e-mail",
             "org_name": "Organization name"
         },
-        "heads-up": "Keep in mind that everything is encrypted on your browser. If your device breaks, is lost, stolen, or has data corruption, there is no way for Vocdoni to recover your entity.",
         "loading": "Loading the details of the entity...",
         "qr_note": "By scanning this QR code with Vocdoni's App a user can subscribe to the activity of your organization.",
         "title": {
-            "create": "Create your entity",
             "new": "New entity",
             "share": "Share"
-        },
-        "welcome": "Welcome! In the next steps you're about to create an entity in Vocdoni. <br /> It's important to keep the password and all the information of the next page in a safe place, it is the only way to access your entity."
+        }
     },
     "error": {
         "cannot_connect": "Could not connect",

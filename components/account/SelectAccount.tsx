@@ -4,7 +4,6 @@ import React, { Component, ReactNode } from 'react'
 import i18n from '../../i18n'
 import { IWallet } from '../../lib/types'
 import LoginContext from '../contexts/LoginContext'
-import Ficon from '../ficon'
 import AccountAvatar from './Avatar'
 
 type State = {
@@ -64,9 +63,9 @@ export default class SelectAccount extends Component<Record<string, unknown>, St
                         </Link>
                     </li>
                     <li>
-                        <Link href='/account/import'>
+                        <Link href='/account/recovery'>
                             <a className='btn block text-center'>
-                                {i18n.t('account.recover')}
+                                {i18n.t('account.btn.recover')}
                             </a>
                         </Link>
                     </li>

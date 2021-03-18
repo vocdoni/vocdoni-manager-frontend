@@ -27,8 +27,9 @@ export default class Password extends Component<undefined, State> {
         this.setState({[field]: e.target.value} as any)
     }
 
-    async submit() : void {
-        if (!this.state.password.length || !this.state.confirm.length || this.state.password !== this.state.confirm) {
+    async submit() : Promise<void> {
+        const {password, confirm} = this.state
+        if (!password.length || !confirm.length || password !== confirm) {
             this.setState({
                 error: i18n.t('account.error.password_missmatch'),
             })
@@ -36,7 +37,7 @@ export default class Password extends Component<undefined, State> {
         }
 
         try {
-            await this.context.createAccount(this.context.name, this.state.password)
+            await this.context.createAccount(this.context.name, password)
         } catch (e) {
             const err : string = e.message
             if (err.includes('strong')) {
@@ -52,12 +53,14 @@ export default class Password extends Component<undefined, State> {
             return
         }
 
+        this.context.setPassword(password)
+
         this.context.setStep('AskForBackup')
     }
 
     render(): ReactNode {
-        const defined = this.state.password.length && this.state.confirm.length
-        const error = (defined && this.state.password !== this.state.confirm) || this.state.error.length
+        const {password, confirm, error} = this.state
+        const defined = password.length && confirm.length
 
         return <>
             <div className='flex justify-between items-center'>
@@ -89,7 +92,7 @@ export default class Password extends Component<undefined, State> {
                     type='password'
                     placeholder={i18n.t('password')}
                     onChange={this.setField.bind(this, 'password')}
-                    value={this.state.password}
+                    value={password}
                 />
             </div>
             <div className='form-group'>
@@ -98,11 +101,11 @@ export default class Password extends Component<undefined, State> {
                     type='password'
                     placeholder={i18n.t('password_confirm')}
                     onChange={this.setField.bind(this, 'confirm')}
-                    value={this.state.confirm}
+                    value={confirm}
                 />
                 <If condition={error}>
                     <span className='text-red-600'>
-                        {this.state.error}
+                        {error}
                     </span>
                 </If>
             </div>

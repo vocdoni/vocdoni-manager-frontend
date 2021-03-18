@@ -49,10 +49,10 @@ body {
 }
 
 .account-avatar {
-    @apply mr-2 w-10 h-10;
+    @apply mr-2 w-8 h-8;
 
-    .ficon svg {
-        @apply w-full h-full;
+    .ficon, .ficon svg {
+        @apply block h-auto w-auto;
         stroke-width: 1;
     }
 }
@@ -89,10 +89,10 @@ body {
 
 .account-selection ul {
     @apply mt-8;
-}
 
-.account-selection ul li {
-    @apply mb-3;
+    li {
+        @apply mb-5;
+    }
 }
 
 .form-group {

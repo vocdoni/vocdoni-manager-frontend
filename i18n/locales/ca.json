@@ -1,21 +1,15 @@
 {
-    "accept": "Accepto <l>{{ what }}</l>",
     "account": {
         "address": "Adreça",
         "balance": "Saldo",
         "btn": {
             "backup_create": "Create backup",
             "create": "",
-            "details_already_copied": "He copiat els detalls de la meva entitat",
-            "download_backup": "Descarrega còpia de seguretat",
             "import": "Importa i inicia sessió"
         },
-        "created": "Compte creat!",
         "created_notice": "",
-        "creating": "Creant compte, espera si et plau...",
         "drag_to_import": "Fes clic aquí o arrossega-hi la teva còpia de seguretat per a una fàcil importació",
         "error": {
-            "cannot_create": "Hi ha hagut un error creant el compte. Torna-ho a intentar si et plau",
             "cannot_import": "Hi ha hagut un error important el compte. Torna-ho a intentar si et plau",
             "missing_name": "Cal que indiquis el nom",
             "missing_password": "La contrasenya cal per desxifrar-ho tot!",
@@ -32,7 +26,6 @@
         "placeholder": {
             "name": ""
         },
-        "please_copy_details": "Si et plau, fes una còpia dels següents detalls abans de continuar",
         "private_key": "Clau privada",
         "public_key": "Clau pública",
         "recover": "",
@@ -47,6 +40,7 @@
     "avatar_alt": "",
     "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
     "backup": {
+        "email": "",
         "encrypt_with_password": "Conjuntament amb la teva contrasenya, aquestes preguntes s'empraran per a xifrar la teva còpia de seguretat.",
         "select_question": "",
         "select_questions": "Selecciona dues preguntes que no siguin informació pública i que puguis recordar fàcilment en el futur.",
@@ -93,15 +87,12 @@
             "org_email": "E-mail de la organització",
             "org_name": "Nom de la organització"
         },
-        "heads-up": "Tingues en compte que tota la informació es xifra al teu navegador. Si el teu dispositiu es trenca, es perd o se li corrompen les dades, Vocdoni no té manera de recuperar la teva entitat.",
         "loading": "Carregant els detalls de l'entitat...",
         "qr_note": "Escanejant aquest codi QR amb l'app de Vocdoni, un usuari es pot suscriure a la teva organització.",
         "title": {
-            "create": "Crear la teva entitat",
             "new": "Nova entitat",
             "share": "Comparteix"
-        },
-        "welcome": "Benvingut! En les següents passes crearàs una entitat a Vocdoni. <br /> És important que desis la contrasenya, així com la resta de la informació d'aquesta pàgina en un lloc segur, és la única manera d'accedir a la teva entitat."
+        }
     },
     "error": {
         "cannot_connect": "No s'ha pogut establir connexió",

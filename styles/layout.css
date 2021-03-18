@@ -267,6 +267,12 @@ form .ant-picker {
     }
 }
 
+.content-wrapper {
+    h1 {
+        @apply text-center text-lg font-normal text-gray-500 flex-1;
+    }
+}
+
 .content-wrapper .label-wrapper .ant-select {
     width: auto;
     font-weight: bold;

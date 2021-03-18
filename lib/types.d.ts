@@ -87,3 +87,8 @@ export type VotingFormImportData = {
     title: string,
     digestedHexClaims: string[],
 }
+
+export type QuestionAnswer = {
+    question: string,
+    answer: string,
+}
