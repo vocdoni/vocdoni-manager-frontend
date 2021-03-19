@@ -183,17 +183,22 @@ class MemberImport extends Component<IAppContext, State> {
         this.props.managerBackendGateway.sendRequest(request as any, this.props.web3Wallet.getWallet())
             .then((result) => {
                 if (!result.ok) {
-                    const error = "Could not import the members"
-                    message.error(error)
-                    this.setState({error})
+                    const error = i18n.t('cannot_import', {error: result.message})
+                    message.error( error )
+                    this.setState({ error })
                     return false
                 }
                 message.success("Members have been imported")
                 Router.replace("/members#/" + this.state.address)
             },
             (error) => {
-                message.error("Could not import the members")
-                console.log(error)
+                let serverMessage = ''
+                if (error.toString().includes('duplicate email')) {
+                    serverMessage = i18n.t('duplicate_email')
+                }
+                const errorMessage = i18n.t('cannot_import', {error: serverMessage})
+                message.error(errorMessage)
+                console.error(error)
                 this.setState({error})
             })
     }

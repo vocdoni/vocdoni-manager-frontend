@@ -29,8 +29,7 @@
         "private_key": "Clau privada",
         "public_key": "Clau pública",
         "seed": "Llavor del compte",
-        "title": "Compte",
-        "wait_for_balance": "Per a activar el teu compte necessitem que ens enviïs el nom del teu entitat junt amb el següent identificador: <code>{{ address }}</code> a <mailto>info@vocdoni.io</mailto>"
+        "title": "Compte"
     },
     "action_in_progress": "Duent a terme...",
     "btn": {
@@ -45,10 +44,12 @@
         "save": "Desa",
         "saving": "Desant"
     },
+    "cannot_import": "",
     "confirm": "Confirma",
     "confirm_delete": "Segur que vols eliminar {{ name }}?",
     "connected": "Connectat",
     "connecting": "Connectant a la xarxa. Espera si et plau...",
+    "duplicate_email": "",
     "entity": {
         "btn": {
             "create": "Crea entitat",

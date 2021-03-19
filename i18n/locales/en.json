@@ -29,8 +29,7 @@
         "private_key": "Private key",
         "public_key": "Public key",
         "seed": "Account seed",
-        "title": "Account",
-        "wait_for_balance": "To activate your account we need you to send us the name of your Entity and this identifier: <code>{{ address }}</code> to <mailto>info@vocdoni.io</mailto>"
+        "title": "Account"
     },
     "action_in_progress": "Action in progress...",
     "btn": {
@@ -45,10 +44,12 @@
         "save": "Save",
         "saving": "Saving"
     },
+    "cannot_import": "Cannot import members {{ error }}",
     "confirm": "Confirm",
     "confirm_delete": "Are you sure you want to remove {{ name }}?",
     "connected": "Connected",
     "connecting": "Connecting to the network. Please wait...",
+    "duplicate_email": "Duplicate email",
     "entity": {
         "btn": {
             "create": "Create entity",
