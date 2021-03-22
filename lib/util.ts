@@ -168,3 +168,5 @@ export const browserProfile = (currentPage?: string): BrowserProfile => {
 }
 
 export const makeUid = (): number => Math.floor(Math.random() * Math.pow(10, 8))
+
+export const normalizeAnswer = (answer: string) : string => answer.replace(/\s*/g, '').toLowerCase()

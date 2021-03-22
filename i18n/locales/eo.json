@@ -5,7 +5,8 @@
         "btn": {
             "backup_create": "Create backup",
             "create": "",
-            "import": ""
+            "import": "",
+            "recover": ""
         },
         "created_notice": "",
         "drag_to_import": "",
@@ -28,7 +29,13 @@
         },
         "private_key": "",
         "public_key": "",
-        "recover": "",
+        "recovery": {
+            "description": "",
+            "option_1": "<b>Option 1:</b> If you have a backup email, click on its link and follow the steps.",
+            "option_2": "<b>Option 2:</b> Upload a backup file.",
+            "option_3": "<b>Option 3:</b> Introduce the mnemonic seed.",
+            "title": ""
+        },
         "seed": "",
         "set_password": "",
         "set_password_description": "",
@@ -40,12 +47,17 @@
     "avatar_alt": "",
     "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
     "backup": {
+        "download_description": "",
         "email": "",
+        "email_description": "",
+        "email_subject": "",
         "encrypt_with_password": "Together with your password these questions will be used to encrypt your backup.",
         "select_question": "",
         "select_questions": "Select 2 questions that are not public information and that you will remember in the future.",
         "store_location": "",
-        "title": ""
+        "title": "",
+        "verify": "",
+        "verify_description": ""
     },
     "btn": {
         "back": "",
@@ -59,17 +71,21 @@
         "ok": "",
         "remove": "",
         "retry": "",
+        "retry_download": "",
         "save": "",
         "saving": "",
         "send_to_email": "",
-        "switch_account": ""
+        "switch_account": "",
+        "verify": ""
     },
+    "cannot_import": "",
     "confirm": "",
     "confirm_create_backup": "Do you want to create the backup now?",
     "confirm_delete": "",
     "connected": "",
     "connecting": "",
     "do_it_later": "I'll do it later",
+    "duplicate_email": "",
     "entity": {
         "btn": {
             "create": ""

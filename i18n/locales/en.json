@@ -30,10 +30,11 @@
         "private_key": "Private key",
         "public_key": "Public key",
         "recovery": {
-            "title": "Recover account",
+            "description": "Answer the following security questions to verify and/or load your backup.",
             "option_1": "<b>Option 1:</b> If you have a backup email, click on its link and follow the steps.",
             "option_2": "<b>Option 2:</b> Upload a backup file.",
-            "option_3": "<b>Option 3:</b> Introduce the mnemonic seed."
+            "option_3": "<b>Option 3:</b> Introduce the mnemonic seed.",
+            "title": "Verify backup"
         },
         "seed": "Account seed",
         "set_password": "Set your password",
@@ -46,10 +47,10 @@
     "avatar_alt": "{{ name }}'s avatar",
     "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
     "backup": {
+        "download_description": "A file is being downloaded. Save it in a secure place where only you have access.",
         "email": "Your e-mail",
         "email_description": "Send yourself an e-mail with a recovery link to get back to your organization account at any time.",
         "email_subject": "Vocdoni backup link",
-        "download_description": "A file is being downloaded. Save it in a secure place where only you have access.",
         "encrypt_with_password": "Together with your password these questions will be used to encrypt your backup.",
         "select_question": "Select question",
         "select_questions": "Select 2 questions that are not public information and that you will remember in the future.",
@@ -74,7 +75,8 @@
         "save": "Save",
         "saving": "Saving",
         "send_to_email": "Send to e-mail",
-        "switch_account": "Switch account"
+        "switch_account": "Switch account",
+        "verify": "Verify"
     },
     "cannot_import": "Cannot import members {{ error }}",
     "confirm": "Confirm",
@@ -82,8 +84,8 @@
     "confirm_delete": "Are you sure you want to remove {{ name }}?",
     "connected": "Connected",
     "connecting": "Connecting to the network. Please wait...",
-    "duplicate_email": "Duplicate email",
     "do_it_later": "I'll do it later",
+    "duplicate_email": "Duplicate email",
     "entity": {
         "btn": {
             "create": "Create entity"

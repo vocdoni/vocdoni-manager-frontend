@@ -5,7 +5,8 @@
         "btn": {
             "backup_create": "Create backup",
             "create": "",
-            "import": "Importa i inicia sessió"
+            "import": "Importa i inicia sessió",
+            "recover": ""
         },
         "created_notice": "",
         "drag_to_import": "Fes clic aquí o arrossega-hi la teva còpia de seguretat per a una fàcil importació",
@@ -28,7 +29,13 @@
         },
         "private_key": "Clau privada",
         "public_key": "Clau pública",
-        "recover": "",
+        "recovery": {
+            "description": "",
+            "option_1": "<b>Option 1:</b> If you have a backup email, click on its link and follow the steps.",
+            "option_2": "<b>Option 2:</b> Upload a backup file.",
+            "option_3": "<b>Option 3:</b> Introduce the mnemonic seed.",
+            "title": ""
+        },
         "seed": "Llavor del compte",
         "set_password": "",
         "set_password_description": "",
@@ -40,12 +47,17 @@
     "avatar_alt": "",
     "backup_requirement_explanation": "An account backup is also necessary to later import it to a different browser or computer",
     "backup": {
+        "download_description": "",
         "email": "",
+        "email_description": "",
+        "email_subject": "",
         "encrypt_with_password": "Conjuntament amb la teva contrasenya, aquestes preguntes s'empraran per a xifrar la teva còpia de seguretat.",
         "select_question": "",
         "select_questions": "Selecciona dues preguntes que no siguin informació pública i que puguis recordar fàcilment en el futur.",
         "store_location": "",
-        "title": "Còpia de seguretat"
+        "title": "Còpia de seguretat",
+        "verify": "",
+        "verify_description": ""
     },
     "btn": {
         "back": "Torna enrere",
@@ -59,10 +71,12 @@
         "ok": "D'acord",
         "remove": "Elimina",
         "retry": "Reintenta",
+        "retry_download": "",
         "save": "Desa",
         "saving": "Desant",
         "send_to_email": "",
-        "switch_account": ""
+        "switch_account": "",
+        "verify": ""
     },
     "cannot_import": "",
     "confirm": "Confirma",
@@ -70,8 +84,8 @@
     "confirm_delete": "Segur que vols eliminar {{ name }}?",
     "connected": "Connectat",
     "connecting": "Connectant a la xarxa. Espera si et plau...",
-    "duplicate_email": "",
     "do_it_later": "I'll do it later",
+    "duplicate_email": "",
     "entity": {
         "btn": {
             "create": "Crea entitat"

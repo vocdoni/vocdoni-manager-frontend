@@ -15,6 +15,7 @@ import Password from '../../components/account/New/Password'
 import Questions from '../../components/account/Backup/Questions'
 import Verify from '../../components/account/Backup/Verify'
 import { QuestionAnswer } from '../../lib/types'
+import { normalizeAnswer } from '../../lib/util'
 
 type State = {
     name: string,
@@ -96,15 +97,14 @@ class AccountNew extends Component<undefined, State> {
         }
 
         const spec = qfile.versions[process.env.BACKUP_LINK_VERSION]
-        const answers = this.state.backupAnswers.map(({ answer }) =>
-            answer.replace(/\s*/g, '').toLowerCase()
-        ).join('')
+        const answers = this.state.backupAnswers.map(({ answer }) => normalizeAnswer(answer)).join('')
         const key = Symmetric.encryptString(this.state.seed, `${this.state.password}${answers}`)
+        const auth = Object.keys(spec.auth)[Object.values(spec.auth).findIndex((val) => val === 'pass')]
 
         const proto = Buffer.from(serializeBackupLink({
             version: process.env.BACKUP_LINK_VERSION,
-            auth: spec.auth, // pass
             questions: this.state.backupAnswers.map(({ question }) => question),
+            auth, // pass
             key,
         })).toString('hex')
 
@@ -118,7 +118,7 @@ class AccountNew extends Component<undefined, State> {
             return parts[varname]
         })
 
-        return `${document.location.origin}/${path}`
+        return `https://${process.env.APP_LINKING_DOMAIN}/${path}`
     }
 
     get createAccountContext(): ICreateAccountContext {
