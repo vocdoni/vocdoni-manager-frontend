@@ -1,1 +1,96 @@
-{}
+{
+    "login": {
+        "password": "Mot de passe",
+        "btn": {
+            "sign_in": "Se connecter",
+            "import": "Importer une entité",
+            "create": "Créer une entité"
+        }
+    },
+    "loading": "Chargement…",
+    "image_uploader": {
+        "uploading": "Téléversement de l’image",
+        "upload": "Téléverser l’image"
+    },
+    "field": {
+        "validated": "Validé",
+        "tags": "Étiquettes",
+        "name": "Nom",
+        "last_name": "Nom de famille",
+        "actions": "Actions",
+        "email": "Courriel"
+    },
+    "error": {
+        "timeout": "La demande a pris trop de temps",
+        "retry": "Réessayez",
+        "oops": "Oups, ceci est une erreur.",
+        "invalid_email": "Ce doit être une adresse courriel valide"
+    },
+    "entity": {
+        "title": {
+            "share": "Partager",
+            "new": "Nouvelle entité"
+        },
+        "error": {
+            "not_found": "Entité non trouvée",
+            "loading": "Une erreur s’est produite lors du chargement des données d’entité"
+        },
+        "btn": {
+            "manage": "Gérer mon entité",
+            "create": "Créer une entité"
+        },
+        "field": {
+            "org_email": "Courriel de l’organisation"
+        }
+    },
+    "duplicate_email": "Courriel en double",
+    "connecting": "Connexion au réseau. Veuillez attendre…",
+    "connected": "Connecté",
+    "confirm": "Confirmer",
+    "account": {
+        "import_file_restriction": "Seuls les fichiers .json sont pris en charge",
+        "error": {
+            "password_missmatch": "Les deux mots de passe que vous avez saisis ne correspondent pas !"
+        },
+        "name": "Nom",
+        "title": "Compte",
+        "public_key": "Clé publique",
+        "private_key": "Clé privée",
+        "drag_to_import": "Cliquez ou faites glisser votre fichier de sauvegarde ici pour une importation facile",
+        "creating": "Création du compte, veuillez patienter…",
+        "created": "La création du compte est terminée !",
+        "btn": {
+            "import": "Importation et connexion",
+            "download_backup": "Télécharger le fichier de sauvegarde",
+            "details_already_copied": "J’ai copié les détails de mon Entité"
+        },
+        "balance": "Solde",
+        "address": "Adresse"
+    },
+    "process": {
+        "step": {
+            "emails": "Envoyer les courriels"
+        },
+        "field": {
+            "web_voting_note": "Permet aux membres non inscrits de voter sur une page Web via un lien de vote qui sera envoyé par courriel. Les membres enregistrés doivent de toute façon voter en utilisant Vocdoni App.",
+            "import_census_note": "Définir manuellement la racine et l’URI du recensement (pour le vote CA, n’enverra pas de courriels ni d’autres processus automatisés)"
+        },
+        "error": {
+            "emails": "Il y a eu une erreur lors de l’envoi des courriels."
+        }
+    },
+    "action_in_progress": "Action en cours…",
+    "btn": {
+        "saving": "Enregistrement",
+        "save": "Enregistrer",
+        "retry": "Réessayer",
+        "remove": "Retirer",
+        "ok": "OK",
+        "edit": "Modifier",
+        "create": "Créer",
+        "copy_link": "Copier le lien",
+        "cancel": "Annuler",
+        "back": "Retour"
+    },
+    "accept": "J’accepte <l>{{ what }}</l>"
+}
