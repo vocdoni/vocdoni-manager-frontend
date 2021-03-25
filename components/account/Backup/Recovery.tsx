@@ -3,7 +3,6 @@ import { Trans } from 'react-i18next'
 
 import i18n from '../../../i18n'
 import CreateAccountContext from '../../contexts/CreateAccountContext'
-import Ficon from '../../ficon'
 
 export default class Recovery extends Component<undefined, undefined> {
     static contextType = CreateAccountContext
@@ -12,9 +11,6 @@ export default class Recovery extends Component<undefined, undefined> {
     render() : ReactNode {
         return <>
             <div className='flex justify-between items-center'>
-                <button>
-                    <Ficon icon='ArrowLeft' />
-                </button>
                 <h5 className='text-center text-lg font-normal text-gray-500 flex-1'>
                     {i18n.t('account.recovery.title')}
                 </h5>

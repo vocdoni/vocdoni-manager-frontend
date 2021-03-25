@@ -57,7 +57,8 @@
         "store_location": "Where do you want to store your backup?",
         "title": "Backup",
         "verify": "Verify backup",
-        "verify_description": "To verify that the backup works correctly, check yor e-mail and click the recovery link."
+        "verify_email_description": "To verify that the backup works correctly, check yor e-mail and click the recovery link.",
+        "verify_file_description": ""
     },
     "btn": {
         "back": "Go back",
@@ -85,6 +86,7 @@
     "connected": "Connected",
     "connecting": "Connecting to the network. Please wait...",
     "do_it_later": "I'll do it later",
+    "drag_and_drop_or_click": "",
     "duplicate_email": "Duplicate email",
     "entity": {
         "btn": {

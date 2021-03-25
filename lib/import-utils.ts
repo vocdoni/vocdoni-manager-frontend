@@ -1,7 +1,6 @@
 import { RcFile } from 'antd/lib/upload'
 import xlsx from 'xlsx'
 import { StringDecoder } from 'string_decoder'
-import Bluebird from "bluebird"
 
 import { CSV_MIME_TYPE } from './constants'
 import { FileReaderPromise, getBufferEncoding, getProperFileMimeType } from './file-utils'
@@ -13,20 +12,19 @@ import { VotingFormImportData } from './types'
  *
  * @param RcFile The file
  */
-export function getSpreadsheetReaderForFile(file: RcFile) {
-    return FileReaderPromise(file).then(buffer => {
-        const mime = getProperFileMimeType(file)
+export const getSpreadsheetReaderForFile = async (file: RcFile) : Promise<xlsx.WorkBook> => {
+    const buffer = await FileReaderPromise(file)
+    const mime = getProperFileMimeType(file)
 
-        if (mime === CSV_MIME_TYPE) {
-            const encoding = getBufferEncoding(buffer)
-            const decoder = new StringDecoder(encoding as BufferEncoding)
-            const contents = decoder.write(buffer)
+    if (mime === CSV_MIME_TYPE) {
+        const encoding = getBufferEncoding(buffer)
+        const decoder = new StringDecoder(encoding as BufferEncoding)
+        const contents = decoder.write(buffer)
 
-            return xlsx.read(contents, { type: 'string' })
-        }
+        return xlsx.read(contents, {type: 'string'})
+    }
 
-        return xlsx.read(buffer, { type: 'buffer' })
-    })
+    return xlsx.read(buffer, {type: 'buffer'})
 }
 
 export const getJSONFromWorksheet = (ws: xlsx.WorkSheet): string[][] => {
@@ -38,56 +36,51 @@ type ParseStatus = {
     current: number
 }
 
-export function parseSpreadsheetData(entityId: string, file: RcFile, cb?: (status: ParseStatus) => void): Promise<VotingFormImportData> {
-    let result: VotingFormImportData
+export const parseSpreadsheetData = async (entityId: string, file: RcFile, cb?: (status: ParseStatus) => void): Promise<VotingFormImportData> => {
+    const workbook = await getSpreadsheetReaderForFile(file)
 
-    return getSpreadsheetReaderForFile(file).then(workbook => {
-        const firstSheetName = workbook.SheetNames[0]
-        if (!firstSheetName || (firstSheetName && !workbook.Sheets[firstSheetName])) {
-            throw new Error('The document does not contain a worksheet')
-        }
-        const worksheet = workbook.Sheets[firstSheetName]
+    const firstSheetName = workbook.SheetNames[0]
+    if (!firstSheetName || (firstSheetName && !workbook.Sheets[firstSheetName])) {
+        throw new Error('The document does not contain a worksheet')
+    }
+    const worksheet = workbook.Sheets[firstSheetName]
 
-        let parsedRows = getJSONFromWorksheet(worksheet)
-        const title = parsedRows.shift()
-        result = {
-            title: title.reduce((i, j) => `${i},${j}`),
-            digestedHexClaims: []
-        }
+    let parsed = getJSONFromWorksheet(worksheet)
+    const title = parsed.shift()
+    const result: VotingFormImportData = {
+        title: title.reduce((i, j) => `${i},${j}`),
+        digestedHexClaims: []
+    }
 
-        // Remove empty rows
-        parsedRows = parsedRows.filter((row) => row.length > 0)
-        if (typeof cb === 'function') {
-            cb({
-                current: 0,
-                total: parsedRows.length,
-            })
-        }
-
-        // Throw if mismatch in number of columns between title and any row
-        parsedRows.every((row) => {
-            if (row.length != title.length) {
-                throw new Error("found incompatible rows size")
-            }
+    // Remove empty rows
+    parsed = parsed.filter((row) => row.length > 0)
+    if (typeof cb === 'function') {
+        cb({
+            current: 0,
+            total: parsed.length,
         })
+    }
 
-        // Limit / space the crypto operations
-        let count = 0
-        return Bluebird.map(parsedRows, row => new Bluebird<string>(resolve => {
-            setTimeout(() => {
-                const strRow = importedRowToString(row, entityId)
-                const digestedRow = extractDigestedPubKeyFromFormData(strRow)
-                if (typeof cb === 'function') {
-                    cb({
-                        total: parsedRows.length,
-                        current: ++count,
-                    })
-                }
-                resolve(digestedRow.digestedHexClaim)
-            }, 50)
-        }), { concurrency: 75 })
-    }).then(digestedClaims => {
-        result.digestedHexClaims = digestedClaims
-        return result
+    // Throw if mismatch in number of columns between title and any row
+    parsed.every((row) => {
+        if (row.length !== title.length) {
+            throw new Error("found incompatible rows size")
+        }
     })
+
+    let count = 0
+    result.digestedHexClaims = await Promise.all(parsed.map((row) => new Promise((resolve) => {
+        setTimeout(() => {
+            const claims = extractDigestedPubKeyFromFormData(importedRowToString(row, entityId)).digestedHexClaim
+            if (typeof cb === 'function') {
+                cb({
+                    total: parsed.length,
+                    current: ++count,
+                })
+            }
+            resolve(claims)
+        }, 50)
+    }))) as string[]
+
+    return result
 }

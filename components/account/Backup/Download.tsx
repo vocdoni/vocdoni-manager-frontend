@@ -12,9 +12,10 @@ export default class Download extends Component {
 
     download() : void {
         const date = moment().format('YYYY-MM-DD')
-        downloadFileWithContents(this.context.getBackupLink(), {
-            filename: `vocdoni-backup-${this.context.name}-${date}.txt`,
-            mime: 'text/plain',
+        const name = this.context.name.replace(/[\\/:"*?<>|]+/g, '').replace(' ', '-')
+        downloadFileWithContents(this.context.getBackup(), {
+            filename: `vocdoni-backup-${name}-${date}.bak`,
+            mime: 'application/octet-stream',
         })
     }
 
@@ -41,7 +42,7 @@ export default class Download extends Component {
                 <button className='btn' onClick={this.download.bind(this)}>
                     {i18n.t('btn.retry_download')}
                 </button>
-                <button className='btn primary' onClick={() => this.context.setStep('Verify')}>
+                <button className='btn primary' onClick={() => this.context.setStep('VerifyFile')}>
                     {i18n.t('next')}
                 </button>
             </div>

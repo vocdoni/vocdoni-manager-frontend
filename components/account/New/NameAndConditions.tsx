@@ -42,7 +42,9 @@ export default class NameAndConditions extends Component<undefined, undefined> {
                     type='text'
                     className='form-control'
                     placeholder={i18n.t('account.placeholder.name')}
-                    onChange={this.context.setName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        this.context.setName(e.target.value)
+                    }
                     value={this.context.name}
                 />
             </div>

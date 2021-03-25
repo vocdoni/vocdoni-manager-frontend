@@ -4,7 +4,7 @@ import React, { Component, ReactNode } from 'react'
 import i18n from '../../../i18n'
 import CreateAccountContext from '../../contexts/CreateAccountContext'
 
-export default class Verify extends Component {
+export default class VerifyEmail extends Component {
     static contextType = CreateAccountContext
     context !: React.ContextType<typeof CreateAccountContext>
 
@@ -14,7 +14,7 @@ export default class Verify extends Component {
                 {i18n.t('backup.verify')}
             </h5>
             <div className='spaced-content'>
-                <p>{i18n.t('backup.verify_description')}</p>
+                <p>{i18n.t('backup.verify_email_description')}</p>
             </div>
             <div className='flex flex-row justify-between'>
                 <Link href='/entities/new'>

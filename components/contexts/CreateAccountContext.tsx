@@ -1,23 +1,25 @@
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
-import { ChangeEvent, createContext } from 'react'
+import { createContext } from 'react'
 
 import { QuestionAnswer } from '../../lib/types'
 import { IAppContext } from '../app-context'
 
 export interface ICreateAccountContext extends IAppContext {
-    name: string,
-    setName?(e: ChangeEvent<HTMLInputElement>): void,
-    terms: boolean,
-    setTerms?(e: CheckboxChangeEvent): void,
-    password: string,
-    setPassword?(password: string): void,
-    seed: string,
-    step: string,
-    setStep?(step: string): void,
-    createAccount?(name: string, password: string): void,
     backupAnswers: QuestionAnswer[],
-    setBackupAnswers?(position: number, qa: QuestionAnswer) : void,
-    getBackupLink() : string,
+    createAccount?(name: string, password: string): void,
+    getBackup(): Uint8Array,
+    name: string,
+    password: string,
+    questions: {[key: number]: string},
+    seed: string,
+    setBackupAnswers?(position: number, qa: QuestionAnswer): void,
+    setBackupQuestions?(questions: {[key: number]: string}),
+    setName?(name: string): void,
+    setPassword?(password: string): void,
+    setStep?(step: string): void,
+    setTerms?(e: CheckboxChangeEvent): void,
+    step: string,
+    terms: boolean,
 }
 
 const CreateAccountContext = createContext<ICreateAccountContext>(null)

@@ -57,6 +57,8 @@
         "store_location": "",
         "title": "Còpia de seguretat",
         "verify": "",
+        "verify_email_description": "",
+        "verify_file_description": "",
         "verify_description": ""
     },
     "btn": {
@@ -85,6 +87,7 @@
     "connected": "Connectat",
     "connecting": "Connectant a la xarxa. Espera si et plau...",
     "do_it_later": "I'll do it later",
+    "drag_and_drop_or_click": "",
     "duplicate_email": "",
     "entity": {
         "btn": {

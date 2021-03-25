@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
-import { Random, serializeBackupLink, Symmetric } from 'dvote-js'
-import moment from 'moment'
+import { AccountBackup, Random } from 'dvote-js'
 
-import qfile from '../../lib/common/backup/questions.spec.json'
 import i18n from '../../i18n'
 import AppContext from '../../components/app-context'
 import AskForBackup from '../../components/account/New/AskForBackup'
@@ -13,9 +11,10 @@ import Email from '../../components/account/Backup/Email'
 import NameAndConditions from '../../components/account/New/NameAndConditions'
 import Password from '../../components/account/New/Password'
 import Questions from '../../components/account/Backup/Questions'
-import Verify from '../../components/account/Backup/Verify'
+import RecoveryForm from '../../components/account/Backup/RecoveryForm'
+import VerifyEmail from '../../components/account/Backup/VerifyEmail'
+import VerifyFile from '../../components/account/Backup/VerifyFile'
 import { QuestionAnswer } from '../../lib/types'
-import { normalizeAnswer } from '../../lib/util'
 
 type State = {
     name: string,
@@ -23,6 +22,7 @@ type State = {
     password: string,
     seed: string,
     step: string,
+    questions: {[key: number]: string},
     backupAnswers: QuestionAnswer[],
 }
 
@@ -37,8 +37,8 @@ class AccountNew extends Component<undefined, State> {
         // For debugging and development purposes, you can change this to the step you wanna check.
         // Take in mind some of these steps require stuff to be in the context tho (from previous steps).
         step: 'NameAndConditions',
-        // step: 'Questions',
         backupAnswers: [],
+        questions: {},
     }
 
     stepComponents = {
@@ -48,7 +48,9 @@ class AccountNew extends Component<undefined, State> {
         'Questions': Questions,
         'Download': Download,
         'Email': Email,
-        'Verify': Verify,
+        'VerifyEmail': VerifyEmail,
+        'VerifyFile': VerifyFile,
+        'RecoveryForm': RecoveryForm,
     }
 
     componentDidMount(): void {
@@ -63,12 +65,12 @@ class AccountNew extends Component<undefined, State> {
         this.setState({ backupAnswers })
     }
 
-    setField(field: string, e: React.ChangeEvent<HTMLInputElement>): void {
-        this.setState({ [field]: e.target.value } as any)
+    setBackupQuestions(questions: {[key: number]: string}): void {
+        this.setState({ questions })
     }
 
-    setPassword(password: string) : void {
-        this.setState({password})
+    setField(field: string, value: string): void {
+        this.setState({ [field]: value } as any)
     }
 
     setTerms(e: CheckboxChangeEvent): void {
@@ -88,50 +90,34 @@ class AccountNew extends Component<undefined, State> {
         this.context.onNewWallet(this.context.web3Wallet.getWallet())
     }
 
-    getBackupLink(): string {
-        console.log(this.state)
+    getBackup(): Uint8Array {
+        // console.log(this.state)
         if (!this.state.seed || !this.state.password.length || !this.state.name.length || !this.state.backupAnswers.length) {
             // a user should never see this error, it's just a security check in case something went terribly wrong
             // devs will probably see it more often if they mess the steps order
             throw new Error('fatal error')
         }
 
-        const spec = qfile.versions[process.env.BACKUP_LINK_VERSION]
-        const answers = this.state.backupAnswers.map(({ answer }) => normalizeAnswer(answer)).join('')
-        const key = Symmetric.encryptString(this.state.seed, `${this.state.password}${answers}`)
-        const auth = Object.keys(spec.auth)[Object.values(spec.auth).findIndex((val) => val === 'pass')]
+        const seed = Buffer.from(this.state.seed, 'ascii')
+        const questions = this.state.backupAnswers.map(({ question }) => parseInt(question, 10))
+        const answers = this.state.backupAnswers.map(({ answer }) => answer)
 
-        const proto = Buffer.from(serializeBackupLink({
-            version: process.env.BACKUP_LINK_VERSION,
-            questions: this.state.backupAnswers.map(({ question }) => question),
-            auth, // pass
-            key,
-        })).toString('hex')
-
-        const parts = {
-            alias: encodeURIComponent(this.state.name),
-            date: moment().format('YYYY-MM-DD'),
-            'encoded-link': proto,
-        }
-
-        const path = spec.linkFormat.replace(/\{([\w-]+)\}/ig, (full, varname) => {
-            return parts[varname]
-        })
-
-        return `https://${process.env.APP_LINKING_DOMAIN}/${path}`
+        return AccountBackup.create(this.state.name, this.state.password, seed, questions, answers)
     }
 
     get createAccountContext(): ICreateAccountContext {
         return {
             ...this.context,
             ...this.state,
-            setTerms: this.setTerms.bind(this),
-            setName: this.setField.bind(this, 'name'),
-            setPassword: this.setPassword.bind(this),
-            setStep: this.setStep.bind(this),
             createAccount: this.createAccount.bind(this),
+            getBackup: this.getBackup.bind(this),
             setBackupAnswers: this.setBackupAnswer.bind(this),
-            getBackupLink: this.getBackupLink.bind(this),
+            setBackupQuestions: this.setBackupQuestions.bind(this),
+            setName: (name: string) => this.setField('name', name),
+            setPassword: (password: string) => this.setField('password', password),
+            setSeed: (seed: string) => this.setState({ seed }),
+            setStep: this.setStep.bind(this),
+            setTerms: this.setTerms.bind(this),
         }
     }
 

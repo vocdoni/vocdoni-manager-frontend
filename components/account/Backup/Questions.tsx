@@ -1,8 +1,8 @@
 import { Select } from 'antd'
+import { AccountBackup } from 'dvote-js'
 import React, { Component, ReactNode } from 'react'
 
 import i18n from '../../../i18n'
-import qfile from '../../../lib/common/backup/questions.spec.json'
 import CreateAccountContext from '../../contexts/CreateAccountContext'
 import Ficon from '../../ficon'
 
@@ -74,15 +74,13 @@ export default class Questions extends Component<undefined, QuestionsState> {
     }
 
     componentDidMount() : void {
-        const spec = qfile.versions[process.env.BACKUP_LINK_VERSION]
         const questions : OptionValue[] = []
-        const active : number[] = spec.active
-        const keys = Object.values(spec.questions)
+        const keys = AccountBackup.questions()
 
-        for (const id of active) {
+        for (const id in keys) {
             questions.push({
                 label: i18n.t(`backup:${keys[id]}`),
-                value: id.toString(),
+                value: id,
             })
         }
         this.setState({questions})

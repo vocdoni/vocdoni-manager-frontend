@@ -25,6 +25,12 @@ export default class Email extends Component<undefined, State> {
         this.setState({ email: e.target.value })
     }
 
+    getBackupLink() : string {
+        const hex = Buffer.from(this.context.getBackup()).toString('hex')
+
+        return `https://${process.env.APP_LINKING_DOMAIN}/recovery/#/${hex}`
+    }
+
     sendEmail(): void {
         this.setState({
             error: null,
@@ -39,7 +45,7 @@ export default class Email extends Component<undefined, State> {
 
         const mail = {
             subject: i18n.t('backup.email_subject'),
-            body: encodeURIComponent(this.context.getBackupLink()),
+            body: encodeURIComponent(this.getBackupLink()),
         }
 
         this.context.toggleUnloadCheck(false)
@@ -86,7 +92,7 @@ export default class Email extends Component<undefined, State> {
                 <button
                     className='btn primary w-full block'
                     disabled={!this.state.sent}
-                    onClick={() => this.context.setStep('Verify')}
+                    onClick={() => this.context.setStep('VerifyEmail')}
                 >
                     {i18n.t('next')}
                 </button>
