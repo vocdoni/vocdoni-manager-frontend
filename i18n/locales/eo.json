@@ -1,1 +1,252 @@
-{}
+{
+    "process": {
+        "end_date": "Fina dato (proksimuma)",
+        "detailed_info": "Detalaj Informoj",
+        "btn": {
+            "mark_ended": "Marki kiel finitan",
+            "publish": "Eldoni finan procezon",
+            "requests": "Demandoj kaj respondoj",
+            "remove": "Forigi procezon for de ento",
+            "question_add": "+ Aldoni demandon",
+            "login": "Ensaluti",
+            "goto_vote": "Voĉdoni",
+            "documentation": "Dokumentoj",
+            "confirm": "Konfirmu vian voĉdonon",
+            "cast_vote": "Voĉdoni",
+            "create": "Krei procezon",
+            "option_add": "+ Aldoni opcion",
+            "new": "Nova"
+        },
+        "error": {
+            "emails": "Okazis eraro pri sendado de retpoŝtaj mesaĝoj.",
+            "select_all": "Bonvolu voĉdoni pri ĉiuj demandoj.",
+            "status": "Malsukcesis ŝargi staton de procezo",
+            "not_in_census": "Vi ne estas en la censo",
+            "invalid_dates": "Ne validas la datoj",
+            "missing_title": "La procezo devas havi titolon",
+            "invalid_private_key": "Ne validas la privata ŝlosilo",
+            "census_invalid": "Nevalidaj censaj datenoj",
+            "not_found": "Ne troviĝis ento aŭ procezo"
+        },
+        "field": {
+            "app_unavailable": "Ne disponeblas en la programo.",
+            "docs_button": "Butonon por dokumentaro",
+            "qna_button": "Butono por demandoj kaj respondoj",
+            "questions": {
+                "blank": "Malplena",
+                "yes": "Jes",
+                "title": "Demandoj",
+                "no": "Ne"
+            },
+            "real_time_results": "Realtempaj rezultoj",
+            "start": "Komenco de voĉdonado",
+            "web_voting": "Reta voĉdonado",
+            "voting_channels": "Voĉdonaj kanaloj",
+            "title": "Titolo de procezo",
+            "publishing": "Eldonado",
+            "census_uri": "Censa Retadreso",
+            "census_root": "Censa Radiko",
+            "participants_all": "Ĉiuj anoj",
+            "participants": "Partoprenantoj",
+            "import_census": "Importi censon",
+            "description": "Priskribo",
+            "period": "Periodo"
+        },
+        "actions": "Agoj",
+        "create_note": "Kreo de la procezo registros ĝin en la blokĉenon, kiu <b>ne estas malfarebla</b>. Ĉu daŭrigi?",
+        "start_block": "Komenca bloko",
+        "end_block": "Fina bloko",
+        "step": {
+            "balance": "Kontroli saldon",
+            "emails": "Sendi retpoŝtajn mesaĝojn",
+            "create": "Krei procezon",
+            "census": "Krei censon"
+        },
+        "details": "Detaloj pri procezo",
+        "creating": "Kreante procezon…",
+        "voting": "Voĉdonado",
+        "loading_results": "Ŝargante rezultojn…",
+        "loading": "Ŝargante la detalojn pri procezo…",
+        "status": {
+            "inactive": "Ankoraŭ ne aktiva",
+            "title": "Stato",
+            "closed": "Fermita",
+            "can_vote": "Vi rajtas voĉdoni",
+            "active": "Aktiva"
+        },
+        "type": "Tipo de procezo",
+        "thanks": "Dankon pro voĉdonado!",
+        "your_selections": "Jen viaj elektoj:",
+        "question_number": "Demando {{ num }}",
+        "results": "Rezultoj",
+        "id": "Identigilo de procezo",
+        "general": "Ĝenerala",
+        "filter": {
+            "ended": "Nur finitaj",
+            "active": "Nur aktivaj",
+            "all": "Ĉiuj procezoj"
+        },
+        "login_title": "Tajpu viajn datenojn",
+        "new": "Nova procezo",
+        "census_size": "Grando de censo"
+    },
+    "news": {
+        "title": {
+            "feed": "Abonfluo",
+            "header": "Ĉapo",
+            "new": "Nova afiŝo"
+        },
+        "field": {
+            "header_image": "Ĉapbildo",
+            "content": "Enhavo",
+            "title": "Titolo"
+        }
+    },
+    "policy": "la regulojn pri privateco",
+    "powered_by": "Funkcianta per Vocdoni",
+    "account": {
+        "please_copy_details": "Bonvolu savkopii la jenajn detaloj antaŭ ol daŭrigi",
+        "error": {
+            "cannot_create": "Okazis eraro pri kreo de la konto. Bonvolu reprovi",
+            "cannot_import": "Okazis eraro pri importo de la konto. Bonvolu reprovi",
+            "password_missmatch": "Ne kongruas la du pasvortoj tajpitaj de vi!",
+            "missing_password": "La pasvorto necesas por malĉifri ĉion!",
+            "missing_name": "Vi devas specifi la nomon de konto",
+            "missing_seed": "La semo estas deviga"
+        },
+        "drag_to_import": "Alklaku aŭ trenu vian savkopion ĉi tie por facile importi ĝin",
+        "btn": {
+            "download_backup": "Elŝuti savkopion",
+            "details_already_copied": "Mi kopiis la detalojn pri mia Ento",
+            "import": "Importi kaj ensaluti"
+        },
+        "manually_set": "Aŭ mane agordu viajn detalojn ĉi-sube:",
+        "import_file_restriction": "Nur JSON-dosieroj estas subtenataj",
+        "created": "Konto kreiĝis!",
+        "balance": "Saldo",
+        "seed": "Semo de konto",
+        "creating": "Kreante konton, bonvolu atendi…",
+        "import_title": "Importi konton",
+        "title": "Konto",
+        "public_key": "Publika ŝlosilo",
+        "private_key": "Privata ŝlosilo",
+        "name": "Nomo",
+        "address": "Adreso"
+    },
+    "members": {
+        "import": {
+            "select_file_first": "Elektu alŝutotan dosieron",
+            "manual": "Mana importo",
+            "title": "Importi anojn",
+            "preview": "Antaŭrigardo de datenoj",
+            "confirm": "Konfirmu importon"
+        },
+        "btn": {
+            "create_census": "Krei voĉdonan censon",
+            "download_template": "Elŝuti ŝablonon",
+            "row_delete": "- Forigi vicon",
+            "row_add": "+ Aldoni vicon",
+            "import": "Importi datenojn"
+        },
+        "census_name": "Tajpu nomon de censo",
+        "list": {
+            "title": "Listo de anoj",
+            "tools": "Iloj"
+        }
+    },
+    "duplicate_email": "Duplikata retpoŝta adreso",
+    "entity": {
+        "error": {
+            "loading": "Okazis eraro dum ŝargado de datenoj pri la ento",
+            "not_found_description": "La serĉata ento ne troveblas",
+            "not_found": "Ento ne troviĝis"
+        },
+        "field": {
+            "callback_url": "URL por referenca alvoko",
+            "callback_secret": "Sekretaĵo por referenca alvoko",
+            "org_email": "Retpoŝta adreso ĉe organizaĵo",
+            "org_name": "Nomo de organizaĵo"
+        },
+        "title": {
+            "share": "Diskonigi",
+            "create": "Krei vian enton",
+            "new": "Nova ento"
+        },
+        "loading": "Ŝargante la detalojn pri la ento…",
+        "btn": {
+            "manage": "Administri mian enton",
+            "create": "Krei enton"
+        }
+    },
+    "action_in_progress": "Ago estas okazanta…",
+    "error": {
+        "update": "Okazis eraro ĝisdatigante la blokĉenajn informojn. Reŝargu la paĝon, se vi ne vidas ŝanĝojn post iom da tempo.",
+        "timeout": "La peto daŭris tro longe",
+        "invalid_uri": "Tio devas esti hiperligo de HTTP aŭ IPFS",
+        "invalid_request": "Ne validas la petitaj datenoj",
+        "general": "Okazis ĝenerala eraro pri la reto",
+        "file_format_unknown": "Alŝutiĝis dosieron de nekonata formo",
+        "cannot_read_entity_metadata": "Malsukcesis legi la metadatenojn pri la ento",
+        "invalid_claims_found": "Troviĝis {{ total }} nevalidaj asertoj",
+        "insufficient_funds": "Nesufiĉa da saldo",
+        "retry": "Reprovu",
+        "oops": "Ho, jen eraro.",
+        "not_found": "Ne troviĝis",
+        "invalid_email": "Ĝi devas esti valida retpoŝta adreso",
+        "cannot_connect": "Ne povis konekti"
+    },
+    "btn": {
+        "copy_link": "Kopii hiperligon",
+        "back": "Reen",
+        "remove": "Forigi",
+        "saving": "Konservante",
+        "retry": "Reprovi",
+        "save": "Konservi",
+        "ok": "Bone",
+        "edit": "Redakti",
+        "create": "Krei",
+        "cancel": "Nuligi"
+    },
+    "connecting": "Konektante al la reto. Bonvolu atendi…",
+    "confirm_delete": "Ĉu vi certas, ke vi volas forigi {{ name }}?",
+    "image_uploader": {
+        "uploading": "Alŝutante bildon",
+        "upload": "Alŝuti bildon"
+    },
+    "cannot_import": "Malsukcesis importi anojn {{ error }}",
+    "tos": "la uzkondiĉojn",
+    "or": "aŭ",
+    "menu": {
+        "users": "Administrado de uzantoj",
+        "settings": "Agordoj",
+        "import": "Importi anojn",
+        "participation": "Partoprenado",
+        "news": "Novaĵoj",
+        "members": "Anoj",
+        "details": "Detaloj",
+        "create_post": "Krei afiŝon",
+        "communication": "Komunikado",
+        "censuses": "Censoj"
+    },
+    "password_confirm": "Konfirmu pasvorton",
+    "password": "Pasvorto",
+    "login": {
+        "password": "Pasvorto",
+        "btn": {
+            "sign_in": "Ensaluti",
+            "import": "Importi enton",
+            "create": "Krei enton"
+        }
+    },
+    "loading": "Ŝargante…",
+    "field": {
+        "tags": "Etikedoj",
+        "name": "Nomo",
+        "last_name": "Familia nomo",
+        "email": "Retpoŝta adreso",
+        "actions": "Agoj"
+    },
+    "connected": "Konektite",
+    "confirm": "Konfirmi",
+    "accept": "Mi akceptas <l>{{ what }}</l>"
+}
