@@ -11,7 +11,7 @@
             "login": "Ensaluti",
             "goto_vote": "Voĉdoni",
             "documentation": "Dokumentoj",
-            "confirm": "Konfirmu vian voĉdonon",
+            "confirm": "Konfirmu vian voĉon",
             "cast_vote": "Voĉdoni",
             "create": "Krei procezon",
             "option_add": "+ Aldoni opcion",
@@ -26,7 +26,19 @@
             "missing_title": "La procezo devas havi titolon",
             "invalid_private_key": "Ne validas la privata ŝlosilo",
             "census_invalid": "Nevalidaj censaj datenoj",
-            "not_found": "Ne troviĝis ento aŭ procezo"
+            "not_found": "Ne troviĝis ento aŭ procezo",
+            "not_found_description": "Aŭ la ento aŭ la serĉata procezo ne troveblas",
+            "census_undefined": "Eraro pri akirado de taŭga censo por elekto",
+            "starts_soon": "La komenca dato devas esti almenaŭ kelkaj minutoj post nuno",
+            "timeout": "Tro longe daŭris la ŝargado de la listo de voĉdonaj procezoj",
+            "cannot_vote": "Malsukcesis registri vian voĉon",
+            "cannot_load": "Okazis eraro pri ŝargado de la voĉoj",
+            "ends_soon": "La fina dato devas esti post la komenca dato",
+            "invalid_frame": "La komenca dato devas esti antaŭ la fina dato",
+            "wrong_value": "Ne validas la elektita valoro por ĉi tiu opcio",
+            "generic": "Malsukcesis ŝargi unu aŭ pluraj censoj",
+            "census": "Malsukcesis kontroli la censon. Reprovu.",
+            "cannot_create": "Malsukcesis krei voĉdonan procezon"
         },
         "field": {
             "app_unavailable": "Ne disponeblas en la programo.",
@@ -50,7 +62,17 @@
             "participants": "Partoprenantoj",
             "import_census": "Importi censon",
             "description": "Priskribo",
-            "period": "Periodo"
+            "period": "Periodo",
+            "import_spreadsheet_note": "Voĉdonantoj aŭtentikiĝos per kompletigo de formularo pri la atributoj en la kalkultabelo. Ĉi tiu metodo ne permesas uzi la poŝaparatan programon por voĉdoni. La kalkultabela dosiero neniam estas alŝutita, kaj nur fingropremaĵo de la atributoj de uzanto estas uzata por aŭtentikigo.",
+            "import_spreadsheet": "Per kalkultabelo (Atributa aŭtentikigo)",
+            "web_voting_note": "Permesi al neregistritaj anoj voĉdoni retpaĝe per voĉdona hiperligo sendota retpoŝte. Registritaj anoj devas voĉdoni per la poŝaparata programo Vocdoni.",
+            "qna_button_note": "Montri butonon pri Oftaj Demandoj ligitan tien, kie vi volas.",
+            "import_census_note": "Mane agordi la censan radikon kaj URI (por voĉdonado per atesta aŭtoritato, tio ne kaŭzos sendadon de retpoŝtaj mesaĝoj nek aliajn aŭtomatajn procezojn)",
+            "census_uri_note": "Aŭ URI de Merkle-arbo aŭ finpunkta URL de atesta aŭtoritato",
+            "live_streaming": "Tuja elsendado",
+            "docs_button_note": "Montri butonon pri Dokumentaro ligitan tien, kie vi volas.",
+            "real_time_results_note": "Voĉdonaj rezultoj videblos antaŭ ol la procezo finiĝos.",
+            "end": "Fino de voĉdonado"
         },
         "actions": "Agoj",
         "create_note": "Kreo de la procezo registros ĝin en la blokĉenon, kiu <b>ne estas malfarebla</b>. Ĉu daŭrigi?",
@@ -72,7 +94,14 @@
             "title": "Stato",
             "closed": "Fermita",
             "can_vote": "Vi rajtas voĉdoni",
-            "active": "Aktiva"
+            "active": "Aktiva",
+            "not_started": "Voĉdonado ankoraŭ ne komenciĝis",
+            "submitting": "Sendante vian voĉdonon",
+            "vote_registered": "Registriĝis via voĉdono",
+            "unsynced": "Ne sinkronigita",
+            "finishes": "Finiĝos je {{ date }}",
+            "finished": "Finiĝis je {{ date }}",
+            "ended": "Finiĝis la voĉdona procezo"
         },
         "type": "Tipo de procezo",
         "thanks": "Dankon pro voĉdonado!",
@@ -88,7 +117,24 @@
         },
         "login_title": "Tajpu viajn datenojn",
         "new": "Nova procezo",
-        "census_size": "Grando de censo"
+        "census_size": "Grando de censo",
+        "confirm_mark_ended": "La procezo estos markita kiel finita, kaj la voĉoj ekekzameniĝos (se tio necesas). Ĉu daŭrigi?",
+        "channels": {
+            "intro": "Voĉdonado per la poŝaparata programo Vocdoni estas la sola metodo, kiu nuntempe garantias plenan anonimecon kaj maksimuman sekurecon.",
+            "list_items": "Tuja elsendado estas ŝaltita;Atingo por neregistritaj uzantoj devas esti garantiata;Atributa aŭtentikigo estas elektita por difini partoprenantojn.",
+            "list": "Reta voĉdonado ofertiĝas kiel kroma alternativo se:"
+        },
+        "media": "Aŭdvidaĵoj",
+        "nullifier_note": "Bonvolu konservi la jenan kodon kiel la unikan kvitancon de via baloto:",
+        "time_frame": "Tempintervalo",
+        "login_uri": "Ensaluta URI",
+        "vote_registered_on": "Via voĉo registriĝis je {{ date }}",
+        "submitted_note": "Riceviĝis kaj sukcese traktiĝis via voĉo",
+        "submitted": "Sendiĝis via voĉo",
+        "votes_received": "Voĉoj ricevitaj: {{ total }}",
+        "confirm_vote": "Vi estas voĉdononta. Tio ne estas malfarebla! Ĉu daŭrigi?",
+        "start_date": "Komenca dato (proksimuma)",
+        "created": "Kreiĝis la voĉdona procezo de identigilo {{id}}. {{averti}}"
     },
     "news": {
         "title": {
@@ -99,8 +145,12 @@
         "field": {
             "header_image": "Ĉapbildo",
             "content": "Enhavo",
-            "title": "Titolo"
-        }
+            "title": "Titolo",
+            "header_image_note": "Se vi ne havas bildojn, provu trovi unu ĉe unsplash.com."
+        },
+        "confirm_delete": "La elektita afiŝo ne plu atingeblos, kaj tio ne estas malfarebla. Ĉu daŭrigi?",
+        "deleted_successfuly": "Forviŝiĝis la afiŝo",
+        "delete_error": "Malsukcesis forviŝi afiŝon"
     },
     "policy": "la regulojn pri privateco",
     "powered_by": "Funkcianta per Vocdoni",
@@ -112,7 +162,8 @@
             "password_missmatch": "Ne kongruas la du pasvortoj tajpitaj de vi!",
             "missing_password": "La pasvorto necesas por malĉifri ĉion!",
             "missing_name": "Vi devas specifi la nomon de konto",
-            "missing_seed": "La semo estas deviga"
+            "missing_seed": "La semo estas deviga",
+            "not_found_description": "Ŝajne via konto ne estas ligita al ekzistanta ento. Ĉu krei enton nun?"
         },
         "drag_to_import": "Alklaku aŭ trenu vian savkopion ĉi tie por facile importi ĝin",
         "btn": {
@@ -131,7 +182,8 @@
         "public_key": "Publika ŝlosilo",
         "private_key": "Privata ŝlosilo",
         "name": "Nomo",
-        "address": "Adreso"
+        "address": "Adreso",
+        "import_finish": "Finu la procezon agordante la nomon de la ento kaj la pasvorton de la ŝlosila paro."
     },
     "members": {
         "import": {
@@ -139,19 +191,26 @@
             "manual": "Mana importo",
             "title": "Importi anojn",
             "preview": "Antaŭrigardo de datenoj",
-            "confirm": "Konfirmu importon"
+            "confirm": "Konfirmu importon",
+            "description": "En ĉi tiu sekcio vi povas aldoni novajn anojn al la datenbanko de via organizo. Se vi alŝutos la kalkultabelon de la atributoj de ĉiu uzanto, do generiĝos individua validiga hiperligo, kiun vi devos sendi al ĉiuj uzantoj, por ke ili registru sin en la enton.",
+            "template": "Uzu la jenan kalkultabelan ŝablonon por alŝuti liston kun novaj anoj",
+            "confirm_note": "Se la enhavo en la antaŭrigardo estas ĝusta, alklaku la butonon por daŭrigi."
         },
         "btn": {
             "create_census": "Krei voĉdonan censon",
             "download_template": "Elŝuti ŝablonon",
             "row_delete": "- Forigi vicon",
             "row_add": "+ Aldoni vicon",
-            "import": "Importi datenojn"
+            "import": "Importi datenojn",
+            "download_validation_links": "Elŝuti validigajn hiperligojn"
         },
         "census_name": "Tajpu nomon de censo",
         "list": {
             "title": "Listo de anoj",
-            "tools": "Iloj"
+            "tools": "Iloj",
+            "tools_note": "Validigaj hiperligoj estas uzataj por registri anojn de via organizaĵo. Elŝutu la liston de hiperligoj, kaj sendu al ĉiuj anoj hiperligojn por ke ili registru sin.",
+            "description": "Jen la listo de anoj de via ento. Ĉi tie vi povas generi validigajn hiperligojn por ke anoj registru sin por doni al si voĉdonrajton. Vi povas krei censojn por voĉdonaj procezoj pri registritaj anoj.",
+            "census_note": "Vi povas krei censojn por doni voĉdonrajtojn al uzantoj jam validigitaj."
         }
     },
     "duplicate_email": "Duplikata retpoŝta adreso",
@@ -176,7 +235,10 @@
         "btn": {
             "manage": "Administri mian enton",
             "create": "Krei enton"
-        }
+        },
+        "heads-up": "Memoru, ke ĉio estas ĉifrita en via TTT-legilo. Se via aparato rompiĝas, perdiĝas, ŝteliĝas, aŭ datene koruptiĝas, Vocdoni ne povas restaŭri vian enton.",
+        "welcome": "Bonvenon! Per la ĉi-subaj paŝoj vi kreos enton en Vocdoni. <br /> Gravas sekure konservi la pasvorton kaj ĉiujn informojn sur la sekva paĝo; tio estas la sola maniero atingi vian enton.",
+        "qr_note": "Skanante ĉi tiun QR-kodon per la poŝaparata programo de Vocdoni, oni povas aboni vian organizaĵon."
     },
     "action_in_progress": "Ago estas okazanta…",
     "error": {
@@ -193,7 +255,12 @@
         "oops": "Ho, jen eraro.",
         "not_found": "Ne troviĝis",
         "invalid_email": "Ĝi devas esti valida retpoŝta adreso",
-        "cannot_connect": "Ne povis konekti"
+        "cannot_connect": "Ne povis konekti",
+        "insufficient_funds_note": "Por fari la transakcion, vi devas akiri ĵetonojn {{token}}. <br /> Kopiu la jenan adreson kaj kontaktu nin: <code>{{address}}</code>",
+        "connection": "Ho, okazis problemo pri konektado al niaj servoj.",
+        "wrong_password": "Malsukcesis malŝlosi la monujon. Bonvolu kontroli vian pasvorton.",
+        "invalid_spreadsheet_data": "La tajpitaj datenoj ŝajnas neĝustaj; bonvolu kontroli ilin.",
+        "invalid_format_contents": "La datenoj ŝajnas ne havi ĝustan formon"
     },
     "btn": {
         "copy_link": "Kopii hiperligon",
@@ -211,7 +278,11 @@
     "confirm_delete": "Ĉu vi certas, ke vi volas forigi {{ name }}?",
     "image_uploader": {
         "uploading": "Alŝutante bildon",
-        "upload": "Alŝuti bildon"
+        "upload": "Alŝuti bildon",
+        "error": {
+            "mime": "Nur JPEG- kaj PNG-dosieroj estas permesataj. La dosiero alŝutita de vi ne estas permesata.",
+            "filesize": "La bildo estas pli granda ol la aktuala maksimumo ({{limit}})"
+        }
     },
     "cannot_import": "Malsukcesis importi anojn {{ error }}",
     "tos": "la uzkondiĉojn",
@@ -236,7 +307,8 @@
             "sign_in": "Ensaluti",
             "import": "Importi enton",
             "create": "Krei enton"
-        }
+        },
+        "description": "Ĉe ĉi tiu paĝo vi povas krei kaj administri enton, eldoni novaĵojn, administri censojn, kaj krei voĉdonajn procezojn."
     },
     "loading": "Ŝargante…",
     "field": {
@@ -244,9 +316,13 @@
         "name": "Nomo",
         "last_name": "Familia nomo",
         "email": "Retpoŝta adreso",
-        "actions": "Agoj"
+        "actions": "Agoj",
+        "validated": "Konfirmita"
     },
     "connected": "Konektite",
     "confirm": "Konfirmi",
-    "accept": "Mi akceptas <l>{{ what }}</l>"
+    "accept": "Mi akceptas <l>{{ what }}</l>",
+    "uploader": {
+        "spreadsheets_note": "Trenu aŭ alklaku por foliumi dosierojn"
+    }
 }
