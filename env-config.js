@@ -1,7 +1,7 @@
 // This file is evaluated when exporting the frontend application
 // The environment variabled need to be set locally on in the CI/CD console
 
-const lang = 'en'
+const lang = 'ca'
 const COMMIT_SHA = process.env.COMMIT_SHA || 'development'
 const networkEnv = process.env.VOCDONI_ENVIRONMENT || 'dev'
 let bootnodes = 'https://bootnodes.vocdoni.net/gateways.json'
