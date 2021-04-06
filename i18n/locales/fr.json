@@ -24,24 +24,35 @@
         "timeout": "La demande a pris trop de temps",
         "retry": "Réessayez",
         "oops": "Oups, ceci est une erreur.",
-        "invalid_email": "Ce doit être une adresse courriel valide"
+        "invalid_email": "Ce doit être une adresse courriel valide",
+        "file_format_unknown": "Format de fichier envoyé inconnu",
+        "connection": "Oups ! Une erreur s'est produite lors de la connexion à nos services.",
+        "cannot_read_entity_metadata": "Impossible de lire les métadonnées de l'entité",
+        "cannot_connect": "Impossible de se connecter"
     },
     "entity": {
         "title": {
             "share": "Partager",
-            "new": "Nouvelle entité"
+            "new": "Nouvelle entité",
+            "create": "Créez votre entité"
         },
         "error": {
             "not_found": "Entité non trouvée",
-            "loading": "Une erreur s’est produite lors du chargement des données d’entité"
+            "loading": "Une erreur s’est produite lors du chargement des données d’entité",
+            "not_found_description": "L'entité que vous recherchez est introuvable"
         },
         "btn": {
             "manage": "Gérer mon entité",
             "create": "Créer une entité"
         },
         "field": {
-            "org_email": "Courriel de l’organisation"
-        }
+            "org_email": "Courriel de l’organisation",
+            "org_name": "Nom de l’organisation"
+        },
+        "welcome": "Bienvenue ! Dans les prochaines étapes, vous allez créer une entité dans Vocdoni. <br /> Il est important de conserver le mot de passe et toutes les informations de la page suivante dans un endroit sûr, c'est le seul moyen d'accéder à votre entité.",
+        "qr_note": "En scannant ce QR code avec l’application Vocdoni, un utilisateur peut s’abonner à l’activité de votre organisation.",
+        "loading": "Chargement des informations sur l'entité…",
+        "heads-up": "Gardez à l'esprit que tout est chiffré dans votre navigateur. Si votre appareil est cassé, perdu, volé ou si vos données sont corrompues, il n'y a aucun moyen pour Vocdoni de récupérer votre entité."
     },
     "duplicate_email": "Courriel en double",
     "connecting": "Connexion au réseau. Veuillez attendre…",
@@ -50,7 +61,12 @@
     "account": {
         "import_file_restriction": "Seuls les fichiers .json sont pris en charge",
         "error": {
-            "password_missmatch": "Les deux mots de passe que vous avez saisis ne correspondent pas !"
+            "password_missmatch": "Les deux mots de passe que vous avez saisis ne correspondent pas !",
+            "not_found_description": "Il semble que votre compte ne soit pas lié à une entité existante. Voulez-vous la créer maintenant ?",
+            "missing_password": "Le mot de passe est nécessaire pour tout déchiffrer !",
+            "missing_name": "Vous devez spécifier un nom de compte",
+            "cannot_import": "Une erreur s'est produite lors de l'importation du compte. Veuillez réessayer",
+            "cannot_create": "Une erreur s'est produite lors de la création du compte. Veuillez réessayer"
         },
         "name": "Nom",
         "title": "Compte",
@@ -65,7 +81,11 @@
             "details_already_copied": "J’ai copié les détails de mon Entité"
         },
         "balance": "Solde",
-        "address": "Adresse"
+        "address": "Adresse",
+        "please_copy_details": "Veuillez conserver une copie des informations suivantes avant de continuer",
+        "manually_set": "Ou définissez manuellement vos informations ci-dessous :",
+        "import_title": "Importer un compte",
+        "import_finish": "Terminez maintenant le processus en définissant un nom d'entité et le mot de passe attendu pour la paire de clés."
     },
     "process": {
         "step": {
@@ -92,5 +112,7 @@
         "cancel": "Annuler",
         "back": "Retour"
     },
-    "accept": "J’accepte <l>{{ what }}</l>"
+    "accept": "J’accepte <l>{{ what }}</l>",
+    "confirm_delete": "Êtes-vous sûr de vouloir supprimer {{ name }} ?",
+    "cannot_import": "Impossible d'importer les membres {{ error }}"
 }
