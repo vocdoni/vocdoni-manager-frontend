@@ -22,7 +22,11 @@ export default class FinishDate extends Component<FinishDateProps, undefined> {
         const d = moment(process.date)
         const vars = {date: d.fromNow()}
         if (d.isAfter(Date.now())) {
-            return i18n.t('process.status.finishes', vars)
+            if (process.params.status.isReady || process.params.status.isPaused) {
+                return i18n.t('process.status.finishes', vars)
+            } else {
+                return null
+            }
         }
 
         return i18n.t('process.status.finished', vars)

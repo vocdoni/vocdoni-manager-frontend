@@ -211,8 +211,8 @@ export default class ProcessListView extends Component<undefined, State> {
                                             )}
                                         >
                                             <div className='state'>
-                                                <div className={`status ${process.params.status.isCanceled && 'finished'}`}>
-                                                    {process.params.status.isCanceled ? i18n.t('process.status.finished') : i18n.t('process.status.active')}
+                                                <div className={`status ${process.params.status.isEnded && 'finished'}`}>
+                                                    {process.params.status.isEnded ? i18n.t('process.status.finished') : i18n.t('process.status.active')}
                                                     <If condition={!synced}>
                                                         <span className='unsync'>
                                                             &nbsp; ({i18n.t('process.status.unsynced')})
