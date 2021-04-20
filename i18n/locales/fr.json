@@ -28,7 +28,8 @@
         "file_format_unknown": "Format de fichier envoyé inconnu",
         "connection": "Oups ! Une erreur s'est produite lors de la connexion à nos services.",
         "cannot_read_entity_metadata": "Impossible de lire les métadonnées de l'entité",
-        "cannot_connect": "Impossible de se connecter"
+        "cannot_connect": "Impossible de se connecter",
+        "general": "Le Web a rencontré une erreur générale"
     },
     "entity": {
         "title": {
@@ -47,7 +48,9 @@
         },
         "field": {
             "org_email": "Courriel de l’organisation",
-            "org_name": "Nom de l’organisation"
+            "org_name": "Nom de l’organisation",
+            "callback_url": "URL de rappel",
+            "callback_secret": "Secret de rappel"
         },
         "welcome": "Bienvenue ! Dans les prochaines étapes, vous allez créer une entité dans Vocdoni. <br /> Il est important de conserver le mot de passe et toutes les informations de la page suivante dans un endroit sûr, c'est le seul moyen d'accéder à votre entité.",
         "qr_note": "En scannant ce QR code avec l’application Vocdoni, un utilisateur peut s’abonner à l’activité de votre organisation.",
@@ -89,15 +92,58 @@
     },
     "process": {
         "step": {
-            "emails": "Envoyer les courriels"
+            "emails": "Envoyer les courriels",
+            "create": "Créer un processus",
+            "census": "Créer un recensement",
+            "balance": "Vérifier le solde"
         },
         "field": {
             "web_voting_note": "Permet aux membres non inscrits de voter sur une page Web via un lien de vote qui sera envoyé par courriel. Les membres enregistrés doivent de toute façon voter en utilisant Vocdoni App.",
-            "import_census_note": "Définir manuellement la racine et l’URI du recensement (pour le vote CA, n’enverra pas de courriels ni d’autres processus automatisés)"
+            "import_census_note": "Définir manuellement la racine et l’URI du recensement (pour le vote CA, n’enverra pas de courriels ni d’autres processus automatisés)",
+            "app_unavailable": "Non disponible dans l'application.",
+            "participants": "Participants",
+            "live_streaming": "Diffusion en direct",
+            "real_time_results": "Résultats en temps réel",
+            "questions": {
+                "yes": "Oui",
+                "title": "Questions",
+                "no": "Non",
+                "blank": "Blanc"
+            }
         },
         "error": {
             "emails": "Il y a eu une erreur lors de l’envoi des courriels."
-        }
+        },
+        "btn": {
+            "goto_vote": "Vote",
+            "documentation": "Docs",
+            "create": "Créer un processus",
+            "confirm": "Confirmer votre vote",
+            "cast_vote": "Voter",
+            "login": "Se connecter"
+        },
+        "actions": "Actions",
+        "status": {
+            "vote_registered": "Votre vote a été enregistré",
+            "unsynced": "Pas de synchronisation",
+            "title": "Statut",
+            "submitting": "Envoi de votre vote",
+            "not_started": "Le vote n'a pas encore commencé",
+            "inactive": "Pas encore actif",
+            "finishes": "Finit le {{ date }}",
+            "finished": "Fini {{ date }}",
+            "ended": "Le processus de vote est terminé",
+            "closed": "Fermé",
+            "can_vote": "Vous pouvez voter"
+        },
+        "submitted_note": "Votre vote a été reçu et traité avec succès",
+        "your_selections": "Ce sont vos sélections :",
+        "voting": "Vote",
+        "votes_received": "Votes reçus : {{ total }}",
+        "vote_registered_on": "Votre vote a été enregistré le {{ date }}",
+        "type": "Type de processus",
+        "time_frame": "Plage de temps",
+        "thanks": "Merci d'avoir voté !"
     },
     "action_in_progress": "Action en cours…",
     "btn": {
@@ -113,6 +159,34 @@
         "back": "Retour"
     },
     "accept": "J’accepte <l>{{ what }}</l>",
-    "confirm_delete": "Êtes-vous sûr de vouloir supprimer {{ name }} ?",
-    "cannot_import": "Impossible d'importer les membres {{ error }}"
+    "confirm_delete": "Êtes-vous sûr·e de vouloir supprimer {{ name }} ?",
+    "cannot_import": "Impossible d'importer les membres {{ error }}",
+    "members": {
+        "btn": {
+            "download_template": "Télécharger le modèle"
+        },
+        "import": {
+            "confirm_note": "Si le contenu de l'aperçu est correct, cliquez sur le bouton pour continuer.",
+            "confirm": "Confirmer l'importation"
+        }
+    },
+    "news": {
+        "field": {
+            "title": "Titre"
+        },
+        "title": {
+            "new": "Nouvelle publication",
+            "header": "En-tête",
+            "feed": "Flux d’actualité"
+        }
+    },
+    "powered_by": "Propulsé par Vocdoni",
+    "policy": "la politique de confidentialité",
+    "password_confirm": "Confirmer le mot de passe",
+    "password": "Mot de passe",
+    "or": "ou",
+    "uploader": {
+        "spreadsheets_note": "Glisser-déposer ou cliquer pour parcourir les fichiers"
+    },
+    "tos": "les conditions de service"
 }
