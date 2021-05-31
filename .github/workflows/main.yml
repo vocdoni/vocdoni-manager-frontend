@@ -116,7 +116,7 @@ jobs:
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
             ETH_NETWORK_ID=xdai
             VOCDONI_ENVIRONMENT=stg
-            EXPLORER_URL=https://explorer-stg.vocdoni.net
+            EXPLORER_URL=https://stg.explorer.vote
             REGISTER_URL=https://manager.stg.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.stg.vocdoni.net/api/registry
             MANAGER_BACKEND_URI=https://manager.stg.vocdoni.net/api/manager
@@ -125,6 +125,7 @@ jobs:
           tags: |
             vocdoni/${{ github.event.repository.name }}:stage,
             ghcr.io/vocdoni/${{ github.event.repository.name }}:stage
+
       - name: Push app image to Docker Hub and ghcr.io
         uses: docker/build-push-action@v2
         with:
@@ -182,6 +183,7 @@ jobs:
           build-args: |
             COMMIT_SHA=${{ steps.vars.outputs.sha_short }}
             ETH_NETWORK_ID=xdai
+            EXPLORER_URL=https://explorer.vote
             VOCDONI_ENVIRONMENT=prod
             REGISTER_URL=https://manager.vocdoni.net/api/registry
             ACTION_VISIBILITY_URL=https://manager.vocdoni.net/api/registry
