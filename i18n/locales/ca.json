@@ -61,8 +61,8 @@
             "not_found_description": "No s'ha pogut trobar l'entitat a la que intentaves accedir"
         },
         "field": {
-            "callback_secret": "Callback secret",
-            "callback_url": "Callback URL",
+            "callback_secret": "Secret de devolució de trucada",
+            "callback_url": "URL de Devolució de trucada",
             "org_email": "E-mail de la organització",
             "org_name": "Nom de la organització"
         },
