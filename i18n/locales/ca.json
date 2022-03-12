@@ -31,7 +31,7 @@
         "seed": "Llavor del compte",
         "title": "Compte"
     },
-    "action_in_progress": "Duent a terme...",
+    "action_in_progress": "Acció en curs...",
     "btn": {
         "back": "Torna enrere",
         "cancel": "Cancel·la",
@@ -44,12 +44,12 @@
         "save": "Desa",
         "saving": "Desant"
     },
-    "cannot_import": "",
+    "cannot_import": "No es pot importar membres {{ error }}",
     "confirm": "Confirma",
     "confirm_delete": "Segur que vols eliminar {{ name }}?",
     "connected": "Connectat",
     "connecting": "Connectant a la xarxa. Espera si et plau...",
-    "duplicate_email": "",
+    "duplicate_email": "Correu duplicat",
     "entity": {
         "btn": {
             "create": "Crea entitat",
@@ -61,8 +61,8 @@
             "not_found_description": "No s'ha pogut trobar l'entitat a la que intentaves accedir"
         },
         "field": {
-            "callback_secret": "Callback secret",
-            "callback_url": "Callback URL",
+            "callback_secret": "Secret de devolució de trucada",
+            "callback_url": "URL de Devolució de trucada",
             "org_email": "E-mail de la organització",
             "org_name": "Nom de la organització"
         },
@@ -113,7 +113,7 @@
         "upload": "Carrega imatge",
         "uploading": "Carregant imatge"
     },
-    "loading": "S'està carregant",
+    "loading": "S'està carregant...",
     "login": {
         "btn": {
             "create": "Crea una entitat",
@@ -125,7 +125,7 @@
     },
     "members": {
         "btn": {
-            "create_census": "Create voting census",
+            "create_census": "Crear cens de votació",
             "download_template": "Descarrega la plantilla",
             "download_validation_links": "Descarrega els enllaços de validació",
             "import": "Importa les dades",
@@ -140,7 +140,7 @@
             "manual": "Importació manual",
             "preview": "Vista prèvia de les dades",
             "select_file_first": "Primer has de seleccionar un fitxer",
-            "template": "Fes servir la plantilla següent per a pujar una llista amb nous membres.",
+            "template": "Fes servir la plantilla següent per a pujar una llista amb nous membres",
             "title": "Importar membres"
         },
         "list": {
@@ -148,7 +148,7 @@
             "description": "Aquest és el llistat de membres de la teva entitat. Des d'aquí pots generar enllaços de validació per a que es puguin registrar i donar-los-hi dret de vot. Podràs crear censos per als procesos de votació amb aquells membres que s'hagin registrat.",
             "title": "Llista de membres",
             "tools": "Eines",
-            "tools_note": "Els enllaços de validació s'empren per a registrar membres a la teva entitat. Descarrega la llista d'enllaços i envia'ls-hi l'enllaç corresponent a cadascun d'ells per a que es puguin registrar"
+            "tools_note": "Els enllaços de validació s'empren per a registrar membres a la teva entitat. Descarrega la llista d'enllaços i envia'ls-hi l'enllaç corresponent a cadascun d'ells per a que es puguin registrar."
         }
     },
     "menu": {
@@ -203,7 +203,7 @@
         },
         "census_size": "Mida del cens",
         "channels": {
-            "intro": "Votar mitjançant l’aplicació de Vocdoni és l’única manera que actualment garanteix l’anonimat total així com la màxima seguretat. ",
+            "intro": "Votar mitjançant l’aplicació de Vocdoni és l’única manera que actualment garanteix l’anonimat total així com la màxima seguretat.",
             "list": "La votació web s'ofereix com a alternativa addicional quan:",
             "list_items": "S'habilita el live streaming;Cal garantir l'accés a usuaris no registrats;L'autenticació via atributs ha estat seleccionada per a definir els participants."
         },
@@ -233,7 +233,7 @@
             "not_found": "No s'ha trobat l'entitat o el procés",
             "not_found_description": "O bé l'entitat o bé el procés als que intentes accedir no s'han pogut trobar",
             "not_in_census": "No formes part del cens",
-            "select_all": "Indica el teu vot per a totes les preguntes",
+            "select_all": "Indica el teu vot per a totes les preguntes.",
             "starts_soon": "La data d'inici ha de ser d'aquí a uns minuts",
             "status": "No s'ha pogut carregar l'estat del procés",
             "timeout": "La informació dels processos ha trigat massa a carregar",
@@ -258,7 +258,7 @@
             "period": "Període",
             "publishing": "Publicació",
             "qna_button": "Botó de precs i preguntes",
-            "qna_button_note": "Mostrarà un botó de precs i preguntes enllaçant on vulguis",
+            "qna_button_note": "Mostrarà un botó de precs i preguntes enllaçant on vulguis.",
             "questions": {
                 "blank": "En blanc",
                 "no": "No",

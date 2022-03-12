@@ -1,0 +1,192 @@
+{
+    "login": {
+        "password": "Mot de passe",
+        "btn": {
+            "sign_in": "Se connecter",
+            "import": "Importer une entité",
+            "create": "Créer une entité"
+        }
+    },
+    "loading": "Chargement…",
+    "image_uploader": {
+        "uploading": "Téléversement de l’image",
+        "upload": "Téléverser l’image"
+    },
+    "field": {
+        "validated": "Validé",
+        "tags": "Étiquettes",
+        "name": "Nom",
+        "last_name": "Nom de famille",
+        "actions": "Actions",
+        "email": "Courriel"
+    },
+    "error": {
+        "timeout": "La demande a pris trop de temps",
+        "retry": "Réessayez",
+        "oops": "Oups, ceci est une erreur.",
+        "invalid_email": "Ce doit être une adresse courriel valide",
+        "file_format_unknown": "Format de fichier envoyé inconnu",
+        "connection": "Oups ! Une erreur s'est produite lors de la connexion à nos services.",
+        "cannot_read_entity_metadata": "Impossible de lire les métadonnées de l'entité",
+        "cannot_connect": "Impossible de se connecter",
+        "general": "Le Web a rencontré une erreur générale"
+    },
+    "entity": {
+        "title": {
+            "share": "Partager",
+            "new": "Nouvelle entité",
+            "create": "Créez votre entité"
+        },
+        "error": {
+            "not_found": "Entité non trouvée",
+            "loading": "Une erreur s’est produite lors du chargement des données d’entité",
+            "not_found_description": "L'entité que vous recherchez est introuvable"
+        },
+        "btn": {
+            "manage": "Gérer mon entité",
+            "create": "Créer une entité"
+        },
+        "field": {
+            "org_email": "Courriel de l’organisation",
+            "org_name": "Nom de l’organisation",
+            "callback_url": "URL de rappel",
+            "callback_secret": "Secret de rappel"
+        },
+        "welcome": "Bienvenue ! Dans les prochaines étapes, vous allez créer une entité dans Vocdoni. <br /> Il est important de conserver le mot de passe et toutes les informations de la page suivante dans un endroit sûr, c'est le seul moyen d'accéder à votre entité.",
+        "qr_note": "En scannant ce QR code avec l’application Vocdoni, un utilisateur peut s’abonner à l’activité de votre organisation.",
+        "loading": "Chargement des informations sur l'entité…",
+        "heads-up": "Gardez à l'esprit que tout est chiffré dans votre navigateur. Si votre appareil est cassé, perdu, volé ou si vos données sont corrompues, il n'y a aucun moyen pour Vocdoni de récupérer votre entité."
+    },
+    "duplicate_email": "Courriel en double",
+    "connecting": "Connexion au réseau. Veuillez attendre…",
+    "connected": "Connecté",
+    "confirm": "Confirmer",
+    "account": {
+        "import_file_restriction": "Seuls les fichiers .json sont pris en charge",
+        "error": {
+            "password_missmatch": "Les deux mots de passe que vous avez saisis ne correspondent pas !",
+            "not_found_description": "Il semble que votre compte ne soit pas lié à une entité existante. Voulez-vous la créer maintenant ?",
+            "missing_password": "Le mot de passe est nécessaire pour tout déchiffrer !",
+            "missing_name": "Vous devez spécifier un nom de compte",
+            "cannot_import": "Une erreur s'est produite lors de l'importation du compte. Veuillez réessayer",
+            "cannot_create": "Une erreur s'est produite lors de la création du compte. Veuillez réessayer"
+        },
+        "name": "Nom",
+        "title": "Compte",
+        "public_key": "Clé publique",
+        "private_key": "Clé privée",
+        "drag_to_import": "Cliquez ou faites glisser votre fichier de sauvegarde ici pour une importation facile",
+        "creating": "Création du compte, veuillez patienter…",
+        "created": "La création du compte est terminée !",
+        "btn": {
+            "import": "Importation et connexion",
+            "download_backup": "Télécharger le fichier de sauvegarde",
+            "details_already_copied": "J’ai copié les détails de mon Entité"
+        },
+        "balance": "Solde",
+        "address": "Adresse",
+        "please_copy_details": "Veuillez conserver une copie des informations suivantes avant de continuer",
+        "manually_set": "Ou définissez manuellement vos informations ci-dessous :",
+        "import_title": "Importer un compte",
+        "import_finish": "Terminez maintenant le processus en définissant un nom d'entité et le mot de passe attendu pour la paire de clés."
+    },
+    "process": {
+        "step": {
+            "emails": "Envoyer les courriels",
+            "create": "Créer un processus",
+            "census": "Créer un recensement",
+            "balance": "Vérifier le solde"
+        },
+        "field": {
+            "web_voting_note": "Permet aux membres non inscrits de voter sur une page Web via un lien de vote qui sera envoyé par courriel. Les membres enregistrés doivent de toute façon voter en utilisant Vocdoni App.",
+            "import_census_note": "Définir manuellement la racine et l’URI du recensement (pour le vote CA, n’enverra pas de courriels ni d’autres processus automatisés)",
+            "app_unavailable": "Non disponible dans l'application.",
+            "participants": "Participants",
+            "live_streaming": "Diffusion en direct",
+            "real_time_results": "Résultats en temps réel",
+            "questions": {
+                "yes": "Oui",
+                "title": "Questions",
+                "no": "Non",
+                "blank": "Blanc"
+            }
+        },
+        "error": {
+            "emails": "Il y a eu une erreur lors de l’envoi des courriels."
+        },
+        "btn": {
+            "goto_vote": "Vote",
+            "documentation": "Docs",
+            "create": "Créer un processus",
+            "confirm": "Confirmer votre vote",
+            "cast_vote": "Voter",
+            "login": "Se connecter"
+        },
+        "actions": "Actions",
+        "status": {
+            "vote_registered": "Votre vote a été enregistré",
+            "unsynced": "Pas de synchronisation",
+            "title": "Statut",
+            "submitting": "Envoi de votre vote",
+            "not_started": "Le vote n'a pas encore commencé",
+            "inactive": "Pas encore actif",
+            "finishes": "Finit le {{ date }}",
+            "finished": "Fini {{ date }}",
+            "ended": "Le processus de vote est terminé",
+            "closed": "Fermé",
+            "can_vote": "Vous pouvez voter"
+        },
+        "submitted_note": "Votre vote a été reçu et traité avec succès",
+        "your_selections": "Ce sont vos sélections :",
+        "voting": "Vote",
+        "votes_received": "Votes reçus : {{ total }}",
+        "vote_registered_on": "Votre vote a été enregistré le {{ date }}",
+        "type": "Type de processus",
+        "time_frame": "Plage de temps",
+        "thanks": "Merci d'avoir voté !"
+    },
+    "action_in_progress": "Action en cours…",
+    "btn": {
+        "saving": "Enregistrement",
+        "save": "Enregistrer",
+        "retry": "Réessayer",
+        "remove": "Retirer",
+        "ok": "OK",
+        "edit": "Modifier",
+        "create": "Créer",
+        "copy_link": "Copier le lien",
+        "cancel": "Annuler",
+        "back": "Retour"
+    },
+    "accept": "J’accepte <l>{{ what }}</l>",
+    "confirm_delete": "Êtes-vous sûr·e de vouloir supprimer {{ name }} ?",
+    "cannot_import": "Impossible d'importer les membres {{ error }}",
+    "members": {
+        "btn": {
+            "download_template": "Télécharger le modèle"
+        },
+        "import": {
+            "confirm_note": "Si le contenu de l'aperçu est correct, cliquez sur le bouton pour continuer.",
+            "confirm": "Confirmer l'importation"
+        }
+    },
+    "news": {
+        "field": {
+            "title": "Titre"
+        },
+        "title": {
+            "new": "Nouvelle publication",
+            "header": "En-tête",
+            "feed": "Flux d’actualité"
+        }
+    },
+    "powered_by": "Propulsé par Vocdoni",
+    "policy": "la politique de confidentialité",
+    "password_confirm": "Confirmer le mot de passe",
+    "password": "Mot de passe",
+    "or": "ou",
+    "uploader": {
+        "spreadsheets_note": "Glisser-déposer ou cliquer pour parcourir les fichiers"
+    },
+    "tos": "les conditions de service"
+}

@@ -148,7 +148,7 @@ jobs:
   release-prod:
     runs-on: self-hosted
     needs: [node-tests]
-    if: startsWith(github.ref, 'refs/heads/release')
+    if: startsWith(github.ref, 'refs/heads/release-*')
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
